@@ -1,4 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+} from "@floating-ui/react";
 
 export function Table() {
   return (
@@ -109,18 +115,6 @@ export function Table() {
                       />
                     </svg>
                   </button>
-                  <div className="relative -bottom-2 z-10 w-full">
-                    <div className="absolute block w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
-                      <ul className="flex flex-col">
-                        <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
-                          Aprovar
-                        </li>
-                        <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
-                          Rejeitar
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="px-4 sm:px-6 lg:col-span-2 lg:py-4">
@@ -214,19 +208,16 @@ export function Table() {
 
 function TableRow() {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as any)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutside, true);
-    return () => {
-      document.removeEventListener("click", handleClickOutside, true);
-    };
-  }, [setIsOpen]);
+  const { x, y, strategy, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
     <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
@@ -245,9 +236,10 @@ function TableRow() {
 
       <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
         <button
-          onClick={() => setIsOpen(!isOpen)}
           type="button"
           className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          ref={refs.setReference}
+          {...getReferenceProps()}
         >
           <svg
             className="h-6 w-6"
@@ -265,8 +257,15 @@ function TableRow() {
           </svg>
         </button>
         {isOpen && (
-          <div ref={ref} className="relative -bottom-2 z-10 w-full">
-            <div className="absolute block w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+          <div
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: y ? y + 10 : 0,
+              left: x ?? 0,
+            }}
+          >
+            <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
                 <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
                   Aprovar
