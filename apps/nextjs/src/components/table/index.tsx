@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import {
   useClick,
   useDismiss,
@@ -6,7 +6,10 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
+import { Dropdown } from "../dropdown";
+
 export function Table() {
+  const [item, setItem] = useState({ label: "", value: "" });
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -20,8 +23,71 @@ export function Table() {
               </div>
             </div>
 
+            <div className="flex flex-row">
+              <div className="w-full">
+                <Dropdown
+                  value={item.label}
+                  onChange={(v) => setItem((state) => ({ ...state, label: v }))}
+                  onSelectItem={(selectedItem) =>
+                    setItem(() => ({
+                      ...selectedItem,
+                      value: selectedItem.value,
+                      label: "",
+                    }))
+                  }
+                  dropdownLabel="Status"
+                  inputPlaceholder="Aprovação"
+                  dropdownPlaceholder="Selecione um status"
+                  dropdownItems={[
+                    {
+                      label: "Aprovado",
+                      value: TableRowStatusEnum.APPROVED,
+                      icon: (
+                        <svg
+                          className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-green-500"
+                          fill="currentColor"
+                          viewBox="0 0 8 8"
+                        >
+                          <circle cx="4" cy="4" r="3" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      label: "Negado",
+                      value: TableRowStatusEnum.DENIED,
+                      icon: (
+                        <svg
+                          className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-red-500"
+                          fill="currentColor"
+                          viewBox="0 0 8 8"
+                        >
+                          <circle cx="4" cy="4" r="3" />
+                        </svg>
+                      ),
+                    },
+                    {
+                      label: "Pendente",
+                      value: TableRowStatusEnum.PENDING,
+                      icon: (
+                        <svg
+                          className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-yellow-400"
+                          fill="currentColor"
+                          viewBox="0 0 8 8"
+                        >
+                          <circle cx="4" cy="4" r="3" />
+                        </svg>
+                      ),
+                    },
+                  ]}
+                />
+              </div>
+            </div>
+
             <div className="divide-y divide-gray-200">
-              <TableRow />
+              <TableRow
+                status={TableRowStatusEnum.APPROVED}
+                file={{ name: "", url: "" }}
+              />
               <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
                 <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
                   <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-900">
@@ -91,7 +157,7 @@ export function Table() {
                     >
                       <circle cx="4" cy="4" r="3" />
                     </svg>
-                    Aprovação
+                    Pendente
                   </span>
                 </div>
 
@@ -206,8 +272,45 @@ export function Table() {
   );
 }
 
-function TableRow() {
+enum TableRowStatusEnum {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
+const TableRowStatusDictionary = {
+  [TableRowStatusEnum.PENDING]: {
+    dotColor: "text-yellow-400",
+    bgColor: "bg-yellow-100",
+    textColor: "text-yellow-900",
+    label: "Pendente",
+  },
+  [TableRowStatusEnum.APPROVED]: {
+    dotColor: "text-green-500",
+    bgColor: "bg-green-100",
+    textColor: "text-green-900",
+    label: "Aprovado",
+  },
+  [TableRowStatusEnum.DENIED]: {
+    dotColor: "text-red-500",
+    bgColor: "bg-red-100",
+    textColor: "text-red-900",
+    label: "Negado",
+  },
+};
+
+interface TableRowProps {
+  status: TableRowStatusEnum;
+  file: {
+    name: string;
+    url: string;
+  };
+}
+
+function TableRow({ status, file }: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { dotColor, bgColor, textColor, label } =
+    TableRowStatusDictionary[status];
 
   const { x, y, strategy, refs, context } = useFloating({
     open: isOpen,
@@ -222,15 +325,17 @@ function TableRow() {
   return (
     <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
       <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
-        <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-900">
+        <span
+          className={`inline-flex items-center rounded-full ${bgColor} px-2.5 py-1 text-xs font-medium ${textColor}`}
+        >
           <svg
-            className="-ml-1 mr-1.5 h-2.5 w-2.5 text-green-500"
+            className={`-ml-1 mr-1.5 h-2.5 w-2.5 ${dotColor}`}
             fill="currentColor"
             viewBox="0 0 8 8"
           >
             <circle cx="4" cy="4" r="3" />
           </svg>
-          Impresso
+          {label}
         </span>
       </div>
 

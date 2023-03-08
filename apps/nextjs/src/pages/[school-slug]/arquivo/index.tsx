@@ -169,7 +169,7 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
 
                 <div>
                   <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-                    Arquivos
+                    Administrativo
                   </p>
                   <nav className="mt-4 flex-1 space-y-1">
                     <a
@@ -191,7 +191,7 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
                           d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                         />
                       </svg>
-                      Ver arquivos
+                      Arquivos
                     </a>
                   </nav>
                 </div>
