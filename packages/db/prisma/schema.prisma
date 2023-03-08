@@ -21,29 +21,31 @@ model School {
   email   String
   website String
   logo    String
+  slug    String
   files   File[]
   users   User[]
 }
 
 model User {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  email     String    @unique
+  email     String   @unique
   password  String
-  school    School    @relation(fields: [schoolId], references: [id])
   schoolId  String
   role      String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id])
 }
 
 model File {
   id        String   @id @default(cuid())
   name      String
   path      String
-  school    School   @relation(fields: [schoolId], references: [id])
   schoolId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id])
 }
