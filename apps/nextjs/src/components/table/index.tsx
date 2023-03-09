@@ -6,10 +6,29 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
+import { type Class, type File, type School, type SchoolYear } from "@acme/db";
+
+import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
 
-export function Table() {
+interface SchoolFilesTableProps {
+  schoolId: string;
+  files?: (File & {
+    Class: Class & {
+      SchoolYear: SchoolYear & {
+        School: School;
+      };
+    };
+  })[];
+}
+
+export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
   const [item, setItem] = useState({ label: "", value: "" });
+  const filesQuery = api.file.allBySchoolId.useQuery(
+    { schoolId },
+    { initialData: files },
+  );
+  console.log(filesQuery);
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -53,8 +72,8 @@ export function Table() {
                       ),
                     },
                     {
-                      label: "Negado",
-                      value: TableRowStatusEnum.DENIED,
+                      label: "Revisão",
+                      value: TableRowStatusEnum.REVIEW,
                       icon: (
                         <svg
                           className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-red-500"
@@ -66,8 +85,8 @@ export function Table() {
                       ),
                     },
                     {
-                      label: "Pendente",
-                      value: TableRowStatusEnum.PENDING,
+                      label: "Solicitado",
+                      value: TableRowStatusEnum.REQUESTED,
                       icon: (
                         <svg
                           className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-yellow-400"
@@ -84,11 +103,20 @@ export function Table() {
             </div>
 
             <div className="divide-y divide-gray-200">
-              <TableRow
+              {filesQuery.data?.map((file) => {
+                const fileStatus =
+                  file.status as keyof typeof TableRowStatusEnum;
+                const status = TableRowStatusEnum[fileStatus] as
+                  | TableRowStatusEnum
+                  | undefined;
+                if (!status) return null;
+                return <TableRow key={file.id} status={status} file={file} />;
+              })}
+              {/* <TableRow
                 status={TableRowStatusEnum.APPROVED}
                 file={{ name: "", url: "" }}
-              />
-              <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
+              /> */}
+              {/* <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
                 <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
                   <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-900">
                     <svg
@@ -263,7 +291,7 @@ export function Table() {
                     Amazon Prime
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -273,38 +301,42 @@ export function Table() {
 }
 
 enum TableRowStatusEnum {
-  PENDING = "PENDING",
+  REQUESTED = "REQUESTED",
   APPROVED = "APPROVED",
-  DENIED = "DENIED",
+  PRINTED = "PRINTED",
+  REVIEW = "REVIEW",
 }
 
 const TableRowStatusDictionary = {
-  [TableRowStatusEnum.PENDING]: {
-    dotColor: "text-yellow-400",
-    bgColor: "bg-yellow-100",
-    textColor: "text-yellow-900",
-    label: "Pendente",
+  [TableRowStatusEnum.REQUESTED]: {
+    dotColor: "text-purple-400",
+    bgColor: "bg-purple-100",
+    textColor: "text-purple-900",
+    label: "Solicitado",
   },
   [TableRowStatusEnum.APPROVED]: {
+    dotColor: "text-sky-400",
+    bgColor: "bg-sky-100",
+    textColor: "text-sky-900",
+    label: "Aprovado",
+  },
+  [TableRowStatusEnum.PRINTED]: {
     dotColor: "text-green-500",
     bgColor: "bg-green-100",
     textColor: "text-green-900",
-    label: "Aprovado",
+    label: "Impresso",
   },
-  [TableRowStatusEnum.DENIED]: {
-    dotColor: "text-red-500",
-    bgColor: "bg-red-100",
-    textColor: "text-red-900",
-    label: "Negado",
+  [TableRowStatusEnum.REVIEW]: {
+    dotColor: "text-yellow-400",
+    bgColor: "bg-yellow-100",
+    textColor: "text-yellow-900",
+    label: "Revisar",
   },
 };
 
 interface TableRowProps {
   status: TableRowStatusEnum;
-  file: {
-    name: string;
-    url: string;
-  };
+  file: any;
 }
 
 function TableRow({ status, file }: TableRowProps) {
@@ -385,17 +417,25 @@ function TableRow({ status, file }: TableRowProps) {
       </div>
 
       <div className="px-4 sm:px-6 lg:col-span-2 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">Visa card **** 4831</p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Card payment</p>
+        <p className="text-sm font-bold text-gray-900">Claudia Santos</p>
+        <p className="mt-1 text-sm font-medium text-gray-500">
+          Lingua Portuguesa
+        </p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">$182.94</p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Jan 17, 2022</p>
+        <p className="text-sm font-bold text-gray-900">20/02/2023</p>
+        <p className="mt-1 text-sm font-medium text-gray-500">01/10/2023</p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="mt-1 text-sm font-medium text-gray-500">Amazon</p>
+        <p className="mt-1 text-sm font-medium text-gray-500">6 ano</p>
+        <p className="mt-1 text-sm font-medium text-gray-500">Turma B</p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="mt-1 text-sm font-medium text-gray-500">20 Cópias</p>
+        <p className="mt-1 text-sm font-medium text-gray-500">Frente e verso</p>
       </div>
     </div>
   );

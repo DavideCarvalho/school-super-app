@@ -1,15 +1,16 @@
-import { useState } from "react";
-import { type GetServerSidePropsContext } from "next";
+import {
+  type GetServerSidePropsContext,
+  type InferGetServerSidePropsType,
+} from "next";
 
-import { Dropdown } from "~/components/dropdown";
-import { Table } from "~/components/table";
+import { trpCaller } from "@acme/api";
 
-interface SchoolFilesPageProps {
-  files: any[];
-}
+import { SchoolFilesTable } from "~/components/table";
 
-export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
-  const [dropdownValue, setDropdownValue] = useState("");
+export default function SchoolFilesPage({
+  school,
+  files,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
@@ -74,8 +75,7 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
                   </svg>
                 </button>
                 <span className="absolute -top-px -right-1 inline-flex items-center rounded-full bg-indigo-600 px-1.5 py-0.5 text-xs font-semibold text-white">
-                  {" "}
-                  2{" "}
+                  2
                 </span>
               </div>
 
@@ -100,8 +100,7 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
                   </svg>
                 </button>
                 <span className="absolute -top-px -right-1 inline-flex items-center rounded-full bg-indigo-600 px-1.5 py-0.5 text-xs font-semibold text-white">
-                  {" "}
-                  6{" "}
+                  6
                 </span>
               </div>
 
@@ -115,8 +114,7 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
                   alt=""
                 />
                 <span className="ml-2 hidden text-sm font-medium text-gray-900 md:block">
-                  {" "}
-                  Jacob Jones{" "}
+                  Jacob Jones
                 </span>
                 <svg
                   className="ml-3 h-4 w-4 text-gray-500"
@@ -257,7 +255,7 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
           <main>
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                <Table />
+                <SchoolFilesTable schoolId={school.id} files={files} />
               </div>
             </div>
           </main>
@@ -267,14 +265,20 @@ export default function SchoolFilesPage({ files }: SchoolFilesPageProps) {
   );
 }
 
-// Path: apps/nextjs/src/pages/[school-slug]/index.tsx
 export async function getServerSideProps({
   params,
 }: GetServerSidePropsContext) {
-  // const school = await getSchoolBySlug(params['school-slug'])
+  const schoolSlug = params?.["school-slug"]! as string;
+  const school = await trpCaller.school.bySlug({ slug: schoolSlug });
+  if (!school) {
+    // throw error
+    throw new Error(`School with slug ${schoolSlug} not found`);
+  }
+  const files = await trpCaller.file.allBySchoolId({ schoolId: school.id });
   return {
     props: {
-      files: [],
+      school,
+      files,
     },
   };
 }

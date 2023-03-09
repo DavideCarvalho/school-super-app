@@ -59,6 +59,15 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   });
 };
 
+export const createTRPCCaller = (
+  router: ReturnType<typeof createTRPCRouter>,
+) => {
+  return router.createCaller({
+    prisma,
+    session: null,
+  });
+};
+
 /**
  * 2. INITIALIZATION
  *

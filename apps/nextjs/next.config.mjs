@@ -1,3 +1,5 @@
+import { withSuperjson } from "next-superjson";
+
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.
  * This is especially useful for Docker builds and Linting.
@@ -13,4 +15,4 @@ const config = {
   typescript: { ignoreBuildErrors: !!process.env.CI },
 };
 
-export default config;
+export default withSuperjson()(config);

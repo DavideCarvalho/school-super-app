@@ -11,19 +11,12 @@ datasource db {
 }
 
 model School {
-  id      String @id @default(cuid())
-  name    String
-  address String
-  city    String
-  state   String
-  zip     String
-  phone   String
-  email   String
-  website String
-  logo    String
-  slug    String
-  files   File[]
-  users   User[]
+  id          String       @id @default(cuid())
+  name        String
+  slug        String
+  Users       User[]
+  SchoolYears SchoolYear[]
+  Teachers    Teacher[]
 }
 
 model User {
@@ -32,20 +25,75 @@ model User {
   email     String   @unique
   password  String
   schoolId  String
-  role      String
+  roleId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  school School @relation(fields: [schoolId], references: [id])
+  School School @relation(fields: [schoolId], references: [id])
+  Role   Role   @relation(fields: [roleId], references: [id])
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  schoolId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  School            School            @relation(fields: [schoolId], references: [id])
+  TeacherHasClasses TeacherHasClass[]
+}
+
+model TeacherHasClass {
+  id           String   @id @default(cuid())
+  teacherId    String
+  schoolYearId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  Teacher    Teacher    @relation(fields: [teacherId], references: [id])
+  SchoolYear SchoolYear @relation(fields: [schoolYearId], references: [id])
 }
 
 model File {
   id        String   @id @default(cuid())
   name      String
   path      String
+  classId   String
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Class Class @relation(fields: [classId], references: [id])
+}
+
+model Role {
+  id    String @id @default(cuid())
+  name  String
+  Users User[]
+}
+
+model SchoolYear {
+  id        String   @id @default(cuid())
+  name      String
   schoolId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  school School @relation(fields: [schoolId], references: [id])
+  School            School            @relation(fields: [schoolId], references: [id])
+  Classes           Class[]
+  TeacherHasClasses TeacherHasClass[]
+}
+
+model Class {
+  id           String   @id @default(cuid())
+  name         String
+  schoolYearId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  SchoolYear SchoolYear @relation(fields: [schoolYearId], references: [id])
+  File       File[]
 }
