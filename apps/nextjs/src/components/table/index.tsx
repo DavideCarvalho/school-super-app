@@ -110,9 +110,6 @@ export function SchoolFilesTable({
   limit,
 }: SchoolFilesTableProps) {
   const router = useRouter();
-  useEffect(() => {
-    console.log("router url", router.pathname);
-  }, [router]);
   const [item, setItem] = useState({ label: "", value: "" });
   const filesQuery = api.file.allBySchoolId.useQuery(
     { schoolId, status, page, limit, orderBy: { dueDate: "asc" } },
@@ -126,6 +123,26 @@ export function SchoolFilesTable({
             <div>
               <p className="text-lg font-bold text-gray-900">Arquivos</p>
             </div>
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+            >
+              <svg
+                className="mr-1 h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Nova solicitação
+            </button>
           </div>
         </div>
 
