@@ -98,6 +98,7 @@ importers:
       '@acme/db': '*'
       '@acme/tailwind-config': '*'
       '@floating-ui/react': ^0.20.1
+      '@headlessui/react': ^1.7.13
       '@tanstack/react-query': ^4.24.10
       '@trpc/client': ^10.14.0
       '@trpc/next': ^10.14.0
@@ -126,6 +127,7 @@ importers:
       '@acme/db': link:../../packages/db
       '@acme/tailwind-config': link:../../packages/config/tailwind
       '@floating-ui/react': 0.20.1_biqbaboplfbrettd7655fr4n2y
+      '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-query': 4.24.10_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.14.0_@trpc+server@10.14.0
       '@trpc/next': 10.14.0_pen7abxfhplw6oyjl4mz6sok3y
@@ -2201,6 +2203,18 @@ packages:
       '@hapi/hoek': 9.3.0
     dev: false
 
+  /@headlessui/react/1.7.13_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: ^16 || ^17 || ^18
+      react-dom: ^16 || ^17 || ^18
+    dependencies:
+      client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
     engines: {node: '>=10.10.0'}
@@ -3056,7 +3070,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@tanstack/react-query': 4.24.10_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-query': 4.24.10_bblof3d6od7kdqr2urb3dykbey
       '@trpc/client': 10.14.0_@trpc+server@10.14.0
       '@trpc/server': 10.14.0
       react: 18.2.0

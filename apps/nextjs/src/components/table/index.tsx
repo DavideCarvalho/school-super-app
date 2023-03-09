@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 import {
   useClick,
@@ -19,6 +19,7 @@ import {
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
+import { NewFileRequestModal } from "../new-file-request-modal";
 import { Pagination } from "../pagination";
 
 interface SchoolFilesTableProps {
@@ -111,12 +112,14 @@ export function SchoolFilesTable({
 }: SchoolFilesTableProps) {
   const router = useRouter();
   const [item, setItem] = useState({ label: "", value: "" });
+  const [open, setOpen] = useState(false);
   const filesQuery = api.file.allBySchoolId.useQuery(
     { schoolId, status, page, limit, orderBy: { dueDate: "asc" } },
     { initialData: files },
   );
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
+      <NewFileRequestModal open={open} onClickCancel={() => setOpen(false)} />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
@@ -125,6 +128,7 @@ export function SchoolFilesTable({
             </div>
             <button
               type="button"
+              onClick={() => setOpen(true)}
               className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
             >
               <svg

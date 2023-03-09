@@ -1,10 +1,10 @@
 import { type PropsWithChildren } from "react";
 
-interface SchoolLayoutProps {}
+interface SchoolLayoutProps {
+  children?: React.ReactNode;
+}
 
-export default function SchoolLayout({
-  children,
-}: PropsWithChildren<SchoolLayoutProps>) {
+export function SchoolLayout({ children }: SchoolLayoutProps) {
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">

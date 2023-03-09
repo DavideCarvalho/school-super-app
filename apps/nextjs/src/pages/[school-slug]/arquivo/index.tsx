@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { trpCaller } from "@acme/api";
 
 import { SchoolFilesTable } from "~/components/table";
-import SchoolLayout from "~/layouts/SchoolLayout";
+import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function SchoolFilesPage({
   status,
