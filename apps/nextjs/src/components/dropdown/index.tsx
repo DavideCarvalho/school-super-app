@@ -8,7 +8,7 @@ import {
 
 interface DropdownProps<T extends { label: string; value: unknown }> {
   search: string;
-  initialSelectedItem: T;
+  initialSelectedItem: T | undefined;
   onChange: (value: string) => void;
   onSelectItem: (value: { label: string; value: unknown }) => void;
   dropdownLabel: string;

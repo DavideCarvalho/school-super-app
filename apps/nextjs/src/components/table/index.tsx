@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import {
   useClick,
@@ -19,6 +19,7 @@ import {
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
+import { Pagination } from "../pagination";
 
 interface SchoolFilesTableProps {
   schoolId: string;
@@ -33,7 +34,10 @@ interface SchoolFilesTableProps {
       };
     };
   })[];
-  status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED";
+  filesCount: number;
+  page: number;
+  limit: number;
+  status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED" | undefined;
 }
 
 function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
@@ -101,11 +105,17 @@ export function SchoolFilesTable({
   schoolId,
   files,
   status,
+  filesCount,
+  page,
+  limit,
 }: SchoolFilesTableProps) {
   const router = useRouter();
+  useEffect(() => {
+    console.log("router url", router.pathname);
+  }, [router]);
   const [item, setItem] = useState({ label: "", value: "" });
   const filesQuery = api.file.allBySchoolId.useQuery(
-    { schoolId, orderBy: { dueDate: "asc" }, status },
+    { schoolId, status, page, limit, orderBy: { dueDate: "asc" } },
     { initialData: files },
   );
   return (
@@ -123,7 +133,7 @@ export function SchoolFilesTable({
           <div className="w-full">
             <Dropdown
               search={item.label}
-              initialSelectedItem={getStatus(status)}
+              initialSelectedItem={status ? getStatus(status) : undefined}
               onChange={(v) => setItem((state) => ({ ...state, label: v }))}
               onSelectItem={(selectedItem) => {
                 setItem(() => ({
@@ -131,8 +141,11 @@ export function SchoolFilesTable({
                   value: selectedItem.value as string,
                   label: "",
                 }));
-                router.replace({
-                  query: { ...router.query, status: selectedItem.value },
+                void router.replace({
+                  query: {
+                    ...router.query,
+                    status: selectedItem.value as string,
+                  },
                 });
               }}
               dropdownLabel="Status"
@@ -175,186 +188,19 @@ export function SchoolFilesTable({
               />
             );
           })}
-          {/* <TableRow
-                status={TableRowStatusEnum.APPROVED}
-                file={{ name: "", url: "" }}
-              /> */}
-          {/* <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
-                <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
-                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-900">
-                    <svg
-                      className="-ml-1 mr-1.5 h-2.5 w-2.5 text-green-500"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <circle cx="4" cy="4" r="3" />
-                    </svg>
-                    Impresso
-                  </span>
-                </div>
+        </div>
 
-                <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
-                  <button
-                    type="button"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:col-span-2 lg:py-4">
-                  <p className="text-sm font-bold text-gray-900">
-                    Mastercard **** 6442
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Card payment
-                  </p>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:py-4">
-                  <p className="text-sm font-bold text-gray-900">$99.00</p>
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Jan 17, 2022
-                  </p>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:py-4">
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Facebook
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
-                <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
-                  <span className="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-medium text-yellow-900">
-                    <svg
-                      className="-ml-1 mr-1.5 h-2.5 w-2.5 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <circle cx="4" cy="4" r="3" />
-                    </svg>
-                    Pendente
-                  </span>
-                </div>
-
-                <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
-                  <button
-                    type="button"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:col-span-2 lg:py-4">
-                  <p className="text-sm font-bold text-gray-900">
-                    Account ****882
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Bank payment
-                  </p>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:py-4">
-                  <p className="text-sm font-bold text-gray-900">$249.94</p>
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Jan 17, 2022
-                  </p>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:py-4">
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Netflix
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
-                <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
-                  <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-900">
-                    <svg
-                      className="-ml-1 mr-1.5 h-2.5 w-2.5 text-red-500"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <circle cx="4" cy="4" r="3" />
-                    </svg>
-                    Negado
-                  </span>
-                </div>
-
-                <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
-                  <button
-                    type="button"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:col-span-2 lg:py-4">
-                  <p className="text-sm font-bold text-gray-900">
-                    Amex card **** 5666
-                  </p>
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Card payment
-                  </p>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:py-4">
-                  <p className="text-sm font-bold text-gray-900">$199.24</p>
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Jan 17, 2022
-                  </p>
-                </div>
-
-                <div className="px-4 sm:px-6 lg:py-4">
-                  <p className="mt-1 text-sm font-medium text-gray-500">
-                    Amazon Prime
-                  </p>
-                </div>
-              </div> */}
+        <div>
+          <Pagination
+            totalCount={filesCount}
+            currentPage={page}
+            itemsPerPage={limit}
+            onChangePage={(page) => {
+              void router.replace({
+                query: { ...router.query, page },
+              });
+            }}
+          />
         </div>
       </div>
     </div>
