@@ -47,24 +47,36 @@ model Teacher {
 }
 
 model TeacherHasClass {
-  id           String   @id @default(cuid())
-  teacherId    String
-  schoolYearId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(cuid())
+  teacherId String
+  classId   String
+  subjectId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  Teacher    Teacher    @relation(fields: [teacherId], references: [id])
-  SchoolYear SchoolYear @relation(fields: [schoolYearId], references: [id])
+  Teacher Teacher @relation(fields: [teacherId], references: [id])
+  Class   Class   @relation(fields: [classId], references: [id])
+  Subject Subject @relation(fields: [subjectId], references: [id])
+}
+
+model Subject {
+  id              String            @id @default(cuid())
+  name            String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  TeacherHasClass TeacherHasClass[]
 }
 
 model File {
-  id        String   @id @default(cuid())
-  name      String
-  path      String
-  classId   String
-  status    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(cuid())
+  name         String
+  path         String
+  classId      String
+  status       String
+  frontAndBack Boolean  @default(false)
+  quantity     Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   Class Class @relation(fields: [classId], references: [id])
 }
@@ -82,9 +94,8 @@ model SchoolYear {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  School            School            @relation(fields: [schoolId], references: [id])
-  Classes           Class[]
-  TeacherHasClasses TeacherHasClass[]
+  School  School  @relation(fields: [schoolId], references: [id])
+  Classes Class[]
 }
 
 model Class {
@@ -94,6 +105,7 @@ model Class {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  SchoolYear SchoolYear @relation(fields: [schoolYearId], references: [id])
-  File       File[]
+  SchoolYear      SchoolYear        @relation(fields: [schoolYearId], references: [id])
+  File            File[]
+  TeacherHasClass TeacherHasClass[]
 }

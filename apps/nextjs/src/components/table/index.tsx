@@ -6,7 +6,15 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
-import { type Class, type File, type School, type SchoolYear } from "@acme/db";
+import {
+  type Class,
+  type File,
+  type School,
+  type SchoolYear,
+  type Subject,
+  type Teacher,
+  type TeacherHasClass,
+} from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
@@ -15,6 +23,10 @@ interface SchoolFilesTableProps {
   schoolId: string;
   files?: (File & {
     Class: Class & {
+      TeacherHasClass: (TeacherHasClass & {
+        Teacher: Teacher;
+        Subject: Subject;
+      })[];
       SchoolYear: SchoolYear & {
         School: School;
       };
@@ -28,7 +40,6 @@ export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
     { schoolId },
     { initialData: files },
   );
-  console.log(filesQuery);
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -110,7 +121,25 @@ export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
                   | TableRowStatusEnum
                   | undefined;
                 if (!status) return null;
-                return <TableRow key={file.id} status={status} file={file} />;
+                return (
+                  <TableRow
+                    key={file.id}
+                    status={status}
+                    file={file}
+                    schoolClass={file.Class}
+                    schoolYear={file.Class.SchoolYear}
+                    teacher={
+                      file.Class.TeacherHasClass.find(
+                        (thc) => thc.classId === file.classId,
+                      )!.Teacher
+                    }
+                    subject={
+                      file.Class.TeacherHasClass.find(
+                        (thc) => thc.classId === file.classId,
+                      )!.Subject
+                    }
+                  />
+                );
               })}
               {/* <TableRow
                 status={TableRowStatusEnum.APPROVED}
@@ -336,10 +365,21 @@ const TableRowStatusDictionary = {
 
 interface TableRowProps {
   status: TableRowStatusEnum;
-  file: any;
+  file: File;
+  schoolClass: Class;
+  schoolYear: SchoolYear;
+  teacher: Teacher;
+  subject: Subject;
 }
 
-function TableRow({ status, file }: TableRowProps) {
+function TableRow({
+  status,
+  file,
+  schoolClass,
+  schoolYear,
+  teacher,
+  subject,
+}: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { dotColor, bgColor, textColor, label } =
     TableRowStatusDictionary[status];
@@ -355,8 +395,8 @@ function TableRow({ status, file }: TableRowProps) {
   const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
-    <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
-      <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
+    <div className="grid grid-cols-6 py-4 lg:grid-cols-6 lg:gap-0">
+      <div className="px-4 sm:px-6 lg:py-4">
         <span
           className={`inline-flex items-center rounded-full ${bgColor} px-2.5 py-1 text-xs font-medium ${textColor}`}
         >
@@ -416,26 +456,40 @@ function TableRow({ status, file }: TableRowProps) {
         )}
       </div>
 
-      <div className="px-4 sm:px-6 lg:col-span-2 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">Claudia Santos</p>
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-sm font-bold text-gray-900">
+          Professora {teacher.name}
+        </p>
         <p className="mt-1 text-sm font-medium text-gray-500">
-          Lingua Portuguesa
+          Matéria {subject.name}
         </p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">20/02/2023</p>
-        <p className="mt-1 text-sm font-medium text-gray-500">01/10/2023</p>
+        <p className="text-sm font-bold text-gray-900">
+          Solicitado em 20/02/2023
+        </p>
+        <p className="mt-1 text-sm font-medium text-gray-500">
+          Aplicação em 01/10/2023
+        </p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="mt-1 text-sm font-medium text-gray-500">6 ano</p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Turma B</p>
+        <p className="mt-1 text-sm font-medium text-gray-900">
+          Para o {schoolYear.name} ano
+        </p>
+        <p className="mt-1 text-sm font-medium text-gray-500">
+          Na turma {schoolClass.name}
+        </p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="mt-1 text-sm font-medium text-gray-500">20 Cópias</p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Frente e verso</p>
+        <p className="mt-1 text-sm font-medium text-gray-900">
+          {file.quantity} {file.quantity === 1 ? "Cópia" : "Cópias"}
+        </p>
+        <p className="mt-1 text-sm font-medium text-gray-500">
+          {file.frontAndBack ? "Frente e verso" : "Apenas frente"}
+        </p>
       </div>
     </div>
   );

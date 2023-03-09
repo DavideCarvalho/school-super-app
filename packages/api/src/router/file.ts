@@ -11,6 +11,12 @@ export const fileRouter = createTRPCRouter({
         include: {
           Class: {
             include: {
+              TeacherHasClass: {
+                include: {
+                  Teacher: true,
+                  Subject: true,
+                },
+              },
               SchoolYear: {
                 include: {
                   School: true,
