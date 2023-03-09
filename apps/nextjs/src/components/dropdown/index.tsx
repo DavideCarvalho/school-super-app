@@ -1,4 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+} from "@floating-ui/react";
 
 interface DropdownProps {
   value: string;
@@ -20,7 +26,6 @@ export function Dropdown({
   dropdownLabel,
 }: DropdownProps) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
   const [selectedItem, setSelectedItem] = useState<{
     label: string;
@@ -39,34 +44,30 @@ export function Dropdown({
     }
   }, [value, dropdownItems, setSearchedValues]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as any)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutside, true);
-    return () => {
-      document.removeEventListener("click", handleClickOutside, true);
-    };
-  }, [setOpen]);
+  const { x, y, strategy, refs, context } = useFloating({
+    open,
+    onOpenChange: setOpen,
+    placement: "bottom-start",
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
       <div className="mx-auto w-full max-w-xs">
-        <div
-          ref={ref}
-          className="relative w-full"
-          onBlur={() => setOpen(false)}
-        >
+        <div className="w-full">
           <label className="block w-full text-sm font-bold text-gray-900">
             {dropdownLabel}
           </label>
-          <div className="mt-2 w-full">
-            <div
-              onClick={() => setOpen(!open)}
-              className="block w-full cursor-pointer rounded-lg border border-gray-300 py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
-            >
+          <div
+            className="mt-2 w-full"
+            ref={refs.setReference}
+            {...getReferenceProps()}
+          >
+            <div className="block w-full cursor-pointer rounded-lg border border-gray-300 py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center justify-start space-x-2">
                   <div className="flex-2">
@@ -100,8 +101,16 @@ export function Dropdown({
           </div>
 
           {open && (
-            <div className="relative -bottom-2 z-10 w-full">
-              <div className="absolute block w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+            <div
+              className="relative z-10 w-full"
+              ref={refs.setFloating}
+              style={{
+                position: strategy,
+                top: y ? y + 10 : 0,
+                left: x ?? 0,
+              }}
+            >
+              <div className="absolute block w-80 space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
                 <div className="relative mt-2">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <svg

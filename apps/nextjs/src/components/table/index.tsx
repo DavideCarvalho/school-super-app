@@ -42,110 +42,107 @@ export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
   );
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-            <div className="px-4 py-5 sm:p-6">
-              <div className="sm:flex sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-lg font-bold text-gray-900">Arquivos</p>
-                </div>
-              </div>
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div className="px-4 py-5 sm:p-6">
+          <div className="sm:flex sm:items-start sm:justify-between">
+            <div>
+              <p className="text-lg font-bold text-gray-900">Arquivos</p>
             </div>
+          </div>
+        </div>
 
-            <div className="flex flex-row">
-              <div className="w-full">
-                <Dropdown
-                  value={item.label}
-                  onChange={(v) => setItem((state) => ({ ...state, label: v }))}
-                  onSelectItem={(selectedItem) =>
-                    setItem(() => ({
-                      ...selectedItem,
-                      value: selectedItem.value,
-                      label: "",
-                    }))
-                  }
-                  dropdownLabel="Status"
-                  inputPlaceholder="Aprovação"
-                  dropdownPlaceholder="Selecione um status"
-                  dropdownItems={[
-                    {
-                      label: "Aprovado",
-                      value: TableRowStatusEnum.APPROVED,
-                      icon: (
-                        <svg
-                          className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-green-500"
-                          fill="currentColor"
-                          viewBox="0 0 8 8"
-                        >
-                          <circle cx="4" cy="4" r="3" />
-                        </svg>
-                      ),
-                    },
-                    {
-                      label: "Revisão",
-                      value: TableRowStatusEnum.REVIEW,
-                      icon: (
-                        <svg
-                          className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-red-500"
-                          fill="currentColor"
-                          viewBox="0 0 8 8"
-                        >
-                          <circle cx="4" cy="4" r="3" />
-                        </svg>
-                      ),
-                    },
-                    {
-                      label: "Solicitado",
-                      value: TableRowStatusEnum.REQUESTED,
-                      icon: (
-                        <svg
-                          className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-yellow-400"
-                          fill="currentColor"
-                          viewBox="0 0 8 8"
-                        >
-                          <circle cx="4" cy="4" r="3" />
-                        </svg>
-                      ),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
+        <div className="flex flex-row">
+          <div className="w-full">
+            <Dropdown
+              value={item.label}
+              onChange={(v) => setItem((state) => ({ ...state, label: v }))}
+              onSelectItem={(selectedItem) =>
+                setItem(() => ({
+                  ...selectedItem,
+                  value: selectedItem.value,
+                  label: "",
+                }))
+              }
+              dropdownLabel="Status"
+              inputPlaceholder="Aprovação"
+              dropdownPlaceholder="Selecione um status"
+              dropdownItems={[
+                {
+                  label: "Aprovado",
+                  value: TableRowStatusEnum.APPROVED,
+                  icon: (
+                    <svg
+                      className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-green-500"
+                      fill="currentColor"
+                      viewBox="0 0 8 8"
+                    >
+                      <circle cx="4" cy="4" r="3" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Revisão",
+                  value: TableRowStatusEnum.REVIEW,
+                  icon: (
+                    <svg
+                      className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-red-500"
+                      fill="currentColor"
+                      viewBox="0 0 8 8"
+                    >
+                      <circle cx="4" cy="4" r="3" />
+                    </svg>
+                  ),
+                },
+                {
+                  label: "Solicitado",
+                  value: TableRowStatusEnum.REQUESTED,
+                  icon: (
+                    <svg
+                      className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 8 8"
+                    >
+                      <circle cx="4" cy="4" r="3" />
+                    </svg>
+                  ),
+                },
+              ]}
+            />
+          </div>
+        </div>
 
-            <div className="divide-y divide-gray-200">
-              {filesQuery.data?.map((file) => {
-                const fileStatus =
-                  file.status as keyof typeof TableRowStatusEnum;
-                const status = TableRowStatusEnum[fileStatus] as
-                  | TableRowStatusEnum
-                  | undefined;
-                if (!status) return null;
-                return (
-                  <TableRow
-                    key={file.id}
-                    status={status}
-                    file={file}
-                    schoolClass={file.Class}
-                    schoolYear={file.Class.SchoolYear}
-                    teacher={
-                      file.Class.TeacherHasClass.find(
-                        (thc) => thc.classId === file.classId,
-                      )!.Teacher
-                    }
-                    subject={
-                      file.Class.TeacherHasClass.find(
-                        (thc) => thc.classId === file.classId,
-                      )!.Subject
-                    }
-                  />
-                );
-              })}
-              {/* <TableRow
+        <div className="divide-y divide-gray-200">
+          {filesQuery.data?.map((file) => {
+            const fileStatus = file.status as keyof typeof TableRowStatusEnum;
+            const status = TableRowStatusEnum[fileStatus] as
+              | TableRowStatusEnum
+              | undefined;
+            if (!status) return null;
+            return (
+              <TableRow
+                key={file.id}
+                status={status}
+                file={file}
+                schoolClass={file.Class}
+                schoolYear={file.Class.SchoolYear}
+                teacher={
+                  file.Class.TeacherHasClass.find(
+                    (thc) => thc.classId === file.classId,
+                  )!.Teacher
+                }
+                subject={
+                  file.Class.TeacherHasClass.find(
+                    (thc) => thc.classId === file.classId,
+                  )!.Subject
+                }
+              />
+            );
+          })}
+          {/* <TableRow
                 status={TableRowStatusEnum.APPROVED}
                 file={{ name: "", url: "" }}
               /> */}
-              {/* <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
+          {/* <div className="grid grid-cols-3 gap-y-4 py-4 lg:grid-cols-6 lg:gap-0">
                 <div className="col-span-2 px-4 sm:px-6 lg:col-span-1 lg:py-4">
                   <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-900">
                     <svg
@@ -321,8 +318,6 @@ export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
                   </p>
                 </div>
               </div> */}
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -467,10 +462,11 @@ function TableRow({
 
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-sm font-bold text-gray-900">
-          Solicitado em 20/02/2023
+          Solicitado em{" "}
+          {new Intl.DateTimeFormat("pt-BR").format(file.createdAt)}
         </p>
         <p className="mt-1 text-sm font-medium text-gray-500">
-          Aplicação em 01/10/2023
+          Aplicação em {new Intl.DateTimeFormat("pt-BR").format(file.dueDate)}
         </p>
       </div>
 
