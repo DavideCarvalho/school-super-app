@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useClick,
   useDismiss,
@@ -6,43 +6,41 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
-interface DropdownProps {
-  value: string;
+interface DropdownProps<T extends { label: string; value: unknown }> {
+  search: string;
+  initialSelectedItem: T;
   onChange: (value: string) => void;
-  onSelectItem: (value: { label: string; value: string }) => void;
+  onSelectItem: (value: { label: string; value: unknown }) => void;
   dropdownLabel: string;
   inputPlaceholder?: string;
   dropdownPlaceholder?: string;
-  dropdownItems: { label: string; value: string; icon?: JSX.Element }[];
+  dropdownItems: T[];
 }
 
-export function Dropdown({
-  value,
+export function Dropdown<T extends { label: string; value: unknown }>({
+  search,
+  initialSelectedItem,
   onChange,
   onSelectItem,
   inputPlaceholder,
   dropdownPlaceholder,
   dropdownItems,
   dropdownLabel,
-}: DropdownProps) {
+}: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
-  const [selectedItem, setSelectedItem] = useState<{
-    label: string;
-    value: string;
-    icon?: JSX.Element;
-  }>();
+  const [selectedItem, setSelectedItem] = useState<T>(initialSelectedItem);
 
   useEffect(() => {
-    if (value) {
+    if (search) {
       const filteredItems = dropdownItems.filter((item) =>
-        item.label.toLowerCase().includes(value.toLowerCase()),
+        item.label.toLowerCase().includes(search.toLowerCase()),
       );
       setSearchedValues(filteredItems);
     } else {
       setSearchedValues(dropdownItems);
     }
-  }, [value, dropdownItems, setSearchedValues]);
+  }, [search, dropdownItems, setSearchedValues]);
 
   const { x, y, strategy, refs, context } = useFloating({
     open,
@@ -72,7 +70,7 @@ export function Dropdown({
                 <div className="flex items-center justify-start space-x-2">
                   <div className="flex-2">
                     {selectedItem && (
-                      <div key={value} className="flex w-full cursor-pointer">
+                      <div className="flex w-full cursor-pointer">
                         <div className="flex flex-col">
                           {selectedItem.icon && selectedItem.icon}
                         </div>
@@ -134,16 +132,13 @@ export function Dropdown({
                     name=""
                     id=""
                     placeholder={inputPlaceholder}
-                    value={value}
+                    value={search}
                     onChange={(e) => onChange(e.target.value)}
                     className="block w-full rounded-lg border border-gray-300 py-2 pl-8 pr-2 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
                   />
                 </div>
                 <ul className="flex flex-col">
-                  <div
-                    key={value}
-                    className="flex w-full cursor-pointer hover:bg-gray-100"
-                  >
+                  <div className="flex w-full cursor-pointer hover:bg-gray-100">
                     <li
                       onClick={() => {
                         onSelectItem({ label: "", value: "" });
@@ -164,6 +159,7 @@ export function Dropdown({
                         onClick={() => {
                           onSelectItem({ label, value });
                           setSelectedItem({ label, value, icon });
+                          setOpen(false);
                         }}
                         className="rounded-md p-2"
                       >

@@ -8,6 +8,7 @@ import { trpCaller } from "@acme/api";
 import { SchoolFilesTable } from "~/components/table";
 
 export default function SchoolFilesPage({
+  status,
   school,
   files,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -255,7 +256,11 @@ export default function SchoolFilesPage({
           <main>
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                <SchoolFilesTable schoolId={school.id} files={files} />
+                <SchoolFilesTable
+                  schoolId={school.id}
+                  files={files}
+                  status={status}
+                />
               </div>
             </div>
           </main>
@@ -267,6 +272,7 @@ export default function SchoolFilesPage({
 
 export async function getServerSideProps({
   params,
+  query,
 }: GetServerSidePropsContext) {
   const schoolSlug = params?.["school-slug"]! as string;
   const school = await trpCaller.school.bySlug({ slug: schoolSlug });
@@ -274,9 +280,29 @@ export async function getServerSideProps({
     // Redirect to 404 page
     throw new Error(`School with slug ${schoolSlug} not found`);
   }
-  const files = await trpCaller.file.allBySchoolId({ schoolId: school.id });
+  let status = query?.["status"] as string | undefined;
+  status = status ? status.toUpperCase() : undefined;
+  console.log("status", status);
+  status =
+    status === "REVIEW" ||
+    status === "APPROVED" ||
+    status === "REQUESTED" ||
+    status === "PRINTED"
+      ? status
+      : undefined;
+  const files = await trpCaller.file.allBySchoolId({
+    schoolId: school.id,
+    orderBy: { dueDate: "asc" },
+    status: status as
+      | "APPROVED"
+      | "REVIEW"
+      | "REQUESTED"
+      | "PRINTED"
+      | undefined,
+  });
   return {
     props: {
+      status,
       school,
       files,
     },

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useRouter } from "next/router";
 import {
   useClick,
   useDismiss,
@@ -32,12 +33,79 @@ interface SchoolFilesTableProps {
       };
     };
   })[];
+  status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED";
 }
 
-export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
+function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
+  switch (status) {
+    case "REVIEW":
+      return {
+        label: "Revisão",
+        value: TableRowStatusEnum.REVIEW,
+        icon: (
+          <svg
+            className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-yellow-500"
+            fill="currentColor"
+            viewBox="0 0 8 8"
+          >
+            <circle cx="4" cy="4" r="3" />
+          </svg>
+        ),
+      };
+    case "REQUESTED":
+      return {
+        label: "Solicitado",
+        value: TableRowStatusEnum.REQUESTED,
+        icon: (
+          <svg
+            className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-purple-500"
+            fill="currentColor"
+            viewBox="0 0 8 8"
+          >
+            <circle cx="4" cy="4" r="3" />
+          </svg>
+        ),
+      };
+    case "APPROVED":
+      return {
+        label: "Aprovado",
+        value: TableRowStatusEnum.APPROVED,
+        icon: (
+          <svg
+            className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-sky-500"
+            fill="currentColor"
+            viewBox="0 0 8 8"
+          >
+            <circle cx="4" cy="4" r="3" />
+          </svg>
+        ),
+      };
+    case "PRINTED":
+      return {
+        label: "Impresso",
+        value: TableRowStatusEnum.PRINTED,
+        icon: (
+          <svg
+            className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-green-500"
+            fill="currentColor"
+            viewBox="0 0 8 8"
+          >
+            <circle cx="4" cy="4" r="3" />
+          </svg>
+        ),
+      };
+  }
+}
+
+export function SchoolFilesTable({
+  schoolId,
+  files,
+  status,
+}: SchoolFilesTableProps) {
+  const router = useRouter();
   const [item, setItem] = useState({ label: "", value: "" });
   const filesQuery = api.file.allBySchoolId.useQuery(
-    { schoolId },
+    { schoolId, orderBy: { dueDate: "asc" }, status },
     { initialData: files },
   );
   return (
@@ -54,58 +122,27 @@ export function SchoolFilesTable({ schoolId, files }: SchoolFilesTableProps) {
         <div className="flex flex-row">
           <div className="w-full">
             <Dropdown
-              value={item.label}
+              search={item.label}
+              initialSelectedItem={getStatus(status)}
               onChange={(v) => setItem((state) => ({ ...state, label: v }))}
-              onSelectItem={(selectedItem) =>
+              onSelectItem={(selectedItem) => {
                 setItem(() => ({
                   ...selectedItem,
-                  value: selectedItem.value,
+                  value: selectedItem.value as string,
                   label: "",
-                }))
-              }
+                }));
+                router.replace({
+                  query: { ...router.query, status: selectedItem.value },
+                });
+              }}
               dropdownLabel="Status"
               inputPlaceholder="Aprovação"
               dropdownPlaceholder="Selecione um status"
               dropdownItems={[
-                {
-                  label: "Aprovado",
-                  value: TableRowStatusEnum.APPROVED,
-                  icon: (
-                    <svg
-                      className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-green-500"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <circle cx="4" cy="4" r="3" />
-                    </svg>
-                  ),
-                },
-                {
-                  label: "Revisão",
-                  value: TableRowStatusEnum.REVIEW,
-                  icon: (
-                    <svg
-                      className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-red-500"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <circle cx="4" cy="4" r="3" />
-                    </svg>
-                  ),
-                },
-                {
-                  label: "Solicitado",
-                  value: TableRowStatusEnum.REQUESTED,
-                  icon: (
-                    <svg
-                      className="-ml-1 mr-1.5 h-2.5 w-2.5 flex-auto grid-cols-2 text-center text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 8 8"
-                    >
-                      <circle cx="4" cy="4" r="3" />
-                    </svg>
-                  ),
-                },
+                getStatus("APPROVED"),
+                getStatus("REVIEW"),
+                getStatus("REQUESTED"),
+                getStatus("PRINTED"),
               ]}
             />
           </div>
@@ -332,6 +369,12 @@ enum TableRowStatusEnum {
 }
 
 const TableRowStatusDictionary = {
+  [TableRowStatusEnum.REVIEW]: {
+    dotColor: "text-yellow-400",
+    bgColor: "bg-yellow-100",
+    textColor: "text-yellow-900",
+    label: "Revisar",
+  },
   [TableRowStatusEnum.REQUESTED]: {
     dotColor: "text-purple-400",
     bgColor: "bg-purple-100",
@@ -349,12 +392,6 @@ const TableRowStatusDictionary = {
     bgColor: "bg-green-100",
     textColor: "text-green-900",
     label: "Impresso",
-  },
-  [TableRowStatusEnum.REVIEW]: {
-    dotColor: "text-yellow-400",
-    bgColor: "bg-yellow-100",
-    textColor: "text-yellow-900",
-    label: "Revisar",
   },
 };
 
