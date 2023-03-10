@@ -97,8 +97,10 @@ importers:
       '@acme/auth': '*'
       '@acme/db': '*'
       '@acme/tailwind-config': '*'
+      '@ams-js/headless': ^0.0.5
       '@floating-ui/react': ^0.20.1
       '@headlessui/react': ^1.7.13
+      '@hookform/resolvers': ^2.9.11
       '@tanstack/react-query': ^4.24.10
       '@trpc/client': ^10.14.0
       '@trpc/next': ^10.14.0
@@ -107,16 +109,23 @@ importers:
       '@types/node': ^18.0.0
       '@types/react': ^18.0.27
       '@types/react-dom': ^18.0.10
+      '@types/react-flatpickr': ^3.8.8
       autoprefixer: ^10.4.13
+      dayjs: ^1.11.7
       eslint: ^8.34.0
       eslint-config-acme: 0.0.0
+      flatpickr: ^4.6.13
       next: ^13.2.3
       next-auth: ^4.20.1
       next-superjson: ^0.0.4
       postcss: ^8.4.21
       react: 18.2.0
       react-dom: 18.2.0
+      react-flatpickr: ^3.10.13
+      react-hook-form: ^7.43.5
+      react-tailwindcss-datepicker: ^1.5.0
       superjson: 1.9.1
+      tailwind-datepicker-react: ^1.2.3
       tailwindcss: ^3.2.7
       tsx: ^3.12.3
       typescript: ^4.9.5
@@ -126,24 +135,33 @@ importers:
       '@acme/auth': link:../../packages/auth
       '@acme/db': link:../../packages/db
       '@acme/tailwind-config': link:../../packages/config/tailwind
+      '@ams-js/headless': 0.0.5_biqbaboplfbrettd7655fr4n2y
       '@floating-ui/react': 0.20.1_biqbaboplfbrettd7655fr4n2y
       '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
+      '@hookform/resolvers': 2.9.11_react-hook-form@7.43.5
       '@tanstack/react-query': 4.24.10_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.14.0_@trpc+server@10.14.0
       '@trpc/next': 10.14.0_pen7abxfhplw6oyjl4mz6sok3y
       '@trpc/react-query': 10.14.0_ewqbv5apgvis5mngp6qivio3iy
       '@trpc/server': 10.14.0
+      dayjs: 1.11.7
+      flatpickr: 4.6.13
       next: 13.2.3_biqbaboplfbrettd7655fr4n2y
       next-auth: 4.20.1_nvzgbose6yf6w7ijjprgspqefi
       next-superjson: 0.0.4_eskw3osmyhfnln5giftcgeeeum
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-flatpickr: 3.10.13_react@18.2.0
+      react-hook-form: 7.43.5_react@18.2.0
+      react-tailwindcss-datepicker: 1.5.0_dayjs@1.11.7+react@18.2.0
       superjson: 1.9.1
+      tailwind-datepicker-react: 1.2.3_ltjyg3fn6ajifv3joquovy6rp4
       zod: 3.20.6
     devDependencies:
       '@types/node': 18.11.18
       '@types/react': 18.0.27
       '@types/react-dom': 18.0.10
+      '@types/react-flatpickr': 3.8.8
       autoprefixer: 10.4.13_postcss@8.4.21
       eslint: 8.34.0
       eslint-config-acme: link:../../packages/config/eslint
@@ -250,6 +268,16 @@ packages:
     dependencies:
       '@jridgewell/gen-mapping': 0.1.1
       '@jridgewell/trace-mapping': 0.3.17
+
+  /@ams-js/headless/0.0.5_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-ceQebM/JymsOKXtPEbJGReYgf8JLWSzO6OuRtZxWBz8S1kd76RANi4ox/AULPjBJNzOAGOZZ0PB5OvmY2D6GFg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
 
   /@babel/code-frame/7.10.4:
     resolution: {integrity: sha512-vG6SvB6oYEhvgisZNFRmRCUkLz11c7rp+tbNTynGqc6mS1d5ATd/sGyV6W0KZZnXRKMTzZDRgQT3Ou9jhpAfUg==}
@@ -2215,6 +2243,14 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
+  /@hookform/resolvers/2.9.11_react-hook-form@7.43.5:
+    resolution: {integrity: sha512-bA3aZ79UgcHj7tFV7RlgThzwSSHZgvfbt2wprldRkYBcMopdMvHyO17Wwp/twcJasNFischFfS7oz8Katz8DdQ==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.43.5_react@18.2.0
+    dev: false
+
   /@humanwhocodes/config-array/0.11.8:
     resolution: {integrity: sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g==}
     engines: {node: '>=10.10.0'}
@@ -3070,7 +3106,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@tanstack/react-query': 4.24.10_bblof3d6od7kdqr2urb3dykbey
+      '@tanstack/react-query': 4.24.10_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.14.0_@trpc+server@10.14.0
       '@trpc/server': 10.14.0
       react: 18.2.0
@@ -3145,6 +3181,13 @@ packages:
     resolution: {integrity: sha512-E42GW/JA4Qv15wQdqJq8DL4JhNpB3prJgjgapN3qJT9K2zO5IIAQh4VXvCEDupoqAwnz0cY4RlXeC/ajX5SFHg==}
     dependencies:
       '@types/react': 18.0.27
+    dev: true
+
+  /@types/react-flatpickr/3.8.8:
+    resolution: {integrity: sha512-wxpSvmO23Qj6Ig0grw+nLAf2CzJZsS6WljXm6PiljSIZPAZrXLH1ggJPShi/uZZ1BPWIIRLJcehH685NiSFjzw==}
+    dependencies:
+      '@types/react': 18.0.27
+      flatpickr: 4.6.13
     dev: true
 
   /@types/react/18.0.27:
@@ -5682,6 +5725,9 @@ packages:
     dependencies:
       flatted: 3.2.7
       rimraf: 3.0.2
+
+  /flatpickr/4.6.13:
+    resolution: {integrity: sha512-97PMG/aywoYpB4IvbvUJi0RQi8vearvU0oov1WW3k0WZPBMrTQVqekSX5CjSG/M4Q3i6A/0FKXC7RyAoAUUSPw==}
 
   /flatted/3.2.7:
     resolution: {integrity: sha512-5nqDSxl8nn5BSNxyR3n4I6eDmbolI6WT+QqR547RwxQapgjQBmtktdP+HTBb/a/zLsbzERTONyUB5pefh5TtjQ==}
@@ -8631,6 +8677,16 @@ packages:
     resolution: {integrity: sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==}
     dev: false
 
+  /react-flatpickr/3.10.13_react@18.2.0:
+    resolution: {integrity: sha512-4m+K1K8jhvRFI8J/AHmQfA5hLALzhebEtEK8mLevXjX24MV3u502crzBn+EGFIBOfNUtrL5PId9FsGwgtuz/og==}
+    peerDependencies:
+      react: '>=16, <=18'
+    dependencies:
+      flatpickr: 4.6.13
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /react-freeze/1.0.3_react@18.2.0:
     resolution: {integrity: sha512-ZnXwLQnGzrDpHBHiC56TXFXvmolPeMjTn1UOm610M4EXGzbEDR7oOIyS2ZiItgbs6eZc4oU/a0hpk8PrcKvv5g==}
     engines: {node: '>=10'}
@@ -8653,6 +8709,15 @@ packages:
       react-dom: 18.2.0_react@18.2.0
       react-fast-compare: 3.2.0
       shallowequal: 1.1.0
+    dev: false
+
+  /react-hook-form/7.43.5_react@18.2.0:
+    resolution: {integrity: sha512-YcaXhuFHoOPipu5pC7ckxrLrialiOcU91pKu8P+isAcXZyMgByUK9PkI9j5fENO4+6XU5PwWXRGMIFlk9u9UBQ==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-is/16.13.1:
@@ -8776,6 +8841,16 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
     dependencies:
+      react: 18.2.0
+    dev: false
+
+  /react-tailwindcss-datepicker/1.5.0_dayjs@1.11.7+react@18.2.0:
+    resolution: {integrity: sha512-eHlpH+exoouxs27gk/LCrqJyBLI0tKhZSN423/t74BNqDvnVFoMSDe0g2jY7ibcENJiVfRPj1qTY7FD4NAWW2g==}
+    peerDependencies:
+      dayjs: ^1.11.6
+      react: ^17.0.2 || ^18.2.0
+    dependencies:
+      dayjs: 1.11.7
       react: 18.2.0
     dev: false
 
@@ -9652,6 +9727,23 @@ packages:
 
   /tabbable/6.1.1:
     resolution: {integrity: sha512-4kl5w+nCB44EVRdO0g/UGoOp3vlwgycUVtkk/7DPyeLZUCuNFFKCFG6/t/DgHLrUPHjrZg6s5tNm+56Q2B0xyg==}
+    dev: false
+
+  /tailwind-datepicker-react/1.2.3_ltjyg3fn6ajifv3joquovy6rp4:
+    resolution: {integrity: sha512-Xd1mi2KsYMJzoEywbLkGxMk87edylElSx6h12ndTbGBuI1iU1UWQaNIK8fg78Q8xlHk18hwW3nyN9cV90pu5zA==}
+    peerDependencies:
+      react: '>=17'
+      react-dom: '>=17'
+      tailwindcss: '>=3'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tailwind-merge: 1.10.0
+      tailwindcss: 3.2.7_postcss@8.4.21
+    dev: false
+
+  /tailwind-merge/1.10.0:
+    resolution: {integrity: sha512-WFnDXSS4kFTZwjKg5/oZSGzBRU/l+qcbv5NVTzLUQvJ9yovDAP05h0F2+ZFW0Lw9EcgRoc2AfURUdZvnEFrXKg==}
     dev: false
 
   /tailwindcss/3.2.7_postcss@8.4.21:
