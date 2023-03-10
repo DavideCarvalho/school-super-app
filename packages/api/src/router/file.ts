@@ -27,7 +27,9 @@ export const fileRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.file.count({
         where: {
-          Class: { SchoolYear: { schoolId: input.schoolId } },
+          TeacherHasClass: {
+            Class: { SchoolYear: { schoolId: input.schoolId } },
+          },
           status: input.status,
         },
         orderBy: { dueDate: input.orderBy?.dueDate },
@@ -59,29 +61,59 @@ export const fileRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.file.findMany({
         where: {
-          Class: { SchoolYear: { schoolId: input.schoolId } },
+          TeacherHasClass: {
+            Class: { SchoolYear: { schoolId: input.schoolId } },
+          },
           status: input.status,
         },
         include: {
-          Class: {
+          TeacherHasClass: {
             include: {
-              TeacherHasClass: {
+              Class: {
                 include: {
-                  Teacher: true,
-                  Subject: true,
+                  SchoolYear: {
+                    include: {
+                      School: true,
+                    },
+                  },
                 },
               },
-              SchoolYear: {
+              Teacher: {
                 include: {
-                  School: true,
+                  User: true,
                 },
               },
+              Subject: true,
             },
           },
         },
         orderBy: { dueDate: input.orderBy?.dueDate },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
+      });
+    }),
+  createRequest: publicProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        teacherHasClassId: z.string(),
+        fileUrl: z.string().url(),
+        quantity: z.number().min(1),
+        dueDate: z.date(),
+        frontAndBack: z.boolean().default(true),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.file.create({
+        data: {
+          name: input.name,
+          teacherHasClassId: input.teacherHasClassId,
+          quantity: input.quantity,
+          path: input.fileUrl,
+          dueDate: input.dueDate,
+          frontAndBack: input.frontAndBack,
+          status: "REQUESTED",
+        },
       });
     }),
 });

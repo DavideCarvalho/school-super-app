@@ -34,9 +34,7 @@
     "react-dom": "18.2.0",
     "react-flatpickr": "^3.10.13",
     "react-hook-form": "^7.43.5",
-    "react-tailwindcss-datepicker": "^1.5.0",
     "superjson": "1.9.1",
-    "tailwind-datepicker-react": "^1.2.3",
     "zod": "^3.20.6"
   },
   "devDependencies": {

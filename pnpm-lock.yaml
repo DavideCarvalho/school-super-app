@@ -123,9 +123,7 @@ importers:
       react-dom: 18.2.0
       react-flatpickr: ^3.10.13
       react-hook-form: ^7.43.5
-      react-tailwindcss-datepicker: ^1.5.0
       superjson: 1.9.1
-      tailwind-datepicker-react: ^1.2.3
       tailwindcss: ^3.2.7
       tsx: ^3.12.3
       typescript: ^4.9.5
@@ -153,9 +151,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-flatpickr: 3.10.13_react@18.2.0
       react-hook-form: 7.43.5_react@18.2.0
-      react-tailwindcss-datepicker: 1.5.0_dayjs@1.11.7+react@18.2.0
       superjson: 1.9.1
-      tailwind-datepicker-react: 1.2.3_ltjyg3fn6ajifv3joquovy6rp4
       zod: 3.20.6
     devDependencies:
       '@types/node': 18.11.18
@@ -3106,7 +3102,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@tanstack/react-query': 4.24.10_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-query': 4.24.10_bblof3d6od7kdqr2urb3dykbey
       '@trpc/client': 10.14.0_@trpc+server@10.14.0
       '@trpc/server': 10.14.0
       react: 18.2.0
@@ -8844,16 +8840,6 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-tailwindcss-datepicker/1.5.0_dayjs@1.11.7+react@18.2.0:
-    resolution: {integrity: sha512-eHlpH+exoouxs27gk/LCrqJyBLI0tKhZSN423/t74BNqDvnVFoMSDe0g2jY7ibcENJiVfRPj1qTY7FD4NAWW2g==}
-    peerDependencies:
-      dayjs: ^1.11.6
-      react: ^17.0.2 || ^18.2.0
-    dependencies:
-      dayjs: 1.11.7
-      react: 18.2.0
-    dev: false
-
   /react/18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
     engines: {node: '>=0.10.0'}
@@ -9727,23 +9713,6 @@ packages:
 
   /tabbable/6.1.1:
     resolution: {integrity: sha512-4kl5w+nCB44EVRdO0g/UGoOp3vlwgycUVtkk/7DPyeLZUCuNFFKCFG6/t/DgHLrUPHjrZg6s5tNm+56Q2B0xyg==}
-    dev: false
-
-  /tailwind-datepicker-react/1.2.3_ltjyg3fn6ajifv3joquovy6rp4:
-    resolution: {integrity: sha512-Xd1mi2KsYMJzoEywbLkGxMk87edylElSx6h12ndTbGBuI1iU1UWQaNIK8fg78Q8xlHk18hwW3nyN9cV90pu5zA==}
-    peerDependencies:
-      react: '>=17'
-      react-dom: '>=17'
-      tailwindcss: '>=3'
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      tailwind-merge: 1.10.0
-      tailwindcss: 3.2.7_postcss@8.4.21
-    dev: false
-
-  /tailwind-merge/1.10.0:
-    resolution: {integrity: sha512-WFnDXSS4kFTZwjKg5/oZSGzBRU/l+qcbv5NVTzLUQvJ9yovDAP05h0F2+ZFW0Lw9EcgRoc2AfURUdZvnEFrXKg==}
     dev: false
 
   /tailwindcss/3.2.7_postcss@8.4.21:

@@ -16,34 +16,31 @@ model School {
   slug        String
   Users       User[]
   SchoolYears SchoolYear[]
-  Teachers    Teacher[]
+  Subjects    Subject[]
 }
 
 model User {
   id        String   @id @default(cuid())
   name      String
+  slug      String
   email     String   @unique
-  password  String
   schoolId  String
   roleId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  School School @relation(fields: [schoolId], references: [id])
-  Role   Role   @relation(fields: [roleId], references: [id])
+  School  School    @relation(fields: [schoolId], references: [id])
+  Role    Role      @relation(fields: [roleId], references: [id])
+  Teacher Teacher[]
 }
 
 model Teacher {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  School            School            @relation(fields: [schoolId], references: [id])
+  id                String
   TeacherHasClasses TeacherHasClass[]
+
+  User User @relation(fields: [id], references: [id])
+
+  @@id([id])
 }
 
 model TeacherHasClass {
@@ -57,29 +54,33 @@ model TeacherHasClass {
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
+  File    File[]
 }
 
 model Subject {
   id              String            @id @default(cuid())
   name            String
+  slug            String
+  schoolId        String
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   TeacherHasClass TeacherHasClass[]
+  School          School?           @relation(fields: [schoolId], references: [id])
 }
 
 model File {
-  id           String   @id @default(cuid())
-  name         String
-  path         String
-  classId      String
-  status       String
-  frontAndBack Boolean  @default(false)
-  quantity     Int      @default(1)
-  dueDate      DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                String   @id @default(cuid())
+  name              String
+  path              String
+  teacherHasClassId String
+  status            String
+  frontAndBack      Boolean  @default(false)
+  quantity          Int      @default(1)
+  dueDate           DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  Class Class @relation(fields: [classId], references: [id])
+  TeacherHasClass TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
 }
 
 model Role {
@@ -91,6 +92,7 @@ model Role {
 model SchoolYear {
   id        String   @id @default(cuid())
   name      String
+  slug      String
   schoolId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -102,11 +104,11 @@ model SchoolYear {
 model Class {
   id           String   @id @default(cuid())
   name         String
+  slug         String
   schoolYearId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   SchoolYear      SchoolYear        @relation(fields: [schoolYearId], references: [id])
-  File            File[]
   TeacherHasClass TeacherHasClass[]
 }

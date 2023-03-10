@@ -15,6 +15,7 @@ import {
   type Subject,
   type Teacher,
   type TeacherHasClass,
+  type User,
 } from "@acme/db";
 
 import { api } from "~/utils/api";
@@ -25,14 +26,16 @@ import { Pagination } from "../pagination";
 interface SchoolFilesTableProps {
   schoolId: string;
   files?: (File & {
-    Class: Class & {
-      TeacherHasClass: (TeacherHasClass & {
-        Teacher: Teacher;
-        Subject: Subject;
-      })[];
-      SchoolYear: SchoolYear & {
-        School: School;
+    TeacherHasClass: TeacherHasClass & {
+      Teacher: Teacher & {
+        User: User;
       };
+      Class: Class & {
+        SchoolYear: SchoolYear & {
+          School: School;
+        };
+      };
+      Subject: Subject;
     };
   })[];
   filesCount: number;
@@ -152,33 +155,35 @@ export function SchoolFilesTable({
 
         <div className="flex flex-row">
           <div className="w-full">
-            <Dropdown
-              search={item.label}
-              initialSelectedItem={status ? getStatus(status) : undefined}
-              onChange={(v) => setItem((state) => ({ ...state, label: v }))}
-              onSelectItem={(selectedItem) => {
-                setItem(() => ({
-                  ...selectedItem,
-                  value: selectedItem.value as string,
-                  label: "",
-                }));
-                void router.replace({
-                  query: {
-                    ...router.query,
-                    status: selectedItem.value as string,
-                  },
-                });
-              }}
-              dropdownLabel="Status"
-              inputPlaceholder="Aprovação"
-              dropdownPlaceholder="Selecione um status"
-              dropdownItems={[
-                getStatus("APPROVED"),
-                getStatus("REVIEW"),
-                getStatus("REQUESTED"),
-                getStatus("PRINTED"),
-              ]}
-            />
+            <div className="mx-auto max-w-xs">
+              <Dropdown
+                search={item.label}
+                initialSelectedItem={status ? getStatus(status) : undefined}
+                onChange={(v) => setItem((state) => ({ ...state, label: v }))}
+                onSelectItem={(selectedItem) => {
+                  setItem(() => ({
+                    ...selectedItem,
+                    value: selectedItem.value as string,
+                    label: "",
+                  }));
+                  void router.replace({
+                    query: {
+                      ...router.query,
+                      status: selectedItem.value as string,
+                    },
+                  });
+                }}
+                dropdownLabel="Status"
+                inputPlaceholder="Aprovação"
+                dropdownPlaceholder="Selecione um status"
+                dropdownItems={[
+                  getStatus("APPROVED"),
+                  getStatus("REVIEW"),
+                  getStatus("REQUESTED"),
+                  getStatus("PRINTED"),
+                ]}
+              />
+            </div>
           </div>
         </div>
 
@@ -194,18 +199,10 @@ export function SchoolFilesTable({
                 key={file.id}
                 status={status}
                 file={file}
-                schoolClass={file.Class}
-                schoolYear={file.Class.SchoolYear}
-                teacher={
-                  file.Class.TeacherHasClass.find(
-                    (thc) => thc.classId === file.classId,
-                  )!.Teacher
-                }
-                subject={
-                  file.Class.TeacherHasClass.find(
-                    (thc) => thc.classId === file.classId,
-                  )!.Subject
-                }
+                schoolClass={file.TeacherHasClass.Class}
+                schoolYear={file.TeacherHasClass.Class.SchoolYear}
+                teacher={file.TeacherHasClass.Teacher}
+                subject={file.TeacherHasClass.Subject}
               />
             );
           })}
@@ -267,7 +264,7 @@ interface TableRowProps {
   file: File;
   schoolClass: Class;
   schoolYear: SchoolYear;
-  teacher: Teacher;
+  teacher: Teacher & { User: User };
   subject: Subject;
 }
 
@@ -357,7 +354,7 @@ function TableRow({
 
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-sm font-bold text-gray-900">
-          Professora {teacher.name}
+          Professora {teacher.User.name}
         </p>
         <p className="mt-1 text-sm font-medium text-gray-500">
           Matéria {subject.name}

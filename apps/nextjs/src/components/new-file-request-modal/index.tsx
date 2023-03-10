@@ -1,18 +1,30 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldValues, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { api } from "~/utils/api";
 import Calendar from "../calendar";
 import { CheckBox } from "../checkbox";
+import { Dropdown } from "../dropdown";
 import { Modal } from "../modal";
-import { FrontAndBack } from "../svgs/front-and-back";
 
 const schema = z
   .object({
-    fileUrl: z.string(),
-    quantity: z.number().positive(),
-    frontAndBack: z.boolean(),
-    dueDate: z.date(),
+    name: z
+      .string({ required_error: "Nome do arquivo é obrigatório" })
+      .min(1, "É necessário que tenha mais de um caracter")
+      .max(255, "O nome pode ter um máximo de 255 caracteres"),
+    fileUrl: z
+      .string({ required_error: "link para o arquivo" })
+      .min(1, "É necessário que tenha mais de um caracter")
+      .max(100, "O nome pode ter um máximo de 255 caracteres")
+      .url("Precisa ser um link"),
+    quantity: z.coerce
+      .number({ required_error: "Quantidade é obrigatória" })
+      .min(1, "Quantidade mínima é 1"),
+    frontAndBack: z.boolean().default(true),
+    dueDate: z.date().default(new Date()),
   })
   .required();
 
@@ -29,7 +41,6 @@ export function NewFileRequestModal({
     register,
     handleSubmit,
     setValue,
-    getValues,
     watch,
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
@@ -40,14 +51,31 @@ export function NewFileRequestModal({
       frontAndBack: true,
     },
   });
+
+  const fileRequest = api.file.createRequest.useMutation();
+
   const onSubmit = (data: z.infer<typeof schema>) => console.log(data);
 
   const watchFrontAndBack = watch("frontAndBack");
+  const watchDueDate = watch("dueDate");
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Nova solicitação"}>
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
+          <div>
+            <label className="text-sm font-bold text-gray-900">Nome</label>
+            <div className="mt-2">
+              <input
+                {...register("name")}
+                type="text"
+                inputMode="text"
+                placeholder="https://docs.google.com/..."
+                className="-gray-300 block w-full rounded-lg border px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="text-sm font-bold text-gray-900">
               URL do arquivo
@@ -56,10 +84,8 @@ export function NewFileRequestModal({
               <input
                 {...register("fileUrl")}
                 type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
                 placeholder="https://docs.google.com/..."
-                className="-gray-300 block w-full rounded-lg border px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
+                className="-gray-300 block w-full rounded-lg border px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
               />
             </div>
           </div>
@@ -77,8 +103,9 @@ export function NewFileRequestModal({
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
-                className="block w-full rounded-lg border border-gray-300 px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
+                className="block w-full rounded-lg border border-gray-300 px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
               />
+              {errors.quantity && <p>{errors.quantity.message}</p>}
             </div>
           </div>
 
@@ -90,7 +117,29 @@ export function NewFileRequestModal({
               Data de aplicação
             </label>
             <div className="mt-2">
-              <Calendar />
+              <Calendar
+                value={watchDueDate}
+                minDate={new Date()}
+                onChange={(date) => setValue("dueDate", date)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              Pra qual turma?
+            </label>
+            <div className="mt-2">
+              <Dropdown
+                dropdownItems={[]}
+                dropdownLabel=""
+                search=""
+                onChange={() => {}}
+                onSelectItem={() => {}}
+              />
             </div>
           </div>
 
@@ -99,7 +148,7 @@ export function NewFileRequestModal({
               htmlFor="frontAndBack"
               className="text-sm font-bold text-gray-900"
             >
-              Frente e verso
+              Imprimir
             </label>
             <div className="mt-2">
               <CheckBox
