@@ -17,9 +17,12 @@ interface DropdownProps<T extends { label: string; value: unknown }> {
   inputPlaceholder?: string;
   dropdownPlaceholder?: string;
   dropdownItems: T[];
+  error?: boolean;
 }
 
-export function Dropdown<T extends { label: string; value: unknown }>({
+export function Dropdown<
+  T extends { label: string; value: unknown; icon?: JSX.Element },
+>({
   search,
   initialSelectedItem,
   onChange,
@@ -28,6 +31,7 @@ export function Dropdown<T extends { label: string; value: unknown }>({
   dropdownPlaceholder,
   dropdownItems,
   dropdownLabel,
+  error,
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
@@ -76,7 +80,11 @@ export function Dropdown<T extends { label: string; value: unknown }>({
         ref={refs.setReference}
         {...getReferenceProps()}
       >
-        <div className="block w-full cursor-pointer rounded-lg border border-gray-300 py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm">
+        <div
+          className={`block w-full cursor-pointer rounded-lg border ${
+            error ? "border-red-400" : "border-grey-300"
+          } py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm`}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start space-x-2">
               <div className="flex-2">

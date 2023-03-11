@@ -26,6 +26,13 @@ const schema = z
         invalid_type_error: "Apenas números são aceitos",
       })
       .min(1, "Quantidade mínima é 1"),
+    class: z.object(
+      {
+        id: z.string(),
+        name: z.string(),
+      },
+      { required_error: "Selecione uma turma" },
+    ),
     frontAndBack: z.boolean().default(true),
     dueDate: z.date().default(new Date()),
   })
@@ -161,7 +168,11 @@ export function NewFileRequestModal({
                 search=""
                 onChange={() => {}}
                 onSelectItem={() => {}}
+                error={errors.class != null}
               />
+              {errors.class && (
+                <p className="text-red-600">{errors.class.message}</p>
+              )}
             </div>
           </div>
 
