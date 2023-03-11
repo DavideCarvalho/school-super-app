@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Flatpickr from "react-flatpickr";
 
 import "flatpickr/dist/themes/light.css";
@@ -15,8 +15,8 @@ export default function Calendar({ value, minDate, onChange }: CalendarProps) {
     <Flatpickr
       className="focus:shadow-soft-primary-outline dark:bg-gray-950 leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 text-sm font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-indigo-600 focus:outline-none"
       options={{
-        dateFormat: "d/m/Y",
         minDate,
+        dateFormat: "d/m/Y",
         enableTime: false,
         locale: Portuguese,
         prevArrow:

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -21,7 +21,10 @@ const schema = z
       .max(100, "O nome pode ter um máximo de 255 caracteres")
       .url("Precisa ser um link"),
     quantity: z.coerce
-      .number({ required_error: "Quantidade é obrigatória" })
+      .number({
+        required_error: "Quantidade é obrigatória",
+        invalid_type_error: "Apenas números são aceitos",
+      })
       .min(1, "Quantidade mínima é 1"),
     frontAndBack: z.boolean().default(true),
     dueDate: z.date().default(new Date()),
@@ -37,6 +40,10 @@ export function NewFileRequestModal({
   open,
   onClickCancel,
 }: NewFileRequestModalProps) {
+  //minDate precisa ser declarado antes do dueDate
+  //porque senão, o dueDate será uma data + hora antes
+  // do minDate, ai o flatpickr não deixa o valor inicial
+  const now = dayjs();
   const {
     register,
     handleSubmit,
@@ -49,15 +56,18 @@ export function NewFileRequestModal({
       fileUrl: "",
       quantity: 1,
       frontAndBack: true,
+      dueDate: now.toDate(),
     },
   });
 
-  const fileRequest = api.file.createRequest.useMutation();
+  const { mutate } = api.file.createRequest.useMutation();
+
+  const teste = new Date();
 
   const onSubmit = (data: z.infer<typeof schema>) => console.log(data);
 
-  const watchFrontAndBack = watch("frontAndBack");
-  const watchDueDate = watch("dueDate");
+  const watchFrontAndBack = watch("frontAndBack", true);
+  const watchDueDate = watch("dueDate", new Date());
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Nova solicitação"}>
@@ -70,9 +80,13 @@ export function NewFileRequestModal({
                 {...register("name")}
                 type="text"
                 inputMode="text"
-                placeholder="https://docs.google.com/..."
-                className="-gray-300 block w-full rounded-lg border px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
+                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
+                  errors.name ? "border-red-400" : "border-grey-300"
+                }`}
               />
+              {errors.name && (
+                <p className="text-red-600">{errors.name.message}</p>
+              )}
             </div>
           </div>
 
@@ -85,8 +99,13 @@ export function NewFileRequestModal({
                 {...register("fileUrl")}
                 type="text"
                 placeholder="https://docs.google.com/..."
-                className="-gray-300 block w-full rounded-lg border px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
+                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
+                  errors.fileUrl ? "border-red-400" : "border-grey-300"
+                }`}
               />
+              {errors.fileUrl && (
+                <p className="text-red-600">{errors.fileUrl.message}</p>
+              )}
             </div>
           </div>
 
@@ -102,10 +121,13 @@ export function NewFileRequestModal({
                 {...register("quantity")}
                 type="text"
                 inputMode="numeric"
-                pattern="[0-9]*"
-                className="block w-full rounded-lg border border-gray-300 px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm"
+                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
+                  errors.quantity ? "border-red-400" : "border-grey-300"
+                }`}
               />
-              {errors.quantity && <p>{errors.quantity.message}</p>}
+              {errors.quantity && (
+                <p className="text-red-600">{errors.quantity.message}</p>
+              )}
             </div>
           </div>
 
@@ -119,7 +141,7 @@ export function NewFileRequestModal({
             <div className="mt-2">
               <Calendar
                 value={watchDueDate}
-                minDate={new Date()}
+                minDate={now.subtract(1, "hour").toDate()}
                 onChange={(date) => setValue("dueDate", date)}
               />
             </div>
