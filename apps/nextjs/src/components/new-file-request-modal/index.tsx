@@ -26,13 +26,7 @@ const schema = z
         invalid_type_error: "Apenas números são aceitos",
       })
       .min(1, "Quantidade mínima é 1"),
-    class: z.object(
-      {
-        id: z.string(),
-        name: z.string(),
-      },
-      { required_error: "Selecione uma turma" },
-    ),
+    classId: z.string({ required_error: "Selecione uma turma" }),
     frontAndBack: z.boolean().default(true),
     dueDate: z.date().default(new Date()),
   })
@@ -68,8 +62,6 @@ export function NewFileRequestModal({
   });
 
   const { mutate } = api.file.createRequest.useMutation();
-
-  const teste = new Date();
 
   const onSubmit = (data: z.infer<typeof schema>) => console.log(data);
 
@@ -163,15 +155,17 @@ export function NewFileRequestModal({
             </label>
             <div className="mt-2">
               <Dropdown
-                dropdownItems={[]}
+                dropdownItems={[{ label: "Turma 1", value: "1" }]}
                 dropdownLabel=""
                 search=""
                 onChange={() => {}}
-                onSelectItem={() => {}}
-                error={errors.class != null}
+                onSelectItem={({ value }) =>
+                  setValue("classId", value as string)
+                }
+                error={errors.classId != null}
               />
-              {errors.class && (
-                <p className="text-red-600">{errors.class.message}</p>
+              {errors.classId && (
+                <p className="text-red-600">{errors.classId.message}</p>
               )}
             </div>
           </div>

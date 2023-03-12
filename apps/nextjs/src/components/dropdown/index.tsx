@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  computePosition,
   size,
   useClick,
   useDismiss,
@@ -8,21 +7,33 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
-interface DropdownProps<T extends { label: string; value: unknown }> {
+type DropdownValue<Item> = Item extends {
+  label: string;
+  value: infer A;
+  icon?: JSX.Element;
+}
+  ? A
+  : unknown;
+
+type DropdownItem<T> = {
+  label: string;
+  value: DropdownValue<T>;
+  icon?: JSX.Element;
+};
+
+interface DropdownProps<T> {
   search: string;
-  initialSelectedItem?: T | undefined;
+  initialSelectedItem?: DropdownItem<T> | undefined;
   onChange: (value: string) => void;
-  onSelectItem: (value: { label: string; value: unknown }) => void;
+  onSelectItem: (value: DropdownItem<T> | null) => void;
   dropdownLabel: string;
   inputPlaceholder?: string;
   dropdownPlaceholder?: string;
-  dropdownItems: T[];
+  dropdownItems: DropdownItem<T>[];
   error?: boolean;
 }
 
-export function Dropdown<
-  T extends { label: string; value: unknown; icon?: JSX.Element },
->({
+export function Dropdown<T extends DropdownItem<T>>({
   search,
   initialSelectedItem,
   onChange,
@@ -35,7 +46,7 @@ export function Dropdown<
 }: DropdownProps<T>) {
   const [open, setOpen] = useState(false);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
-  const [selectedItem, setSelectedItem] = useState<T | undefined>(
+  const [selectedItem, setSelectedItem] = useState<DropdownItem<T> | undefined>(
     initialSelectedItem,
   );
 
@@ -160,7 +171,7 @@ export function Dropdown<
               <div className="flex w-full cursor-pointer hover:bg-gray-100">
                 <li
                   onClick={() => {
-                    onSelectItem({ label: "", value: "" });
+                    onSelectItem(null);
                     setSelectedItem(undefined);
                   }}
                   className="rounded-md p-2"
@@ -170,13 +181,13 @@ export function Dropdown<
               </div>
               {searchedValues.map(({ label, value, icon }) => (
                 <div
-                  key={value}
+                  key={label}
                   className="flex w-full cursor-pointer hover:bg-gray-100"
                 >
                   <div className="flex flex-col">{icon && icon}</div>
                   <li
                     onClick={() => {
-                      onSelectItem({ label, value });
+                      onSelectItem({ label, value, icon });
                       setSelectedItem({ label, value, icon });
                       setOpen(false);
                     }}

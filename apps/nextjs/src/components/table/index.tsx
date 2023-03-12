@@ -163,13 +163,13 @@ export function SchoolFilesTable({
                 onSelectItem={(selectedItem) => {
                   setItem(() => ({
                     ...selectedItem,
-                    value: selectedItem.value as string,
+                    value: selectedItem?.value as string,
                     label: "",
                   }));
                   void router.replace({
                     query: {
                       ...router.query,
-                      status: selectedItem.value as string,
+                      status: selectedItem?.value as string,
                     },
                   });
                 }}
