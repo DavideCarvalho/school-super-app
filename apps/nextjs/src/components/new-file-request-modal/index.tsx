@@ -49,6 +49,7 @@ export function NewFileRequestModal({
     register,
     handleSubmit,
     setValue,
+    resetField,
     watch,
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
@@ -154,14 +155,15 @@ export function NewFileRequestModal({
               Pra qual turma?
             </label>
             <div className="mt-2">
-              <Dropdown
+              <Dropdown<string>
                 dropdownItems={[{ label: "Turma 1", value: "1" }]}
                 dropdownLabel=""
                 search=""
                 onChange={() => {}}
-                onSelectItem={({ value }) =>
-                  setValue("classId", value as string)
-                }
+                onSelectItem={(selectedItem) => {
+                  if (!selectedItem) return resetField("classId");
+                  setValue("classId", selectedItem.value);
+                }}
                 error={errors.classId != null}
               />
               {errors.classId && (

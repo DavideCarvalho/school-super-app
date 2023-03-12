@@ -7,33 +7,35 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
+type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
+
 type DropdownValue<Item> = Item extends {
   label: string;
   value: infer A;
   icon?: JSX.Element;
 }
   ? A
-  : unknown;
+  : never;
 
-type DropdownItem<T> = {
+type DropdownItem<Value> = {
   label: string;
-  value: DropdownValue<T>;
+  value: Value;
   icon?: JSX.Element;
 };
 
-interface DropdownProps<T> {
+interface DropdownProps<Item> {
   search: string;
-  initialSelectedItem?: DropdownItem<T> | undefined;
+  initialSelectedItem?: DropdownItem<Item>;
   onChange: (value: string) => void;
-  onSelectItem: (value: DropdownItem<T> | null) => void;
+  onSelectItem: (value: DropdownItem<Item> | null) => void;
   dropdownLabel: string;
   inputPlaceholder?: string;
   dropdownPlaceholder?: string;
-  dropdownItems: DropdownItem<T>[];
+  dropdownItems: DropdownItem<Item>[];
   error?: boolean;
 }
 
-export function Dropdown<T extends DropdownItem<T>>({
+export function Dropdown<Item>({
   search,
   initialSelectedItem,
   onChange,
@@ -43,12 +45,10 @@ export function Dropdown<T extends DropdownItem<T>>({
   dropdownItems,
   dropdownLabel,
   error,
-}: DropdownProps<T>) {
+}: DropdownProps<Item>) {
   const [open, setOpen] = useState(false);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
-  const [selectedItem, setSelectedItem] = useState<DropdownItem<T> | undefined>(
-    initialSelectedItem,
-  );
+  const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
 
   useEffect(() => {
     if (search) {
@@ -187,7 +187,11 @@ export function Dropdown<T extends DropdownItem<T>>({
                   <div className="flex flex-col">{icon && icon}</div>
                   <li
                     onClick={() => {
-                      onSelectItem({ label, value, icon });
+                      onSelectItem({
+                        label,
+                        value,
+                        icon,
+                      });
                       setSelectedItem({ label, value, icon });
                       setOpen(false);
                     }}

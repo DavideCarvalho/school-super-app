@@ -114,7 +114,11 @@ export function SchoolFilesTable({
   limit,
 }: SchoolFilesTableProps) {
   const router = useRouter();
-  const [item, setItem] = useState({ label: "", value: "" });
+  const [item, setItem] = useState<{
+    label: string;
+    value: string | undefined;
+    icon?: JSX.Element;
+  }>({ label: "", value: "", icon: undefined });
   const [open, setOpen] = useState(false);
   const filesQuery = api.file.allBySchoolId.useQuery(
     { schoolId, status, page, limit, orderBy: { dueDate: "asc" } },
@@ -156,14 +160,14 @@ export function SchoolFilesTable({
         <div className="flex flex-row">
           <div className="w-full">
             <div className="mx-auto max-w-xs">
-              <Dropdown
+              <Dropdown<string>
                 search={item.label}
                 initialSelectedItem={status ? getStatus(status) : undefined}
                 onChange={(v) => setItem((state) => ({ ...state, label: v }))}
                 onSelectItem={(selectedItem) => {
                   setItem(() => ({
                     ...selectedItem,
-                    value: selectedItem?.value as string,
+                    value: selectedItem?.value,
                     label: "",
                   }));
                   void router.replace({
