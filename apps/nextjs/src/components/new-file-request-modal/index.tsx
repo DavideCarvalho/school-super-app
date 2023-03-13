@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
@@ -27,7 +28,15 @@ const schema = z
         invalid_type_error: "Apenas números são aceitos",
       })
       .min(1, "Quantidade mínima é 1"),
-    classId: z.string({ required_error: "Selecione uma turma" }),
+    teacherHasClass: z.object(
+      {
+        classId: z.string({ required_error: "Selecione uma turma" }),
+        subjectId: z.string({ required_error: "Selecione uma matéria" }),
+      },
+      {
+        required_error: "Selecione uma turma",
+      },
+    ),
     frontAndBack: z.boolean().default(true),
     dueDate: z.date().default(new Date()),
   })
@@ -35,11 +44,13 @@ const schema = z
 
 interface NewFileRequestModalProps {
   open: boolean;
+  onCreated: () => void;
   onClickCancel: () => void;
 }
 
 export function NewFileRequestModal({
   open,
+  onCreated,
   onClickCancel,
 }: NewFileRequestModalProps) {
   const { user } = useUser();
@@ -64,18 +75,27 @@ export function NewFileRequestModal({
     },
   });
 
+  const [useDropdownSearch, setDropdownSearch] = useState("");
+
   const { mutate } = api.file.createRequest.useMutation();
 
   const teacherClasses = api.teacher.getClassesById.useQuery({
     id: user?.publicMetadata?.id as string,
   });
 
-  teacherClasses.data?.map(({ id, name }) => ({
-    value: id,
-    label: name,
-  }));
-
-  const onSubmit = (data: z.infer<typeof schema>) => console.log(data);
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    mutate({
+      name: data.name,
+      dueDate: data.dueDate,
+      frontAndBack: data.frontAndBack,
+      fileUrl: data.fileUrl,
+      quantity: data.quantity,
+      classId: data.teacherHasClass.classId,
+      subjectId: data.teacherHasClass.subjectId,
+      teacherId: user?.publicMetadata?.id as string,
+    });
+    await onCreated();
+  };
 
   const watchFrontAndBack = watch("frontAndBack", true);
   const watchDueDate = watch("dueDate", new Date());
@@ -166,23 +186,24 @@ export function NewFileRequestModal({
               Pra qual turma?
             </label>
             <div className="mt-2">
-              <Dropdown<string>
+              <Dropdown<{ classId: string; subjectId: string }>
+                search={useDropdownSearch}
                 searchable={false}
                 dropdownItems={
-                  teacherClasses.data?.map(({ id, name }) => ({
-                    value: id,
-                    label: name,
+                  teacherClasses.data?.map(({ Class, Subject }) => ({
+                    value: { classId: Class.id, subjectId: Subject.id },
+                    label: `${Class.name} - ${Subject.name}`,
                   })) || []
                 }
-                onChange={() => {}}
                 onSelectItem={(selectedItem) => {
-                  if (!selectedItem) return resetField("classId");
-                  setValue("classId", selectedItem.value);
+                  if (!selectedItem) return resetField("teacherHasClass");
+                  setValue("teacherHasClass", selectedItem.value);
+                  setDropdownSearch(selectedItem.label);
                 }}
-                error={errors.classId != null}
+                error={errors.teacherHasClass != null}
               />
-              {errors.classId && (
-                <p className="text-red-600">{errors.classId.message}</p>
+              {errors.teacherHasClass && (
+                <p className="text-red-600">{errors.teacherHasClass.message}</p>
               )}
             </div>
           </div>

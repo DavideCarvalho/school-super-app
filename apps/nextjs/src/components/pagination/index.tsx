@@ -11,6 +11,9 @@ export function Pagination({
   itemsPerPage,
   onChangePage,
 }: PaginationProps) {
+  console.log("currentPage", currentPage);
+  console.log("totalCount", totalCount);
+  console.log("itemsPerPage", itemsPerPage);
   const pages = Math.ceil(totalCount / itemsPerPage);
   const pagesList = Array.from(Array(pages < 5 ? pages : 5).keys()).map((i) =>
     currentPage <= 5 ? i + 1 : i + currentPage - 4,

@@ -27,7 +27,7 @@ interface DropdownProps<Item> {
   search?: string;
   initialSelectedItem?: DropdownItem<Item>;
   searchable?: boolean;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   onSelectItem: (value: DropdownItem<Item> | null) => void;
   dropdownLabel?: string;
   inputPlaceholder?: string;
@@ -166,7 +166,7 @@ export function Dropdown<Item>({
                   id=""
                   placeholder={inputPlaceholder}
                   value={search}
-                  onChange={(e) => onChange(e.target.value)}
+                  onChange={(e) => onChange && onChange(e.target.value)}
                   className="block w-full rounded-lg border border-gray-300 py-2 pl-8 pr-2 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
                 />
               </div>

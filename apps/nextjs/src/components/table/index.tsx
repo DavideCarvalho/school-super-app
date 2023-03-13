@@ -125,11 +125,27 @@ export function SchoolFilesTable({
   const [open, setOpen] = useState(false);
   const filesQuery = api.file.allBySchoolId.useQuery(
     { schoolId, status, page, limit, orderBy: { dueDate: "asc" } },
-    { initialData: files },
+    { initialData: files, keepPreviousData: true },
   );
+
+  const filesCountQuery = api.file.countAllBySchoolId.useQuery(
+    { schoolId, status, orderBy: { dueDate: "asc" } },
+    { initialData: filesCount, keepPreviousData: true },
+  );
+
+  async function onCreated() {
+    setOpen(false);
+    await filesQuery.refetch();
+    await filesCountQuery.refetch();
+  }
+
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewFileRequestModal open={open} onClickCancel={() => setOpen(false)} />
+      <NewFileRequestModal
+        onCreated={() => onCreated()}
+        open={open}
+        onClickCancel={() => setOpen(false)}
+      />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
@@ -219,7 +235,7 @@ export function SchoolFilesTable({
 
         <div>
           <Pagination
-            totalCount={filesCount}
+            totalCount={filesCountQuery.data}
             currentPage={page}
             itemsPerPage={limit}
             onChangePage={(page) => {

@@ -55,6 +55,8 @@ model TeacherHasClass {
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
   File    File[]
+
+  @@unique([teacherId, classId, subjectId])
 }
 
 model Subject {
