@@ -167,14 +167,13 @@ export function NewFileRequestModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
+                searchable={false}
                 dropdownItems={
                   teacherClasses.data?.map(({ id, name }) => ({
                     value: id,
                     label: name,
                   })) || []
                 }
-                dropdownLabel=""
-                search=""
                 onChange={() => {}}
                 onSelectItem={(selectedItem) => {
                   if (!selectedItem) return resetField("classId");

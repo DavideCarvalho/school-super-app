@@ -24,11 +24,12 @@ type DropdownItem<Value> = {
 };
 
 interface DropdownProps<Item> {
-  search: string;
+  search?: string;
   initialSelectedItem?: DropdownItem<Item>;
+  searchable?: boolean;
   onChange: (value: string) => void;
   onSelectItem: (value: DropdownItem<Item> | null) => void;
-  dropdownLabel: string;
+  dropdownLabel?: string;
   inputPlaceholder?: string;
   dropdownPlaceholder?: string;
   dropdownItems: DropdownItem<Item>[];
@@ -38,6 +39,7 @@ interface DropdownProps<Item> {
 export function Dropdown<Item>({
   search,
   initialSelectedItem,
+  searchable,
   onChange,
   onSelectItem,
   inputPlaceholder,
@@ -139,46 +141,50 @@ export function Dropdown<Item>({
           }}
         >
           <div className="absolute block w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
-            <div className="relative mt-2">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </div>
+            {searchable && (
+              <div className="relative mt-2">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
 
-              <input
-                type="text"
-                name=""
-                id=""
-                placeholder={inputPlaceholder}
-                value={search}
-                onChange={(e) => onChange(e.target.value)}
-                className="block w-full rounded-lg border border-gray-300 py-2 pl-8 pr-2 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
-              />
-            </div>
-            <ul className="flex flex-col">
-              <div className="flex w-full cursor-pointer hover:bg-gray-100">
-                <li
-                  onClick={() => {
-                    onSelectItem(null);
-                    setSelectedItem(undefined);
-                  }}
-                  className="rounded-md p-2"
-                >
-                  Tirar filtro
-                </li>
+                <input
+                  type="text"
+                  name=""
+                  id=""
+                  placeholder={inputPlaceholder}
+                  value={search}
+                  onChange={(e) => onChange(e.target.value)}
+                  className="block w-full rounded-lg border border-gray-300 py-2 pl-8 pr-2 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
+                />
               </div>
+            )}
+            <ul className="flex flex-col">
+              {searchable && (
+                <div className="flex w-full cursor-pointer hover:bg-gray-100">
+                  <li
+                    onClick={() => {
+                      onSelectItem(null);
+                      setSelectedItem(undefined);
+                    }}
+                    className="rounded-md p-2"
+                  >
+                    Tirar filtro
+                  </li>
+                </div>
+              )}
               {searchedValues.map(({ label, value, icon }) => (
                 <div
                   key={label}
