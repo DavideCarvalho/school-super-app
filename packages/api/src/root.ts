@@ -4,6 +4,7 @@ import { authRouter } from "./router/auth";
 import { fileRouter } from "./router/file";
 import { postRouter } from "./router/post";
 import { schoolRouter } from "./router/school";
+import { teacherRouter } from "./router/teacher";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   auth: authRouter,
   school: schoolRouter,
   file: fileRouter,
+  teacher: teacherRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });

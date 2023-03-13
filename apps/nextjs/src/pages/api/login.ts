@@ -44,12 +44,13 @@ export default async function handler(
     publicMetadata: {
       role: dbUser.Role.name,
       school: dbUser.School,
+      id: dbUser.id,
     },
   });
 
   console.log("req.query", req.query);
 
-  const redirectTo = req.query.redirectTo;
+  const redirectTo = req.query.redirectTo as string | undefined;
 
   const redirectUrl = redirectTo ?? `/${dbUser.School.slug}`;
 

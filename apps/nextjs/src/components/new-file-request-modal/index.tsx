@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -41,6 +42,7 @@ export function NewFileRequestModal({
   open,
   onClickCancel,
 }: NewFileRequestModalProps) {
+  const { user } = useUser();
   //minDate precisa ser declarado antes do dueDate
   //porque senão, o dueDate será uma data + hora antes
   // do minDate, ai o flatpickr não deixa o valor inicial
@@ -63,6 +65,15 @@ export function NewFileRequestModal({
   });
 
   const { mutate } = api.file.createRequest.useMutation();
+
+  const teacherClasses = api.teacher.getClassesById.useQuery({
+    id: user?.publicMetadata?.id as string,
+  });
+
+  teacherClasses.data?.map(({ id, name }) => ({
+    value: id,
+    label: name,
+  }));
 
   const onSubmit = (data: z.infer<typeof schema>) => console.log(data);
 
@@ -156,7 +167,12 @@ export function NewFileRequestModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
-                dropdownItems={[{ label: "Turma 1", value: "1" }]}
+                dropdownItems={
+                  teacherClasses.data?.map(({ id, name }) => ({
+                    value: id,
+                    label: name,
+                  })) || []
+                }
                 dropdownLabel=""
                 search=""
                 onChange={() => {}}

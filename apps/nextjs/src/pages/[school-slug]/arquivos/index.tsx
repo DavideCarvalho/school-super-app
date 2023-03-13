@@ -5,6 +5,7 @@ import {
 } from "next";
 import { useRouter } from "next/router";
 import { getAuth } from "@clerk/nextjs/server";
+import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
@@ -47,64 +48,63 @@ export default function SchoolFilesPage({
   );
 }
 
-export async function getServerSideProps({
-  req,
-  params,
-  query,
-}: GetServerSidePropsContext) {
-  const schoolSlug = params?.["school-slug"]! as string;
-  const school = await trpCaller.school.bySlug({ slug: schoolSlug });
-  if (!school) {
-    // Redirect to 404 page
-    throw new Error(`School with slug ${schoolSlug} not found`);
-  }
+export const getServerSideProps = withServerSideAuth(
+  async ({ req, params, query }: GetServerSidePropsContext) => {
+    withServerSideAuth({ loadUser: true });
+    const schoolSlug = params?.["school-slug"]! as string;
+    const school = await trpCaller.school.bySlug({ slug: schoolSlug });
+    if (!school) {
+      // Redirect to 404 page
+      throw new Error(`School with slug ${schoolSlug} not found`);
+    }
 
-  const clerkUser = getAuth(req);
-  console.log("to aqui no arquivos", clerkUser);
+    const clerkUser = getAuth(req);
 
-  if (!clerkUser.userId) {
-    // Redirect to sign in page
+    if (!clerkUser.userId) {
+      // Redirect to sign in page
+      return {
+        redirect: {
+          destination: `/sign-in?redirectTo=/${schoolSlug}/arquivos`,
+          permanent: false,
+        },
+      };
+    }
+
+    let status = query?.["status"] as string | undefined;
+    status = status ? status.toUpperCase() : undefined;
+    const page = query?.["page"] ? Number(query["page"]) : 1;
+    const limit = query?.["limit"] ? Number(query["limit"]) : 5;
+    const filteredStatus =
+      status === "REVIEW" ||
+      status === "APPROVED" ||
+      status === "REQUESTED" ||
+      status === "PRINTED"
+        ? status
+        : undefined;
+    const [files, filesCount] = await Promise.all([
+      trpCaller.file.allBySchoolId({
+        schoolId: school.id,
+        orderBy: { dueDate: "asc" },
+        status: filteredStatus,
+        page: page,
+        limit: limit,
+      }),
+      trpCaller.file.countAllBySchoolId({
+        schoolId: school.id,
+        orderBy: { dueDate: "asc" },
+        status: filteredStatus,
+      }),
+    ]);
     return {
-      redirect: {
-        destination: `/sign-in?redirectTo=/${schoolSlug}/arquivos`,
-        permanent: false,
+      props: {
+        status,
+        school,
+        files,
+        filesCount,
+        page,
+        limit,
       },
     };
-  }
-
-  let status = query?.["status"] as string | undefined;
-  status = status ? status.toUpperCase() : undefined;
-  const page = query?.["page"] ? Number(query["page"]) : 1;
-  const limit = query?.["limit"] ? Number(query["limit"]) : 5;
-  const filteredStatus =
-    status === "REVIEW" ||
-    status === "APPROVED" ||
-    status === "REQUESTED" ||
-    status === "PRINTED"
-      ? status
-      : undefined;
-  const [files, filesCount] = await Promise.all([
-    trpCaller.file.allBySchoolId({
-      schoolId: school.id,
-      orderBy: { dueDate: "asc" },
-      status: filteredStatus,
-      page: page,
-      limit: limit,
-    }),
-    trpCaller.file.countAllBySchoolId({
-      schoolId: school.id,
-      orderBy: { dueDate: "asc" },
-      status: filteredStatus,
-    }),
-  ]);
-  return {
-    props: {
-      status,
-      school,
-      files,
-      filesCount,
-      page,
-      limit,
-    },
-  };
-}
+  },
+  { loadUser: true },
+);
