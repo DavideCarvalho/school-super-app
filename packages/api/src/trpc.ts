@@ -6,12 +6,13 @@
  * tl;dr - this is where all the tRPC server stuff is created and plugged in.
  * The pieces you will need to use are documented accordingly near the end
  */
+
+import { getAuth } from "@clerk/nextjs/server";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerSession, type Session } from "@acme/auth";
 import { prisma } from "@acme/db";
 
 /**
@@ -24,7 +25,7 @@ import { prisma } from "@acme/db";
  *
  */
 type CreateContextOptions = {
-  session: Session | null;
+  session: Awaited<ReturnType<typeof getAuth>> | null;
 };
 
 /**
@@ -48,11 +49,11 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  const { req } = opts;
 
   // Get the session from the server using the unstable_getServerSession wrapper function
-  const session = await getServerSession({ req, res });
+  const session = getAuth(req);
 
   return createInnerTRPCContext({
     session,

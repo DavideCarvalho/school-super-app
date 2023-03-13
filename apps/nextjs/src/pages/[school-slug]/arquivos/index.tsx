@@ -4,6 +4,7 @@ import {
   type InferGetServerSidePropsType,
 } from "next";
 import { useRouter } from "next/router";
+import { getAuth } from "@clerk/nextjs/server";
 
 import { trpCaller } from "@acme/api";
 
@@ -47,6 +48,7 @@ export default function SchoolFilesPage({
 }
 
 export async function getServerSideProps({
+  req,
   params,
   query,
 }: GetServerSidePropsContext) {
@@ -56,6 +58,20 @@ export async function getServerSideProps({
     // Redirect to 404 page
     throw new Error(`School with slug ${schoolSlug} not found`);
   }
+
+  const clerkUser = getAuth(req);
+  console.log("to aqui no arquivos", clerkUser);
+
+  if (!clerkUser.userId) {
+    // Redirect to sign in page
+    return {
+      redirect: {
+        destination: `/sign-in?redirectTo=/${schoolSlug}/arquivos`,
+        permanent: false,
+      },
+    };
+  }
+
   let status = query?.["status"] as string | undefined;
   status = status ? status.toUpperCase() : undefined;
   const page = query?.["page"] ? Number(query["page"]) : 1;
