@@ -4,6 +4,7 @@ import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
 import { api } from "~/utils/api";
 
@@ -16,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <SessionProvider session={session}>
         <Component {...pageProps} />
       </SessionProvider>
+      <Toaster />
     </ClerkProvider>
   );
 };

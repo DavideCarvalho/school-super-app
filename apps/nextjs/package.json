@@ -37,6 +37,7 @@
     "react-dom": "18.2.0",
     "react-flatpickr": "^3.10.13",
     "react-hook-form": "^7.43.5",
+    "react-hot-toast": "^2.4.0",
     "superjson": "1.9.1",
     "zod": "^3.20.6"
   },

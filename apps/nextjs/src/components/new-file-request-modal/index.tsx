@@ -3,6 +3,7 @@ import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { api } from "~/utils/api";
@@ -84,6 +85,7 @@ export function NewFileRequestModal({
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
+    toast.loading("Criando solicitação...");
     mutate({
       name: data.name,
       dueDate: data.dueDate,
@@ -94,6 +96,8 @@ export function NewFileRequestModal({
       subjectId: data.teacherHasClass.subjectId,
       teacherId: user?.publicMetadata?.id as string,
     });
+    toast.dismiss();
+    toast.success("Solicitação criada com sucesso!");
     await onCreated();
   };
 
