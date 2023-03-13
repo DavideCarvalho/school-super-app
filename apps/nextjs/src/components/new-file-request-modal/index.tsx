@@ -64,6 +64,7 @@ export function NewFileRequestModal({
     handleSubmit,
     setValue,
     resetField,
+    reset,
     watch,
     formState: { errors },
   } = useForm<z.infer<typeof schema>>({
@@ -99,6 +100,7 @@ export function NewFileRequestModal({
     toast.dismiss();
     toast.success("Solicitação criada com sucesso!");
     await onCreated();
+    reset();
   };
 
   const watchFrontAndBack = watch("frontAndBack", true);
