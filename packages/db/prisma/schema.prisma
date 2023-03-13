@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider     = "sqlite"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model School {
@@ -32,15 +33,18 @@ model User {
   School  School    @relation(fields: [schoolId], references: [id])
   Role    Role      @relation(fields: [roleId], references: [id])
   Teacher Teacher[]
+
+  @@index([schoolId])
+  @@index([roleId])
 }
 
 model Teacher {
-  id                String
+  id                String            @id
   TeacherHasClasses TeacherHasClass[]
 
   User User @relation(fields: [id], references: [id])
 
-  @@id([id])
+  @@index([id])
 }
 
 model TeacherHasClass {
@@ -57,6 +61,9 @@ model TeacherHasClass {
   File    File[]
 
   @@unique([teacherId, classId, subjectId])
+  @@index([teacherId])
+  @@index([classId])
+  @@index([subjectId])
 }
 
 model Subject {
@@ -67,7 +74,9 @@ model Subject {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   TeacherHasClass TeacherHasClass[]
-  School          School?           @relation(fields: [schoolId], references: [id])
+  School          School            @relation(fields: [schoolId], references: [id])
+
+  @@index([schoolId])
 }
 
 model File {
@@ -83,6 +92,8 @@ model File {
   updatedAt         DateTime @updatedAt
 
   TeacherHasClass TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
+
+  @@index([teacherHasClassId])
 }
 
 model Role {
@@ -101,6 +112,8 @@ model SchoolYear {
 
   School  School  @relation(fields: [schoolId], references: [id])
   Classes Class[]
+
+  @@index([schoolId])
 }
 
 model Class {
@@ -113,4 +126,6 @@ model Class {
 
   SchoolYear      SchoolYear        @relation(fields: [schoolYearId], references: [id])
   TeacherHasClass TeacherHasClass[]
+
+  @@index([schoolYearId])
 }
