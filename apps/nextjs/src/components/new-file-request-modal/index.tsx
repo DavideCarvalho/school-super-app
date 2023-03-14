@@ -45,7 +45,7 @@ const schema = z
 
 interface NewFileRequestModalProps {
   open: boolean;
-  onCreated: () => void;
+  onCreated: () => void | Promise<void>;
   onClickCancel: () => void;
 }
 
@@ -87,20 +87,28 @@ export function NewFileRequestModal({
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     toast.loading("Criando solicitação...");
-    mutate({
-      name: data.name,
-      dueDate: data.dueDate,
-      frontAndBack: data.frontAndBack,
-      fileUrl: data.fileUrl,
-      quantity: data.quantity,
-      classId: data.teacherHasClass.classId,
-      subjectId: data.teacherHasClass.subjectId,
-      teacherId: user?.publicMetadata?.id as string,
-    });
-    toast.dismiss();
-    toast.success("Solicitação criada com sucesso!");
-    await onCreated();
-    reset();
+    mutate(
+      {
+        name: data.name,
+        dueDate: data.dueDate,
+        frontAndBack: data.frontAndBack,
+        fileUrl: data.fileUrl,
+        quantity: data.quantity,
+        classId: data.teacherHasClass.classId,
+        subjectId: data.teacherHasClass.subjectId,
+        teacherId: user?.publicMetadata?.id as string,
+      },
+      {
+        async onSuccess() {
+          toast.dismiss();
+          toast.success("Solicitação criada com sucesso!");
+          const onCreatedReturn = onCreated();
+          const isPromise = onCreatedReturn instanceof Promise;
+          if (isPromise) await onCreatedReturn;
+          reset();
+        },
+      },
+    );
   };
 
   const watchFrontAndBack = watch("frontAndBack", true);

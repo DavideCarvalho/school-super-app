@@ -135,14 +135,17 @@ export function SchoolFilesTable({
 
   async function onCreated() {
     setOpen(false);
+    console.log("fechado modal");
     await filesQuery.refetch();
+    console.log("repegando files");
     await filesCountQuery.refetch();
+    console.log("repegando filesCount");
   }
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
       <NewFileRequestModal
-        onCreated={() => onCreated()}
+        onCreated={async () => await onCreated()}
         open={open}
         onClickCancel={() => setOpen(false)}
       />
