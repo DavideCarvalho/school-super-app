@@ -7,6 +7,7 @@ import {
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
+import { toast } from "react-hot-toast";
 
 import {
   type Class,
@@ -133,13 +134,15 @@ export function SchoolFilesTable({
     { initialData: filesCount, keepPreviousData: true },
   );
 
+  const approveFileRequest = api.file.approveRequest.useMutation();
+  const reviewFileRequest = api.file.reviewRequest.useMutation();
+  const fileReviewedRequest = api.file.reviewed.useMutation();
+  const printFileRequest = api.file.printRequest.useMutation();
+
   async function onCreated() {
     setOpen(false);
-    console.log("fechado modal");
     await filesQuery.refetch();
-    console.log("repegando files");
     await filesCountQuery.refetch();
-    console.log("repegando filesCount");
   }
 
   return (
@@ -224,6 +227,66 @@ export function SchoolFilesTable({
             if (!status) return null;
             return (
               <TableRow
+                onApprove={(fileId) => {
+                  toast.loading("Aprovando solicitação...");
+                  approveFileRequest.mutate(
+                    { id: fileId },
+                    {
+                      async onSuccess() {
+                        toast.dismiss();
+                        toast.success("Solicitação aprovada com sucesso!");
+                        await filesQuery.refetch();
+                        await filesCountQuery.refetch();
+                      },
+                    },
+                  );
+                }}
+                onReview={(fileId) => {
+                  fileReviewedRequest.mutate(
+                    { id: fileId },
+                    {
+                      async onSuccess() {
+                        toast.dismiss();
+                        toast.success("Solicitação reenviada com sucesso!");
+                        await filesQuery.refetch();
+                        await filesCountQuery.refetch();
+                      },
+                    },
+                  );
+                }}
+                setReview={(fileId) => {
+                  toast.loading('Alterando para "Revisar"...');
+                  reviewFileRequest.mutate(
+                    { id: fileId },
+                    {
+                      async onSuccess() {
+                        toast.dismiss();
+                        toast.success("Solicitação alterada com sucesso!");
+                        await filesQuery.refetch();
+                        await filesCountQuery.refetch();
+                      },
+                    },
+                  );
+                }}
+                onPrint={(fileId) => {
+                  window.open(file.path, "_blank", "noreferrer");
+                  printFileRequest.mutate(
+                    { id: fileId },
+                    {
+                      async onSuccess() {
+                        await filesQuery.refetch();
+                        await filesCountQuery.refetch();
+                      },
+                    },
+                  );
+                }}
+                userRole={
+                  user?.publicMetadata?.role as
+                    | "TEACHER"
+                    | "COORDINATOR"
+                    | "SCHOOL_WORKER"
+                    | undefined
+                }
                 key={file.id}
                 status={status}
                 file={file}
@@ -288,21 +351,31 @@ const TableRowStatusDictionary = {
 };
 
 interface TableRowProps {
+  userRole: "TEACHER" | "COORDINATOR" | "SCHOOL_WORKER" | undefined;
   status: TableRowStatusEnum;
   file: File;
   schoolClass: Class;
   schoolYear: SchoolYear;
   teacher: Teacher & { User: User };
   subject: Subject;
+  onApprove: (fileId: string) => void;
+  onReview: (fileId: string) => void;
+  setReview: (fileId: string) => void;
+  onPrint: (fileId: string) => void;
 }
 
 function TableRow({
+  userRole,
   status,
   file,
   schoolClass,
   schoolYear,
   teacher,
   subject,
+  onApprove,
+  onReview,
+  setReview,
+  onPrint,
 }: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { dotColor, bgColor, textColor, label } =
@@ -335,50 +408,114 @@ function TableRow({
         </span>
       </div>
 
-      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
-        <button
-          type="button"
-          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-          ref={refs.setReference}
-          {...getReferenceProps()}
-        >
-          <svg
-            className="h-6 w-6"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
+      {((userRole === "TEACHER" && status === "REVIEW") ||
+        (userRole === "COORDINATOR" && status === "REQUESTED") ||
+        (userRole === "SCHOOL_WORKER" && status === "APPROVED") ||
+        (userRole === "SCHOOL_WORKER" && status === "PRINTED")) && (
+        <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+          <button
+            type="button"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+            ref={refs.setReference}
+            {...getReferenceProps()}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-            />
-          </svg>
-        </button>
-        {isOpen && (
-          <div
-            ref={refs.setFloating}
-            style={{
-              position: strategy,
-              top: y ? y + 10 : 0,
-              left: x ?? 0,
-            }}
-          >
-            <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
-              <ul className="flex flex-col">
-                <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
-                  Aprovar
-                </li>
-                <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
-                  Rejeitar
-                </li>
-              </ul>
-            </div>
-          </div>
-        )}
-      </div>
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+              />
+            </svg>
+          </button>
+          {((userRole === "TEACHER" && status === "REVIEW") ||
+            (userRole === "COORDINATOR" && status === "REQUESTED") ||
+            (userRole === "SCHOOL_WORKER" && status === "APPROVED") ||
+            (userRole === "SCHOOL_WORKER" && status === "PRINTED")) &&
+            isOpen && (
+              <div
+                ref={refs.setFloating}
+                style={{
+                  position: strategy,
+                  top: y ? y + 10 : 0,
+                  left: x ?? 0,
+                }}
+              >
+                <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+                  <ul className="flex flex-col">
+                    {userRole === "TEACHER" && status === "REVIEW" && (
+                      <>
+                        <li
+                          onClick={() => {
+                            onReview(file.id);
+                            setIsOpen(false);
+                          }}
+                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                        >
+                          Reenviar
+                        </li>
+                      </>
+                    )}
+                    {userRole === "COORDINATOR" && status === "REQUESTED" && (
+                      <>
+                        <li
+                          onClick={() => {
+                            onApprove(file.id);
+                            setIsOpen(false);
+                          }}
+                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                        >
+                          Aprovar
+                        </li>
+                        <li
+                          onClick={() => {
+                            setReview(file.id);
+                            setIsOpen(false);
+                          }}
+                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                        >
+                          Revisar
+                        </li>
+                      </>
+                    )}
+                    {userRole === "SCHOOL_WORKER" && status === "APPROVED" && (
+                      <>
+                        <li
+                          onClick={() => {
+                            onPrint(file.id);
+                            setIsOpen(false);
+                          }}
+                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                        >
+                          Imprimir
+                        </li>
+                      </>
+                    )}
+                    {userRole === "SCHOOL_WORKER" && status === "PRINTED" && (
+                      <>
+                        <li
+                          onClick={() => {
+                            onPrint(file.id);
+                            setIsOpen(false);
+                          }}
+                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                        >
+                          Imprimir
+                        </li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              </div>
+            )}
+        </div>
+      )}
 
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-sm font-bold text-gray-900">

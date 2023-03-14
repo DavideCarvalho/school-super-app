@@ -85,7 +85,7 @@ export function NewFileRequestModal({
     id: user?.publicMetadata?.id as string,
   });
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
+  const onSubmit = (data: z.infer<typeof schema>) => {
     toast.loading("Criando solicitação...");
     mutate(
       {

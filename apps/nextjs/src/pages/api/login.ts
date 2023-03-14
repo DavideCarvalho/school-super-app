@@ -48,13 +48,9 @@ export default async function handler(
     },
   });
 
-  console.log("req.query", req.query);
-
   const redirectTo = req.query.redirectTo as string | undefined;
 
   const redirectUrl = redirectTo ?? `/${dbUser.School.slug}`;
-
-  console.log("redirectUrl", redirectUrl);
 
   return res.redirect(307, redirectUrl);
 }

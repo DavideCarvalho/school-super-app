@@ -10,7 +10,6 @@ import { prisma } from "@acme/db";
 const SignInPage = ({
   redirectTo,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  console.log(redirectTo);
   return (
     <SignIn
       path="/sign-in"

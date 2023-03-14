@@ -116,8 +116,6 @@ export const fileRouter = createTRPCRouter({
           `Teacher with id ${input.teacherId} does not teach in the class with id ${input.classId} for the subject with id ${input.subjectId}`,
         );
       }
-      console.log("teacherHasClass", teacherHasClass);
-      console.log("Criando solicitação de impressão");
       await ctx.prisma.file.create({
         data: {
           name: input.name,
@@ -135,6 +133,70 @@ export const fileRouter = createTRPCRouter({
           dueDate: input.dueDate,
           frontAndBack: input.frontAndBack,
           status: "REQUESTED",
+        },
+      });
+    }),
+  reviewed: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.file.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: "REQUESTED",
+        },
+      });
+    }),
+  approveRequest: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.file.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: "APPROVED",
+        },
+      });
+    }),
+  reviewRequest: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.file.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: "REVIEW",
+        },
+      });
+    }),
+  printRequest: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.file.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: "PRINTED",
         },
       });
     }),
