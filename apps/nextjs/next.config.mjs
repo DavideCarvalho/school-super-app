@@ -13,6 +13,9 @@ const config = {
   /** We already do linting and typechecking as separate tasks in CI */
   eslint: { ignoreDuringBuilds: !!process.env.CI },
   typescript: { ignoreBuildErrors: !!process.env.CI },
+  images: {
+    domains: ["landingfoliocom.imgix.net"],
+  },
 };
 
 export default withSuperjson()(config);

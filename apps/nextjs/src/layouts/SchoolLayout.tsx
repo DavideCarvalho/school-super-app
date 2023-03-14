@@ -1,10 +1,13 @@
-import { type PropsWithChildren } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 
 interface SchoolLayoutProps {
   children?: React.ReactNode;
 }
 
 export function SchoolLayout({ children }: SchoolLayoutProps) {
+  const { user } = useUser();
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
@@ -34,15 +37,19 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
 
             <div className="ml-6 mr-auto flex lg:ml-0">
               <div className="flex flex-shrink-0 items-center">
-                <img
+                <Image
                   className="block h-8 w-auto lg:hidden"
                   src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo-symbol.svg"
                   alt=""
+                  width={500}
+                  height={500}
                 />
-                <img
+                <Image
                   className="hidden h-8 w-auto lg:block"
                   src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo.svg"
                   alt=""
+                  width={500}
+                  height={500}
                 />
               </div>
             </div>
@@ -102,9 +109,11 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                 type="button"
                 className="flex max-w-xs items-center rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
               >
-                <img
+                <Image
                   className="h-8 w-8 rounded-full bg-gray-300 object-cover"
                   src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/vertical-menu/1/avatar-male.png"
+                  width={500}
+                  height={500}
                   alt=""
                 />
                 <span className="ml-2 hidden text-sm font-medium text-gray-900 md:block">
@@ -136,9 +145,9 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
             <div className="flex h-full flex-1 flex-col justify-between px-4">
               <div className="space-y-4">
                 <nav className="flex-1 space-y-1">
-                  <a
-                    href="#"
-                    title=""
+                  <Link
+                    href={`${user?.publicMetadata?.school?.slug}`}
+                    title="Dashboard"
                     className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                   >
                     <svg
@@ -156,7 +165,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       />
                     </svg>
                     Dashboard
-                  </a>
+                  </Link>
                 </nav>
 
                 <div>
@@ -164,9 +173,9 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     Administrativo
                   </p>
                   <nav className="mt-4 flex-1 space-y-1">
-                    <a
-                      href="#"
-                      title=""
+                    <Link
+                      href={`/${user?.publicMetadata?.school?.slug}/arquivos`}
+                      title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -184,7 +193,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                         />
                       </svg>
                       Arquivos
-                    </a>
+                    </Link>
                   </nav>
                 </div>
               </div>

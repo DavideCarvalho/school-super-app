@@ -255,7 +255,9 @@ export default function SchoolPage({ school }: SchoolPageProps) {
           <main>
             <div className="py-6">
               <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                <h1>Content</h1>
+                {
+                  //content
+                }
               </div>
             </div>
           </main>
