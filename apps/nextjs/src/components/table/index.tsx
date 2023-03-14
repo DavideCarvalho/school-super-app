@@ -268,6 +268,7 @@ export function SchoolFilesTable({
                     },
                   );
                 }}
+                onOpen={() => window.open(file.path, "_blank", "noreferrer")}
                 onPrint={(fileId) => {
                   window.open(file.path, "_blank", "noreferrer");
                   printFileRequest.mutate(
@@ -362,6 +363,7 @@ interface TableRowProps {
   onReview: (fileId: string) => void;
   setReview: (fileId: string) => void;
   onPrint: (fileId: string) => void;
+  onOpen: () => void;
 }
 
 function TableRow({
@@ -376,6 +378,7 @@ function TableRow({
   onReview,
   setReview,
   onPrint,
+  onOpen,
 }: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { dotColor, bgColor, textColor, label } =
@@ -464,6 +467,15 @@ function TableRow({
                     )}
                     {userRole === "COORDINATOR" && status === "REQUESTED" && (
                       <>
+                        <li
+                          onClick={() => {
+                            onOpen();
+                            setIsOpen(false);
+                          }}
+                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                        >
+                          Abrir
+                        </li>
                         <li
                           onClick={() => {
                             onApprove(file.id);
