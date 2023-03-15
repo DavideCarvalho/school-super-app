@@ -1,7 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
-import LandingPage, { Contact, Footer, Pricing } from "./landing-page";
+import LandingPage, {
+  Contact,
+  Features,
+  Footer,
+  Pricing,
+} from "./landing-page";
 
 const Home: NextPage = () => {
   return (
@@ -13,6 +18,7 @@ const Home: NextPage = () => {
       </Head>
       <main>
         <LandingPage />
+        <Features />
         <Pricing />
         <Contact />
         <Footer />
