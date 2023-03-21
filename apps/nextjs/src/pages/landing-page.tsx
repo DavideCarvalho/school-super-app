@@ -25,40 +25,36 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden lg:ml-12 lg:flex lg:items-center lg:space-x-4">
-              <a
-                href="#"
-                title=""
+              <Link
+                href="#funcionalidades"
                 className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Funcionalidades
-              </a>
+              </Link>
 
-              <a
-                href="#"
-                title=""
+              <Link
+                href="#fale-conosco"
                 className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Fale conosco
-              </a>
+              </Link>
 
-              <a
-                href="#"
-                title=""
+              <Link
+                href="#preco"
                 className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Preço
-              </a>
+              </Link>
             </div>
 
             <div className="hidden sm:ml-auto sm:flex sm:items-center sm:justify-end sm:space-x-4">
-              <a
-                href="#"
-                title=""
+              <Link
+                href="/sign-in"
                 className="focus:ring-ring-900 inline-flex items-center justify-center rounded-full border border-gray-900 px-6 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
                 role="button"
               >
                 Login
-              </a>
+              </Link>
             </div>
 
             <div className="ml-4 flex lg:hidden">
@@ -160,7 +156,7 @@ export default function LandingPage() {
 
 export function Pricing() {
   return (
-    <section className="py-10 sm:py-16 lg:py-24">
+    <section className="py-10 sm:py-16 lg:py-24" id="preco">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold leading-tight text-black sm:text-4xl lg:text-5xl">
@@ -301,7 +297,7 @@ export function Contact() {
   const onSubmit = (data) => console.log(data);
 
   return (
-    <section className="py-10 sm:py-16 lg:py-24">
+    <section className="py-10 sm:py-16 lg:py-24" id="fale-conosco">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl lg:text-5xl">
@@ -432,33 +428,30 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ul className="mt-14 flex flex-wrap items-center justify-center space-x-12 md:space-x-16">
           <li>
-            <a
-              href="#"
-              title=""
+            <Link
+              href="#funcionalidades"
               className="font-pj inline-flex transform text-lg font-medium text-gray-900 transition-all duration-200 hover:-translate-y-1 hover:text-gray-600"
             >
               Funcionalidades
-            </a>
+            </Link>
           </li>
 
           <li>
-            <a
-              href="#"
-              title=""
+            <Link
+              href="#fale-conosco"
               className="font-pj inline-flex transform text-lg font-medium text-gray-900 transition-all duration-200 hover:-translate-y-1 hover:text-gray-600"
             >
               Fale Conosco
-            </a>
+            </Link>
           </li>
 
           <li>
-            <a
-              href="#"
-              title=""
+            <Link
+              href="#preco"
               className="font-pj inline-flex transform text-lg font-medium text-gray-900 transition-all duration-200 hover:-translate-y-1 hover:text-gray-600"
             >
               Preço
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -468,7 +461,7 @@ export function Footer() {
 
 export function Features() {
   return (
-    <section className="bg-white py-10 sm:py-16 lg:py-24">
+    <section className="bg-white py-10 sm:py-16 lg:py-24" id="funcionalidades">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 text-center sm:grid-cols-2 md:grid-cols-3 lg:gap-y-16">
           <div>
