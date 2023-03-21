@@ -13,7 +13,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="shrink-0">
-              <a href="#" title="" className="">
+              <Link href="/">
                 <Image
                   className="h-8 w-auto"
                   src="https://landingfoliocom.imgix.net/store/collection/saasui/images/logo.svg"
@@ -21,7 +21,7 @@ export default function LandingPage() {
                   width={32}
                   height={32}
                 />
-              </a>
+              </Link>
             </div>
 
             <div className="hidden lg:ml-12 lg:flex lg:items-center lg:space-x-4">
@@ -68,39 +68,43 @@ export default function LandingPage() {
                 onClick={() => setExpanded(!expanded)}
                 aria-expanded={expanded}
               >
-                <span x-show="!expanded" aria-hidden="true">
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
-                </span>
+                {!expanded && (
+                  <span aria-hidden="true">
+                    <svg
+                      className="h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
+                    </svg>
+                  </span>
+                )}
 
-                <span x-show="expanded" aria-hidden="true">
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </span>
+                {expanded && (
+                  <span aria-hidden="true">
+                    <svg
+                      className="h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </span>
+                )}
               </button>
             </div>
           </div>
