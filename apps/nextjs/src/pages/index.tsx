@@ -22,6 +22,8 @@ const Home: NextPage = () => {
           property="og:description"
           content="Gerenciar sua escola nunca foi tão fácil!"
         />
+        <meta property="og:type" content="website" />
+        <meta name="og:site_name" content="Anuá" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
