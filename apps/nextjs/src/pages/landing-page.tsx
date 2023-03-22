@@ -30,19 +30,19 @@ export default function LandingPage() {
               </Link>
 
               <Link
-                href="#fale-conosco"
-                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
-              >
-                Fale conosco
-              </Link>
-
-              <Link
                 href="#preco"
                 className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Preço
               </Link>
             </div>
+
+            <Link
+              href="#fale-conosco"
+              className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              Fale conosco
+            </Link>
 
             <div className="hidden sm:ml-auto sm:flex sm:items-center sm:justify-end sm:space-x-4">
               <Link
@@ -172,7 +172,7 @@ export function Pricing() {
 
               <div className="mt-5 flex items-end">
                 <div className="flex items-start">
-                  <span className="text-xl font-medium text-black"> $ </span>
+                  <span className="text-xl font-medium text-black"> R$ </span>
                   <p className="text-6xl font-medium tracking-tight">1,99</p>
                 </div>
                 <span className="ml-0.5 text-lg text-gray-600"> / aluno </span>
@@ -296,7 +296,7 @@ export function Contact() {
   const onSubmit = (data: z.infer<typeof contactSchema>) => {
     toast.loading("Enviando mensagem de contato...");
     mutate(data, {
-      onSuccess(data, variables, context) {
+      onSuccess() {
         toast.dismiss();
         toast.success("Mensagem enviada com sucesso!");
       },
@@ -432,7 +432,7 @@ export function Contact() {
 
 export function Footer() {
   return (
-    <footer className="bg-white py-12 sm:py-16 lg:py-20">
+    <footer className="py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <ul className="mt-14 flex flex-wrap items-center justify-center space-x-12 md:space-x-16">
           <li>
@@ -446,19 +446,19 @@ export function Footer() {
 
           <li>
             <Link
-              href="#fale-conosco"
+              href="#preco"
               className="font-pj inline-flex transform text-lg font-medium text-gray-900 transition-all duration-200 hover:-translate-y-1 hover:text-gray-600"
             >
-              Fale Conosco
+              Preço
             </Link>
           </li>
 
           <li>
             <Link
-              href="#preco"
+              href="#fale-conosco"
               className="font-pj inline-flex transform text-lg font-medium text-gray-900 transition-all duration-200 hover:-translate-y-1 hover:text-gray-600"
             >
-              Preço
+              Fale Conosco
             </Link>
           </li>
         </ul>
