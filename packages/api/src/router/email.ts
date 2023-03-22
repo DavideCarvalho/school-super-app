@@ -37,7 +37,7 @@ export const emailRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string().min(1).max(255),
-        email: z.string().email("O email precisa ser válido"),
+        email: z.string().email(),
         schoolName: z.string(),
         phone: z.string().optional(),
         message: z.string(),
@@ -52,9 +52,10 @@ export const emailRouter = createTRPCRouter({
             ContactUs({
               email: input.email,
               message: `
+
                 Nome da escola: ${input.schoolName}
                 
-                Mensagem: ${input.message}
+                ${input.message}
               `,
               name: input.name,
               phone: input.phone,
