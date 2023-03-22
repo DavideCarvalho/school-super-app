@@ -26,7 +26,7 @@ const Home: NextPage = () => {
         <meta name="og:site_name" content="Anuá" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main className="scroll-smooth">
         <LandingPage />
         <Features />
         <Pricing />

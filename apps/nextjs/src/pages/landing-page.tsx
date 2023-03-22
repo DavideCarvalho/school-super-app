@@ -3,7 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
+
+import { api } from "~/utils/api";
+import { emailJsClient } from "~/utils/email";
 
 export default function LandingPage() {
   const [expanded, setExpanded] = useState(false);
@@ -14,13 +18,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-between">
             <div className="shrink-0">
               <Link href="/">
-                <Image
-                  className="h-8 w-auto"
-                  src="https://landingfoliocom.imgix.net/store/collection/saasui/images/logo.svg"
-                  alt=""
-                  width={32}
-                  height={32}
-                />
+                <span className="text-3xl font-bold text-purple-600">Anuá</span>
               </Link>
             </div>
 
@@ -119,15 +117,16 @@ export default function LandingPage() {
 
               <div className="mt-6 lg:mt-auto">
                 <p className="text-lg leading-7 text-gray-700 lg:text-xl lg:leading-8">
-                  Anuá te da tudo que você precisa para gerenciar sua escola!
-                  Desde controle das salas de aula, alunos, professores, até
-                  controle da cantina!
+                  <span className="font-bold text-purple-600">Anuá</span> te da
+                  tudo que você precisa para gerenciar sua escola! Desde
+                  controle das salas de aula, alunos, professores, até controle
+                  da cantina!
                 </p>
                 <div className="mt-10">
                   <Link
-                    href="#"
+                    href="#fale-conosco"
                     title=""
-                    className="inline-flex items-center justify-center rounded-xl border border-transparent bg-blue-600 px-8 py-4 text-base font-medium text-white transition-all duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:ring-offset-2"
+                    className="inline-flex items-center justify-center rounded-xl border border-transparent bg-purple-600 px-8 py-4 text-base font-medium text-white transition-all duration-200 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2"
                     role="button"
                   >
                     Interessado? Entre em contato!
@@ -200,7 +199,7 @@ export function Pricing() {
                     <path
                       fill-rule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                   <span className="text-base font-medium text-gray-900">
@@ -218,7 +217,7 @@ export function Pricing() {
                     <path
                       fill-rule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                   <span className="text-base font-medium text-gray-900">
@@ -236,7 +235,7 @@ export function Pricing() {
                     <path
                       fill-rule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                   <span className="text-base font-medium text-gray-900">
@@ -254,7 +253,7 @@ export function Pricing() {
                     <path
                       fill-rule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clip-rule="evenodd"
+                      clipRule="evenodd"
                     />
                   </svg>
                   <span className="text-base font-medium">
@@ -286,18 +285,29 @@ const contactSchema = z
   .required();
 
 export function Contact() {
+  const { mutate } = api.email.sendContactUsEmail.useMutation();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
+    reset,
   } = useForm<z.infer<typeof contactSchema>>({
     resolver: zodResolver(contactSchema),
   });
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data: z.infer<typeof contactSchema>) => {
+    toast.loading("Enviando mensagem de contato...");
+    mutate(data, {
+      onSuccess(data, variables, context) {
+        toast.dismiss();
+        toast.success("Mensagem enviada com sucesso!");
+      },
+    });
+    reset();
+  };
 
   return (
     <section className="py-10 sm:py-16 lg:py-24" id="fale-conosco">
+      <Toaster position="top-center" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl lg:text-5xl">
@@ -345,7 +355,6 @@ export function Contact() {
                     <div className="relative mt-2.5">
                       <input
                         type="email"
-                        placeholder="Enter your full name"
                         {...register("email")}
                         className="block w-full rounded-md border border-gray-200 bg-white px-4 py-4 text-black placeholder-gray-500 caret-blue-600 transition-all duration-200 focus:border-blue-600 focus:outline-none"
                       />
@@ -407,7 +416,7 @@ export function Contact() {
                   <div className="sm:col-span-2">
                     <button
                       type="submit"
-                      className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-blue-700 focus:bg-blue-700 focus:outline-none"
+                      className="mt-2 inline-flex w-full items-center justify-center rounded-md border border-transparent bg-purple-600 px-4 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-purple-700 focus:bg-purple-700 focus:outline-none"
                     >
                       Enviar
                     </button>
@@ -462,7 +471,16 @@ export function Footer() {
 export function Features() {
   return (
     <section className="bg-white py-10 sm:py-16 lg:py-24" id="funcionalidades">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-2xl text-center">
+        <h2 className="text-3xl font-bold leading-tight text-gray-900 sm:text-4xl lg:text-5xl">
+          Funcionalidades
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-gray-500">
+          Tudo que o <span className="font-bold text-purple-600">Anuá</span>{" "}
+          pode te ajudar!
+        </p>
+      </div>
+      <div className="mx-auto mt-14 max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 text-center sm:grid-cols-2 md:grid-cols-3 lg:gap-y-16">
           <div>
             <div className="relative mx-auto flex items-center justify-center">
