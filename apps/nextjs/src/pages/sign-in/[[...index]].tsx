@@ -11,12 +11,13 @@ const SignInPage = ({
   redirectTo,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
-    <SignIn
-      path="/sign-in"
-      signUpUrl="/sign-in"
-      afterSignInUrl={redirectTo}
-      redirectUrl={redirectTo}
-    />
+    <main className="flex h-full w-full items-center justify-center">
+      <SignIn
+        path="/sign-in"
+        afterSignInUrl={redirectTo}
+        redirectUrl={redirectTo}
+      />
+    </main>
   );
 };
 
