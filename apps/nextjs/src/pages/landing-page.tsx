@@ -7,7 +7,6 @@ import { Toaster, toast } from "react-hot-toast";
 import { z } from "zod";
 
 import { api } from "~/utils/api";
-import { emailJsClient } from "~/utils/email";
 
 export default function LandingPage() {
   const [expanded, setExpanded] = useState(false);
@@ -25,21 +24,21 @@ export default function LandingPage() {
             <div className="hidden lg:ml-12 lg:flex lg:items-center lg:space-x-4">
               <Link
                 href="#funcionalidades"
-                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Funcionalidades
               </Link>
 
               <Link
                 href="#fale-conosco"
-                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Fale conosco
               </Link>
 
               <Link
                 href="#preco"
-                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="focus:ring-ring-300 inline-flex items-center justify-center rounded-full border border-transparent px-4 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 Preço
               </Link>
@@ -48,7 +47,7 @@ export default function LandingPage() {
             <div className="hidden sm:ml-auto sm:flex sm:items-center sm:justify-end sm:space-x-4">
               <Link
                 href="/sign-in"
-                className="focus:ring-ring-900 inline-flex items-center justify-center rounded-full border border-gray-900 px-6 py-2.5 text-base font-medium text-gray-900 transition-all duration-200 hover:bg-gray-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="focus:ring-ring-900 inline-flex items-center justify-center rounded-full border border-purple-900 px-6 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-900 focus:ring-offset-2"
                 role="button"
               >
                 Login
@@ -58,7 +57,7 @@ export default function LandingPage() {
             <div className="ml-4 flex lg:hidden">
               <button
                 type="button"
-                className="transiton-all inline-flex items-center rounded-full border border-gray-900 p-2.5 text-gray-900 duration-200 hover:bg-gray-900 hover:text-white focus:bg-gray-900 focus:text-white focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+                className="transiton-all inline-flex items-center rounded-full border border-purple-900 p-2.5 text-purple-900 duration-200 hover:bg-purple-900 hover:text-white focus:bg-purple-900 focus:text-white focus:outline-none focus:ring-2 focus:ring-purple-900 focus:ring-offset-2"
                 onClick={() => setExpanded(!expanded)}
                 aria-expanded={expanded}
               >
