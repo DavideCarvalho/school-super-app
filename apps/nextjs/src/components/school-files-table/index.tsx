@@ -188,6 +188,7 @@ export function SchoolFilesTable({
           <div className="w-full">
             <div className="mx-auto max-w-xs">
               <Dropdown<string>
+                cleanFilter={true}
                 search={item.label}
                 initialSelectedItem={status ? getStatus(status) : undefined}
                 onChange={(v) => setItem((state) => ({ ...state, label: v }))}

@@ -1,4 +1,5 @@
 import clerk from "@clerk/clerk-sdk-node";
+import slugify from "slugify";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -126,7 +127,7 @@ export const userRouter = createTRPCRouter({
         where: { id: input.userId },
         data: {
           name: input.name,
-          slug: input.name.toLowerCase().replace(" ", "-"),
+          slug: slugify(input.name),
           email: input.email,
           roleId: role.id,
         },

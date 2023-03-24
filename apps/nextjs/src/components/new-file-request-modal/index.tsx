@@ -201,6 +201,7 @@ export function NewFileRequestModal({
             </label>
             <div className="mt-2">
               <Dropdown<{ classId: string; subjectId: string }>
+                cleanFilter={false}
                 search={useDropdownSearch}
                 searchable={false}
                 dropdownItems={

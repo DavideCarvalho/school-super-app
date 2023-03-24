@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
+
+import { type Role, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
@@ -29,19 +31,28 @@ const schema = z
   })
   .required();
 
-interface NewWorkerRequestModalProps {
+interface EditWorkerRequestModalProps {
   schoolId: string;
   open: boolean;
-  onCreated: () => void | Promise<void>;
+  onEdited: () => void | Promise<void>;
   onClickCancel: () => void;
+  selectedWorker: (User & { Role: Role }) | undefined;
 }
 
-export function NewWorkerRequestModal({
+const tableRowRoleDictionary = {
+  SCHOOL_WORKER: "Funcionário(a)",
+  TEACHER: "Professor(a)",
+  COORDINATOR: "Coordenador(a)",
+  DIRECTOR: "Diretor(a)",
+};
+
+export function EditWorkerRequestModal({
   schoolId,
   open,
-  onCreated,
+  onEdited,
   onClickCancel,
-}: NewWorkerRequestModalProps) {
+  selectedWorker,
+}: EditWorkerRequestModalProps) {
   const {
     register,
     handleSubmit,
@@ -49,35 +60,56 @@ export function NewWorkerRequestModal({
     resetField,
     reset,
     formState: { errors },
+    setError,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      email: "",
-      roleName: "SCHOOL_WORKER",
+      name: selectedWorker?.name,
+      email: selectedWorker?.email,
+      roleName: selectedWorker?.Role?.name as
+        | "DIRECTOR"
+        | "COORDINATOR"
+        | "TEACHER"
+        | "SCHOOL_WORKER",
     },
   });
 
+  useEffect(() => {
+    if (!selectedWorker) return;
+    setValue("name", selectedWorker.name);
+    setValue("email", selectedWorker.email);
+    setValue(
+      "roleName",
+      selectedWorker.Role.name as
+        | "DIRECTOR"
+        | "COORDINATOR"
+        | "TEACHER"
+        | "SCHOOL_WORKER",
+    );
+  }, [selectedWorker, setValue]);
+
   const [dropdownSearch, setDropdownSearch] = useState("");
 
-  const createWorkerMutation = api.user.createWorker.useMutation();
+  const editWorkerMutation = api.user.editWorker.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    toast.loading("Criando usuário...");
-    createWorkerMutation.mutate(
+    if (!selectedWorker) return;
+    toast.loading("Alterando usuário...");
+    editWorkerMutation.mutate(
       {
+        userId: selectedWorker.id,
         name: data.name,
         email: data.email,
-        schoolId: schoolId,
+        schoolId,
         roleName: data.roleName,
       },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Usuário criado com sucesso!");
-          const onCreatedReturn = onCreated();
-          const isPromise = onCreatedReturn instanceof Promise;
-          if (isPromise) await onCreatedReturn;
+          toast.success("Usuário alterado com sucesso!");
+          const onEditedReturn = onEdited();
+          const isPromise = onEditedReturn instanceof Promise;
+          if (isPromise) await onEditedReturn;
           reset();
         },
       },
@@ -136,17 +168,30 @@ export function NewWorkerRequestModal({
                 search={dropdownSearch}
                 searchable={false}
                 initialSelectedItem={{
-                  label: "Funcionário",
-                  value: "SCHOOL_WORKER",
+                  label:
+                    tableRowRoleDictionary[
+                      selectedWorker?.Role.name as
+                        | "DIRECTOR"
+                        | "COORDINATOR"
+                        | "TEACHER"
+                        | "SCHOOL_WORKER"
+                    ],
+                  value: selectedWorker?.Role.name as
+                    | "DIRECTOR"
+                    | "COORDINATOR"
+                    | "TEACHER"
+                    | "SCHOOL_WORKER",
                 }}
                 dropdownItems={[
-                  { label: "Diretor", value: "DIRECTOR" },
-                  { label: "Coordenador", value: "COORDINATOR" },
-                  { label: "Professor", value: "TEACHER" },
-                  { label: "Funcionário", value: "SCHOOL_WORKER" },
+                  { label: "Diretor(a)", value: "DIRECTOR" },
+                  { label: "Coordenador(a)", value: "COORDINATOR" },
+                  { label: "Professor(a)", value: "TEACHER" },
+                  { label: "Funcionário(a)", value: "SCHOOL_WORKER" },
                 ]}
                 onSelectItem={(selectedItem) => {
-                  if (!selectedItem) return resetField("roleName");
+                  if (!selectedItem) {
+                    resetField("roleName");
+                  }
                   setValue("roleName", selectedItem.value);
                   setDropdownSearch("");
                 }}
@@ -172,7 +217,7 @@ export function NewWorkerRequestModal({
             type="submit"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
           >
-            Solicitar
+            Alterar
           </button>
         </div>
       </form>

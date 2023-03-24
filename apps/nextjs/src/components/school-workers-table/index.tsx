@@ -7,11 +7,13 @@ import {
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
+import { toast } from "react-hot-toast";
 
 import { type Role, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
+import { EditWorkerRequestModal } from "../edit-worker-request-modal";
 import { NewWorkerRequestModal } from "../new-worker-request-modal";
 import { Pagination } from "../pagination";
 
@@ -56,6 +58,10 @@ export function SchoolWorkersTable({
     icon?: JSX.Element;
   }>({ label: "", value: "", icon: undefined });
   const [open, setOpen] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [selectedWorker, setSelectedWorker] = useState<
+    (User & { Role: Role }) | undefined
+  >(undefined);
   const workersQuery = api.user.allBySchoolId.useQuery(
     { schoolId, limit, page, role },
     { initialData: workers, keepPreviousData: true },
@@ -66,8 +72,37 @@ export function SchoolWorkersTable({
     { initialData: workersCount, keepPreviousData: true },
   );
 
+  const deleteWorkerMutation = api.user.deleteById.useMutation();
+
   async function onCreated() {
     setOpen(false);
+    await workersQuery.refetch();
+    await workersCountQuery.refetch();
+  }
+
+  function deleteWorker(workerId: string) {
+    toast.loading("Removendo usuário...");
+    deleteWorkerMutation.mutate(
+      { userId: workerId, schoolId },
+      {
+        async onSuccess() {
+          toast.dismiss();
+          toast.success("Usuário removido com sucesso!");
+          await workersQuery.refetch();
+          await workersCountQuery.refetch();
+        },
+      },
+    );
+  }
+
+  function onSelectWorkerToEdit(worker: User & { Role: Role }) {
+    setOpenEditModal(true);
+    setSelectedWorker(worker);
+  }
+
+  async function onEdited() {
+    setOpenEditModal(false);
+    setSelectedWorker(undefined);
     await workersQuery.refetch();
     await workersCountQuery.refetch();
   }
@@ -79,6 +114,16 @@ export function SchoolWorkersTable({
         onCreated={async () => await onCreated()}
         open={open}
         onClickCancel={() => setOpen(false)}
+      />
+      <EditWorkerRequestModal
+        schoolId={schoolId}
+        open={openEditModal}
+        selectedWorker={selectedWorker as User & { Role: Role }}
+        onClickCancel={() => {
+          setOpenEditModal(false);
+          setSelectedWorker(undefined);
+        }}
+        onEdited={() => onEdited()}
       />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="px-4 py-5 sm:p-6">
@@ -116,6 +161,7 @@ export function SchoolWorkersTable({
           <div className="w-full">
             <div className="mx-auto max-w-xs">
               <Dropdown<string>
+                cleanFilter={true}
                 search={item.label}
                 initialSelectedItem={
                   role ? { label: getRole(role), value: role } : undefined
@@ -150,7 +196,14 @@ export function SchoolWorkersTable({
 
         <div className="divide-y divide-gray-200">
           {workersQuery.data?.map((worker) => {
-            return <TableRow key={worker.id} worker={worker} />;
+            return (
+              <TableRow
+                key={worker.id}
+                worker={worker}
+                onDelete={deleteWorker}
+                onEdit={onSelectWorkerToEdit}
+              />
+            );
           })}
         </div>
 
@@ -173,16 +226,18 @@ export function SchoolWorkersTable({
 
 interface TableRowProps {
   worker: User & { Role: Role };
+  onDelete: (workerId: string) => void;
+  onEdit: (worker: User & { Role: Role }) => void;
 }
 
 const tableRowRoleDictionary = {
-  SCHOOL_WORKER: "Funcionário",
+  SCHOOL_WORKER: "Funcionário(a)",
   TEACHER: "Professor(a)",
   COORDINATOR: "Coordenador(a)",
   DIRECTOR: "Diretor(a)",
 };
 
-function TableRow({ worker }: TableRowProps) {
+function TableRow({ worker, onDelete, onEdit }: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { x, y, strategy, refs, context } = useFloating({
@@ -230,10 +285,16 @@ function TableRow({ worker }: TableRowProps) {
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
-                  Deletar
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onDelete(worker.id)}
+                >
+                  Excluir
                 </li>
-                <li className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100">
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onEdit(worker)}
+                >
                   Editar
                 </li>
               </ul>
