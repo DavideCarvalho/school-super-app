@@ -3,6 +3,7 @@ import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Analytics } from "@vercel/analytics/react";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
@@ -22,6 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           data-utcoffset="-3"
         />
         <Component {...pageProps} />
+        <Analytics />
       </SessionProvider>
       <Toaster />
     </ClerkProvider>
