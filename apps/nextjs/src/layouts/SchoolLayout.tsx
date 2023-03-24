@@ -54,7 +54,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
               </div>
             </div>
 
-            <div className="flex items-center justify-end space-x-6 sm:ml-5">
+            {/* <div className="flex items-center justify-end space-x-6 sm:ml-5">
               <div className="relative">
                 <button
                   type="button"
@@ -134,7 +134,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                   />
                 </svg>
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </header>
@@ -146,7 +146,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
               <div className="space-y-4">
                 <nav className="flex-1 space-y-1">
                   <Link
-                    href={`${user?.publicMetadata?.school?.slug}`}
+                    href={`/escola/${user?.publicMetadata?.school?.slug}`}
                     title="Dashboard"
                     className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                   >
@@ -174,7 +174,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                   </p>
                   <nav className="mt-4 flex-1 space-y-1">
                     <Link
-                      href={`/${user?.publicMetadata?.school?.slug}/arquivos`}
+                      href={`/escola/${user?.publicMetadata?.school?.slug}/arquivos`}
                       title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
@@ -194,13 +194,35 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       </svg>
                       Arquivos
                     </Link>
+
+                    <Link
+                      href={`/escola/${user?.publicMetadata?.school?.slug}/funcionarios`}
+                      title="Arquivos"
+                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
+                    >
+                      <svg
+                        className="mr-4 h-5 w-5 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                      Funcionários
+                    </Link>
                   </nav>
                 </div>
               </div>
 
-              <div className="mt-12 pb-4">
+              {/* <div className="mt-12 pb-4">
                 <nav className="flex-1 space-y-1">
-                  <a
+                  <Link
                     href="#"
                     title=""
                     className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
@@ -225,9 +247,9 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       />
                     </svg>
                     Settings
-                  </a>
+                  </Link>
 
-                  <a
+                  <Link
                     href="#"
                     title=""
                     className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
@@ -247,9 +269,9 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       />
                     </svg>
                     Sair
-                  </a>
+                  </Link>
                 </nav>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -23,7 +23,7 @@ export function Pagination({
             Página {currentPage} de {pages}
           </p>
 
-          <nav className="relative mt-6 flex justify-end space-x-1.5 lg:mt-0">
+          <nav className="mt-6 flex justify-end space-x-1.5 lg:mt-0">
             {pagesList.map((page) => (
               <button
                 key={page}

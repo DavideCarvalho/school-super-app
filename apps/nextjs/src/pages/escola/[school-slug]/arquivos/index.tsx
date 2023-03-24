@@ -9,7 +9,7 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolFilesTable } from "~/components/table";
+import { SchoolFilesTable } from "~/components/school-files-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function SchoolFilesPage({
@@ -50,7 +50,6 @@ export default function SchoolFilesPage({
 
 export const getServerSideProps = withServerSideAuth(
   async ({ req, params, query }: GetServerSidePropsContext) => {
-    withServerSideAuth({ loadUser: true });
     const schoolSlug = params?.["school-slug"]! as string;
     const school = await trpCaller.school.bySlug({ slug: schoolSlug });
     if (!school) {
@@ -58,22 +57,23 @@ export const getServerSideProps = withServerSideAuth(
       throw new Error(`School with slug ${schoolSlug} not found`);
     }
 
+    let status = query?.["status"] as string | undefined;
+    status = status ? status.toUpperCase() : undefined;
+    const page = query?.["page"] ? Number(query["page"]) : 1;
+    const limit = query?.["limit"] ? Number(query["limit"]) : 5;
+
     const clerkUser = getAuth(req);
 
     if (!clerkUser.userId) {
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/${schoolSlug}/arquivos`,
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/arquivos?status=${status}&page=${page}&limit=${limit}}`,
           permanent: false,
         },
       };
     }
 
-    let status = query?.["status"] as string | undefined;
-    status = status ? status.toUpperCase() : undefined;
-    const page = query?.["page"] ? Number(query["page"]) : 1;
-    const limit = query?.["limit"] ? Number(query["limit"]) : 5;
     const filteredStatus =
       status === "REVIEW" ||
       status === "APPROVED" ||

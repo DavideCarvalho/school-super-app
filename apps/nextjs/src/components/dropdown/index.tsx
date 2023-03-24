@@ -51,6 +51,7 @@ export function Dropdown<Item>({
   const [open, setOpen] = useState(false);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
   const [selectedItem, setSelectedItem] = useState(initialSelectedItem);
+  console.log(selectedItem);
 
   useEffect(() => {
     if (search) {
@@ -172,19 +173,17 @@ export function Dropdown<Item>({
               </div>
             )}
             <ul className="flex flex-col">
-              {searchable && (
-                <div className="flex w-full cursor-pointer hover:bg-gray-100">
-                  <li
-                    onClick={() => {
-                      onSelectItem(null);
-                      setSelectedItem(undefined);
-                    }}
-                    className="rounded-md p-2"
-                  >
-                    Tirar filtro
-                  </li>
-                </div>
-              )}
+              <div className="flex w-full cursor-pointer hover:bg-gray-100">
+                <li
+                  onClick={() => {
+                    onSelectItem(null);
+                    setSelectedItem(undefined);
+                  }}
+                  className="rounded-md p-2"
+                >
+                  Tirar filtro
+                </li>
+              </div>
               {searchedValues.map(({ label, value, icon }) => (
                 <div
                   key={label}
