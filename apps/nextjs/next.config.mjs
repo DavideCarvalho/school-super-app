@@ -1,3 +1,4 @@
+import { withAxiom } from "next-axiom";
 import { withSuperjson } from "next-superjson";
 
 /**
@@ -18,4 +19,4 @@ const config = {
   },
 };
 
-export default withSuperjson()(config);
+export default withAxiom({ ...withSuperjson()(config) });

@@ -3,12 +3,13 @@ import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Analytics } from "@vercel/analytics/react";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 
 import { api } from "~/utils/api";
+
+export { reportWebVitals } from "next-axiom";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -23,7 +24,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
           data-utcoffset="-3"
         />
         <Component {...pageProps} />
-        <Analytics />
       </SessionProvider>
       <Toaster />
     </ClerkProvider>

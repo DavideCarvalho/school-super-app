@@ -128,6 +128,7 @@ importers:
       flatpickr: ^4.6.13
       next: ^13.2.3
       next-auth: ^4.20.1
+      next-axiom: ^0.17.0
       next-superjson: ^0.0.4
       nodemailer: ^6.9.1
       postcss: ^8.4.21
@@ -171,6 +172,7 @@ importers:
       flatpickr: 4.6.13
       next: 13.2.3_biqbaboplfbrettd7655fr4n2y
       next-auth: 4.20.1_nqfews3zxntugbnfuqgpde23my
+      next-axiom: 0.17.0_next@13.2.3
       next-superjson: 0.0.4_eskw3osmyhfnln5giftcgeeeum
       nodemailer: 6.9.1
       react: 18.2.0
@@ -9229,6 +9231,16 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       uuid: 8.3.2
+    dev: false
+
+  /next-axiom/0.17.0_next@13.2.3:
+    resolution: {integrity: sha512-qFdnH50SvRjJUAmNjGIYLcRc4tO/U4R1h9WUuniiwaucXAH5KhL06m7TT3WWD2U1HbulwSfC0R+NlPASOx1XlQ==}
+    engines: {node: '>=15'}
+    peerDependencies:
+      next: ^12.1.4 || ^13
+    dependencies:
+      next: 13.2.3_biqbaboplfbrettd7655fr4n2y
+      whatwg-fetch: 3.6.2
     dev: false
 
   /next-superjson/0.0.4_eskw3osmyhfnln5giftcgeeeum:
