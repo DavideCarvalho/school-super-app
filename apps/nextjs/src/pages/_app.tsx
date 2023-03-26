@@ -5,11 +5,10 @@ import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+// import { AxiomReporter } from 'next-axiom';
 import { Toaster } from "react-hot-toast";
 
 import { api } from "~/utils/api";
-
-export { reportWebVitals } from "next-axiom";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -24,6 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           data-utcoffset="-3"
         />
         <Component {...pageProps} />
+        {/* <AxiomReporter /> */}
       </SessionProvider>
       <Toaster />
     </ClerkProvider>
