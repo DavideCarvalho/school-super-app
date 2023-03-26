@@ -27,7 +27,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         recordHeadersAndBody: true,
       },
     });
-  }, []);
+  }, [user]);
   useEffect(() => {
     if (alreadyIdentified) return;
     if (!user || !user.emailAddresses[0]?.emailAddress) return;
