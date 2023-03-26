@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
@@ -17,9 +17,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   const { user } = useUser();
-  const alreadyIdentified = false;
+  const [alreadyInitiated, setAlreadyInitiated] = useState(false);
   useEffect(() => {
     if (!user) return;
+    if (alreadyInitiated) return;
     H.init(process.env.NEXT_PUBLIC_HIGHLIGHT_APP_ID, {
       tracingOrigins: true,
       networkRecording: {
@@ -27,12 +28,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
         recordHeadersAndBody: true,
       },
     });
-  }, [user]);
+    setAlreadyInitiated(true);
+  }, [user, alreadyInitiated, setAlreadyInitiated]);
   useEffect(() => {
-    if (alreadyIdentified) return;
+    if (!alreadyInitiated) return;
     if (!user || !user.emailAddresses[0]?.emailAddress) return;
     H.identify(user?.emailAddresses[0]?.emailAddress);
-  }, [user, alreadyIdentified]);
+  }, [user, alreadyInitiated]);
   return (
     <ClerkProvider localization={ptBR} {...pageProps}>
       <SessionProvider session={session}>
