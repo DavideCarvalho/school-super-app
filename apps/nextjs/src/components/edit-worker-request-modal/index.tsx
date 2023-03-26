@@ -60,7 +60,6 @@ export function EditWorkerRequestModal({
     resetField,
     reset,
     formState: { errors },
-    setError,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -118,7 +117,7 @@ export function EditWorkerRequestModal({
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Novo funcionário"}>
-      <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-6" onSubmit={void handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-bold text-gray-900">Nome</label>
@@ -190,7 +189,7 @@ export function EditWorkerRequestModal({
                 ]}
                 onSelectItem={(selectedItem) => {
                   if (!selectedItem) {
-                    resetField("roleName");
+                    return resetField("roleName");
                   }
                   setValue("roleName", selectedItem.value);
                   setDropdownSearch("");

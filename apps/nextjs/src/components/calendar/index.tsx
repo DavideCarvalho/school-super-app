@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Flatpickr from "react-flatpickr";
 
 import "flatpickr/dist/themes/light.css";

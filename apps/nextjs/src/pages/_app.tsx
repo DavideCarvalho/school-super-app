@@ -1,8 +1,10 @@
 import "../styles/globals.css";
+import { useEffect } from "react";
 import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, useUser } from "@clerk/nextjs";
+import { H } from "highlight.run";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 // import { AxiomReporter } from 'next-axiom';
@@ -14,6 +16,23 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  const { user } = useUser();
+  const alreadyIdentified = false;
+  useEffect(() => {
+    if (!user) return;
+    H.init(process.env.NEXT_PUBLIC_HIGHLIGHT_APP_ID, {
+      tracingOrigins: true,
+      networkRecording: {
+        enabled: true,
+        recordHeadersAndBody: true,
+      },
+    });
+  }, []);
+  useEffect(() => {
+    if (alreadyIdentified) return;
+    if (!user || !user.emailAddresses[0]?.emailAddress) return;
+    H.identify(user?.emailAddresses[0]?.emailAddress);
+  }, [user, alreadyIdentified]);
   return (
     <ClerkProvider localization={ptBR} {...pageProps}>
       <SessionProvider session={session}>

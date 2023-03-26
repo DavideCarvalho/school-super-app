@@ -105,6 +105,7 @@ importers:
       '@emailjs/browser': ^3.10.0
       '@floating-ui/react': ^0.20.1
       '@headlessui/react': ^1.7.13
+      '@highlight-run/react': ^2.0.1
       '@hookform/resolvers': ^2.9.11
       '@react-email/container': 0.0.8
       '@react-email/html': 0.0.4
@@ -126,6 +127,7 @@ importers:
       eslint: ^8.34.0
       eslint-config-acme: 0.0.0
       flatpickr: ^4.6.13
+      highlight.run: ^5.4.1
       next: ^13.2.3
       next-auth: ^4.20.1
       next-axiom: ^0.17.0
@@ -157,6 +159,7 @@ importers:
       '@emailjs/browser': 3.10.0
       '@floating-ui/react': 0.20.1_biqbaboplfbrettd7655fr4n2y
       '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
+      '@highlight-run/react': 2.0.1_biqbaboplfbrettd7655fr4n2y
       '@hookform/resolvers': 2.9.11_react-hook-form@7.43.5
       '@react-email/container': 0.0.8
       '@react-email/html': 0.0.4
@@ -170,6 +173,7 @@ importers:
       '@vercel/analytics': 0.1.11_react@18.2.0
       dayjs: 1.11.7
       flatpickr: 4.6.13
+      highlight.run: 5.4.1
       next: 13.2.3_biqbaboplfbrettd7655fr4n2y
       next-auth: 4.20.1_nqfews3zxntugbnfuqgpde23my
       next-axiom: 0.17.0_next@13.2.3
@@ -2687,6 +2691,16 @@ packages:
       react-dom: ^16 || ^17 || ^18
     dependencies:
       client-only: 0.0.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@highlight-run/react/2.0.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-g2QgFblfAAlv5pkPKP6q8OuV9enmkpX5ty4aVE7PuOMwC/ZFx+qJ/qMc8H4kG6FVnHd9ts5040db1ezbeAKTLA==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false
@@ -7525,6 +7539,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       source-map: 0.7.4
+    dev: false
+
+  /highlight.run/5.4.1:
+    resolution: {integrity: sha512-fPNr0kdIpNAc/6wNTTgwMn6M0KGv1DKVllHcMjUg6ahJylXjSQ9JU8ZqR414FGN00bz/qGnzwhy48IQBmMgf+g==}
     dev: false
 
   /hoist-non-react-statics/3.3.2:

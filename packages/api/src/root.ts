@@ -3,7 +3,6 @@ import { prisma } from "@acme/db";
 import { authRouter } from "./router/auth";
 import { emailRouter } from "./router/email";
 import { fileRouter } from "./router/file";
-import { postRouter } from "./router/post";
 import { roleRouter } from "./router/role";
 import { schoolRouter } from "./router/school";
 import { teacherRouter } from "./router/teacher";
@@ -11,7 +10,6 @@ import { userRouter } from "./router/user";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
-  post: postRouter,
   auth: authRouter,
   school: schoolRouter,
   file: fileRouter,

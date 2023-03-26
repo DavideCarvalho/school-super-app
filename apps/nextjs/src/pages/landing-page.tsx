@@ -325,7 +325,7 @@ export function Contact() {
                 Nos mande um e-mail!
               </h3>
 
-              <form className="mt-14" onSubmit={handleSubmit(onSubmit)}>
+              <form className="mt-14" onSubmit={void handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
                   <div>
                     <label

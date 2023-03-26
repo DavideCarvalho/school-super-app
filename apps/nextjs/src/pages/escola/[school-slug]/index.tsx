@@ -6,20 +6,13 @@ import { trpCaller } from "@acme/api";
 
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
-interface SchoolPageProps {
-  school: {
-    name: string;
-    description: string;
-  };
-}
-
-export default function SchoolPage({ school }: SchoolPageProps) {
+export default function SchoolPage() {
   return <SchoolLayout></SchoolLayout>;
 }
 
 export const getServerSideProps = withServerSideAuth(
   async ({ req, params }: GetServerSidePropsContext) => {
-    const schoolSlug = params?.["school-slug"]! as string;
+    const schoolSlug = params?.["school-slug"] as string;
     const school = await trpCaller.school.bySlug({ slug: schoolSlug });
     if (!school) {
       // Redirect to 404 page

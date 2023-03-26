@@ -116,7 +116,7 @@ export function NewFileRequestModal({
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Nova solicitação"}>
-      <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
+      <form className="mt-6" onSubmit={void handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-bold text-gray-900">Nome</label>

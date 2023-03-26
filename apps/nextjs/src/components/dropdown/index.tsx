@@ -1,26 +1,14 @@
 import { useEffect, useState } from "react";
 import {
   FloatingPortal,
-  autoPlacement,
   flip,
   shift,
   size,
   useClick,
   useDismiss,
   useFloating,
-  useFloatingNodeId,
   useInteractions,
 } from "@floating-ui/react";
-
-type PropType<TObj, TProp extends keyof TObj> = TObj[TProp];
-
-type DropdownValue<Item> = Item extends {
-  label: string;
-  value: infer A;
-  icon?: JSX.Element;
-}
-  ? A
-  : never;
 
 type DropdownItem<Value> = {
   label: string;
