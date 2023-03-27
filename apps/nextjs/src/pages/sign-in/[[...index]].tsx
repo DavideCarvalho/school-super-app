@@ -42,10 +42,6 @@ export async function getServerSideProps({
     });
 
     if (!dbUser) {
-      console.log(
-        `primeiro redirectTo
-        api/sign-in?redirectTo=${redirectTo}`,
-      );
       return {
         props: {
           redirectTo: `api/login?redirectTo=${redirectTo}`,
@@ -53,7 +49,13 @@ export async function getServerSideProps({
       };
     }
 
-    console.log(`penultimo redirectTo ${redirectTo}`);
+    await clerkClient.users.updateUser(user.id, {
+      publicMetadata: {
+        role: dbUser.Role.name,
+        school: dbUser.School,
+        id: dbUser.id,
+      },
+    });
 
     return {
       redirect: {
@@ -62,8 +64,6 @@ export async function getServerSideProps({
       },
     };
   }
-
-  console.log(`ultimo redirectTo api/login?redirectTo=${redirectTo}`);
 
   return {
     props: {

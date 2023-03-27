@@ -40,19 +40,13 @@ export default async function handler(
     return res.redirect(307, "/sign-in");
   }
 
-  console.log(`atualizando o usuário ${userId} com os dados do banco de dados`);
-
-  const teste = await clerkClient.users.updateUser(userId, {
+  await clerkClient.users.updateUser(userId, {
     publicMetadata: {
       role: dbUser.Role.name,
       school: dbUser.School,
       id: dbUser.id,
     },
   });
-
-  console.log(`atualizado`);
-
-  console.log(teste);
 
   const redirectTo = req.query.redirectTo as string | undefined;
 
