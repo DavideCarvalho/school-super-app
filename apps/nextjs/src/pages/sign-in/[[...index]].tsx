@@ -1,67 +1,54 @@
-import {
-  type GetServerSidePropsContext,
-  type InferGetServerSidePropsType,
-} from "next";
 import { SignIn } from "@clerk/nextjs";
-import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
-import { prisma } from "@acme/db";
-
-const SignInPage = ({
-  redirectTo,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const SignInPage = () => {
   return (
     <main className="flex h-full w-full items-center justify-center">
-      <SignIn path="/sign-in" redirectUrl={redirectTo} routing="path" />
+      <SignIn path="/sign-in" redirectUrl="/api/login" routing="path" />
     </main>
   );
 };
 
-export async function getServerSideProps({
-  req,
-  query,
-}: GetServerSidePropsContext) {
-  const redirectTo = (query.redirectTo as string | undefined) ?? "";
+// export async function getServerSideProps({
+//   req,
+//   query,
+// }: GetServerSidePropsContext) {
+//   // const redirectTo = (query.redirectTo as string | undefined) ?? "";
 
-  const clerkUser = getAuth(req);
+//   // const clerkUser = getAuth(req);
 
-  if (clerkUser.userId) {
-    const user = await clerkClient.users.getUser(clerkUser.userId);
-    const primaryEmailAddress = user.emailAddresses.find(
-      ({ id }) => id === user.primaryEmailAddressId,
-    );
+//   // if (clerkUser.userId) {
+//   //   const user = await clerkClient.users.getUser(clerkUser.userId);
+//   //   const primaryEmailAddress = user.emailAddresses.find(
+//   //     ({ id }) => id === user.primaryEmailAddressId,
+//   //   );
 
-    console.log(`clerk user`, user);
+//   //   const dbUser = await prisma.user.findFirst({
+//   //     where: {
+//   //       email: primaryEmailAddress?.emailAddress,
+//   //     },
+//   //   });
 
-    const dbUser = await prisma.user.findFirst({
-      where: {
-        email: primaryEmailAddress?.emailAddress,
-      },
-    });
+//   //   if (!dbUser) {
+//   //     return {
+//   //       props: {
+//   //         redirectTo: `/api/login?redirectTo=${redirectTo}`,
+//   //       },
+//   //     };
+//   //   }
 
-    console.log(`db user`, dbUser);
+//   //   return {
+//   //     redirect: {
+//   //       destination: `/api/login`,
+//   //       permanent: false,
+//   //     },
+//   //   };
+//   // }
 
-    if (!dbUser) {
-      return {
-        props: {
-          redirectTo: `/api/login?redirectTo=${redirectTo}`,
-        },
-      };
-    }
-
-    return {
-      redirect: {
-        destination: `/api/login`,
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      redirectTo: `/api/login`,
-    },
-  };
-}
+//   return {
+//     props: {
+//       redirectTo: `/api/login`,
+//     },
+//   };
+// }
 
 export default SignInPage;
