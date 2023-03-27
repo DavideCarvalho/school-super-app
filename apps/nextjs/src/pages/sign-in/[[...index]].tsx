@@ -7,7 +7,7 @@ import { prisma } from "@acme/db";
 const SignInPage = () => {
   return (
     <main className="flex h-full w-full items-center justify-center">
-      <SignIn path="/sign-in" redirectUrl="/api/login" routing="virtual" />
+      <SignIn path="/sign-in" />
     </main>
   );
 };
