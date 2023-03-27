@@ -48,7 +48,7 @@ export async function getServerSideProps({
       );
       return {
         props: {
-          redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
+          redirectTo: `api/login?redirectTo=${redirectTo}`,
         },
       };
     }
@@ -63,11 +63,11 @@ export async function getServerSideProps({
     };
   }
 
-  console.log(`ultimo redirectTo api/sign-in?redirectTo=${redirectTo}`);
+  console.log(`ultimo redirectTo api/login?redirectTo=${redirectTo}`);
 
   return {
     props: {
-      redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
+      redirectTo: `api/login?redirectTo=${redirectTo}`,
     },
   };
 }
