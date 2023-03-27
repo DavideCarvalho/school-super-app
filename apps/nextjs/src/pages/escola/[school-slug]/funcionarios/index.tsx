@@ -37,7 +37,7 @@ export const getServerSideProps = withServerSideAuth(
     const schoolSlug = params?.["school-slug"] as string;
     const school = await trpCaller.school.bySlug({ slug: schoolSlug });
     if (!school) {
-      // Redirect to 404 page
+      // TODO: Redirect to 404 page
       throw new Error(`School with slug ${schoolSlug} not found`);
     }
 

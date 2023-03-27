@@ -147,8 +147,8 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                 <nav className="flex-1 space-y-1">
                   <Link
                     href={`/escola/${
-                      (user?.publicMetadata as { school: { slug: string } })
-                        .school?.slug
+                      (user?.publicMetadata as { school?: { slug: string } })
+                        ?.school?.slug
                     }`}
                     title="Dashboard"
                     className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
@@ -178,8 +178,8 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                   <nav className="mt-4 flex-1 space-y-1">
                     <Link
                       href={`/escola/${
-                        (user?.publicMetadata as { school: { slug: string } })
-                          .school?.slug
+                        (user?.publicMetadata as { school?: { slug: string } })
+                          ?.school?.slug
                       }/arquivos`}
                       title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
@@ -203,8 +203,8 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
 
                     <Link
                       href={`/escola/${
-                        (user?.publicMetadata as { school: { slug: string } })
-                          .school?.slug
+                        (user?.publicMetadata as { school?: { slug: string } })
+                          ?.school?.slug
                       }/funcionarios`}
                       title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"

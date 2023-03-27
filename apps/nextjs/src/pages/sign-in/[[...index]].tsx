@@ -12,7 +12,7 @@ const SignInPage = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <main className="flex h-full w-full items-center justify-center">
-      <SignIn path="/sign-in" afterSignInUrl={redirectTo} routing="path" />
+      <SignIn path="/sign-in" redirectUrl={redirectTo} routing="path" />
     </main>
   );
 };
@@ -52,7 +52,7 @@ export async function getServerSideProps({
     return {
       redirect: {
         destination: `/api/login`,
-        permanent: true,
+        permanent: false,
       },
     };
   }
