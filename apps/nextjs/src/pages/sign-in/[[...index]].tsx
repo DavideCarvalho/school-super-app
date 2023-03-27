@@ -1,9 +1,13 @@
+import { type GetServerSidePropsContext } from "next";
 import { SignIn } from "@clerk/nextjs";
+import { clerkClient, getAuth } from "@clerk/nextjs/server";
+
+import { prisma } from "@acme/db";
 
 const SignInPage = () => {
   return (
     <main className="flex h-full w-full items-center justify-center">
-      <SignIn path="/sign-in" redirectUrl="/api/login" routing="path" />
+      <SignIn path="/sign-in" redirectUrl="/api/login" routing="hash" />
     </main>
   );
 };
@@ -12,43 +16,35 @@ const SignInPage = () => {
 //   req,
 //   query,
 // }: GetServerSidePropsContext) {
-//   // const redirectTo = (query.redirectTo as string | undefined) ?? "";
+//   const redirectTo = (query.redirectTo as string | undefined) ?? "";
 
-//   // const clerkUser = getAuth(req);
+//   const clerkUser = getAuth(req);
 
-//   // if (clerkUser.userId) {
-//   //   const user = await clerkClient.users.getUser(clerkUser.userId);
-//   //   const primaryEmailAddress = user.emailAddresses.find(
-//   //     ({ id }) => id === user.primaryEmailAddressId,
-//   //   );
+//   if (clerkUser.userId) {
+//     const user = await clerkClient.users.getUser(clerkUser.userId);
+//     const primaryEmailAddress = user.emailAddresses.find(
+//       ({ id }) => id === user.primaryEmailAddressId,
+//     );
 
-//   //   const dbUser = await prisma.user.findFirst({
-//   //     where: {
-//   //       email: primaryEmailAddress?.emailAddress,
-//   //     },
-//   //   });
+//     const dbUser = await prisma.user.findFirst({
+//       where: {
+//         email: primaryEmailAddress?.emailAddress,
+//       },
+//     });
 
-//   //   if (!dbUser) {
-//   //     return {
-//   //       props: {
-//   //         redirectTo: `/api/login?redirectTo=${redirectTo}`,
-//   //       },
-//   //     };
-//   //   }
+//     if (!dbUser) {
+//       return {};
+//     }
 
-//   //   return {
-//   //     redirect: {
-//   //       destination: `/api/login`,
-//   //       permanent: false,
-//   //     },
-//   //   };
-//   // }
+//     return {
+//       redirect: {
+//         destination: `/api/login`,
+//         permanent: false,
+//       },
+//     };
+//   }
 
-//   return {
-//     props: {
-//       redirectTo: `/api/login`,
-//     },
-//   };
+//   return {};
 // }
 
 export default SignInPage;
