@@ -16,25 +16,25 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
-  const { user } = useUser();
-  const [alreadyInitiated, setAlreadyInitiated] = useState(false);
-  useEffect(() => {
-    if (!user) return;
-    if (alreadyInitiated) return;
-    H.init(process.env.NEXT_PUBLIC_HIGHLIGHT_APP_ID, {
-      tracingOrigins: true,
-      networkRecording: {
-        enabled: true,
-        recordHeadersAndBody: true,
-      },
-    });
-    setAlreadyInitiated(true);
-  }, [user, alreadyInitiated, setAlreadyInitiated]);
-  useEffect(() => {
-    if (!alreadyInitiated) return;
-    if (!user || !user.emailAddresses[0]?.emailAddress) return;
-    H.identify(user?.emailAddresses[0]?.emailAddress);
-  }, [user, alreadyInitiated]);
+  // const { user } = useUser();
+  // const [alreadyInitiated, setAlreadyInitiated] = useState(false);
+  // useEffect(() => {
+  //   if (!user) return;
+  //   if (alreadyInitiated) return;
+  //   H.init(process.env.NEXT_PUBLIC_HIGHLIGHT_APP_ID, {
+  //     tracingOrigins: true,
+  //     networkRecording: {
+  //       enabled: true,
+  //       recordHeadersAndBody: true,
+  //     },
+  //   });
+  //   setAlreadyInitiated(true);
+  // }, [user, alreadyInitiated, setAlreadyInitiated]);
+  // useEffect(() => {
+  //   if (!alreadyInitiated) return;
+  //   if (!user || !user.emailAddresses[0]?.emailAddress) return;
+  //   H.identify(user?.emailAddresses[0]?.emailAddress);
+  // }, [user, alreadyInitiated]);
   return (
     <ClerkProvider localization={ptBR} {...pageProps}>
       <SessionProvider session={session}>
