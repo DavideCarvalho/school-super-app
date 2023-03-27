@@ -12,11 +12,7 @@ const SignInPage = ({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <main className="flex h-full w-full items-center justify-center">
-      <SignIn
-        path="/sign-in"
-        afterSignInUrl={redirectTo}
-        redirectUrl={redirectTo}
-      />
+      <SignIn path="/sign-in" afterSignInUrl={redirectTo} routing="path" />
     </main>
   );
 };
@@ -46,12 +42,18 @@ export async function getServerSideProps({
     });
 
     if (!dbUser) {
+      console.log(
+        `primeiro redirectTo
+        api/sign-in?redirectTo=${redirectTo}`,
+      );
       return {
         props: {
           redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
         },
       };
     }
+
+    console.log(`penultimo redirectTo ${redirectTo}`);
 
     return {
       redirect: {
@@ -60,6 +62,8 @@ export async function getServerSideProps({
       },
     };
   }
+
+  console.log(`ultimo redirectTo api/sign-in?redirectTo=${redirectTo}`);
 
   return {
     props: {
