@@ -31,15 +31,15 @@ export async function getServerSideProps({
       ({ id }) => id === user.primaryEmailAddressId,
     );
 
+    console.log(`clerk user`, user);
+
     const dbUser = await prisma.user.findFirst({
       where: {
         email: primaryEmailAddress?.emailAddress,
       },
-      include: {
-        Role: true,
-        School: true,
-      },
     });
+
+    console.log(`db user`, dbUser);
 
     if (!dbUser) {
       return {
@@ -59,7 +59,7 @@ export async function getServerSideProps({
 
   return {
     props: {
-      redirectTo: `/api/login?redirectTo=${redirectTo}`,
+      redirectTo: `/api/login`,
     },
   };
 }
