@@ -48,14 +48,14 @@ export async function getServerSideProps({
     if (!dbUser) {
       return {
         props: {
-          redirectTo: `api/login?redirectTo=${redirectTo}`,
+          redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
         },
       };
     }
 
     return {
       redirect: {
-        destination: redirectTo || `${dbUser.School.slug}`,
+        destination: redirectTo || `/escola/${dbUser.School.slug}`,
         permanent: true,
       },
     };
@@ -63,7 +63,7 @@ export async function getServerSideProps({
 
   return {
     props: {
-      redirectTo: `api/login?redirectTo=${redirectTo}`,
+      redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
     },
   };
 }

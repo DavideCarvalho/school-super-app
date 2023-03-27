@@ -50,7 +50,7 @@ export default async function handler(
 
   const redirectTo = req.query.redirectTo as string | undefined;
 
-  const redirectUrl = redirectTo ?? `/escola/${dbUser.School.slug}`;
+  const redirectUrl = redirectTo || `/escola/${dbUser.School.slug}`;
 
   return res.redirect(307, redirectUrl);
 }
