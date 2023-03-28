@@ -1,18 +1,32 @@
-import { type GetServerSidePropsContext } from "next";
+import {
+  type GetServerSidePropsContext,
+  type InferGetServerSidePropsType,
+} from "next";
 import { SignIn } from "@clerk/nextjs";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
 import { prisma } from "@acme/db";
 
-const SignInPage = () => {
+const SignInPage = ({
+  redirectTo,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
     <main className="flex h-full w-full items-center justify-center">
-      <SignIn path="/sign-in" />
+      <SignIn
+        path="/sign-in"
+        afterSignInUrl={redirectTo}
+        redirectUrl={redirectTo}
+      />
     </main>
   );
 };
 
-export async function getServerSideProps({ req }: GetServerSidePropsContext) {
+export async function getServerSideProps({
+  req,
+  query,
+}: GetServerSidePropsContext) {
+  const redirectTo = (query.redirectTo as string | undefined) ?? "";
+
   const clerkUser = getAuth(req);
 
   if (clerkUser.userId) {
@@ -32,26 +46,26 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
     });
 
     if (!dbUser) {
-      return {};
+      return {
+        props: {
+          redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
+        },
+      };
     }
-
-    await clerkClient.users.updateUser(user.id, {
-      publicMetadata: {
-        role: dbUser.Role.name,
-        school: dbUser.School,
-        id: dbUser.id,
-      },
-    });
 
     return {
       redirect: {
-        destination: `/escola/${dbUser.School.slug}`,
+        destination: redirectTo || `/escola/${dbUser.School.slug}`,
         permanent: true,
       },
     };
   }
 
-  return {};
+  return {
+    props: {
+      redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
+    },
+  };
 }
 
 export default SignInPage;
