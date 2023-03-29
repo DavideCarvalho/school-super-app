@@ -49,7 +49,7 @@ export async function getServerSideProps({
     if (!dbUser) {
       return {
         props: {
-          redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
+          redirectTo: `/api/login?redirectTo=${redirectTo}`,
         },
       };
     }
@@ -64,7 +64,7 @@ export async function getServerSideProps({
 
   return {
     props: {
-      redirectTo: `api/sign-in?redirectTo=${redirectTo}`,
+      redirectTo: `/api/login?redirectTo=${redirectTo}`,
     },
   };
 }
