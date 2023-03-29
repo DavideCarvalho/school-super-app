@@ -6,6 +6,8 @@ import { ClerkProvider } from "@clerk/nextjs";
 // import { AxiomReporter } from 'next-axiom';
 import { Toaster } from "react-hot-toast";
 
+import { api } from "~/utils/api";
+
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   // const { user } = useUser();
   // const [alreadyInitiated, setAlreadyInitiated] = useState(false);
@@ -40,4 +42,4 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   );
 };
 
-export default MyApp;
+export default api.withTRPC(MyApp);
