@@ -50,5 +50,5 @@ export default async function handler(
 
   const redirectUrl = `/escola/${dbUser.School.slug}`;
 
-  return res.redirect(307, redirectUrl);
+  return res.redirect(redirectUrl);
 }
