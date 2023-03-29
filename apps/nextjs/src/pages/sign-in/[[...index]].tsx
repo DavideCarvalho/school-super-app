@@ -14,6 +14,7 @@ const SignInPage = ({
     <main className="flex h-full w-full items-center justify-center">
       <SignIn
         path="/sign-in"
+        routing="path"
         afterSignInUrl={redirectTo}
         redirectUrl={redirectTo}
       />
