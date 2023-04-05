@@ -12,84 +12,61 @@ import { toast } from "react-hot-toast";
 import { type Role, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { Dropdown } from "../dropdown";
 import { EditWorkerRequestModal } from "../edit-worker-request-modal";
-import { NewWorkerRequestModal } from "../new-worker-request-modal";
+import { NewTeacherRequestModal } from "../new-teacher-request-modal";
 import { Pagination } from "../pagination";
 
-interface SchoolWorkersTableProps {
+interface SchoolTeachersTableProps {
   schoolId: string;
-  workers: (User & { Role: Role })[];
-  workersCount: number;
+  teachers: (User & { Role: Role })[];
+  teachersCount: number;
   page: number;
   limit: number;
-  role: "TEACHER" | "SCHOOL_WORKER" | "COORDINATOR" | "DIRECTOR" | undefined;
 }
 
-function getRole(roleName: string) {
-  switch (roleName) {
-    case "TEACHER":
-      return "Professor(a)";
-    case "SCHOOL_WORKER":
-      return "Funcionário(a)";
-    case "COORDINATOR":
-      return "Coordenador(a)";
-    case "DIRECTOR":
-      return "Diretor(a)";
-    default:
-      return "Funcionário";
-  }
-}
-
-export function SchoolWorkersTable({
+export function SchoolTeachersTable({
   schoolId,
-  workers,
-  role,
-  workersCount,
+  teachers,
+  teachersCount,
   page,
   limit,
-}: SchoolWorkersTableProps) {
+}: SchoolTeachersTableProps) {
   const router = useRouter();
   const { user } = useUser();
 
-  const [item, setItem] = useState<{
-    label: string;
-    value: string | undefined;
-    icon?: JSX.Element;
-  }>({ label: "", value: "", icon: undefined });
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [selectedWorker, setSelectedWorker] = useState<
     (User & { Role: Role }) | undefined
   >(undefined);
-  const workersQuery = api.user.allBySchoolId.useQuery(
-    { schoolId, limit, page, role },
-    { initialData: workers, keepPreviousData: true },
+  const teachersQuery = api.user.allBySchoolId.useQuery(
+    { schoolId, limit, page, role: "TEACHER" },
+    { initialData: teachers, keepPreviousData: true },
   );
 
-  const workersCountQuery = api.user.countAllBySchoolId.useQuery(
-    { schoolId, role },
-    { initialData: workersCount, keepPreviousData: true },
+  const teachersCountQuery = api.user.countAllBySchoolId.useQuery(
+    { schoolId, role: "TEACHER" },
+    { initialData: teachersCount, keepPreviousData: true },
   );
 
-  const deleteWorkerMutation = api.user.deleteById.useMutation();
+  const deleteTeacherMutation = api.teacher.deleteById.useMutation();
 
   async function onCreated() {
     setOpen(false);
-    await workersQuery.refetch();
-    await workersCountQuery.refetch();
+    await teachersQuery.refetch();
+    await teachersCountQuery.refetch();
   }
 
   function deleteWorker(workerId: string) {
-    toast.loading("Removendo usuário...");
-    deleteWorkerMutation.mutate(
-      { userId: workerId, schoolId },
+    toast.loading("Removendo professor...");
+    deleteTeacherMutation.mutate(
+      { userId: workerId },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Usuário removido com sucesso!");
-          await workersQuery.refetch();
-          await workersCountQuery.refetch();
+          toast.success("Professor removido com sucesso!");
+          await teachersQuery.refetch();
+          await teachersCountQuery.refetch();
         },
       },
     );
@@ -103,13 +80,13 @@ export function SchoolWorkersTable({
   async function onEdited() {
     setOpenEditModal(false);
     setSelectedWorker(undefined);
-    await workersQuery.refetch();
-    await workersCountQuery.refetch();
+    await teachersQuery.refetch();
+    await teachersCountQuery.refetch();
   }
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewWorkerRequestModal
+      <NewTeacherRequestModal
         schoolId={schoolId}
         onCreated={async () => await onCreated()}
         open={open}
@@ -129,7 +106,7 @@ export function SchoolWorkersTable({
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Funcionários</p>
+              <p className="text-lg font-bold text-gray-900">Professores</p>
             </div>
             {user?.publicMetadata?.role === "SCHOOL_WORKER" && (
               <button
@@ -151,51 +128,14 @@ export function SchoolWorkersTable({
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-                Novo funcionário
+                Novo professor
               </button>
             )}
           </div>
         </div>
 
-        <div className="flex flex-row">
-          <div className="w-full">
-            <div className="mx-auto max-w-xs">
-              <Dropdown<string>
-                cleanFilter={true}
-                search={item.label}
-                initialSelectedItem={
-                  role ? { label: getRole(role), value: role } : undefined
-                }
-                onChange={(v) => setItem((state) => ({ ...state, label: v }))}
-                onSelectItem={(selectedItem) => {
-                  setItem(() => ({
-                    ...selectedItem,
-                    value: selectedItem?.value,
-                    label: "",
-                  }));
-                  void router.replace({
-                    query: {
-                      ...router.query,
-                      role: selectedItem?.value as string,
-                    },
-                  });
-                }}
-                dropdownLabel="Cargos"
-                inputPlaceholder="Professor(a)"
-                dropdownPlaceholder="Selecione um cargo"
-                dropdownItems={[
-                  { label: getRole("TEACHER"), value: "TEACHER" },
-                  { label: getRole("SCHOOL_WORKER"), value: "SCHOOL_WORKER" },
-                  { label: getRole("COORDINATOR"), value: "COORDINATOR" },
-                  { label: getRole("DIRECTOR"), value: "DIRECTOR" },
-                ]}
-              />
-            </div>
-          </div>
-        </div>
-
         <div className="divide-y divide-gray-200">
-          {workersQuery.data?.map((worker) => {
+          {teachersQuery.data?.map((worker) => {
             return (
               <TableRow
                 key={worker.id}
@@ -209,7 +149,7 @@ export function SchoolWorkersTable({
 
         <div>
           <Pagination
-            totalCount={workersCountQuery.data}
+            totalCount={teachersCountQuery.data}
             currentPage={page}
             itemsPerPage={limit}
             onChangePage={(page) => {

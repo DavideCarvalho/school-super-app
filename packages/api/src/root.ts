@@ -8,6 +8,7 @@ import { schoolRouter } from "./router/school";
 import { teacherRouter } from "./router/teacher";
 import { userRouter } from "./router/user";
 import { createTRPCRouter } from "./trpc";
+import { schoolYearRouter } from "./router/schoolYear";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   email: emailRouter,
   user: userRouter,
   role: roleRouter,
+  schoolYear: schoolYearRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });

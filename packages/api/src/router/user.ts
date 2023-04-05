@@ -44,6 +44,8 @@ export const userRouter = createTRPCRouter({
       return ctx.prisma.user.findMany({
         where: { schoolId: input.schoolId, Role: { name: input.role } },
         include: { Role: true },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
       });
     }),
   createWorker: publicProcedure
@@ -71,11 +73,11 @@ export const userRouter = createTRPCRouter({
         lastName: rest.join(" "),
         emailAddress: [input.email],
       });
-      await ctx.prisma.user.create({
+      return await ctx.prisma.user.create({
         data: {
           schoolId: input.schoolId,
           name: input.name,
-          slug: input.name.toLowerCase().replace(" ", "-"),
+          slug: slugify(input.name),
           email: input.email,
           roleId: role.id,
         },

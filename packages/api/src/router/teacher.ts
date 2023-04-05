@@ -16,4 +16,22 @@ export const teacherRouter = createTRPCRouter({
         },
       });
     }),
+  deleteById: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const teacher = await ctx.prisma.teacher.findUnique({
+        where: { id: input.userId },
+      });
+      if (!teacher) {
+        throw new Error(`Professor com id ${input.userId} não encontrado`);
+      }
+      await ctx.prisma.$transaction([
+        ctx.prisma.teacherHasClass.deleteMany({
+          where: { teacherId: input.userId },
+        }),
+        ctx.prisma.teacher.delete({
+          where: { id: input.userId },
+        }),
+      ]);
+    }),
 });

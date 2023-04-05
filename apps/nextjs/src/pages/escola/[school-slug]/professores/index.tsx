@@ -7,26 +7,24 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolWorkersTable } from "~/components/school-workers-table";
+import { SchoolTeachersTable } from "~/components/school-teachers-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
-export default function WorkersPage({
+export default function TeachersPage({
   school,
-  workers,
-  workersCount,
+  teachers,
+  teachersCount,
   page,
   limit,
-  role,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolWorkersTable
+      <SchoolTeachersTable
         schoolId={school.id}
-        workers={workers}
-        workersCount={workersCount}
+        teachers={teachers}
+        teachersCount={teachersCount}
         page={page}
         limit={limit}
-        role={role}
       />
     </SchoolLayout>
   );
@@ -43,18 +41,6 @@ export const getServerSideProps = withServerSideAuth(
 
     const page = query?.["page"] ? Number(query["page"]) : 1;
     const limit = query?.["limit"] ? Number(query["limit"]) : 5;
-    const roleQuery = query?.["role"] ? (query["role"] as string) : "";
-    const role =
-      roleQuery.toUpperCase() === "DIRECTOR" ||
-      roleQuery.toUpperCase() === "TEACHER" ||
-      roleQuery.toUpperCase() === "COORDINATOR" ||
-      roleQuery.toUpperCase() === "SCHOOL_WORKER"
-        ? (roleQuery.toUpperCase() as
-            | "DIRECTOR"
-            | "TEACHER"
-            | "COORDINATOR"
-            | "SCHOOL_WORKER")
-        : undefined;
 
     const clerkUser = getAuth(req);
 
@@ -68,26 +54,25 @@ export const getServerSideProps = withServerSideAuth(
       };
     }
 
-    const workers = await trpCaller.user.allBySchoolId({
+    const teachers = await trpCaller.user.allBySchoolId({
       schoolId: school.id,
       page,
       limit,
-      role,
+      role: "TEACHER",
     });
 
-    const workersCount = await trpCaller.user.countAllBySchoolId({
+    const teachersCount = await trpCaller.user.countAllBySchoolId({
       schoolId: school.id,
-      role,
+      role: "TEACHER",
     });
 
     return {
       props: {
         school,
-        workers,
-        workersCount,
+        teachers,
+        teachersCount,
         page,
         limit,
-        role,
       },
     };
   },

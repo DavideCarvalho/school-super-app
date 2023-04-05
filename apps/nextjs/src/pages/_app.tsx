@@ -10,6 +10,7 @@ import { api } from "~/utils/api";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   // const { user } = useUser();
+
   // const [alreadyInitiated, setAlreadyInitiated] = useState(false);
   // useEffect(() => {
   //   if (!user) return;

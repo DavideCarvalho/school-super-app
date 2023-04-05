@@ -7,26 +7,24 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolWorkersTable } from "~/components/school-workers-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
+import { SchoolSchoolYearsTable } from "~/components/school-schoolyears-table";
 
-export default function WorkersPage({
+export default function YearsPage({
   school,
-  workers,
-  workersCount,
+  schoolYears,
+  schoolYearsCount,
   page,
   limit,
-  role,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolWorkersTable
+      <SchoolSchoolYearsTable
         schoolId={school.id}
-        workers={workers}
-        workersCount={workersCount}
+        schoolYears={schoolYears}
+        schoolYearsCount={schoolYearsCount}
         page={page}
         limit={limit}
-        role={role}
       />
     </SchoolLayout>
   );
@@ -43,18 +41,6 @@ export const getServerSideProps = withServerSideAuth(
 
     const page = query?.["page"] ? Number(query["page"]) : 1;
     const limit = query?.["limit"] ? Number(query["limit"]) : 5;
-    const roleQuery = query?.["role"] ? (query["role"] as string) : "";
-    const role =
-      roleQuery.toUpperCase() === "DIRECTOR" ||
-      roleQuery.toUpperCase() === "TEACHER" ||
-      roleQuery.toUpperCase() === "COORDINATOR" ||
-      roleQuery.toUpperCase() === "SCHOOL_WORKER"
-        ? (roleQuery.toUpperCase() as
-            | "DIRECTOR"
-            | "TEACHER"
-            | "COORDINATOR"
-            | "SCHOOL_WORKER")
-        : undefined;
 
     const clerkUser = getAuth(req);
 
@@ -62,32 +48,30 @@ export const getServerSideProps = withServerSideAuth(
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/funcionarios?page=${page}&limit=${limit}&role=${role}`,
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/anos?page=${page}&limit=${limit}`,
           permanent: false,
         },
       };
     }
 
-    const workers = await trpCaller.user.allBySchoolId({
-      schoolId: school.id,
-      page,
-      limit,
-      role,
-    });
-
-    const workersCount = await trpCaller.user.countAllBySchoolId({
-      schoolId: school.id,
-      role,
-    });
+    const [schoolYears, schoolYearsCount] = await Promise.all([
+      trpCaller.schoolYear.allBySchoolId({
+        schoolId: school.id,
+        page,
+        limit,
+      }),
+      trpCaller.user.countAllBySchoolId({
+        schoolId: school.id,
+      })
+    ]);
 
     return {
       props: {
         school,
-        workers,
-        workersCount,
+        schoolYears,
+        schoolYearsCount,
         page,
         limit,
-        role,
       },
     };
   },

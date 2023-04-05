@@ -1,0 +1,104 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Modal } from "../modal";
+import { api } from "~/utils/api";
+import toast from 'react-hot-toast';
+
+const schema = z
+  .object({
+    name: z
+      .string({ required_error: "Qual ano?" })
+  })
+  .required();
+
+interface NewWorkerRequestModalProps {
+  schoolId: string;
+  open: boolean;
+  onCreated: () => void | Promise<void>;
+  onClickCancel: () => void;
+}
+
+export function NewSchoolYearRequestModal({
+  schoolId,
+  open,
+  onCreated,
+  onClickCancel,
+}: NewWorkerRequestModalProps) {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+    },
+  });
+
+  const createSchoolYearMutation = api.schoolYear.createBySchoolId.useMutation();
+
+  const onSubmit = (data: z.infer<typeof schema>) => {
+    toast.loading("Criando ano...");
+    createSchoolYearMutation.mutate(
+      {
+        name: data.name,
+        schoolId: schoolId,
+      },
+      {
+        async onSuccess() {
+          toast.dismiss();
+          toast.success("Ano criado com sucesso!");
+          const onCreatedReturn = onCreated();
+          const isPromise = onCreatedReturn instanceof Promise;
+          if (isPromise) await onCreatedReturn;
+          reset();
+        },
+      },
+    );
+  };
+
+  return (
+    <Modal open={open} onClose={onClickCancel} title={"Novo funcionário"}>
+      <form className="mt-6" onSubmit={void handleSubmit(onSubmit)}>
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-bold text-gray-900">Nome</label>
+            <div className="mt-2">
+              <input
+                {...register("name")}
+                type="text"
+                inputMode="text"
+                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
+                  errors.name ? "border-red-400" : "border-grey-300"
+                }`}
+              />
+              {errors.name && (
+                <p className="text-red-600">{errors.name.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center justify-end space-x-4">
+          <button
+            onClick={() => onClickCancel()}
+            type="reset"
+            className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-semibold leading-5 text-gray-600 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          >
+            Solicitar
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
