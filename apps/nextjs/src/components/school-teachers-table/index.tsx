@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import { type Role, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { EditWorkerRequestModal } from "../edit-worker-request-modal";
+import { EditWorkerModal } from "../edit-worker-modal";
 import { NewTeacherRequestModal } from "../new-teacher-request-modal";
 import { Pagination } from "../pagination";
 
@@ -92,7 +92,7 @@ export function SchoolTeachersTable({
         open={open}
         onClickCancel={() => setOpen(false)}
       />
-      <EditWorkerRequestModal
+      <EditWorkerModal
         schoolId={schoolId}
         open={openEditModal}
         selectedWorker={selectedWorker as User & { Role: Role }}

@@ -13,7 +13,7 @@ import { type Role, type User } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
-import { EditWorkerRequestModal } from "../edit-worker-request-modal";
+import { EditWorkerModal } from "../edit-worker-modal";
 import { NewWorkerRequestModal } from "../new-worker-request-modal";
 import { Pagination } from "../pagination";
 
@@ -115,7 +115,7 @@ export function SchoolWorkersTable({
         open={open}
         onClickCancel={() => setOpen(false)}
       />
-      <EditWorkerRequestModal
+      <EditWorkerModal
         schoolId={schoolId}
         open={openEditModal}
         selectedWorker={selectedWorker as User & { Role: Role }}

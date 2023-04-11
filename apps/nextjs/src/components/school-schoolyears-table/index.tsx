@@ -14,6 +14,7 @@ import { type SchoolYear } from "@acme/db";
 import { api } from "~/utils/api";
 import { Pagination } from "../pagination";
 import { NewSchoolYearRequestModal } from "~/components/new-schoolyear-request-modal";
+import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
 
 interface SchoolSchoolYearsTableProps {
   schoolId: string;
@@ -33,8 +34,10 @@ export function SchoolSchoolYearsTable({
   const router = useRouter();
   const { user } = useUser();
 
+  const [selectedSchoolYear, setSelectedSchoolYear] = useState<SchoolYear | undefined>();
+
   const [open, setOpen] = useState(false);
-  // const [openEditModal, setOpenEditModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const schoolYearsQuery = api.schoolYear.allBySchoolId.useQuery(
     { schoolId, limit, page },
@@ -46,7 +49,7 @@ export function SchoolSchoolYearsTable({
     { initialData: schoolYearsCount, keepPreviousData: true },
   );
 
-  const deleteTeacherMutation = api.teacher.deleteById.useMutation();
+  const deleteSchoolYearMutation = api.schoolYear.deleteById.useMutation();
 
   async function onCreated() {
     setOpen(false);
@@ -54,14 +57,14 @@ export function SchoolSchoolYearsTable({
     await schoolYearsCountQuery.refetch();
   }
 
-  function deleteWorker(workerId: string) {
-    toast.loading("Removendo professor...");
-    deleteTeacherMutation.mutate(
-      { userId: workerId },
+  function deleteSchoolYear(schoolYearId: string) {
+    toast.loading("Removendo ano...");
+    deleteSchoolYearMutation.mutate(
+      { schoolYearId },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Professor removido com sucesso!");
+          toast.success("Ano removido com sucesso!");
           await schoolYearsQuery.refetch();
           await schoolYearsCountQuery.refetch();
         },
@@ -69,17 +72,17 @@ export function SchoolSchoolYearsTable({
     );
   }
 
-  // function onSelectWorkerToEdit(worker: SchoolYear) {
-  //   setOpenEditModal(true);
-  //   setSelectedWorker(worker);
-  // }
-  //
-  // async function onEdited() {
-  //   setOpenEditModal(false);
-  //   setSelectedWorker(undefined);
-  //   await schoolYearsQuery.refetch();
-  //   await schoolYearsCountQuery.refetch();
-  // }
+  function onSelectSchoolYearToEdit(schoolYear: SchoolYear) {
+    setOpenEditModal(true);
+    setSelectedSchoolYear(schoolYear);
+  }
+
+  async function onEdited() {
+    setOpenEditModal(false);
+    setSelectedSchoolYear(undefined);
+    await schoolYearsQuery.refetch();
+    await schoolYearsCountQuery.refetch();
+  }
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
@@ -89,16 +92,16 @@ export function SchoolSchoolYearsTable({
         open={open}
         onClickCancel={() => setOpen(false)}
       />
-      {/*<EditWorkerRequestModal*/}
-      {/*  schoolId={schoolId}*/}
-      {/*  open={openEditModal}*/}
-      {/*  selectedWorker={selectedWorker as SchoolYear}*/}
-      {/*  onClickCancel={() => {*/}
-      {/*    setOpenEditModal(false);*/}
-      {/*    setSelectedWorker(undefined);*/}
-      {/*  }}*/}
-      {/*  onEdited={() => onEdited()}*/}
-      {/*/>*/}
+      <EditSchoolYearModal
+        schoolId={schoolId}
+        open={openEditModal}
+        selectedSchoolYear={selectedSchoolYear as unknown as SchoolYear}
+        onClickCancel={() => {
+          setOpenEditModal(false);
+          setSelectedSchoolYear(undefined);
+        }}
+        onEdited={() => onEdited()}
+      />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
@@ -137,8 +140,8 @@ export function SchoolSchoolYearsTable({
               <TableRow
                 key={worker.id}
                 schoolYear={worker}
-                onDelete={deleteWorker}
-                onEdit={() => console.log('edit')}
+                onDelete={deleteSchoolYear}
+                onEdit={(schoolYear) => onSelectSchoolYearToEdit(schoolYear)}
               />
             );
           })}

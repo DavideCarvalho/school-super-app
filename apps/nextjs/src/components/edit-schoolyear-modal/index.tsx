@@ -1,67 +1,82 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { Modal } from "../modal";
+import type { SchoolYear } from "@acme/db";
+
 import { api } from "~/utils/api";
-import toast from 'react-hot-toast';
+import { Modal } from "../modal";
 
 const schema = z
   .object({
     name: z
-      .string({ required_error: "Qual ano?" })
+      .string({ required_error: "Nome do arquivo é obrigatório" })
+      .min(1, "É necessário que tenha mais de um caracter")
+      .max(255, "O nome pode ter um máximo de 255 caracteres")
   })
   .required();
 
-interface NewWorkerRequestModalProps {
+interface EditSchoolYearModalProps {
   schoolId: string;
   open: boolean;
-  onCreated: () => void | Promise<void>;
+  onEdited: () => void | Promise<void>;
   onClickCancel: () => void;
+  selectedSchoolYear: SchoolYear;
 }
 
-export function NewSchoolYearRequestModal({
-  schoolId,
-  open,
-  onCreated,
-  onClickCancel,
-}: NewWorkerRequestModalProps) {
+export function EditSchoolYearModal({
+                                      schoolId,
+                                      open,
+                                      onEdited,
+                                      onClickCancel,
+                                      selectedSchoolYear
+                                    }: EditSchoolYearModalProps) {
   const {
     register,
     handleSubmit,
+    setValue,
     reset,
-    formState: { errors },
+    formState: { errors }
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-    },
+      name: selectedSchoolYear?.name
+    }
   });
 
-  const createSchoolYearMutation = api.schoolYear.createBySchoolId.useMutation();
+  useEffect(() => {
+    if (!selectedSchoolYear) return;
+    setValue("name", selectedSchoolYear.name);
+  }, [selectedSchoolYear, setValue]);
+
+  const editSchoolYearMutation = api.schoolYear.updateById.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    toast.loading("Criando ano...");
-    createSchoolYearMutation.mutate(
+    if (!selectedSchoolYear) return;
+    toast.loading("Alterando ano...");
+    editSchoolYearMutation.mutate(
       {
-        name: data.name,
-        schoolId: schoolId,
+        schoolId,
+        schoolYearId: selectedSchoolYear.id,
+        name: data.name
       },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Ano criado com sucesso!");
-          const onCreatedReturn = onCreated();
-          const isPromise = onCreatedReturn instanceof Promise;
-          if (isPromise) await onCreatedReturn;
+          toast.success("Ano alterado com sucesso!");
+          const onEditedReturn = onEdited();
+          const isPromise = onEditedReturn instanceof Promise;
+          if (isPromise) await onEditedReturn;
           reset();
-        },
-      },
+        }
+      }
     );
   };
 
   return (
-    <Modal open={open} onClose={onClickCancel} title={"Novo funcionário"}>
+    <Modal open={open} onClose={onClickCancel} title={`Editar ${selectedSchoolYear?.name}`}>
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
@@ -80,6 +95,7 @@ export function NewSchoolYearRequestModal({
               )}
             </div>
           </div>
+
         </div>
 
         <div className="mt-5 flex items-center justify-end space-x-4">
@@ -95,7 +111,7 @@ export function NewSchoolYearRequestModal({
             type="submit"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
           >
-            Criar
+            Alterar
           </button>
         </div>
       </form>
