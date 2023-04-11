@@ -1,6 +1,7 @@
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
-import * as React from 'react';
-import { TooltipContent } from './tooltip-content';
+import * as React from "react";
+import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+
+import { TooltipContent } from "./tooltip-content";
 
 type RootProps = React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Root>;
 

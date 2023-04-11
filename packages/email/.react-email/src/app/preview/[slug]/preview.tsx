@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { Shell } from '../../../components/shell';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { CodeContainer } from '../../../components/code-container';
-import React from 'react';
-import { Tooltip } from '../../../components/tooltip';
+import React from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { CodeContainer } from "../../../components/code-container";
+import { Shell } from "../../../components/shell";
+import { Tooltip } from "../../../components/tooltip";
 
 export default function Preview({
   navItems,
@@ -16,18 +17,18 @@ export default function Preview({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeView, setActiveView] = React.useState('desktop');
-  const [activeLang, setActiveLang] = React.useState('jsx');
+  const [activeView, setActiveView] = React.useState("desktop");
+  const [activeLang, setActiveLang] = React.useState("jsx");
 
   React.useEffect(() => {
-    const view = searchParams.get('view');
-    const lang = searchParams.get('lang');
+    const view = searchParams.get("view");
+    const lang = searchParams.get("lang");
 
-    if (view === 'source' || view === 'desktop') {
+    if (view === "source" || view === "desktop") {
       setActiveView(view);
     }
 
-    if (lang === 'jsx' || lang === 'markup' || lang === 'markdown') {
+    if (lang === "jsx" || lang === "markup" || lang === "markdown") {
       setActiveLang(lang);
     }
   }, [searchParams]);
@@ -50,16 +51,16 @@ export default function Preview({
       activeView={activeView}
       setActiveView={handleViewChange}
     >
-      {activeView === 'desktop' ? (
-        <iframe srcDoc={markup} className="w-full h-[calc(100vh_-_70px)]" />
+      {activeView === "desktop" ? (
+        <iframe srcDoc={markup} className="h-[calc(100vh_-_70px)] w-full" />
       ) : (
-        <div className="flex gap-6 mx-auto p-6 max-w-3xl">
+        <div className="mx-auto flex max-w-3xl gap-6 p-6">
           <Tooltip.Provider>
             <CodeContainer
               markups={[
-                { language: 'jsx', content: reactMarkup },
-                { language: 'markup', content: markup },
-                { language: 'markdown', content: plainText },
+                { language: "jsx", content: reactMarkup },
+                { language: "markup", content: markup },
+                { language: "markdown", content: plainText },
               ]}
               activeLang={activeLang}
               setActiveLang={handleLangChange}

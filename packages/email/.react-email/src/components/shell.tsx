@@ -1,9 +1,10 @@
-import * as React from 'react';
-import { Topbar } from './topbar';
-import { Sidebar } from './sidebar';
+import * as React from "react";
 
-type ShellElement = React.ElementRef<'div'>;
-type RootProps = React.ComponentPropsWithoutRef<'div'>;
+import { Sidebar } from "./sidebar";
+import { Topbar } from "./topbar";
+
+type ShellElement = React.ElementRef<"div">;
+type RootProps = React.ComponentPropsWithoutRef<"div">;
 
 interface ShellProps extends RootProps {
   navItems: string[];
@@ -13,11 +14,14 @@ interface ShellProps extends RootProps {
 }
 
 export const Shell = React.forwardRef<ShellElement, Readonly<ShellProps>>(
-  ({ title, navItems, children, markup, activeView, setActiveView }, forwardedRef) => {
+  (
+    { title, navItems, children, markup, activeView, setActiveView },
+    forwardedRef,
+  ) => {
     return (
-      <div ref={forwardedRef} className="flex justify-between h-screen">
+      <div ref={forwardedRef} className="flex h-screen justify-between">
         <Sidebar navItems={navItems} title={title} />
-        <main className="w-[calc(100%_-_275px)] bg-slate-2">
+        <main className="bg-slate-2 w-[calc(100%_-_275px)]">
           {title && (
             <Topbar
               title={title}
@@ -35,4 +39,4 @@ export const Shell = React.forwardRef<ShellElement, Readonly<ShellProps>>(
   },
 );
 
-Shell.displayName = 'Shell';
+Shell.displayName = "Shell";

@@ -1,7 +1,7 @@
-import * as React from 'react';
+import * as React from "react";
 
-type LogoElement = React.ElementRef<'svg'>;
-type RootProps = React.ComponentPropsWithoutRef<'svg'>;
+type LogoElement = React.ElementRef<"svg">;
+type RootProps = React.ComponentPropsWithoutRef<"svg">;
 
 export const Logo = React.forwardRef<LogoElement, Readonly<RootProps>>(
   ({ ...props }, forwardedRef) => (
@@ -68,4 +68,4 @@ export const Logo = React.forwardRef<LogoElement, Readonly<RootProps>>(
   ),
 );
 
-Logo.displayName = 'Logo';
+Logo.displayName = "Logo";

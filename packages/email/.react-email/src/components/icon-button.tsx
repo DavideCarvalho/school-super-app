@@ -1,8 +1,8 @@
-import classnames from 'classnames';
-import * as React from 'react';
+import * as React from "react";
+import classnames from "classnames";
 
 export interface IconButtonProps
-  extends React.ComponentPropsWithoutRef<'button'> {}
+  extends React.ComponentPropsWithoutRef<"button"> {}
 
 export const IconButton = React.forwardRef<
   HTMLButtonElement,
@@ -12,7 +12,7 @@ export const IconButton = React.forwardRef<
     {...props}
     ref={forwardedRef}
     className={classnames(
-      'rounded text-slate-11 focus:text-slate-12 ease-in-out transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-8 hover:text-slate-12',
+      "text-slate-11 focus:text-slate-12 focus:ring-gray-8 hover:text-slate-12 rounded transition duration-200 ease-in-out focus:outline-none focus:ring-2",
       className,
     )}
   >
@@ -20,4 +20,4 @@ export const IconButton = React.forwardRef<
   </button>
 ));
 
-IconButton.displayName = 'IconButton';
+IconButton.displayName = "IconButton";

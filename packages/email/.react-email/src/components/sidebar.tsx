@@ -1,13 +1,14 @@
-import { Logo } from './logo';
-import * as React from 'react';
-import classnames from 'classnames';
-import Link from 'next/link';
-import { Heading } from './heading';
-import * as Collapsible from '@radix-ui/react-collapsible';
-import { LayoutGroup, motion } from 'framer-motion';
+import * as React from "react";
+import Link from "next/link";
+import * as Collapsible from "@radix-ui/react-collapsible";
+import classnames from "classnames";
+import { LayoutGroup, motion } from "framer-motion";
 
-type SidebarElement = React.ElementRef<'aside'>;
-type RootProps = React.ComponentPropsWithoutRef<'aside'>;
+import { Heading } from "./heading";
+import { Logo } from "./logo";
+
+type SidebarElement = React.ElementRef<"aside">;
+type RootProps = React.ComponentPropsWithoutRef<"aside">;
 
 interface SidebarProps extends RootProps {
   navItems: string[];
@@ -19,18 +20,18 @@ export const Sidebar = React.forwardRef<SidebarElement, Readonly<SidebarProps>>(
     return (
       <aside
         ref={forwardedRef}
-        className="px-6 min-w-[275px] max-w-[275px] flex flex-col gap-4 border-r border-slate-6"
+        className="border-slate-6 flex min-w-[275px] max-w-[275px] flex-col gap-4 border-r px-6"
         {...props}
       >
-        <div className="h-[70px] flex items-center">
+        <div className="flex h-[70px] items-center">
           <Logo />
         </div>
 
         <nav className="flex flex-col gap-4">
           <Collapsible.Root defaultOpen>
             <Collapsible.Trigger
-              className={classnames('flex items-center gap-1', {
-                'cursor-default': navItems && navItems.length === 0,
+              className={classnames("flex items-center gap-1", {
+                "cursor-default": navItems && navItems.length === 0,
               })}
             >
               <svg
@@ -57,13 +58,13 @@ export const Sidebar = React.forwardRef<SidebarElement, Readonly<SidebarProps>>(
                 />
               </svg>
 
-              <div className="flex items-center text-slate-11 transition ease-in-out duration-200 hover:text-slate-12">
+              <div className="text-slate-11 hover:text-slate-12 flex items-center transition duration-200 ease-in-out">
                 <Heading
                   as="h3"
                   color="gray"
                   size="2"
                   weight="medium"
-                  className="transition ease-in-out duration-200 hover:text-slate-12"
+                  className="hover:text-slate-12 transition duration-200 ease-in-out"
                 >
                   All emails
                 </Heading>
@@ -86,9 +87,9 @@ export const Sidebar = React.forwardRef<SidebarElement, Readonly<SidebarProps>>(
 
             {navItems && navItems.length > 0 && (
               <Collapsible.Content className="relative mt-3">
-                <div className="absolute left-2.5  w-px h-full bg-slate-6" />
+                <div className="bg-slate-6 absolute  left-2.5 h-full w-px" />
 
-                <div className="py-2 flex flex-col truncate">
+                <div className="flex flex-col truncate py-2">
                   <LayoutGroup id="sidebar">
                     {navItems &&
                       navItems.map((item) => {
@@ -97,22 +98,22 @@ export const Sidebar = React.forwardRef<SidebarElement, Readonly<SidebarProps>>(
                           <Link key={item} href={`/preview/${item}`}>
                             <motion.span
                               className={classnames(
-                                'text-[14px] flex items-center font-medium gap-2 w-full pl-4 h-8 rounded-md text-slate-11 relative block transition ease-in-out duration-200',
+                                "text-slate-11 relative block flex h-8 w-full items-center gap-2 rounded-md pl-4 text-[14px] font-medium transition duration-200 ease-in-out",
                                 {
-                                  'text-cyan-11': isCurrentPage,
-                                  'hover:text-slate-12': title !== item,
+                                  "text-cyan-11": isCurrentPage,
+                                  "hover:text-slate-12": title !== item,
                                 },
                               )}
                             >
                               {isCurrentPage && (
                                 <motion.span
                                   layoutId="sidebar"
-                                  className="absolute left-0 right-0 top-0 bottom-0 rounded-md bg-cyan-5"
+                                  className="bg-cyan-5 absolute left-0 right-0 top-0 bottom-0 rounded-md"
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
                                   exit={{ opacity: 0 }}
                                 >
-                                  <div className="bg-cyan-11 w-px absolute top-1 left-2.5 h-6" />
+                                  <div className="bg-cyan-11 absolute top-1 left-2.5 h-6 w-px" />
                                 </motion.span>
                               )}
                               <svg
@@ -156,4 +157,4 @@ export const Sidebar = React.forwardRef<SidebarElement, Readonly<SidebarProps>>(
   },
 );
 
-Sidebar.displayName = 'Sidebar';
+Sidebar.displayName = "Sidebar";

@@ -7,8 +7,8 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolLayout } from "~/layouts/SchoolLayout";
 import { SchoolSchoolYearsTable } from "~/components/school-schoolyears-table";
+import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function YearsPage({
   school,
@@ -62,7 +62,7 @@ export const getServerSideProps = withServerSideAuth(
       }),
       trpCaller.user.countAllBySchoolId({
         schoolId: school.id,
-      })
+      }),
     ]);
 
     return {

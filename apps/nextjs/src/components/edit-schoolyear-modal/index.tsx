@@ -14,7 +14,7 @@ const schema = z
     name: z
       .string({ required_error: "Nome do arquivo é obrigatório" })
       .min(1, "É necessário que tenha mais de um caracter")
-      .max(255, "O nome pode ter um máximo de 255 caracteres")
+      .max(255, "O nome pode ter um máximo de 255 caracteres"),
   })
   .required();
 
@@ -27,23 +27,23 @@ interface EditSchoolYearModalProps {
 }
 
 export function EditSchoolYearModal({
-                                      schoolId,
-                                      open,
-                                      onEdited,
-                                      onClickCancel,
-                                      selectedSchoolYear
-                                    }: EditSchoolYearModalProps) {
+  schoolId,
+  open,
+  onEdited,
+  onClickCancel,
+  selectedSchoolYear,
+}: EditSchoolYearModalProps) {
   const {
     register,
     handleSubmit,
     setValue,
     reset,
-    formState: { errors }
+    formState: { errors },
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: selectedSchoolYear?.name
-    }
+      name: selectedSchoolYear?.name,
+    },
   });
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function EditSchoolYearModal({
       {
         schoolId,
         schoolYearId: selectedSchoolYear.id,
-        name: data.name
+        name: data.name,
       },
       {
         async onSuccess() {
@@ -70,13 +70,17 @@ export function EditSchoolYearModal({
           const isPromise = onEditedReturn instanceof Promise;
           if (isPromise) await onEditedReturn;
           reset();
-        }
-      }
+        },
+      },
     );
   };
 
   return (
-    <Modal open={open} onClose={onClickCancel} title={`Editar ${selectedSchoolYear?.name}`}>
+    <Modal
+      open={open}
+      onClose={onClickCancel}
+      title={`Editar ${selectedSchoolYear?.name}`}
+    >
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
@@ -95,7 +99,6 @@ export function EditSchoolYearModal({
               )}
             </div>
           </div>
-
         </div>
 
         <div className="mt-5 flex items-center justify-end space-x-4">

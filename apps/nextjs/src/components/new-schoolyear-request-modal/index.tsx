@@ -1,15 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { Modal } from "../modal";
 import { api } from "~/utils/api";
-import toast from 'react-hot-toast';
+import { Modal } from "../modal";
 
 const schema = z
   .object({
-    name: z
-      .string({ required_error: "Qual ano?" })
+    name: z.string({ required_error: "Qual ano?" }),
   })
   .required();
 
@@ -38,7 +37,8 @@ export function NewSchoolYearRequestModal({
     },
   });
 
-  const createSchoolYearMutation = api.schoolYear.createBySchoolId.useMutation();
+  const createSchoolYearMutation =
+    api.schoolYear.createBySchoolId.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     toast.loading("Criando ano...");

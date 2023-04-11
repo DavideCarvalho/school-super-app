@@ -12,9 +12,9 @@ import { toast } from "react-hot-toast";
 import { type SchoolYear } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { Pagination } from "../pagination";
-import { NewSchoolYearRequestModal } from "~/components/new-schoolyear-request-modal";
 import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
+import { NewSchoolYearRequestModal } from "~/components/new-schoolyear-request-modal";
+import { Pagination } from "../pagination";
 
 interface SchoolSchoolYearsTableProps {
   schoolId: string;
@@ -34,7 +34,9 @@ export function SchoolSchoolYearsTable({
   const router = useRouter();
   const { user } = useUser();
 
-  const [selectedSchoolYear, setSelectedSchoolYear] = useState<SchoolYear | undefined>();
+  const [selectedSchoolYear, setSelectedSchoolYear] = useState<
+    SchoolYear | undefined
+  >();
 
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);

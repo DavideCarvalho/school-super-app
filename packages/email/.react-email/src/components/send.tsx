@@ -1,12 +1,13 @@
-import { inter } from '../app/layout';
-import { Button } from './button';
-import { Text } from './text';
-import * as Popover from '@radix-ui/react-popover';
-import * as React from 'react';
+import * as React from "react";
+import * as Popover from "@radix-ui/react-popover";
+
+import { inter } from "../app/layout";
+import { Button } from "./button";
+import { Text } from "./text";
 
 export const Send = ({ markup }: { markup: string }) => {
-  const [to, setTo] = React.useState('');
-  const [subject, setSubject] = React.useState('Testing React Email');
+  const [to, setTo] = React.useState("");
+  const [subject, setSubject] = React.useState("Testing React Email");
   const [isSending, setIsSending] = React.useState(false);
 
   const onFormSubmit = async (e: React.FormEvent) => {
@@ -14,9 +15,9 @@ export const Send = ({ markup }: { markup: string }) => {
       e.preventDefault();
       setIsSending(true);
 
-      const response = await fetch('https://react.email/api/send/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("https://react.email/api/send/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           to,
           subject,
@@ -29,7 +30,7 @@ export const Send = ({ markup }: { markup: string }) => {
         alert(error);
       }
     } catch (e) {
-      alert('Something went wrong. Please try again.');
+      alert("Something went wrong. Please try again.");
     } finally {
       setIsSending(false);
     }
@@ -38,7 +39,7 @@ export const Send = ({ markup }: { markup: string }) => {
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
-        <button className="box-border outline-none self-center w-20 h-5 flex items-center justify-center rounded-lg text-center transition duration-300 ease-in-out border border-slate-6 text-slate-11 text-sm px-4 py-4 hover:border-slate-12 hover:text-slate-12 font-sans">
+        <button className="border-slate-6 text-slate-11 hover:border-slate-12 hover:text-slate-12 box-border flex h-5 w-20 items-center justify-center self-center rounded-lg border px-4 py-4 text-center font-sans text-sm outline-none transition duration-300 ease-in-out">
           Send
         </button>
       </Popover.Trigger>
@@ -46,24 +47,24 @@ export const Send = ({ markup }: { markup: string }) => {
       <Popover.Portal>
         <Popover.Content
           align="end"
-          className={`w-80 -mt-10 p-3 bg-black border border-slate-6 text-slate-11 rounded-lg font-sans ${inter.variable}`}
+          className={`border-slate-6 text-slate-11 -mt-10 w-80 rounded-lg border bg-black p-3 font-sans ${inter.variable}`}
         >
           <Popover.Close
             aria-label="Close"
-            className="absolute right-2 flex items-center justify-center w-6 h-6 text-xs text-slate-11 hover:text-slate-12 transition duration-300 ease-in-out rounded-full"
+            className="text-slate-11 hover:text-slate-12 absolute right-2 flex h-6 w-6 items-center justify-center rounded-full text-xs transition duration-300 ease-in-out"
           >
             ✕
           </Popover.Close>
           <form onSubmit={onFormSubmit} className="mt-1">
             <label
               htmlFor="to"
-              className="text-slate-10 text-xs uppercase mb-2 block"
+              className="text-slate-10 mb-2 block text-xs uppercase"
             >
               Recipient
             </label>
             <input
               autoFocus={true}
-              className="appearance-none rounded-lg px-2 py-1 mb-3 outline-none w-full bg-slate-3 border placeholder-slate-8 border-slate-6 text-slate-12 text-sm focus:ring-1 focus:ring-slate-12 transition duration-300 ease-in-out"
+              className="bg-slate-3 placeholder-slate-8 border-slate-6 text-slate-12 focus:ring-slate-12 mb-3 w-full appearance-none rounded-lg border px-2 py-1 text-sm outline-none transition duration-300 ease-in-out focus:ring-1"
               onChange={(e) => setTo(e.target.value)}
               defaultValue={to}
               placeholder="you@example.com"
@@ -73,12 +74,12 @@ export const Send = ({ markup }: { markup: string }) => {
             />
             <label
               htmlFor="subject"
-              className="text-slate-10 text-xs uppercase mb-2 block"
+              className="text-slate-10 mb-2 block text-xs uppercase"
             >
               Subject
             </label>
             <input
-              className="appearance-none rounded-lg px-2 py-1 mb-3 outline-none w-full bg-slate-3 border placeholder-slate-8 border-slate-6 text-slate-12 text-sm focus:ring-1 focus:ring-slate-12 transition duration-300 ease-in-out"
+              className="bg-slate-3 placeholder-slate-8 border-slate-6 text-slate-12 focus:ring-slate-12 mb-3 w-full appearance-none rounded-lg border px-2 py-1 text-sm outline-none transition duration-300 ease-in-out focus:ring-1"
               onChange={(e) => setSubject(e.target.value)}
               defaultValue={subject}
               placeholder="My Email"
@@ -92,9 +93,9 @@ export const Send = ({ markup }: { markup: string }) => {
             />
             <div className="flex items-center justify-between">
               <Text className="inline-block" size="1">
-                Powered by{' '}
+                Powered by{" "}
                 <a
-                  className="hover:text-slate-12 transition ease-in-out duration-300"
+                  className="hover:text-slate-12 transition duration-300 ease-in-out"
                   href="https://resend.com"
                   target="_blank"
                   rel="noreferrer"

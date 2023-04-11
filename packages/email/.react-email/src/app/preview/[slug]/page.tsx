@@ -1,7 +1,8 @@
-import { getEmails, CONTENT_DIR } from '../../../utils/get-emails';
-import { promises as fs } from 'fs';
-import { render } from '@react-email/render';
-import Preview from './preview';
+import { promises as fs } from "fs";
+import { render } from "@react-email/render";
+
+import { CONTENT_DIR, getEmails } from "../../../utils/get-emails";
+import Preview from "./preview";
 
 export const dynamicParams = true;
 
@@ -18,7 +19,7 @@ export async function generateStaticParams() {
 export default async function Page({ params }) {
   const { emails, filenames } = await getEmails();
   const template = filenames.filter((email) => {
-    const [fileName] = email.split('.');
+    const [fileName] = email.split(".");
     return params.slug === fileName;
   });
 
@@ -27,7 +28,7 @@ export default async function Page({ params }) {
   const plainText = render(<Email />, { plainText: true });
   const path = `${process.cwd()}/${CONTENT_DIR}/${template[0]}`;
   const reactMarkup = await fs.readFile(path, {
-    encoding: 'utf-8',
+    encoding: "utf-8",
   });
 
   return (
