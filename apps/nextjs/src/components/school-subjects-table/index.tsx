@@ -15,6 +15,7 @@ import { api } from "~/utils/api";
 import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
 import { Pagination } from "../pagination";
 import { NewSubjectModal } from "~/components/new-subject-request-modal";
+import { EditSubjectModal } from "~/components/edit-subject-modal";
 
 interface SchoolSubjectsTableProps {
   schoolId: string;
@@ -94,10 +95,10 @@ export function SchoolSubjectsTable({
         open={open}
         onClickCancel={() => setOpen(false)}
       />
-      <EditSchoolYearModal
+      <EditSubjectModal
         schoolId={schoolId}
         open={openEditModal}
-        selectedSchoolYear={selectedSubjected as unknown as Subject}
+        selectedSubject={selectedSubjected as unknown as Subject}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedSubjected(undefined);
