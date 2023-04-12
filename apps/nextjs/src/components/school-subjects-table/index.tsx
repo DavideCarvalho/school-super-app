@@ -9,86 +9,86 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import { type SchoolYear } from "@acme/db";
+import { type Subject } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
-import { NewSchoolYearModal } from "~/components/new-schoolyear-request-modal";
 import { Pagination } from "../pagination";
+import { NewSubjectModal } from "~/components/new-subject-request-modal";
 
-interface SchoolSchoolYearsTableProps {
+interface SchoolSubjectsTableProps {
   schoolId: string;
-  schoolYears: SchoolYear[];
-  schoolYearsCount: number;
+  subjects: Subject[];
+  subjectsCount: number;
   page: number;
   limit: number;
 }
 
-export function SchoolSchoolYearsTable({
+export function SchoolSubjectsTable({
   schoolId,
-  schoolYears,
-  schoolYearsCount,
+  subjects,
+  subjectsCount,
   page,
   limit,
-}: SchoolSchoolYearsTableProps) {
+}: SchoolSubjectsTableProps) {
   const router = useRouter();
   const { user } = useUser();
 
-  const [selectedSchoolYear, setSelectedSchoolYear] = useState<
-    SchoolYear | undefined
+  const [selectedSubjected, setSelectedSubjected] = useState<
+    Subject | undefined
   >();
 
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const schoolYearsQuery = api.schoolYear.allBySchoolId.useQuery(
+  const subjectsQuery = api.subject.allBySchoolId.useQuery(
     { schoolId, limit, page },
-    { initialData: schoolYears, keepPreviousData: true },
+    { initialData: subjects, keepPreviousData: true },
   );
 
-  const schoolYearsCountQuery = api.schoolYear.countAllBySchoolId.useQuery(
+  const subjectsCountQuery = api.subject.countAllBySchoolId.useQuery(
     { schoolId },
-    { initialData: schoolYearsCount, keepPreviousData: true },
+    { initialData: subjectsCount, keepPreviousData: true },
   );
 
   const deleteSchoolYearMutation = api.schoolYear.deleteById.useMutation();
 
   async function onCreated() {
     setOpen(false);
-    await schoolYearsQuery.refetch();
-    await schoolYearsCountQuery.refetch();
+    await subjectsQuery.refetch();
+    await subjectsCountQuery.refetch();
   }
 
-  function deleteSchoolYear(schoolYearId: string) {
-    toast.loading("Removendo ano...");
+  function deleteSchoolYear(subjectId: string) {
+    toast.loading("Removendo matéria...");
     deleteSchoolYearMutation.mutate(
-      { schoolYearId: subjectId },
+      { subjectId },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Ano removido com sucesso!");
-          await schoolYearsQuery.refetch();
-          await schoolYearsCountQuery.refetch();
+          toast.success("Matéria removida com sucesso!");
+          await subjectsQuery.refetch();
+          await subjectsCountQuery.refetch();
         },
       },
     );
   }
 
-  function onSelectSchoolYearToEdit(schoolYear: SchoolYear) {
+  function onSelectSchoolYearToEdit(subject: Subject) {
     setOpenEditModal(true);
-    setSelectedSchoolYear(schoolYear);
+    setSelectedSubjected(subject);
   }
 
   async function onEdited() {
     setOpenEditModal(false);
-    setSelectedSchoolYear(undefined);
-    await schoolYearsQuery.refetch();
-    await schoolYearsCountQuery.refetch();
+    setSelectedSubjected(undefined);
+    await subjectsQuery.refetch();
+    await subjectsCountQuery.refetch();
   }
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewSchoolYearModal
+      <NewSubjectModal
         schoolId={schoolId}
         onCreated={async () => await onCreated()}
         open={open}
@@ -97,10 +97,10 @@ export function SchoolSchoolYearsTable({
       <EditSchoolYearModal
         schoolId={schoolId}
         open={openEditModal}
-        selectedSchoolYear={selectedSchoolYear as unknown as SchoolYear}
+        selectedSchoolYear={selectedSubjected as unknown as Subject}
         onClickCancel={() => {
           setOpenEditModal(false);
-          setSelectedSchoolYear(undefined);
+          setSelectedSubjected(undefined);
         }}
         onEdited={() => onEdited()}
       />
@@ -108,7 +108,7 @@ export function SchoolSchoolYearsTable({
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Anos</p>
+              <p className="text-lg font-bold text-gray-900">Matérias</p>
             </div>
             {user?.publicMetadata?.role === "SCHOOL_WORKER" && (
               <button
@@ -130,20 +130,20 @@ export function SchoolSchoolYearsTable({
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-                Novo ano
+                Nova matéria
               </button>
             )}
           </div>
         </div>
 
         <div className="divide-y divide-gray-200">
-          {schoolYearsQuery.data?.map((worker) => {
+          {subjectsQuery.data?.map((worker) => {
             return (
               <TableRow
                 key={worker.id}
-                schoolYear={worker}
+                subject={worker}
                 onDelete={deleteSchoolYear}
-                onEdit={(schoolYear) => onSelectSchoolYearToEdit(schoolYear)}
+                onEdit={(subject) => onSelectSchoolYearToEdit(subject)}
               />
             );
           })}
@@ -151,7 +151,7 @@ export function SchoolSchoolYearsTable({
 
         <div>
           <Pagination
-            totalCount={schoolYearsCountQuery.data}
+            totalCount={subjectsCountQuery.data}
             currentPage={page}
             itemsPerPage={limit}
             onChangePage={(page) => {
@@ -167,12 +167,12 @@ export function SchoolSchoolYearsTable({
 }
 
 interface TableRowProps {
-  schoolYear: SchoolYear;
-  onDelete: (schoolYearId: string) => void;
-  onEdit: (schoolYear: SchoolYear) => void;
+  subject: Subject;
+  onDelete: (subjectId: string) => void;
+  onEdit: (subject: Subject) => void;
 }
 
-function TableRow({ schoolYear, onDelete, onEdit }: TableRowProps) {
+function TableRow({ subject, onDelete, onEdit }: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { x, y, strategy, refs, context } = useFloating({
@@ -222,13 +222,13 @@ function TableRow({ schoolYear, onDelete, onEdit }: TableRowProps) {
               <ul className="flex flex-col">
                 <li
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                  onClick={() => onDelete(schoolYear.id)}
+                  onClick={() => onDelete(subject.id)}
                 >
                   Excluir
                 </li>
                 <li
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                  onClick={() => onEdit(schoolYear)}
+                  onClick={() => onEdit(subject)}
                 >
                   Editar
                 </li>
@@ -239,7 +239,7 @@ function TableRow({ schoolYear, onDelete, onEdit }: TableRowProps) {
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">{schoolYear.name}</p>
+        <p className="text-sm font-bold text-gray-900">{subject.name}</p>
       </div>
     </div>
   );

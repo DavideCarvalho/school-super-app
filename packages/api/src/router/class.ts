@@ -22,7 +22,7 @@ export const classRouter = createTRPCRouter({
     .input(
       z.object({
         schoolId: z.string(),
-        schoolYearId: z.string(),
+        subjectId: z.string(),
         subjectId: z.string(),
         name: z.string(),
         teacherId: z.string().optional(),

@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
-export const schoolYearRouter = createTRPCRouter({
+export const subjectRouter = createTRPCRouter({
   allBySchoolId: publicProcedure
     .input(
       z.object({
@@ -13,7 +13,7 @@ export const schoolYearRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx, input }) => {
-      return ctx.prisma.schoolYear.findMany({
+      return ctx.prisma.subject.findMany({
         where: { schoolId: input.schoolId },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
@@ -26,7 +26,7 @@ export const schoolYearRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx, input }) => {
-      return ctx.prisma.schoolYear.count({
+      return ctx.prisma.subject.count({
         where: { schoolId: input.schoolId },
       });
     }),
@@ -38,7 +38,7 @@ export const schoolYearRouter = createTRPCRouter({
       }),
     )
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.schoolYear.create({
+      return ctx.prisma.subject.create({
         data: {
           name: input.name,
           slug: slugify(input.name),
@@ -49,18 +49,17 @@ export const schoolYearRouter = createTRPCRouter({
   deleteById: publicProcedure
     .input(z.object({ subjectId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const schoolYear = await ctx.prisma.schoolYear.findUnique({
-        where: { id: input.schoolYearId },
+      const subject = await ctx.prisma.subject.findUnique({
+        where: { id: input.subjectId },
         include: {
           School: true,
-          Classes: { include: { TeacherHasClass: true } },
         },
       });
-      if (!schoolYear) {
-        throw new Error(`Ano com id ${input.schoolYearId} não encontrado`);
+      if (!subject) {
+        throw new Error(`Matéria com id ${input.subjectId} não encontrado`);
       }
-      await ctx.prisma.schoolYear.delete({
-        where: { id: input.schoolYearId },
+      await ctx.prisma.subject.delete({
+        where: { id: input.subjectId },
       });
     }),
   updateById: publicProcedure
@@ -72,14 +71,14 @@ export const schoolYearRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const schoolYear = await ctx.prisma.schoolYear.findUnique({
-        where: { id: input.schoolYearId },
+      const subject = await ctx.prisma.subject.findUnique({
+        where: { id: input.subjectId },
       });
-      if (!schoolYear) {
-        throw new Error(`Ano com id ${input.schoolYearId} não encontrado`);
+      if (!subject) {
+        throw new Error(`Matéria com id ${input.subjectId} não encontrado`);
       }
-      return ctx.prisma.schoolYear.update({
-        where: { id: input.schoolYearId },
+      return ctx.prisma.subject.update({
+        where: { id: input.subjectId },
         data: {
           name: input.name,
           slug: slugify(input.name),

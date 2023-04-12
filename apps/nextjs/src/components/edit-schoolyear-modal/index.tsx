@@ -59,7 +59,7 @@ export function EditSchoolYearModal({
     editSchoolYearMutation.mutate(
       {
         schoolId,
-        schoolYearId: selectedSchoolYear.id,
+        subjectId: selectedSchoolYear.id,
         name: data.name,
       },
       {

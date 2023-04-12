@@ -12,19 +12,19 @@ const schema = z
   })
   .required();
 
-interface NewSchoolYearModalProps {
+interface NewSubjectModalProps {
   schoolId: string;
   open: boolean;
   onCreated: () => void | Promise<void>;
   onClickCancel: () => void;
 }
 
-export function NewSchoolYearModal({
+export function NewSubjectModal({
   schoolId,
   open,
   onCreated,
   onClickCancel,
-}: NewSchoolYearModalProps) {
+}: NewSubjectModalProps) {
   const {
     register,
     handleSubmit,
@@ -38,10 +38,10 @@ export function NewSchoolYearModal({
   });
 
   const createSchoolYearMutation =
-    api.schoolYear.createBySchoolId.useMutation();
+    api.subject.createBySchoolId.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    toast.loading("Criando ano...");
+    toast.loading("Criando matéria...");
     createSchoolYearMutation.mutate(
       {
         name: data.name,
@@ -50,7 +50,7 @@ export function NewSchoolYearModal({
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Ano criado com sucesso!");
+          toast.success("Matéria criada com sucesso!");
           const onCreatedReturn = onCreated();
           const isPromise = onCreatedReturn instanceof Promise;
           if (isPromise) await onCreatedReturn;
