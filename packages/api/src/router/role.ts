@@ -1,4 +1,3 @@
-import clerk from "@clerk/clerk-sdk-node";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";

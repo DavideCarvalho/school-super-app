@@ -12,7 +12,6 @@ export const teacherRouter = createTRPCRouter({
           Class: true,
           Subject: true,
           Teacher: true,
-          File: true,
         },
       });
     }),

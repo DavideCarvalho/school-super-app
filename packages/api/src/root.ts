@@ -6,7 +6,6 @@ import { emailRouter } from "./router/email";
 import { fileRouter } from "./router/file";
 import { roleRouter } from "./router/role";
 import { schoolRouter } from "./router/school";
-import { schoolYearRouter } from "./router/schoolYear";
 import { subjectRouter } from "./router/subjects";
 import { teacherRouter } from "./router/teacher";
 import { userRouter } from "./router/user";
@@ -20,7 +19,6 @@ export const appRouter = createTRPCRouter({
   email: emailRouter,
   user: userRouter,
   role: roleRouter,
-  schoolYear: schoolYearRouter,
   class: classRouter,
   subject: subjectRouter,
 });

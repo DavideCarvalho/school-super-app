@@ -37,8 +37,7 @@ export function NewSubjectModal({
     },
   });
 
-  const createSchoolYearMutation =
-    api.subject.createBySchoolId.useMutation();
+  const createSchoolYearMutation = api.subject.createBySchoolId.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     toast.loading("Criando matéria...");

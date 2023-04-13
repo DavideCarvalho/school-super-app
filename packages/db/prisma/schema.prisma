@@ -12,12 +12,12 @@ datasource db {
 }
 
 model School {
-  id          String       @id @default(cuid())
-  name        String
-  slug        String
-  Users       User[]
-  SchoolYears SchoolYear[]
-  Subjects    Subject[]
+  id       String    @id @default(cuid())
+  name     String
+  slug     String
+  Users    User[]
+  Subjects Subject[]
+  Class    Class[]
 }
 
 model User {
@@ -43,12 +43,12 @@ model Teacher {
   id                String            @id
   TeacherHasClasses TeacherHasClass[]
   User              User              @relation(fields: [id], references: [id])
+  File              File[]
 
   @@index([id])
 }
 
 model TeacherHasClass {
-  id        String   @id @default(cuid())
   teacherId String
   classId   String
   subjectId String
@@ -58,7 +58,6 @@ model TeacherHasClass {
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
-  File    File[]
 
   @@unique([teacherId, classId, subjectId])
   @@index([teacherId])
@@ -75,25 +74,28 @@ model Subject {
   updatedAt       DateTime          @updatedAt
   TeacherHasClass TeacherHasClass[]
   School          School            @relation(fields: [schoolId], references: [id])
+  File            File[]
 
   @@index([schoolId])
 }
 
 model File {
-  id                String   @id @default(cuid())
-  name              String
-  path              String
-  teacherHasClassId String
-  status            String
-  frontAndBack      Boolean  @default(false)
-  quantity          Int      @default(1)
-  dueDate           DateTime
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id           String   @id @default(cuid())
+  teacherId    String
+  classId      String
+  subjectId    String
+  name         String
+  path         String
+  status       String
+  frontAndBack Boolean  @default(false)
+  quantity     Int      @default(1)
+  dueDate      DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  TeacherHasClass TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
-
-  @@index([teacherHasClassId])
+  Teacher Teacher @relation(fields: [teacherId], references: [id])
+  Class   Class   @relation(fields: [classId], references: [id])
+  Subject Subject @relation(fields: [subjectId], references: [id])
 }
 
 model Role {
@@ -102,7 +104,7 @@ model Role {
   Users User[]
 }
 
-model SchoolYear {
+model Class {
   id        String   @id @default(cuid())
   name      String
   slug      String
@@ -110,22 +112,7 @@ model SchoolYear {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  School  School  @relation(fields: [schoolId], references: [id])
-  Classes Class[]
-
-  @@index([schoolId])
-}
-
-model Class {
-  id           String   @id @default(cuid())
-  name         String
-  slug         String
-  schoolYearId String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  SchoolYear      SchoolYear        @relation(fields: [schoolYearId], references: [id])
   TeacherHasClass TeacherHasClass[]
-
-  @@index([schoolYearId])
+  School          School            @relation(fields: [schoolId], references: [id])
+  File            File[]
 }

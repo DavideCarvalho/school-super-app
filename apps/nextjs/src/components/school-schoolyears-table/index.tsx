@@ -9,81 +9,79 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import { type SchoolYear } from "@acme/db";
+import { type Class } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
 import { NewSchoolYearModal } from "~/components/new-schoolyear-request-modal";
 import { Pagination } from "../pagination";
 
-interface SchoolSchoolYearsTableProps {
+interface SchoolClassesTableProps {
   schoolId: string;
-  schoolYears: SchoolYear[];
-  schoolYearsCount: number;
+  classes: Class[];
+  classesCount: number;
   page: number;
   limit: number;
 }
 
-export function SchoolSchoolYearsTable({
+export function SchoolClassesTable({
   schoolId,
-  schoolYears,
-  schoolYearsCount,
+  classes,
+  classesCount,
   page,
   limit,
-}: SchoolSchoolYearsTableProps) {
+}: SchoolClassesTableProps) {
   const router = useRouter();
   const { user } = useUser();
 
-  const [selectedSchoolYear, setSelectedSchoolYear] = useState<
-    SchoolYear | undefined
-  >();
+  const [selectedClass, setSelectedClass] = useState<Class>();
 
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
 
-  const schoolYearsQuery = api.schoolYear.allBySchoolId.useQuery(
+  const classesQuery = api.class.allBySchoolId.useQuery(
     { schoolId, limit, page },
-    { initialData: schoolYears, keepPreviousData: true },
+    { initialData: classes, keepPreviousData: true },
   );
 
-  const schoolYearsCountQuery = api.schoolYear.countAllBySchoolId.useQuery(
+  const classesCountQuery = api.class.countAllBySchoolId.useQuery(
     { schoolId },
-    { initialData: schoolYearsCount, keepPreviousData: true },
+    { initialData: classesCount, keepPreviousData: true },
   );
 
-  const deleteSchoolYearMutation = api.schoolYear.deleteById.useMutation();
+  const deleteSchoolClassMutation = api.class.deleteById.useMutation();
 
   async function onCreated() {
     setOpen(false);
-    await schoolYearsQuery.refetch();
-    await schoolYearsCountQuery.refetch();
+    await classesQuery.refetch();
+    await classesCountQuery.refetch();
   }
 
-  function deleteSchoolYear(schoolYearId: string) {
-    toast.loading("Removendo ano...");
-    deleteSchoolYearMutation.mutate(
-      { schoolYearId: subjectId },
+  function deleteClass(classId: string) {
+    toast.loading("Removendo sala...");
+    deleteSchoolClassMutation.mutate(
+      { classId, schoolId },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Ano removido com sucesso!");
-          await schoolYearsQuery.refetch();
-          await schoolYearsCountQuery.refetch();
+          toast.success("Sala removida com sucesso!");
+          await classesQuery.refetch();
+          await classesCountQuery.refetch();
         },
       },
     );
   }
 
-  function onSelectSchoolYearToEdit(schoolYear: SchoolYear) {
+  function onSelectClassToEdit(schoolClass: Class) {
     setOpenEditModal(true);
-    setSelectedSchoolYear(schoolYear);
+    setSelectedClass(schoolClass);
   }
 
   async function onEdited() {
     setOpenEditModal(false);
-    setSelectedSchoolYear(undefined);
-    await schoolYearsQuery.refetch();
-    await schoolYearsCountQuery.refetch();
+    setSelectedClass(undefined);
+    await classesQuery.refetch();
+    await classesCountQuery.refetch();
   }
 
   return (
@@ -97,10 +95,10 @@ export function SchoolSchoolYearsTable({
       <EditSchoolYearModal
         schoolId={schoolId}
         open={openEditModal}
-        selectedSchoolYear={selectedSchoolYear as unknown as SchoolYear}
+        selectedSchoolYear={selectedClass as Class}
         onClickCancel={() => {
           setOpenEditModal(false);
-          setSelectedSchoolYear(undefined);
+          setSelectedClass(undefined);
         }}
         onEdited={() => onEdited()}
       />
@@ -137,13 +135,13 @@ export function SchoolSchoolYearsTable({
         </div>
 
         <div className="divide-y divide-gray-200">
-          {schoolYearsQuery.data?.map((worker) => {
+          {classesQuery.data?.map((worker) => {
             return (
               <TableRow
                 key={worker.id}
                 schoolYear={worker}
-                onDelete={deleteSchoolYear}
-                onEdit={(schoolYear) => onSelectSchoolYearToEdit(schoolYear)}
+                onDelete={deleteClass}
+                onEdit={(schoolYear) => onSelectClassToEdit(schoolYear)}
               />
             );
           })}
@@ -151,7 +149,7 @@ export function SchoolSchoolYearsTable({
 
         <div>
           <Pagination
-            totalCount={schoolYearsCountQuery.data}
+            totalCount={classesCountQuery.data}
             currentPage={page}
             itemsPerPage={limit}
             onChangePage={(page) => {
@@ -167,9 +165,9 @@ export function SchoolSchoolYearsTable({
 }
 
 interface TableRowProps {
-  schoolYear: SchoolYear;
-  onDelete: (schoolYearId: string) => void;
-  onEdit: (schoolYear: SchoolYear) => void;
+  schoolYear: Class;
+  onDelete: (classId: string) => void;
+  onEdit: (schoolClass: Class) => void;
 }
 
 function TableRow({ schoolYear, onDelete, onEdit }: TableRowProps) {

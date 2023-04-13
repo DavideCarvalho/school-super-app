@@ -12,11 +12,8 @@ import { toast } from "react-hot-toast";
 import {
   type Class,
   type File,
-  type School,
-  type SchoolYear,
   type Subject,
   type Teacher,
-  type TeacherHasClass,
   type User,
 } from "@acme/db";
 
@@ -28,17 +25,9 @@ import { Pagination } from "../pagination";
 interface SchoolFilesTableProps {
   schoolId: string;
   files?: (File & {
-    TeacherHasClass: TeacherHasClass & {
-      Teacher: Teacher & {
-        User: User;
-      };
-      Class: Class & {
-        SchoolYear: SchoolYear & {
-          School: School;
-        };
-      };
-      Subject: Subject;
-    };
+    Teacher: Teacher & { User: User };
+    Subject: Subject;
+    Class: Class;
   })[];
   filesCount: number;
   page: number;
@@ -292,10 +281,9 @@ export function SchoolFilesTable({
                 key={file.id}
                 status={status}
                 file={file}
-                schoolClass={file.TeacherHasClass.Class}
-                schoolYear={file.TeacherHasClass.Class.SchoolYear}
-                teacher={file.TeacherHasClass.Teacher}
-                subject={file.TeacherHasClass.Subject}
+                schoolClass={file.Class as Class}
+                teacher={file.Teacher as Teacher & { User: User }}
+                subject={file.Subject as Subject}
               />
             );
           })}
@@ -357,7 +345,6 @@ interface TableRowProps {
   status: TableRowStatusEnum;
   file: File;
   schoolClass: Class;
-  schoolYear: SchoolYear;
   teacher: Teacher & { User: User };
   subject: Subject;
   onApprove: (fileId: string) => void;
@@ -372,7 +359,6 @@ function TableRow({
   status,
   file,
   schoolClass,
-  schoolYear,
   teacher,
   subject,
   onApprove,
@@ -550,9 +536,6 @@ function TableRow({
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="mt-1 text-sm font-medium text-gray-900">
-          Para o {schoolYear.name} ano
-        </p>
         <p className="mt-1 text-sm font-medium text-gray-500">
           Na turma {schoolClass.name}
         </p>

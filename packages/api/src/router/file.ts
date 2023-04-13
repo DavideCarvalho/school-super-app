@@ -25,8 +25,16 @@ export const fileRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.file.count({
         where: {
-          TeacherHasClass: {
-            Class: { SchoolYear: { schoolId: input.schoolId } },
+          Teacher: {
+            User: {
+              schoolId: input.schoolId,
+            },
+          },
+          Subject: {
+            schoolId: input.schoolId,
+          },
+          Class: {
+            schoolId: input.schoolId,
           },
           status: input.status,
         },
@@ -57,31 +65,27 @@ export const fileRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.file.findMany({
         where: {
-          TeacherHasClass: {
-            Class: { SchoolYear: { schoolId: input.schoolId } },
+          Teacher: {
+            User: {
+              schoolId: input.schoolId,
+            },
+          },
+          Subject: {
+            schoolId: input.schoolId,
+          },
+          Class: {
+            schoolId: input.schoolId,
           },
           status: input.status,
         },
         include: {
-          TeacherHasClass: {
+          Class: true,
+          Teacher: {
             include: {
-              Class: {
-                include: {
-                  SchoolYear: {
-                    include: {
-                      School: true,
-                    },
-                  },
-                },
-              },
-              Teacher: {
-                include: {
-                  User: true,
-                },
-              },
-              Subject: true,
+              User: true,
             },
           },
+          Subject: true,
         },
         orderBy: { dueDate: input.orderBy?.dueDate },
         take: input.limit,
@@ -119,15 +123,9 @@ export const fileRouter = createTRPCRouter({
       await ctx.prisma.file.create({
         data: {
           name: input.name,
-          TeacherHasClass: {
-            connect: {
-              teacherId_classId_subjectId: {
-                teacherId: input.teacherId,
-                classId: input.classId,
-                subjectId: input.subjectId,
-              },
-            },
-          },
+          teacherId: input.teacherId,
+          classId: input.classId,
+          subjectId: input.subjectId,
           quantity: input.quantity,
           path: input.fileUrl,
           dueDate: input.dueDate,

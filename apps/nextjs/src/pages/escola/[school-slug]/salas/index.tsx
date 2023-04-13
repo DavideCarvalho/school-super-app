@@ -7,22 +7,22 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolSchoolYearsTable } from "~/components/school-schoolyears-table";
+import { SchoolClassesTable } from "~/components/school-schoolyears-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function YearsPage({
   school,
-  schoolYears,
-  schoolYearsCount,
+  classes,
+  classesCount,
   page,
   limit,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolSchoolYearsTable
+      <SchoolClassesTable
         schoolId={school.id}
-        schoolYears={schoolYears}
-        schoolYearsCount={schoolYearsCount}
+        classes={classes}
+        classesCount={classesCount}
         page={page}
         limit={limit}
       />
@@ -54,13 +54,13 @@ export const getServerSideProps = withServerSideAuth(
       };
     }
 
-    const [schoolYears, schoolYearsCount] = await Promise.all([
-      trpCaller.schoolYear.allBySchoolId({
+    const [classes, classesCount] = await Promise.all([
+      trpCaller.class.allBySchoolId({
         schoolId: school.id,
         page,
         limit,
       }),
-      trpCaller.user.countAllBySchoolId({
+      trpCaller.class.countAllBySchoolId({
         schoolId: school.id,
       }),
     ]);
@@ -68,8 +68,8 @@ export const getServerSideProps = withServerSideAuth(
     return {
       props: {
         school,
-        schoolYears,
-        schoolYearsCount,
+        classes,
+        classesCount,
         page,
         limit,
       },

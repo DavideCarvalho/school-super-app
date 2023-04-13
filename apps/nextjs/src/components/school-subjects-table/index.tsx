@@ -12,10 +12,9 @@ import { toast } from "react-hot-toast";
 import { type Subject } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
-import { Pagination } from "../pagination";
-import { NewSubjectModal } from "~/components/new-subject-request-modal";
 import { EditSubjectModal } from "~/components/edit-subject-modal";
+import { NewSubjectModal } from "~/components/new-subject-request-modal";
+import { Pagination } from "../pagination";
 
 interface SchoolSubjectsTableProps {
   schoolId: string;

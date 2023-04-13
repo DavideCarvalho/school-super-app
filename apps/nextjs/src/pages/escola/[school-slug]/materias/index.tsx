@@ -7,8 +7,8 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolLayout } from "~/layouts/SchoolLayout";
 import { SchoolSubjectsTable } from "~/components/school-subjects-table";
+import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function SubjectsPage({
   school,
@@ -53,7 +53,6 @@ export const getServerSideProps = withServerSideAuth(
         },
       };
     }
-
 
     const [subjects, subjectsCount] = await Promise.all([
       trpCaller.subject.allBySchoolId({
