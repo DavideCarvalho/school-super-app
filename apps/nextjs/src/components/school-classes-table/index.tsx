@@ -12,8 +12,8 @@ import { toast } from "react-hot-toast";
 import { type Class } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { EditSchoolYearModal } from "~/components/edit-schoolyear-modal";
-import { NewSchoolYearModal } from "~/components/new-schoolyear-request-modal";
+import { EditClassModal } from "src/components/edit-class-modal";
+import { NewClassModal } from "src/components/new-class-modal";
 import { Pagination } from "../pagination";
 
 interface SchoolClassesTableProps {
@@ -86,16 +86,16 @@ export function SchoolClassesTable({
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewSchoolYearModal
+      <NewClassModal
         schoolId={schoolId}
         onCreated={async () => await onCreated()}
         open={open}
         onClickCancel={() => setOpen(false)}
       />
-      <EditSchoolYearModal
+      <EditClassModal
         schoolId={schoolId}
         open={openEditModal}
-        selectedSchoolYear={selectedClass as Class}
+        selectedClass={selectedClass as Class}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedClass(undefined);
@@ -106,7 +106,7 @@ export function SchoolClassesTable({
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Anos</p>
+              <p className="text-lg font-bold text-gray-900">Turmas</p>
             </div>
             {user?.publicMetadata?.role === "SCHOOL_WORKER" && (
               <button
@@ -128,7 +128,7 @@ export function SchoolClassesTable({
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-                Novo ano
+                Nova turma
               </button>
             )}
           </div>

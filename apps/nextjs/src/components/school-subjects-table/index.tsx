@@ -51,7 +51,7 @@ export function SchoolSubjectsTable({
     { initialData: subjectsCount, keepPreviousData: true },
   );
 
-  const deleteSchoolYearMutation = api.schoolYear.deleteById.useMutation();
+  const deleteSubjectMutation = api.subject.deleteById.useMutation();
 
   async function onCreated() {
     setOpen(false);
@@ -61,7 +61,7 @@ export function SchoolSubjectsTable({
 
   function deleteSchoolYear(subjectId: string) {
     toast.loading("Removendo matéria...");
-    deleteSchoolYearMutation.mutate(
+    deleteSubjectMutation.mutate(
       { subjectId },
       {
         async onSuccess() {

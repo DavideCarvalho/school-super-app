@@ -280,7 +280,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       href={`/escola/${
                         (user?.publicMetadata as { school?: { slug: string } })
                           ?.school?.slug
-                      }/salas`}
+                      }/turmas`}
                       title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
@@ -298,7 +298,32 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                           d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                         />
                       </svg>
-                      Salas
+                      Turmas
+                    </Link>
+
+                    <Link
+                      href={`/escola/${
+                        (user?.publicMetadata as { school?: { slug: string } })
+                          ?.school?.slug
+                      }/aulas`}
+                      title="Arquivos"
+                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
+                    >
+                      <svg
+                        className="mr-4 h-5 w-5 flex-shrink-0"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                        />
+                      </svg>
+                      Aulas
                     </Link>
                   </nav>
                 </div>

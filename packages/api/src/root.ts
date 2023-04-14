@@ -10,6 +10,7 @@ import { subjectRouter } from "./router/subjects";
 import { teacherRouter } from "./router/teacher";
 import { userRouter } from "./router/user";
 import { createTRPCRouter } from "./trpc";
+import { teacherHasClassRouter } from "./router/teacherHasClass";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   role: roleRouter,
   class: classRouter,
   subject: subjectRouter,
+  teacherHasClass: teacherHasClassRouter
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });

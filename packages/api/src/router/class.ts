@@ -33,41 +33,43 @@ export const classRouter = createTRPCRouter({
         },
       });
     }),
-  create: publicProcedure
+  createBySchoolId: publicProcedure
     .input(
       z.object({
         schoolId: z.string(),
-        subjectId: z.string(),
         name: z.string(),
-        teacherId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const foundTeacher = await ctx.prisma.teacher.findUnique({
-        where: { id: input.teacherId },
-        include: { User: true },
-      });
-      if (!foundTeacher || foundTeacher.User.schoolId !== input.schoolId) {
-        throw new Error(`Professor não encontrado`);
-      }
       return ctx.prisma.class.create({
         data: {
           id: `uuid`,
           name: input.name,
           slug: "slugify(input.name)",
           schoolId: input.schoolId,
-          TeacherHasClass:
-            input.teacherId && input.subjectId
-              ? {
-                  connect: {
-                    teacherId_classId_subjectId: {
-                      classId: `uuid`,
-                      subjectId: input.subjectId,
-                      teacherId: input.teacherId,
-                    },
-                  },
-                }
-              : undefined,
+        },
+      });
+    }),
+  updateById: publicProcedure
+    .input(
+      z.object({
+        schoolId: z.string(),
+        classId: z.string(),
+        name: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const foundClass = await ctx.prisma.class.findUnique({
+        where: { id: input.classId },
+      });
+      if (!foundClass || foundClass.schoolId !== input.schoolId) {
+        throw new Error(`Turma não encontrada`);
+      }
+      return ctx.prisma.class.update({
+        where: { id: input.classId },
+        data: {
+          name: input.name,
+          slug: "slugify(input.name)",
         },
       });
     }),

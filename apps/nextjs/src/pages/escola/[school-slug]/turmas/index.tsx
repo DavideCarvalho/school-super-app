@@ -7,10 +7,10 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
-import { SchoolClassesTable } from "~/components/school-schoolyears-table";
+import { SchoolClassesTable } from "src/components/school-classes-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
-export default function YearsPage({
+export default function ClassesPage({
   school,
   classes,
   classesCount,
