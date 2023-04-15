@@ -7,20 +7,25 @@ import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
 import { trpCaller } from "@acme/api";
 
+import { SchoolTeacherHasClassTable } from "~/components/school-teacherHasClass-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
-export default function ClassesPage({}: InferGetServerSidePropsType<
-  typeof getServerSideProps
->) {
+export default function ClassesPage({
+  teacherHasClasses,
+  teacherHasClassesCount,
+  page,
+  limit,
+  school,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      {/*<SchoolClassesTable*/}
-      {/*  schoolId={school.id}*/}
-      {/*  classes={classes}*/}
-      {/*  classesCount={classesCount}*/}
-      {/*  page={page}*/}
-      {/*  limit={limit}*/}
-      {/*/>*/}
+      <SchoolTeacherHasClassTable
+        schoolId={school.id}
+        teacherHasClasses={teacherHasClasses}
+        teacherHasClassesCount={teacherHasClassesCount}
+        page={page}
+        limit={limit}
+      />
     </SchoolLayout>
   );
 }

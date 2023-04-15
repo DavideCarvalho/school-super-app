@@ -1,5 +1,5 @@
-import { z } from "zod";
 import slugify from "slugify";
+import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -16,14 +16,14 @@ export const teacherHasClassRouter = createTRPCRouter({
           Teacher: {
             User: {
               schoolId: input.schoolId,
-            }
+            },
           },
           Class: {
             schoolId: input.schoolId,
           },
           Subject: {
             schoolId: input.schoolId,
-          }
+          },
         },
       });
     }),
@@ -40,26 +40,26 @@ export const teacherHasClassRouter = createTRPCRouter({
         orderBy: {
           Class: {
             name: "asc",
-          }
+          },
         },
         where: {
           Teacher: {
             User: {
               schoolId: input.schoolId,
-            }
+            },
           },
           Class: {
             schoolId: input.schoolId,
           },
           Subject: {
             schoolId: input.schoolId,
-          }
+          },
         },
         include: {
           Teacher: {
             include: {
               User: true,
-            }
+            },
           },
           Class: true,
           Subject: true,
@@ -72,32 +72,87 @@ export const teacherHasClassRouter = createTRPCRouter({
     .input(
       z.object({
         schoolId: z.string(),
-        name: z.string(),
+        teacherId: z.string(),
+        classId: z.string(),
+        subjectId: z.string(),
       }),
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.subject.create({
+    .mutation(async ({ ctx, input }) => {
+      const teacher = await ctx.prisma.teacher.findFirst({
+        where: {
+          id: input.teacherId,
+          User: {
+            schoolId: input.schoolId,
+          },
+        },
+      });
+
+      if (!teacher) {
+        throw new Error(`Professor com id ${input.teacherId} não encontrado`);
+      }
+
+      const schoolClass = await ctx.prisma.class.findFirst({
+        where: {
+          id: input.classId,
+          schoolId: input.schoolId,
+        },
+      });
+
+      if (!schoolClass) {
+        throw new Error(`Turma com id ${input.classId} não encontrado`);
+      }
+
+      const subject = await ctx.prisma.subject.findFirst({
+        where: {
+          id: input.subjectId,
+          schoolId: input.schoolId,
+        },
+      });
+
+      if (!subject) {
+        throw new Error(`Matéria com id ${input.subjectId} não encontrado`);
+      }
+
+      return ctx.prisma.teacherHasClass.create({
         data: {
-          name: input.name,
-          slug: slugify(input.name),
-          School: { connect: { id: input.schoolId } },
+          teacherId: input.teacherId,
+          classId: input.classId,
+          subjectId: input.subjectId,
         },
       });
     }),
   deleteById: publicProcedure
-    .input(z.object({ subjectId: z.string() }))
+    .input(
+      z.object({
+        subjectId: z.string(),
+        schoolId: z.string(),
+        classId: z.string(),
+        teacherId: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const subject = await ctx.prisma.subject.findUnique({
-        where: { id: input.subjectId },
-        include: {
-          School: true,
+      const teacherHasClass = await ctx.prisma.teacherHasClass.findUnique({
+        where: {
+          teacherId_classId_subjectId: {
+            teacherId: input.teacherId,
+            classId: input.classId,
+            subjectId: input.subjectId,
+          },
         },
       });
-      if (!subject) {
-        throw new Error(`Matéria com id ${input.subjectId} não encontrado`);
+      if (!teacherHasClass) {
+        throw new Error(
+          `Aula com subjectId ${input.subjectId} e classId ${input.classId} e teacherId ${input.teacherId} não encontrado`,
+        );
       }
-      await ctx.prisma.subject.delete({
-        where: { id: input.subjectId },
+      await ctx.prisma.teacherHasClass.delete({
+        where: {
+          teacherId_classId_subjectId: {
+            teacherId: input.teacherId,
+            classId: input.classId,
+            subjectId: input.subjectId,
+          },
+        },
       });
     }),
   updateById: publicProcedure
