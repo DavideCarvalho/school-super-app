@@ -20,13 +20,15 @@ import {
 import { api } from "~/utils/api";
 import { Pagination } from "../pagination";
 
+type TeacherHasClassWithTeacherSubjectAndClass = TeacherHasClass & {
+  Teacher: Teacher & { User: User };
+  Subject: Subject;
+  Class: Class;
+};
+
 interface SchoolTeacherHasClassTableProps {
   schoolId: string;
-  teacherHasClasses: (TeacherHasClass & {
-    Teacher: Teacher & { User: User };
-    Subject: Subject;
-    Class: Class;
-  })[];
+  teacherHasClasses: TeacherHasClassWithTeacherSubjectAndClass[];
   teacherHasClassesCount: number;
   page: number;
   limit: number;
@@ -122,7 +124,7 @@ export function SchoolTeacherHasClassTable({
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Turmas</p>
+              <p className="text-lg font-bold text-gray-900">Aulas</p>
             </div>
             {(user?.publicMetadata?.role === "SCHOOL_WORKER" ||
               user?.publicMetadata?.role === "COORDINATOR") && (
@@ -145,7 +147,7 @@ export function SchoolTeacherHasClassTable({
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-                Nova turma
+                Nova aula
               </button>
             )}
           </div>
@@ -184,9 +186,11 @@ export function SchoolTeacherHasClassTable({
 }
 
 interface TableRowProps {
-  teacherHasClass: TeacherHasClass;
-  onDelete: (teacherHasClass: TeacherHasClass) => void;
-  onEdit: (schoolClass: TeacherHasClass) => void;
+  teacherHasClass: TeacherHasClassWithTeacherSubjectAndClass;
+  onDelete: (
+    teacherHasClass: TeacherHasClassWithTeacherSubjectAndClass,
+  ) => void;
+  onEdit: (schoolClass: TeacherHasClassWithTeacherSubjectAndClass) => void;
 }
 
 function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
@@ -203,7 +207,7 @@ function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
   const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
-    <div className="grid grid-cols-2 py-4 lg:grid-cols-2 lg:gap-0">
+    <div className="grid grid-cols-4 py-4 lg:grid-cols-4 lg:gap-0">
       <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
         <button
           type="button"
@@ -257,8 +261,23 @@ function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
 
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-sm font-bold text-gray-900">
-          {teacherHasClass.subjectId}
+          {teacherHasClass.Teacher.User.name}
         </p>
+        <p className="mt-1 text-sm font-medium text-gray-500">Professor</p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-sm font-bold text-gray-900">
+          {teacherHasClass.Class.name}
+        </p>
+        <p className="mt-1 text-sm font-medium text-gray-500">Turma</p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-sm font-bold text-gray-900">
+          {teacherHasClass.Subject.name}
+        </p>
+        <p className="mt-1 text-sm font-medium text-gray-500">Matéria</p>
       </div>
     </div>
   );
