@@ -68,19 +68,35 @@ export const userRouter = createTRPCRouter({
       });
       if (!role) throw new Error("Role not found");
       const [firstName, ...rest] = input.name.split(" ");
-      await clerk.users.createUser({
-        firstName: firstName,
-        lastName: rest.join(" "),
-        emailAddress: [input.email],
-      });
-      return await ctx.prisma.user.create({
-        data: {
-          schoolId: input.schoolId,
-          name: input.name,
-          slug: slugify(input.name),
-          email: input.email,
-          roleId: role.id,
-        },
+      try {
+      } catch (e) {}
+      return await ctx.prisma.$transaction(async (tx) => {
+        const worker = await tx.user.create({
+          data: {
+            schoolId: input.schoolId,
+            name: input.name,
+            slug: slugify(input.name),
+            email: input.email,
+            roleId: role.id,
+          },
+        });
+        if (role.name === "TEACHER") {
+          await tx.teacher.create({
+            data: {
+              User: {
+                connect: {
+                  id: worker.id,
+                },
+              },
+            },
+          });
+        }
+        await clerk.users.createUser({
+          firstName: firstName,
+          lastName: rest.join(" "),
+          emailAddress: [input.email],
+        });
+        return worker;
       });
     }),
   editWorker: publicProcedure

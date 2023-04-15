@@ -88,7 +88,7 @@ export function SchoolTeachersTable({
     <div className="bg-white py-12 sm:py-16 lg:py-20">
       <NewTeacherRequestModal
         schoolId={schoolId}
-        onCreated={async () => await onCreated()}
+        onCreated={() => onCreated()}
         open={open}
         onClickCancel={() => setOpen(false)}
       />

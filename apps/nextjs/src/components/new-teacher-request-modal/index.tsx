@@ -21,7 +21,7 @@ const schema = z
 interface NewWorkerRequestModalProps {
   schoolId: string;
   open: boolean;
-  onCreated: () => void | Promise<void>;
+  onCreated: () => void;
   onClickCancel: () => void;
 }
 
@@ -56,12 +56,10 @@ export function NewTeacherRequestModal({
         roleName: "TEACHER",
       },
       {
-        async onSuccess() {
+        onSuccess() {
           toast.dismiss();
           toast.success("Professor criado com sucesso!");
-          const onCreatedReturn = onCreated();
-          const isPromise = onCreatedReturn instanceof Promise;
-          if (isPromise) await onCreatedReturn;
+          onCreated();
           reset();
         },
       },
@@ -70,7 +68,7 @@ export function NewTeacherRequestModal({
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Novo funcionário"}>
-      <form className="mt-6" onSubmit={void handleSubmit(onSubmit)}>
+      <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-bold text-gray-900">Nome</label>
@@ -119,7 +117,7 @@ export function NewTeacherRequestModal({
             type="submit"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
           >
-            Solicitar
+            Criar
           </button>
         </div>
       </form>

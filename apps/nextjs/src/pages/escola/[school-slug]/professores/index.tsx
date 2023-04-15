@@ -48,7 +48,7 @@ export const getServerSideProps = withServerSideAuth(
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/funcionarios?page=${page}&limit=${limit}&role=${role}`,
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/funcionarios?page=${page}&limit=${limit}`,
           permanent: false,
         },
       };
