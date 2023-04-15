@@ -18,6 +18,8 @@ import {
 } from "@acme/db";
 
 import { api } from "~/utils/api";
+import { dayjsClient } from "~/utils/dayjs.client";
+import { Dropdown } from "~/components/dropdown";
 import { Pagination } from "../pagination";
 
 type TeacherHasClassWithTeacherSubjectAndClass = TeacherHasClass & {
@@ -124,7 +126,7 @@ export function SchoolTeacherHasClassTable({
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
             <div>
-              <p className="text-lg font-bold text-gray-900">Aulas</p>
+              <p className="text-2xl font-bold text-gray-900">Aulas</p>
             </div>
             {(user?.publicMetadata?.role === "SCHOOL_WORKER" ||
               user?.publicMetadata?.role === "COORDINATOR") && (
@@ -150,6 +152,45 @@ export function SchoolTeacherHasClassTable({
                 Nova aula
               </button>
             )}
+          </div>
+        </div>
+
+        <div className="flex flex-row">
+          <div className="w-full">
+            <div className="mx-auto max-w-xs">
+              <Dropdown<string>
+                onChange={(v) => console.log(v)}
+                onSelectItem={(selectedItem) => console.log(selectedItem)}
+                dropdownLabel="Professor"
+                inputPlaceholder="Nome do professor"
+                dropdownPlaceholder="Selecione um professor"
+                dropdownItems={[]}
+              />
+            </div>
+          </div>
+          <div className="w-full">
+            <div className="mx-auto max-w-xs">
+              <Dropdown<string>
+                onChange={(v) => console.log(v)}
+                onSelectItem={(selectedItem) => console.log(selectedItem)}
+                dropdownLabel="Turma"
+                inputPlaceholder="Nome do professor"
+                dropdownPlaceholder="Selecione uma turma"
+                dropdownItems={[]}
+              />
+            </div>
+          </div>
+          <div className="w-full">
+            <div className="mx-auto max-w-xs">
+              <Dropdown<string>
+                onChange={(v) => console.log(v)}
+                onSelectItem={(selectedItem) => console.log(selectedItem)}
+                dropdownLabel="Matéria"
+                inputPlaceholder="Nome do professor"
+                dropdownPlaceholder="Selecione uma matéria"
+                dropdownItems={[]}
+              />
+            </div>
           </div>
         </div>
 
@@ -206,8 +247,10 @@ function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
 
   const { getReferenceProps } = useInteractions([click, dismiss]);
 
+  console.log(dayjsClient().isoWeekday(1).format("dddd"));
+
   return (
-    <div className="grid grid-cols-4 py-4 lg:grid-cols-4 lg:gap-0">
+    <div className="grid grid-cols-5 py-4 lg:grid-cols-5 lg:gap-0">
       <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
         <button
           type="button"
@@ -260,24 +303,33 @@ function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">
+        <p className="text-lg font-bold text-gray-900">Professor</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
           {teacherHasClass.Teacher.User.name}
         </p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Professor</p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">
+        <p className="text-lg font-bold text-gray-900">Turma</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
           {teacherHasClass.Class.name}
         </p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Turma</p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-sm font-bold text-gray-900">
+        <p className="text-lg font-bold text-gray-900">Matéria</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
           {teacherHasClass.Subject.name}
         </p>
-        <p className="mt-1 text-sm font-medium text-gray-500">Matéria</p>
+      </div>
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Dia e hora</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {dayjsClient()
+            .isoWeekday(Number(teacherHasClass.classWeekDay))
+            .format("dddd")}{" "}
+          às {teacherHasClass.classTime}
+        </p>
       </div>
     </div>
   );
