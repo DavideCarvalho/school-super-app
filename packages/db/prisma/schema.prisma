@@ -49,17 +49,21 @@ model Teacher {
 }
 
 model TeacherHasClass {
-  teacherId String
-  classId   String
-  subjectId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  teacherId    String
+  classId      String
+  subjectId    String
+  classWeekDay String
+  classTime    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
   @@unique([teacherId, classId, subjectId])
+  @@unique([teacherId, classWeekDay, classTime])
+  @@unique([classId, classWeekDay, classTime])
   @@index([teacherId])
   @@index([classId])
   @@index([subjectId])
