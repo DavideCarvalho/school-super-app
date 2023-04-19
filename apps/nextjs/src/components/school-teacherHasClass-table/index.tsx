@@ -11,6 +11,7 @@ import { toast } from "react-hot-toast";
 
 import {
   type Class,
+  type Role,
   type Subject,
   type Teacher,
   type TeacherHasClass,
@@ -31,6 +32,9 @@ type TeacherHasClassWithTeacherSubjectAndClass = TeacherHasClass & {
 interface SchoolTeacherHasClassTableProps {
   schoolId: string;
   teacherHasClasses: TeacherHasClassWithTeacherSubjectAndClass[];
+  teachers: (User & { Role: Role })[];
+  subjects: Subject[];
+  classes: Class[];
   teacherHasClassesCount: number;
   page: number;
   limit: number;
@@ -40,6 +44,9 @@ export function SchoolTeacherHasClassTable({
   schoolId,
   teacherHasClasses,
   teacherHasClassesCount,
+  teachers,
+  subjects,
+  classes,
   page,
   limit,
 }: SchoolTeacherHasClassTableProps) {
@@ -159,36 +166,55 @@ export function SchoolTeacherHasClassTable({
           <div className="w-full">
             <div className="mx-auto max-w-xs">
               <Dropdown<string>
+                cleanFilter={true}
                 onChange={(v) => console.log(v)}
                 onSelectItem={(selectedItem) => console.log(selectedItem)}
                 dropdownLabel="Professor"
                 inputPlaceholder="Nome do professor"
                 dropdownPlaceholder="Selecione um professor"
-                dropdownItems={[]}
+                dropdownItems={teachers.map((t) => ({
+                  label: t.name,
+                  value: t.id,
+                }))}
               />
             </div>
           </div>
           <div className="w-full">
             <div className="mx-auto max-w-xs">
-              <Dropdown<string>
+              <Dropdown<{ id: string; slug: string }>
+                cleanFilter={true}
                 onChange={(v) => console.log(v)}
-                onSelectItem={(selectedItem) => console.log(selectedItem)}
+                onSelectItem={(selectedItem) => {
+                  void router.replace({
+                    query: {
+                      ...router.query,
+                      class: selectedItem?.value.slug,
+                    },
+                  });
+                }}
                 dropdownLabel="Turma"
                 inputPlaceholder="Nome do professor"
                 dropdownPlaceholder="Selecione uma turma"
-                dropdownItems={[]}
+                dropdownItems={classes.map((c) => ({
+                  label: c.name,
+                  value: { id: c.id, slug: c.slug },
+                }))}
               />
             </div>
           </div>
           <div className="w-full">
             <div className="mx-auto max-w-xs">
               <Dropdown<string>
+                cleanFilter={true}
                 onChange={(v) => console.log(v)}
                 onSelectItem={(selectedItem) => console.log(selectedItem)}
                 dropdownLabel="Matéria"
                 inputPlaceholder="Nome do professor"
                 dropdownPlaceholder="Selecione uma matéria"
-                dropdownItems={[]}
+                dropdownItems={subjects.map((s) => ({
+                  label: s.name,
+                  value: s.id,
+                }))}
               />
             </div>
           </div>

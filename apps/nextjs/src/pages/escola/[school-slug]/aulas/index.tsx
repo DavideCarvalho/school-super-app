@@ -13,6 +13,9 @@ import { SchoolLayout } from "~/layouts/SchoolLayout";
 export default function ClassesPage({
   teacherHasClasses,
   teacherHasClassesCount,
+  teachers,
+  subjects,
+  classes,
   page,
   limit,
   school,
@@ -21,6 +24,9 @@ export default function ClassesPage({
     <SchoolLayout>
       <SchoolTeacherHasClassTable
         schoolId={school.id}
+        teachers={teachers}
+        subjects={subjects}
+        classes={classes}
         teacherHasClasses={teacherHasClasses}
         teacherHasClassesCount={teacherHasClassesCount}
         page={page}
@@ -54,7 +60,13 @@ export const getServerSideProps = withServerSideAuth(
       };
     }
 
-    const [teacherHasClasses, teacherHasClassesCount] = await Promise.all([
+    const [
+      teacherHasClasses,
+      teacherHasClassesCount,
+      teachers,
+      subjects,
+      classes,
+    ] = await Promise.all([
       trpCaller.teacherHasClass.allBySchoolId({
         schoolId: school.id,
         page,
@@ -63,6 +75,19 @@ export const getServerSideProps = withServerSideAuth(
       trpCaller.teacherHasClass.countAllBySchoolId({
         schoolId: school.id,
       }),
+      trpCaller.user.allBySchoolId({
+        schoolId: school.id,
+        limit: 999,
+        role: "TEACHER",
+      }),
+      trpCaller.subject.allBySchoolId({
+        schoolId: school.id,
+        limit: 999,
+      }),
+      trpCaller.class.allBySchoolId({
+        schoolId: school.id,
+        limit: 999,
+      }),
     ]);
 
     return {
@@ -70,6 +95,9 @@ export const getServerSideProps = withServerSideAuth(
         school,
         teacherHasClasses,
         teacherHasClassesCount,
+        teachers,
+        subjects,
+        classes,
         page,
         limit,
       },

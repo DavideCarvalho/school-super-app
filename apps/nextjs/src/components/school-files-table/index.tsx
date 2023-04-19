@@ -281,9 +281,9 @@ export function SchoolFilesTable({
                 key={file.id}
                 status={status}
                 file={file}
-                schoolClass={file.Class as Class}
-                teacher={file.Teacher as Teacher & { User: User }}
-                subject={file.Subject as Subject}
+                schoolClass={file.Class}
+                teacher={file.Teacher}
+                subject={file.Subject}
               />
             );
           })}
