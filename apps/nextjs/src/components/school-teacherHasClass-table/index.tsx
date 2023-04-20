@@ -44,40 +44,55 @@ export function SchoolTeacherHasClassTable({
   const [_open, setOpen] = useState(false);
   const [_openEditModal, setOpenEditModal] = useState(false);
 
-  const teacherHasClassesQuery = api.teacherHasClass.allBySchoolId.useQuery({
-    schoolId,
-    limit: router.query.limit ? Number(router.query.limit) : 5,
-    page: router.query.page ? Number(router.query.page) : 1,
-    teacherSlug: router.query.teacher as string | undefined,
-    subjectSlug: router.query.subject as string | undefined,
-    classSlug: router.query.class as string | undefined,
-    classWeekDay: router.query.weekday as string | undefined,
-  });
-
-  const teacherHasClassesCountQuery =
-    api.teacherHasClass.countAllBySchoolId.useQuery({
+  const teacherHasClassesQuery = api.teacherHasClass.allBySchoolId.useQuery(
+    {
       schoolId,
+      limit: router.query.limit ? Number(router.query.limit) : 5,
+      page: router.query.page ? Number(router.query.page) : 1,
       teacherSlug: router.query.teacher as string | undefined,
       subjectSlug: router.query.subject as string | undefined,
       classSlug: router.query.class as string | undefined,
       classWeekDay: router.query.weekday as string | undefined,
-    });
+    },
+    { keepPreviousData: true },
+  );
 
-  const subjectsQuery = api.subject.allBySchoolId.useQuery({
-    schoolId,
-    limit: 999,
-  });
+  const teacherHasClassesCountQuery =
+    api.teacherHasClass.countAllBySchoolId.useQuery(
+      {
+        schoolId,
+        teacherSlug: router.query.teacher as string | undefined,
+        subjectSlug: router.query.subject as string | undefined,
+        classSlug: router.query.class as string | undefined,
+        classWeekDay: router.query.weekday as string | undefined,
+      },
+      { keepPreviousData: true },
+    );
 
-  const classesQuery = api.class.allBySchoolId.useQuery({
-    schoolId,
-    limit: 999,
-  });
+  const subjectsQuery = api.subject.allBySchoolId.useQuery(
+    {
+      schoolId,
+      limit: 999,
+    },
+    { keepPreviousData: true },
+  );
 
-  const teachersQuery = api.user.allBySchoolId.useQuery({
-    schoolId,
-    limit: 999,
-    role: "TEACHER",
-  });
+  const classesQuery = api.class.allBySchoolId.useQuery(
+    {
+      schoolId,
+      limit: 999,
+    },
+    { keepPreviousData: true },
+  );
+
+  const teachersQuery = api.user.allBySchoolId.useQuery(
+    {
+      schoolId,
+      limit: 999,
+      role: "TEACHER",
+    },
+    { keepPreviousData: true },
+  );
 
   const deleteTeacherHasClassMutation =
     api.teacherHasClass.deleteById.useMutation();
@@ -331,19 +346,25 @@ export function SchoolTeacherHasClassTable({
         </div>
 
         <div className="divide-y divide-gray-200">
-          {teacherHasClassesQuery.isLoading && <TableRowSkeleton />}
-          {teacherHasClassesQuery.data?.map((teacherHasClass) => {
-            return (
-              <TableRow
-                key={`${teacherHasClass.classId}-${teacherHasClass.subjectId}-${teacherHasClass.teacherId}`}
-                teacherHasClass={teacherHasClass}
-                onDelete={deleteClass}
-                onEdit={(teacherHasClass) =>
-                  onSelectClassToEdit(teacherHasClass)
-                }
-              />
-            );
-          })}
+          {teacherHasClassesQuery.isFetching && (
+            <>
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+            </>
+          )}
+          {!teacherHasClassesQuery.isFetching &&
+            teacherHasClassesQuery.data?.map((teacherHasClass) => {
+              return (
+                <TableRow
+                  key={`${teacherHasClass.classId}-${teacherHasClass.subjectId}-${teacherHasClass.teacherId}`}
+                  teacherHasClass={teacherHasClass}
+                  onDelete={deleteClass}
+                  onEdit={(teacherHasClass) =>
+                    onSelectClassToEdit(teacherHasClass)
+                  }
+                />
+              );
+            })}
         </div>
 
         <div>
