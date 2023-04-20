@@ -388,9 +388,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
         <div className="flex flex-1 flex-col">
           <main>
             <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                {children}
-              </div>
+              <div className="px-4 sm:px-6 md:px-8">{children}</div>
             </div>
           </main>
         </div>
