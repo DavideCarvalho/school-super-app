@@ -162,62 +162,79 @@ export function SchoolTeacherHasClassTable({
           </div>
         </div>
 
-        <div className="flex flex-row">
-          <div className="w-full">
-            <div className="mx-auto max-w-xs">
-              <Dropdown<string>
-                cleanFilter={true}
-                onChange={(v) => console.log(v)}
-                onSelectItem={(selectedItem) => console.log(selectedItem)}
-                dropdownLabel="Professor"
-                inputPlaceholder="Nome do professor"
-                dropdownPlaceholder="Selecione um professor"
-                dropdownItems={teachers.map((t) => ({
-                  label: t.name,
-                  value: t.id,
-                }))}
-              />
-            </div>
-          </div>
-          <div className="w-full">
-            <div className="mx-auto max-w-xs">
-              <Dropdown<{ id: string; slug: string }>
-                cleanFilter={true}
-                onChange={(v) => console.log(v)}
-                onSelectItem={(selectedItem) => {
-                  void router.replace({
-                    query: {
-                      ...router.query,
-                      class: selectedItem?.value.slug,
-                    },
-                  });
-                }}
-                dropdownLabel="Turma"
-                inputPlaceholder="Nome do professor"
-                dropdownPlaceholder="Selecione uma turma"
-                dropdownItems={classes.map((c) => ({
-                  label: c.name,
-                  value: { id: c.id, slug: c.slug },
-                }))}
-              />
-            </div>
-          </div>
-          <div className="w-full">
-            <div className="mx-auto max-w-xs">
-              <Dropdown<string>
-                cleanFilter={true}
-                onChange={(v) => console.log(v)}
-                onSelectItem={(selectedItem) => console.log(selectedItem)}
-                dropdownLabel="Matéria"
-                inputPlaceholder="Nome do professor"
-                dropdownPlaceholder="Selecione uma matéria"
-                dropdownItems={subjects.map((s) => ({
-                  label: s.name,
-                  value: s.id,
-                }))}
-              />
-            </div>
-          </div>
+        <div className="grid grid-cols-4 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Dropdown<string>
+            cleanFilter={true}
+            onChange={(v) => console.log(v)}
+            onSelectItem={(selectedItem) => console.log(selectedItem)}
+            dropdownLabel="Professor"
+            inputPlaceholder="Nome do professor"
+            dropdownPlaceholder="Selecione um professor"
+            dropdownItems={teachers.map((t) => ({
+              label: t.name,
+              value: t.id,
+            }))}
+          />
+          <Dropdown<{ id: string; slug: string }>
+            cleanFilter={true}
+            onChange={(v) => console.log(v)}
+            onSelectItem={(selectedItem) => {
+              void router.replace({
+                query: {
+                  ...router.query,
+                  class: selectedItem?.value.slug,
+                },
+              });
+            }}
+            dropdownLabel="Turma"
+            inputPlaceholder="Nome da turma"
+            dropdownPlaceholder="Selecione uma turma"
+            dropdownItems={classes.map((c) => ({
+              label: c.name,
+              value: { id: c.id, slug: c.slug },
+            }))}
+          />
+          <Dropdown<{ id: string; slug: string }>
+            cleanFilter={true}
+            onChange={(v) => console.log(v)}
+            onSelectItem={(selectedItem) => {
+              void router.replace({
+                query: {
+                  ...router.query,
+                  subject: selectedItem?.value.slug,
+                },
+              });
+            }}
+            dropdownLabel="Matéria"
+            inputPlaceholder="Nome da matéria"
+            dropdownPlaceholder="Selecione uma matéria"
+            dropdownItems={subjects.map((s) => ({
+              label: s.name,
+              value: { id: s.id, slug: s.slug },
+            }))}
+          />
+          <Dropdown<number>
+            cleanFilter={true}
+            onChange={(v) => console.log(v)}
+            onSelectItem={(selectedItem) => {
+              void router.replace({
+                query: {
+                  ...router.query,
+                  classWeekDay: selectedItem?.value,
+                },
+              });
+            }}
+            dropdownLabel="Dia da semana"
+            inputPlaceholder="Segunda"
+            dropdownPlaceholder="Selecione um dia"
+            dropdownItems={[
+              { label: "Segunda", value: 1 },
+              { label: "Terça", value: 2 },
+              { label: "Quarta", value: 3 },
+              { label: "Quinta", value: 4 },
+              { label: "Sexta", value: 5 },
+            ]}
+          />
         </div>
 
         <div className="divide-y divide-gray-200">
