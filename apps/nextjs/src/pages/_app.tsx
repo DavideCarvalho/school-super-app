@@ -3,6 +3,7 @@ import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
+import {Collapse} from 'react-collapse';
 // import { AxiomReporter } from 'next-axiom';
 import { Toaster } from "react-hot-toast";
 

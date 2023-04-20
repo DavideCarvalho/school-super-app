@@ -9,3 +9,7 @@ html,
     width: 100%;
     overflow-x: hidden;
 }
+
+.ReactCollapse--collapse {
+    transition: height 500ms;
+}

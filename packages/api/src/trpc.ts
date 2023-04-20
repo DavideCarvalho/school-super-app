@@ -15,6 +15,7 @@ import { ZodError } from "zod";
 
 import { prisma } from "@acme/db";
 
+
 /**
  * 1. CONTEXT
  *
@@ -57,15 +58,6 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
 
   return createInnerTRPCContext({
     session,
-  });
-};
-
-export const createTRPCCaller = (
-  router: ReturnType<typeof createTRPCRouter>,
-) => {
-  return router.createCaller({
-    prisma,
-    session: null,
   });
 };
 

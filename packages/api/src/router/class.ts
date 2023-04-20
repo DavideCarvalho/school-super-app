@@ -1,4 +1,5 @@
 import { z } from "zod";
+import slugify from "slugify";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -45,7 +46,7 @@ export const classRouter = createTRPCRouter({
         data: {
           id: `uuid`,
           name: input.name,
-          slug: "slugify(input.name)",
+          slug: slugify(input.name),
           schoolId: input.schoolId,
         },
       });
@@ -69,7 +70,7 @@ export const classRouter = createTRPCRouter({
         where: { id: input.classId },
         data: {
           name: input.name,
-          slug: "slugify(input.name)",
+          slug: slugify(input.name),
         },
       });
     }),

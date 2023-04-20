@@ -8,6 +8,8 @@ export const teacherHasClassRouter = createTRPCRouter({
     .input(
       z.object({
         schoolId: z.string(),
+        page: z.number().optional().default(1),
+        limit: z.number().optional().default(5),
       }),
     )
     .query(({ ctx, input }) => {
@@ -33,6 +35,10 @@ export const teacherHasClassRouter = createTRPCRouter({
         schoolId: z.string(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(5),
+        teacherSlug: z.string().optional(),
+        subjectSlug: z.string().optional(),
+        classSlug: z.string().optional(),
+        classWeekDay: z.string().optional(),
       }),
     )
     .query(({ ctx, input }) => {
@@ -46,14 +52,18 @@ export const teacherHasClassRouter = createTRPCRouter({
           Teacher: {
             User: {
               schoolId: input.schoolId,
+              slug: input.teacherSlug,
             },
           },
           Class: {
             schoolId: input.schoolId,
+            slug: input.classSlug,
           },
           Subject: {
             schoolId: input.schoolId,
+            slug: input.subjectSlug,
           },
+          classWeekDay: input.classWeekDay,
         },
         include: {
           Teacher: {
@@ -75,6 +85,8 @@ export const teacherHasClassRouter = createTRPCRouter({
         teacherId: z.string(),
         classId: z.string(),
         subjectId: z.string(),
+        classWeekDay: z.string(),
+        classTime: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -118,6 +130,8 @@ export const teacherHasClassRouter = createTRPCRouter({
           teacherId: input.teacherId,
           classId: input.classId,
           subjectId: input.subjectId,
+          classWeekDay: input.classWeekDay,
+          classTime: input.classTime,
         },
       });
     }),

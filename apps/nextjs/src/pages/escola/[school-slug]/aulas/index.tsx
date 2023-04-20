@@ -5,33 +5,17 @@ import {
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
-import { trpCaller } from "@acme/api";
+import { serverSideHelpers, trpCaller } from "@acme/api";
 
 import { SchoolTeacherHasClassTable } from "~/components/school-teacherHasClass-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function ClassesPage({
-  teacherHasClasses,
-  teacherHasClassesCount,
-  teachers,
-  subjects,
-  classes,
-  page,
-  limit,
   school,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolTeacherHasClassTable
-        schoolId={school.id}
-        teachers={teachers}
-        subjects={subjects}
-        classes={classes}
-        teacherHasClasses={teacherHasClasses}
-        teacherHasClassesCount={teacherHasClassesCount}
-        page={page}
-        limit={limit}
-      />
+      <SchoolTeacherHasClassTable schoolId={school.id} />
     </SchoolLayout>
   );
 }
@@ -60,31 +44,40 @@ export const getServerSideProps = withServerSideAuth(
       };
     }
 
-    const [
-      teacherHasClasses,
-      teacherHasClassesCount,
-      teachers,
-      subjects,
-      classes,
-    ] = await Promise.all([
-      trpCaller.teacherHasClass.allBySchoolId({
+    let teacherSlug = query?.["teacher"] as string | undefined;
+    teacherSlug = teacherSlug ? teacherSlug : undefined;
+    let subjectSlug = query?.["subject"] as string | undefined;
+    subjectSlug = subjectSlug ? subjectSlug : undefined;
+    let classSlug = query?.["class"] as string | undefined;
+    classSlug = classSlug ? classSlug : undefined;
+    let classWeekDay = query?.["weekday"] as string | undefined;
+    classWeekDay = classWeekDay ? classWeekDay : undefined;
+
+    await Promise.all([
+      serverSideHelpers.teacherHasClass.allBySchoolId.prefetch({
+        schoolId: school.id,
+        page,
+        limit,
+        teacherSlug,
+        subjectSlug,
+        classSlug,
+        classWeekDay,
+      }),
+      serverSideHelpers.teacherHasClass.countAllBySchoolId.prefetch({
         schoolId: school.id,
         page,
         limit,
       }),
-      trpCaller.teacherHasClass.countAllBySchoolId({
-        schoolId: school.id,
-      }),
-      trpCaller.user.allBySchoolId({
+      serverSideHelpers.user.allBySchoolId.prefetch({
         schoolId: school.id,
         limit: 999,
         role: "TEACHER",
       }),
-      trpCaller.subject.allBySchoolId({
+      serverSideHelpers.subject.allBySchoolId.prefetch({
         schoolId: school.id,
         limit: 999,
       }),
-      trpCaller.class.allBySchoolId({
+      serverSideHelpers.class.allBySchoolId.prefetch({
         schoolId: school.id,
         limit: 999,
       }),
@@ -93,13 +86,7 @@ export const getServerSideProps = withServerSideAuth(
     return {
       props: {
         school,
-        teacherHasClasses,
-        teacherHasClassesCount,
-        teachers,
-        subjects,
-        classes,
-        page,
-        limit,
+        trpcState: serverSideHelpers.dehydrate(),
       },
     };
   },

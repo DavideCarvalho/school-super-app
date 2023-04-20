@@ -160,8 +160,6 @@ export function Dropdown<Item>({
 
                   <input
                     type="text"
-                    name=""
-                    id=""
                     placeholder={inputPlaceholder}
                     value={search}
                     onChange={(e) => onChange && onChange(e.target.value)}
@@ -176,6 +174,7 @@ export function Dropdown<Item>({
                     onClick={() => {
                       onSelectItem(null);
                       setSelectedItem(undefined);
+                      setOpen(false);
                     }}
                   >
                     <li className="rounded-md p-2">Tirar filtro</li>
@@ -184,7 +183,9 @@ export function Dropdown<Item>({
                 {searchedValues.map(({ label, value, icon }) => (
                   <div
                     key={label}
-                    className="flex w-full cursor-pointer hover:bg-gray-100"
+                    className={`flex w-full cursor-pointer hover:bg-gray-100 ${
+                      value === selectedItem?.value && "bg-gray-200"
+                    }`}
                     onClick={() => {
                       onSelectItem({
                         label,

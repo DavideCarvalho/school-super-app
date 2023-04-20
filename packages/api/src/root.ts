@@ -1,3 +1,6 @@
+import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import superjson from "superjson";
+
 import { prisma } from "@acme/db";
 
 import { authRouter } from "./router/auth";
@@ -8,9 +11,9 @@ import { roleRouter } from "./router/role";
 import { schoolRouter } from "./router/school";
 import { subjectRouter } from "./router/subjects";
 import { teacherRouter } from "./router/teacher";
-import { userRouter } from "./router/user";
-import { createTRPCRouter } from "./trpc";
 import { teacherHasClassRouter } from "./router/teacherHasClass";
+import { userRouter } from "./router/user";
+import { createTRPCContext, createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -22,10 +25,19 @@ export const appRouter = createTRPCRouter({
   role: roleRouter,
   class: classRouter,
   subject: subjectRouter,
-  teacherHasClass: teacherHasClassRouter
+  teacherHasClass: teacherHasClassRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });
+
+export const serverSideHelpers = createProxySSGHelpers({
+  router: appRouter,
+  ctx: {
+    session: null,
+    prisma,
+  },
+  transformer: superjson,
+});
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

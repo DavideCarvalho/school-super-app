@@ -11,7 +11,6 @@ import { toast } from "react-hot-toast";
 
 import {
   type Class,
-  type Role,
   type Subject,
   type Teacher,
   type TeacherHasClass,
@@ -31,24 +30,10 @@ type TeacherHasClassWithTeacherSubjectAndClass = TeacherHasClass & {
 
 interface SchoolTeacherHasClassTableProps {
   schoolId: string;
-  teacherHasClasses: TeacherHasClassWithTeacherSubjectAndClass[];
-  teachers: (User & { Role: Role })[];
-  subjects: Subject[];
-  classes: Class[];
-  teacherHasClassesCount: number;
-  page: number;
-  limit: number;
 }
 
 export function SchoolTeacherHasClassTable({
   schoolId,
-  teacherHasClasses,
-  teacherHasClassesCount,
-  teachers,
-  subjects,
-  classes,
-  page,
-  limit,
 }: SchoolTeacherHasClassTableProps) {
   const router = useRouter();
   const { user } = useUser();
@@ -59,19 +44,56 @@ export function SchoolTeacherHasClassTable({
   const [_open, setOpen] = useState(false);
   const [_openEditModal, setOpenEditModal] = useState(false);
 
-  const teacherHasClassesQuery = api.teacherHasClass.allBySchoolId.useQuery(
-    { schoolId, limit, page },
-    { initialData: teacherHasClasses, keepPreviousData: true },
-  );
+  const teacherHasClassesQuery = api.teacherHasClass.allBySchoolId.useQuery({
+    schoolId,
+    limit: router.query.limit ? Number(router.query.limit) : 5,
+    page: router.query.page ? Number(router.query.page) : 1,
+    teacherSlug: router.query.teacher as string | undefined,
+    subjectSlug: router.query.subject as string | undefined,
+    classSlug: router.query.class as string | undefined,
+    classWeekDay: router.query.weekday as string | undefined,
+  });
 
   const teacherHasClassesCountQuery =
-    api.teacherHasClass.countAllBySchoolId.useQuery(
-      { schoolId },
-      { initialData: teacherHasClassesCount, keepPreviousData: true },
-    );
+    api.teacherHasClass.countAllBySchoolId.useQuery({ schoolId });
+
+  const subjectsQuery = api.subject.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
+
+  const classesQuery = api.class.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
+
+  const teachersQuery = api.user.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+    role: "TEACHER",
+  });
 
   const deleteTeacherHasClassMutation =
     api.teacherHasClass.deleteById.useMutation();
+
+  const selectedTeacher =
+    router.query.teacher != null && teachersQuery.isSuccess
+      ? teachersQuery.data.find(
+          (teacher) => teacher.slug === router.query.teacher,
+        )
+      : undefined;
+
+  const selectedSubject =
+    router.query.subject && subjectsQuery.isSuccess
+      ? subjectsQuery.data.find(
+          (subject) => subject.slug === router.query.subject,
+        )
+      : undefined;
+
+  const selectedClass =
+    router.query.class && classesQuery.isSuccess
+      ? classesQuery.data.find((class_) => class_.slug === router.query.class)
+      : undefined;
 
   /*  async function onCreated() {
     setOpen(false);
@@ -139,7 +161,9 @@ export function SchoolTeacherHasClassTable({
               user?.publicMetadata?.role === "COORDINATOR") && (
               <button
                 type="button"
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                  setOpen(true);
+                }}
                 className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
               >
                 <svg
@@ -165,79 +189,149 @@ export function SchoolTeacherHasClassTable({
         <div className="grid grid-cols-4 gap-4 px-4 sm:grid-cols-2 lg:grid-cols-4">
           <Dropdown<string>
             cleanFilter={true}
+            initialSelectedItem={
+              selectedTeacher != null
+                ? {
+                    label: selectedTeacher.name,
+                    value: selectedTeacher.slug,
+                  }
+                : undefined
+            }
             onChange={(v) => console.log(v)}
-            onSelectItem={(selectedItem) => console.log(selectedItem)}
+            onSelectItem={(selectedItem) => {
+              const { teacher: _teacher, ...rest } = router.query;
+              void router.replace(
+                {
+                  query: {
+                    ...rest,
+                    ...(selectedItem?.value && {
+                      teacher: selectedItem.value,
+                    }),
+                  },
+                },
+                undefined,
+                { shallow: true },
+              );
+            }}
             dropdownLabel="Professor"
             inputPlaceholder="Nome do professor"
             dropdownPlaceholder="Selecione um professor"
-            dropdownItems={teachers.map((t) => ({
-              label: t.name,
-              value: t.id,
-            }))}
+            dropdownItems={
+              teachersQuery?.data?.map((t) => ({
+                label: t.name,
+                value: t.slug,
+              })) || []
+            }
           />
-          <Dropdown<{ id: string; slug: string }>
+          <Dropdown<string>
             cleanFilter={true}
+            initialSelectedItem={
+              selectedClass && {
+                label: selectedClass.name,
+                value: selectedClass.slug,
+              }
+            }
             onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
-              void router.replace({
-                query: {
-                  ...router.query,
-                  class: selectedItem?.value.slug,
+              const { class: _class, ...rest } = router.query;
+              void router.replace(
+                {
+                  query: {
+                    ...rest,
+                    ...(selectedItem?.value && {
+                      class: selectedItem.value,
+                    }),
+                  },
                 },
-              });
+                undefined,
+                { shallow: true },
+              );
             }}
             dropdownLabel="Turma"
             inputPlaceholder="Nome da turma"
             dropdownPlaceholder="Selecione uma turma"
-            dropdownItems={classes.map((c) => ({
-              label: c.name,
-              value: { id: c.id, slug: c.slug },
-            }))}
+            dropdownItems={
+              classesQuery?.data?.map((c) => ({
+                label: c.name,
+                value: c.slug,
+              })) || []
+            }
           />
-          <Dropdown<{ id: string; slug: string }>
+          <Dropdown<string>
             cleanFilter={true}
+            initialSelectedItem={
+              selectedSubject && {
+                label: selectedSubject.name,
+                value: selectedSubject.slug,
+              }
+            }
             onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
-              void router.replace({
-                query: {
-                  ...router.query,
-                  subject: selectedItem?.value.slug,
+              const { subject: _subject, ...rest } = router.query;
+              void router.replace(
+                {
+                  query: {
+                    ...rest,
+                    ...(selectedItem?.value && {
+                      subject: selectedItem.value,
+                    }),
+                  },
                 },
-              });
+                undefined,
+                { shallow: true },
+              );
             }}
             dropdownLabel="Matéria"
             inputPlaceholder="Nome da matéria"
             dropdownPlaceholder="Selecione uma matéria"
-            dropdownItems={subjects.map((s) => ({
-              label: s.name,
-              value: { id: s.id, slug: s.slug },
-            }))}
+            dropdownItems={
+              subjectsQuery?.data?.map((s) => ({
+                label: s.name,
+                value: s.slug,
+              })) || []
+            }
           />
-          <Dropdown<number>
+          <Dropdown<string>
             cleanFilter={true}
+            initialSelectedItem={
+              router.query.weekday != null
+                ? {
+                    label: dayjsClient()
+                      .isoWeekday(Number(router.query.weekday))
+                      .format("dddd"),
+                    value: router.query.weekday as string,
+                  }
+                : undefined
+            }
             onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
-              void router.replace({
-                query: {
-                  ...router.query,
-                  classWeekDay: selectedItem?.value,
+              const { weekday: _weekday, ...rest } = router.query;
+              void router.replace(
+                {
+                  query: {
+                    ...rest,
+                    ...(selectedItem?.value && { weekday: selectedItem.value }),
+                  },
                 },
-              });
+                undefined,
+                { shallow: true },
+              );
             }}
             dropdownLabel="Dia da semana"
             inputPlaceholder="Segunda"
             dropdownPlaceholder="Selecione um dia"
             dropdownItems={[
-              { label: "Segunda", value: 1 },
-              { label: "Terça", value: 2 },
-              { label: "Quarta", value: 3 },
-              { label: "Quinta", value: 4 },
-              { label: "Sexta", value: 5 },
+              { label: "Segunda", value: "1" },
+              { label: "Terça", value: "2" },
+              { label: "Quarta", value: "3" },
+              { label: "Quinta", value: "4" },
+              { label: "Sexta", value: "5" },
             ]}
           />
         </div>
 
         <div className="divide-y divide-gray-200">
+          {teacherHasClassesQuery.isLoading && <TableRowSkeleton />}
           {teacherHasClassesQuery.data?.map((teacherHasClass) => {
             return (
               <TableRow
@@ -254,13 +348,17 @@ export function SchoolTeacherHasClassTable({
 
         <div>
           <Pagination
-            totalCount={teacherHasClassesCountQuery.data}
-            currentPage={page}
-            itemsPerPage={limit}
+            totalCount={teacherHasClassesCountQuery?.data || 0}
+            currentPage={router.query.page ? Number(router.query.page) : 1}
+            itemsPerPage={router.query.limit ? Number(router.query.limit) : 5}
             onChangePage={(page) => {
-              void router.replace({
-                query: { ...router.query, page },
-              });
+              void router.replace(
+                {
+                  query: { ...router.query, page },
+                },
+                undefined,
+                { shallow: true },
+              );
             }}
           />
         </div>
@@ -289,8 +387,6 @@ function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
   const dismiss = useDismiss(context);
 
   const { getReferenceProps } = useInteractions([click, dismiss]);
-
-  console.log(dayjsClient().isoWeekday(1).format("dddd"));
 
   return (
     <div className="grid grid-cols-5 py-4 lg:grid-cols-5 lg:gap-0">
@@ -373,6 +469,61 @@ function TableRow({ teacherHasClass, onDelete, onEdit }: TableRowProps) {
             .format("dddd")}{" "}
           às {teacherHasClass.classTime}
         </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <div className="grid grid-cols-5 py-4 lg:grid-cols-5 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Professor</p>
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Turma</p>
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Matéria</p>
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Dia e hora</p>
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
       </div>
     </div>
   );
