@@ -55,7 +55,13 @@ export function SchoolTeacherHasClassTable({
   });
 
   const teacherHasClassesCountQuery =
-    api.teacherHasClass.countAllBySchoolId.useQuery({ schoolId });
+    api.teacherHasClass.countAllBySchoolId.useQuery({
+      schoolId,
+      teacherSlug: router.query.teacher as string | undefined,
+      subjectSlug: router.query.subject as string | undefined,
+      classSlug: router.query.class as string | undefined,
+      classWeekDay: router.query.weekday as string | undefined,
+    });
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery({
     schoolId,
@@ -101,24 +107,18 @@ export function SchoolTeacherHasClassTable({
     await teacherHasClassesCountQuery.refetch();
   }*/
 
-  function deleteClass(teacherHasClass: TeacherHasClass) {
+  async function deleteClass(teacherHasClass: TeacherHasClass) {
     toast.loading("Removendo aula...");
-    deleteTeacherHasClassMutation.mutate(
-      {
-        subjectId: teacherHasClass.subjectId,
-        teacherId: teacherHasClass.teacherId,
-        classId: teacherHasClass.classId,
-        schoolId,
-      },
-      {
-        async onSuccess() {
-          toast.dismiss();
-          toast.success("Aula removida com sucesso!");
-          await teacherHasClassesQuery.refetch();
-          await teacherHasClassesCountQuery.refetch();
-        },
-      },
-    );
+    await deleteTeacherHasClassMutation.mutateAsync({
+      subjectId: teacherHasClass.subjectId,
+      teacherId: teacherHasClass.teacherId,
+      classId: teacherHasClass.classId,
+      schoolId,
+    });
+    toast.dismiss();
+    toast.success("Aula removida com sucesso!");
+    await teacherHasClassesQuery.refetch();
+    await teacherHasClassesCountQuery.refetch();
   }
 
   function onSelectClassToEdit(teacherHasClass: TeacherHasClass) {
