@@ -56,7 +56,7 @@ jobs:
         run: pnpm turbo build lint type-check
         env:
           SKIP_ENV_VALIDATION: true
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_c3R1bm5pbmctcm91Z2h5LTk0LmNsZXJrLmFjY291bnRzLmRldiQ
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
       - name: Check workspaces
         run: pnpm manypkg check
