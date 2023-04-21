@@ -57,7 +57,7 @@ importers:
       react-native-screens: ~3.20.0
       superjson: 1.9.1
       tailwindcss: ^3.3.1
-      typescript: ^4.9.5
+      typescript: 5.0.4
     dependencies:
       '@shopify/flash-list': 1.4.0_guwohi4nlpi5pltiuinnykzlhi
       '@tanstack/react-query': 4.29.3_bblof3d6od7kdqr2urb3dykbey
@@ -89,7 +89,7 @@ importers:
       eslint-config-acme: link:../../packages/config/eslint
       postcss: 8.4.23
       tailwindcss: 3.3.1_postcss@8.4.23
-      typescript: 4.9.5
+      typescript: 5.0.4
 
   apps/nextjs:
     specifiers:
@@ -12249,12 +12249,6 @@ packages:
       for-each: 0.3.3
       is-typed-array: 1.1.10
     dev: false
-
-  /typescript/4.9.5:
-    resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
-    engines: {node: '>=4.2.0'}
-    hasBin: true
-    dev: true
 
   /typescript/5.0.4:
     resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
