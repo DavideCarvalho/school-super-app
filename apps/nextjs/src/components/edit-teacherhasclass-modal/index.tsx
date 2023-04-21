@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
+
+import { type TeacherHasClass } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "~/components/dropdown";
@@ -19,19 +21,31 @@ const schema = z
   })
   .required();
 
-interface NewTeacherHasClassModalProps {
+interface EditTeacherHasClassModalProps {
   schoolId: string;
+  teacherHasClass: TeacherHasClass;
   open: boolean;
-  onCreated: () => void;
+  onEdited: () => void;
   onClickCancel: () => void;
 }
 
-export function NewTeacherHasClassModal({
+const weekdaysDictionary: Record<string, string> = {
+  "0": "Domingo",
+  "1": "Segunda-feira",
+  "2": "Terça-feira",
+  "3": "Quarta-feira",
+  "4": "Quinta-feira",
+  "5": "Sexta-feira",
+  "6": "Sábado",
+};
+
+export function EditTeacherHasClassModal({
   schoolId,
   open,
-  onCreated,
+  onEdited,
   onClickCancel,
-}: NewTeacherHasClassModalProps) {
+  teacherHasClass,
+}: EditTeacherHasClassModalProps) {
   const {
     handleSubmit,
     reset,
@@ -39,9 +53,31 @@ export function NewTeacherHasClassModal({
     formState: { errors },
     setError,
     clearErrors,
+    getValues,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      teacherId: teacherHasClass?.teacherId,
+      subjectId: teacherHasClass?.subjectId,
+      classId: teacherHasClass?.classId,
+      weekday: teacherHasClass?.classWeekDay,
+      hour: teacherHasClass?.classTime.split(":")[0],
+      minutes: teacherHasClass?.classTime.split(":")[1],
+    },
   });
+
+  useEffect(() => {
+    if (!teacherHasClass) {
+      reset();
+      return;
+    }
+    setValue("teacherId", teacherHasClass.teacherId);
+    setValue("subjectId", teacherHasClass.subjectId);
+    setValue("classId", teacherHasClass.classId);
+    setValue("weekday", teacherHasClass.classWeekDay);
+    setValue("hour", teacherHasClass.classTime.split(":")[0] as string);
+    setValue("minutes", teacherHasClass.classTime.split(":")[1] as string);
+  }, [teacherHasClass]);
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery(
     {
@@ -68,19 +104,30 @@ export function NewTeacherHasClassModal({
     { keepPreviousData: true },
   );
 
-  const createTeacherHasClassMutation =
-    api.teacherHasClass.createBySchoolId.useMutation();
+  const editTeacherHasClassMutation = api.teacherHasClass.update.useMutation();
 
   const [teachersDropdownSearch, setTeachersDropdownSearch] = useState("");
   const [subjectsDropdownSearch, setSubjectsDropdownSearch] = useState("");
   const [classesDropdownSearch, setClassesDropdownSearch] = useState("");
 
-  const hours = [...Array(24).keys()];
-  const minutes = [...Array(60).keys()];
+  const hoursArray = [...Array(24).keys()];
+  const minutesArray = [...Array(60).keys()];
+
+  const selectedTeacher = teachersQuery?.data?.find(
+    (teacher) => teacher.id === teacherHasClass?.teacherId,
+  );
+
+  const selectedSubject = subjectsQuery.data?.find(
+    (subject) => subject.id === teacherHasClass?.subjectId,
+  );
+
+  const selectedClass = classesQuery.data?.find(
+    (classItem) => classItem.id === teacherHasClass?.classId,
+  );
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    toast.loading("Criando aula...");
-    await createTeacherHasClassMutation.mutateAsync({
+    toast.loading("Alterando aula...");
+    await editTeacherHasClassMutation.mutateAsync({
       schoolId: schoolId,
       teacherId: data.teacherId,
       classId: data.classId,
@@ -89,8 +136,8 @@ export function NewTeacherHasClassModal({
       classTime: `${data.hour}:${data.minutes}`,
     });
     toast.dismiss();
-    toast.success("Aula criada com sucesso!");
-    onCreated();
+    toast.success("Aula alterada com sucesso!");
+    onEdited();
     reset();
   };
 
@@ -101,7 +148,7 @@ export function NewTeacherHasClassModal({
         reset();
         onClickCancel();
       }}
-      title={"Nova aula"}
+      title={"Editando aula"}
     >
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
@@ -114,6 +161,15 @@ export function NewTeacherHasClassModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
+                disabled={true}
+                initialSelectedItem={
+                  selectedTeacher
+                    ? {
+                        value: selectedTeacher.id,
+                        label: selectedTeacher.name,
+                      }
+                    : undefined
+                }
                 cleanFilter={false}
                 onChange={setTeachersDropdownSearch}
                 search={teachersDropdownSearch}
@@ -150,6 +206,15 @@ export function NewTeacherHasClassModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
+                disabled={true}
+                initialSelectedItem={
+                  selectedSubject
+                    ? {
+                        value: selectedSubject.id,
+                        label: selectedSubject.name,
+                      }
+                    : undefined
+                }
                 cleanFilter={false}
                 onChange={setSubjectsDropdownSearch}
                 search={subjectsDropdownSearch}
@@ -186,6 +251,15 @@ export function NewTeacherHasClassModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
+                disabled={true}
+                initialSelectedItem={
+                  selectedClass
+                    ? {
+                        value: selectedClass.id,
+                        label: selectedClass.name,
+                      }
+                    : undefined
+                }
                 cleanFilter={false}
                 onChange={setClassesDropdownSearch}
                 search={classesDropdownSearch}
@@ -222,15 +296,20 @@ export function NewTeacherHasClassModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
-                dropdownItems={[
-                  { value: "0", label: "Domingo" },
-                  { value: "1", label: "Segunda-feira" },
-                  { value: "2", label: "Terça-feira" },
-                  { value: "3", label: "Quarta-feira" },
-                  { value: "4", label: "Quinta-feira" },
-                  { value: "5", label: "Sexta-feira" },
-                  { value: "6", label: "Sábado" },
-                ]}
+                initialSelectedItem={{
+                  label: teacherHasClass?.classWeekDay
+                    ? (weekdaysDictionary[
+                        teacherHasClass.classWeekDay
+                      ] as string)
+                    : "",
+                  value: teacherHasClass?.classWeekDay,
+                }}
+                dropdownItems={Object.keys(weekdaysDictionary).map(
+                  (weekdayKey) => ({
+                    value: weekdayKey,
+                    label: weekdaysDictionary[weekdayKey] as string,
+                  }),
+                )}
                 onSelectItem={(selectedItem) => {
                   if (selectedItem == null)
                     return setError("weekday", { type: "required" });
@@ -256,7 +335,20 @@ export function NewTeacherHasClassModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
-                dropdownItems={hours.map((hour) => ({
+                initialSelectedItem={hoursArray
+                  .map((hour) => ({
+                    value: `${
+                      hour < 10 ? `0${hour.toString()}` : hour.toString()
+                    }`,
+                    label: `${
+                      hour < 10 ? `0${hour.toString()}` : hour.toString()
+                    }`,
+                  }))
+                  .find(
+                    (_hour) =>
+                      _hour.value === teacherHasClass?.classTime.split(":")[0],
+                  )}
+                dropdownItems={hoursArray.map((hour) => ({
                   value: `${
                     hour < 10 ? `0${hour.toString()}` : hour.toString()
                   }`,
@@ -286,7 +378,20 @@ export function NewTeacherHasClassModal({
             </label>
             <div className="mt-2">
               <Dropdown<string>
-                dropdownItems={minutes.map((minute) => ({
+                initialSelectedItem={minutesArray
+                  .map((minute) => ({
+                    value: `${
+                      minute < 10 ? `0${minute.toString()}` : minute.toString()
+                    }`,
+                    label: `${
+                      minute < 10 ? `0${minute.toString()}` : minute.toString()
+                    }`,
+                  }))
+                  .find(
+                    (minute) =>
+                      minute.value === teacherHasClass?.classTime.split(":")[1],
+                  )}
+                dropdownItems={minutesArray.map((minute) => ({
                   value: `${
                     minute < 10 ? `0${minute.toString()}` : minute.toString()
                   }`,
@@ -322,7 +427,7 @@ export function NewTeacherHasClassModal({
             type="submit"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
           >
-            Criar
+            Editar
           </button>
         </div>
       </form>

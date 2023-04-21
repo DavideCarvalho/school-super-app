@@ -20,6 +20,7 @@ import {
 import { api } from "~/utils/api";
 import { dayjsClient } from "~/utils/dayjs.client";
 import { Dropdown } from "~/components/dropdown";
+import { EditTeacherHasClassModal } from "~/components/edit-teacherhasclass-modal";
 import { NewTeacherHasClassModal } from "~/components/new-teacherhasclass-modal";
 import { Pagination } from "../pagination";
 
@@ -39,11 +40,11 @@ export function SchoolTeacherHasClassTable({
   const router = useRouter();
   const { user } = useUser();
 
-  const [_selectedTeacherHasClass, setSelectedTeacherHasClass] =
+  const [selectedTeacherHasClass, setSelectedTeacherHasClass] =
     useState<TeacherHasClass>();
 
   const [openCreateModal, setOpenCreateModal] = useState(false);
-  const [_openEditModal, setOpenEditModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const teacherHasClassesQuery = api.teacherHasClass.allBySchoolId.useQuery(
     {
@@ -142,12 +143,12 @@ export function SchoolTeacherHasClassTable({
     setSelectedTeacherHasClass(teacherHasClass);
   }
 
-  /*  async function onEdited() {
+  async function onEdited() {
     setOpenEditModal(false);
     setSelectedTeacherHasClass(undefined);
     await teacherHasClassesQuery.refetch();
     await teacherHasClassesCountQuery.refetch();
-  }*/
+  }
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
@@ -157,16 +158,16 @@ export function SchoolTeacherHasClassTable({
         open={openCreateModal}
         onClickCancel={() => setOpenCreateModal(false)}
       />
-      {/*      <EditClassModal
+      <EditTeacherHasClassModal
         schoolId={schoolId}
         open={openEditModal}
-        selectedClass={selectedTeacherHasClass as TeacherHasClass}
+        teacherHasClass={selectedTeacherHasClass as TeacherHasClass}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedTeacherHasClass(undefined);
         }}
         onEdited={() => onEdited()}
-      />*/}
+      />
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">

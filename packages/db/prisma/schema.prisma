@@ -35,8 +35,7 @@ model User {
   Role    Role      @relation(fields: [roleId], references: [id])
   Teacher Teacher[]
 
-  @@index([schoolId])
-  @@index([roleId])
+  @@index([schoolId, roleId])
 }
 
 model Teacher {
@@ -64,9 +63,7 @@ model TeacherHasClass {
   @@unique([teacherId, classId, subjectId])
   @@unique([teacherId, classWeekDay, classTime])
   @@unique([classId, classWeekDay, classTime])
-  @@index([teacherId])
-  @@index([classId])
-  @@index([subjectId])
+  @@index([teacherId, classId, subjectId])
 }
 
 model Subject {

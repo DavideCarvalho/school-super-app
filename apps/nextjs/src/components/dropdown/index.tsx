@@ -29,6 +29,7 @@ interface DropdownProps<Item> {
   dropdownItems: DropdownItem<Item>[];
   error?: boolean;
   cleanFilter?: boolean;
+  disabled?: boolean;
 }
 
 export function Dropdown<Item>({
@@ -43,6 +44,7 @@ export function Dropdown<Item>({
   dropdownItems,
   dropdownLabel,
   error,
+  disabled,
 }: DropdownProps<Item>) {
   const [open, setOpen] = useState(false);
   const [searchedValues, setSearchedValues] = useState(dropdownItems);
@@ -62,7 +64,7 @@ export function Dropdown<Item>({
   const { x, y, strategy, refs, context } = useFloating({
     open,
     placement: "bottom-end",
-    onOpenChange: setOpen,
+    onOpenChange: disabled ? () => void {} : setOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
       size({
@@ -98,9 +100,11 @@ export function Dropdown<Item>({
         {...getReferenceProps()}
       >
         <div
-          className={`block w-full cursor-pointer rounded-lg border ${
+          className={`block w-full rounded-lg border ${
             error ? "border-red-400" : "border-grey-300"
-          } py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm`}
+          } py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
+            disabled ? `bg-gray-200` : "cursor-pointer"
+          }`}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center justify-start space-x-2">

@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -175,12 +174,15 @@ export const teacherHasClassRouter = createTRPCRouter({
         },
       });
     }),
-  updateById: publicProcedure
+  update: publicProcedure
     .input(
       z.object({
         schoolId: z.string(),
+        teacherId: z.string(),
+        classId: z.string(),
         subjectId: z.string(),
-        name: z.string(),
+        classWeekDay: z.string().optional(),
+        classTime: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -190,11 +192,17 @@ export const teacherHasClassRouter = createTRPCRouter({
       if (!subject) {
         throw new Error(`Matéria com id ${input.subjectId} não encontrado`);
       }
-      return ctx.prisma.subject.update({
-        where: { id: input.subjectId },
+      return ctx.prisma.teacherHasClass.update({
+        where: {
+          teacherId_classId_subjectId: {
+            teacherId: input.teacherId,
+            classId: input.classId,
+            subjectId: input.subjectId,
+          },
+        },
         data: {
-          name: input.name,
-          slug: slugify(input.name),
+          classWeekDay: input.classWeekDay,
+          classTime: input.classTime,
         },
       });
     }),
