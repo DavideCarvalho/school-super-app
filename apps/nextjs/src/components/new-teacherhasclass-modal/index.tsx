@@ -10,11 +10,10 @@ import { Modal } from "../modal";
 
 const schema = z
   .object({
-    classId: z.string({ required_error: "Qual classe?" }),
+    classId: z.string({ required_error: "Qual turma?" }),
     teacherId: z.string({ required_error: "Qual professor?" }),
     subjectId: z.string({ required_error: "Qual matéria?" }),
     weekday: z.string({ required_error: "Qual dia da semana?" }),
-    time: z.string({ required_error: "Qual horário?" }),
     hour: z.string({ required_error: "Qual hora?" }),
     minutes: z.string({ required_error: "Qual minuto?" }),
   })
@@ -35,11 +34,11 @@ export function NewTeacherHasClassModal({
 }: NewTeacherHasClassModalProps) {
   const {
     handleSubmit,
-    resetField,
     reset,
     setValue,
     formState: { errors },
     setError,
+    clearErrors,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
@@ -80,6 +79,7 @@ export function NewTeacherHasClassModal({
   const minutes = [...Array(60).keys()];
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
+    console.log("to aqui");
     toast.loading("Criando aula...");
     await createTeacherHasClassMutation.mutateAsync({
       schoolId: schoolId,
@@ -87,7 +87,7 @@ export function NewTeacherHasClassModal({
       classId: data.classId,
       subjectId: data.subjectId,
       classWeekDay: data.weekday,
-      classTime: data.time,
+      classTime: `${data.hour}:${data.minutes}`,
     });
     toast.dismiss();
     toast.success("Aula criada com sucesso!");
@@ -96,7 +96,14 @@ export function NewTeacherHasClassModal({
   };
 
   return (
-    <Modal open={open} onClose={onClickCancel} title={"Nova aula"}>
+    <Modal
+      open={open}
+      onClose={() => {
+        reset();
+        onClickCancel();
+      }}
+      title={"Nova aula"}
+    >
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
@@ -119,11 +126,9 @@ export function NewTeacherHasClassModal({
                   })) || []
                 }
                 onSelectItem={(selectedItem) => {
-                  if (selectedItem == null) {
-                    resetField("teacherId");
-                    setError("teacherId", { type: "required" });
-                    return;
-                  }
+                  if (selectedItem == null)
+                    return setError("teacherId", { type: "required" });
+                  clearErrors("teacherId");
                   setValue("teacherId", selectedItem.value);
                   setTeachersDropdownSearch("");
                 }}
@@ -157,11 +162,9 @@ export function NewTeacherHasClassModal({
                   })) || []
                 }
                 onSelectItem={(selectedItem) => {
-                  if (selectedItem == null) {
-                    resetField("subjectId");
-                    setError("subjectId", { type: "required" });
-                    return;
-                  }
+                  if (selectedItem == null)
+                    return setError("subjectId", { type: "required" });
+                  clearErrors("subjectId");
                   setValue("subjectId", selectedItem.value);
                   setSubjectsDropdownSearch("");
                 }}
@@ -195,11 +198,9 @@ export function NewTeacherHasClassModal({
                   })) || []
                 }
                 onSelectItem={(selectedItem) => {
-                  if (selectedItem == null) {
-                    resetField("classId");
-                    setError("classId", { type: "required" });
-                    return;
-                  }
+                  if (selectedItem == null)
+                    return setError("classId", { type: "required" });
+                  clearErrors("classId");
                   setValue("classId", selectedItem.value);
                   setClassesDropdownSearch("");
                 }}
@@ -232,14 +233,12 @@ export function NewTeacherHasClassModal({
                   { value: "6", label: "Sábado" },
                 ]}
                 onSelectItem={(selectedItem) => {
-                  if (selectedItem == null) {
-                    resetField("weekday");
-                    setError("weekday", { type: "required" });
-                    return;
-                  }
+                  if (selectedItem == null)
+                    return setError("weekday", { type: "required" });
+                  clearErrors("weekday");
                   setValue("weekday", selectedItem.value);
                 }}
-                error={errors.classId != null}
+                error={errors.weekday != null}
               />
               {errors.weekday && (
                 <p className="text-red-600">{errors.weekday.message}</p>
@@ -257,17 +256,19 @@ export function NewTeacherHasClassModal({
               Horas?
             </label>
             <div className="mt-2">
-              <Dropdown<number>
+              <Dropdown<string>
                 dropdownItems={hours.map((hour) => ({
-                  value: hour,
-                  label: hour.toString(),
+                  value: `${
+                    hour < 10 ? `0${hour.toString()}` : hour.toString()
+                  }`,
+                  label: `${
+                    hour < 10 ? `0${hour.toString()}` : hour.toString()
+                  }`,
                 }))}
                 onSelectItem={(selectedItem) => {
-                  if (selectedItem == null) {
-                    resetField("hour");
-                    setError("hour", { type: "required" });
-                    return;
-                  }
+                  if (selectedItem == null)
+                    return setError("hour", { type: "required" });
+                  clearErrors("hour");
                   setValue("hour", selectedItem.value.toString());
                 }}
                 error={errors.hour != null}
@@ -285,17 +286,19 @@ export function NewTeacherHasClassModal({
               E minutos?
             </label>
             <div className="mt-2">
-              <Dropdown<number>
+              <Dropdown<string>
                 dropdownItems={minutes.map((minute) => ({
-                  value: minute,
-                  label: minute.toString(),
+                  value: `${
+                    minute < 10 ? `0${minute.toString()}` : minute.toString()
+                  }`,
+                  label: `${
+                    minute < 10 ? `0${minute.toString()}` : minute.toString()
+                  }`,
                 }))}
                 onSelectItem={(selectedItem) => {
-                  if (selectedItem == null) {
-                    resetField("minutes");
-                    setError("minutes", { type: "required" });
-                    return;
-                  }
+                  if (selectedItem == null)
+                    return setError("minutes", { type: "required" });
+                  clearErrors("minutes");
                   setValue("minutes", selectedItem.value.toString());
                 }}
                 error={errors.minutes != null}

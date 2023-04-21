@@ -65,8 +65,6 @@ export const getServerSideProps = withServerSideAuth(
       }),
       serverSideHelpers.teacherHasClass.countAllBySchoolId.prefetch({
         schoolId: school.id,
-        page,
-        limit,
       }),
       serverSideHelpers.user.allBySchoolId.prefetch({
         schoolId: school.id,
