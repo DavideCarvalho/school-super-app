@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import {
   FloatingPortal,
+  autoUpdate,
   flip,
-  shift,
+  offset,
   size,
   useClick,
   useDismiss,
@@ -60,18 +61,24 @@ export function Dropdown<Item>({
 
   const { x, y, strategy, refs, context } = useFloating({
     open,
+    placement: "bottom-end",
     onOpenChange: setOpen,
-    placement: "bottom-start",
+    whileElementsMounted: autoUpdate,
     middleware: [
       size({
-        apply({ rects, elements }) {
+        apply({ availableWidth, availableHeight, rects, elements }) {
           Object.assign(elements.floating.style, {
             width: `${rects.reference.width}px`,
+            maxWidth: `${availableWidth}px`,
+            maxHeight: `${availableHeight}px`,
+            overflow: "auto",
           });
         },
       }),
-      flip(),
-      shift(),
+      flip({
+        fallbackStrategy: "initialPlacement",
+      }),
+      offset(10),
     ],
   });
 
@@ -130,15 +137,15 @@ export function Dropdown<Item>({
       {open && (
         <FloatingPortal>
           <div
-            className="relative z-10 w-full"
+            className="z-10 w-full"
             ref={refs.setFloating}
             style={{
               position: strategy,
-              top: y ? y + 10 : 0,
+              top: y ?? 0,
               left: x ?? 0,
             }}
           >
-            <div className="absolute block w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+            <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               {searchable && (
                 <div className="relative mt-2">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
