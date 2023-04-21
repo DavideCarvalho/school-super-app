@@ -15,6 +15,8 @@ const schema = z
     subjectId: z.string({ required_error: "Qual matéria?" }),
     weekday: z.string({ required_error: "Qual dia da semana?" }),
     time: z.string({ required_error: "Qual horário?" }),
+    hour: z.string({ required_error: "Qual hora?" }),
+    minutes: z.string({ required_error: "Qual minuto?" }),
   })
   .required();
 
@@ -73,6 +75,9 @@ export function NewTeacherHasClassModal({
   const [teachersDropdownSearch, setTeachersDropdownSearch] = useState("");
   const [subjectsDropdownSearch, setSubjectsDropdownSearch] = useState("");
   const [classesDropdownSearch, setClassesDropdownSearch] = useState("");
+
+  const hours = [...Array(24).keys()];
+  const minutes = [...Array(60).keys()];
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     toast.loading("Criando aula...");
@@ -158,7 +163,7 @@ export function NewTeacherHasClassModal({
                     return;
                   }
                   setValue("subjectId", selectedItem.value);
-                  setTeachersDropdownSearch("");
+                  setSubjectsDropdownSearch("");
                 }}
                 error={errors.subjectId != null}
               />
@@ -196,12 +201,107 @@ export function NewTeacherHasClassModal({
                     return;
                   }
                   setValue("classId", selectedItem.value);
-                  setTeachersDropdownSearch("");
+                  setClassesDropdownSearch("");
                 }}
                 error={errors.classId != null}
               />
               {errors.classId && (
                 <p className="text-red-600">{errors.classId.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              Qual o dia?
+            </label>
+            <div className="mt-2">
+              <Dropdown<string>
+                dropdownItems={[
+                  { value: "0", label: "Domingo" },
+                  { value: "1", label: "Segunda-feira" },
+                  { value: "2", label: "Terça-feira" },
+                  { value: "3", label: "Quarta-feira" },
+                  { value: "4", label: "Quinta-feira" },
+                  { value: "5", label: "Sexta-feira" },
+                  { value: "6", label: "Sábado" },
+                ]}
+                onSelectItem={(selectedItem) => {
+                  if (selectedItem == null) {
+                    resetField("weekday");
+                    setError("weekday", { type: "required" });
+                    return;
+                  }
+                  setValue("weekday", selectedItem.value);
+                }}
+                error={errors.classId != null}
+              />
+              {errors.weekday && (
+                <p className="text-red-600">{errors.weekday.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              Horas?
+            </label>
+            <div className="mt-2">
+              <Dropdown<number>
+                dropdownItems={hours.map((hour) => ({
+                  value: hour,
+                  label: hour.toString(),
+                }))}
+                onSelectItem={(selectedItem) => {
+                  if (selectedItem == null) {
+                    resetField("hour");
+                    setError("hour", { type: "required" });
+                    return;
+                  }
+                  setValue("hour", selectedItem.value.toString());
+                }}
+                error={errors.hour != null}
+              />
+              {errors.hour && (
+                <p className="text-red-600">{errors.hour.message}</p>
+              )}
+            </div>
+          </div>
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              E minutos?
+            </label>
+            <div className="mt-2">
+              <Dropdown<number>
+                dropdownItems={minutes.map((minute) => ({
+                  value: minute,
+                  label: minute.toString(),
+                }))}
+                onSelectItem={(selectedItem) => {
+                  if (selectedItem == null) {
+                    resetField("minutes");
+                    setError("minutes", { type: "required" });
+                    return;
+                  }
+                  setValue("minutes", selectedItem.value.toString());
+                }}
+                error={errors.minutes != null}
+              />
+              {errors.minutes && (
+                <p className="text-red-600">{errors.minutes.message}</p>
               )}
             </div>
           </div>
