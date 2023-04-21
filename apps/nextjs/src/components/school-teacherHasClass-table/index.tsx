@@ -353,18 +353,19 @@ export function SchoolTeacherHasClassTable({
               <TableRowSkeleton />
             </>
           )}
-          {teacherHasClassesQuery.data?.map((teacherHasClass) => {
-            return (
-              <TableRow
-                key={`${teacherHasClass.classId}-${teacherHasClass.subjectId}-${teacherHasClass.teacherId}`}
-                teacherHasClass={teacherHasClass}
-                onDelete={deleteClass}
-                onEdit={(teacherHasClass) =>
-                  onSelectClassToEdit(teacherHasClass)
-                }
-              />
-            );
-          })}
+          {!teacherHasClassesQuery.isFetching &&
+            teacherHasClassesQuery.data?.map((teacherHasClass) => {
+              return (
+                <TableRow
+                  key={`${teacherHasClass.classId}-${teacherHasClass.subjectId}-${teacherHasClass.teacherId}`}
+                  teacherHasClass={teacherHasClass}
+                  onDelete={deleteClass}
+                  onEdit={(teacherHasClass) =>
+                    onSelectClassToEdit(teacherHasClass)
+                  }
+                />
+              );
+            })}
         </div>
 
         <div>
