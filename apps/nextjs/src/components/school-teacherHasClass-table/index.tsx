@@ -54,7 +54,7 @@ export function SchoolTeacherHasClassTable({
       classSlug: router.query.class as string | undefined,
       classWeekDay: router.query.weekday as string | undefined,
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true, refetchOnMount: false },
   );
 
   const teacherHasClassesCountQuery =
@@ -66,7 +66,7 @@ export function SchoolTeacherHasClassTable({
         classSlug: router.query.class as string | undefined,
         classWeekDay: router.query.weekday as string | undefined,
       },
-      { keepPreviousData: true },
+      { keepPreviousData: true, refetchOnMount: false },
     );
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery(
@@ -74,7 +74,7 @@ export function SchoolTeacherHasClassTable({
       schoolId,
       limit: 999,
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true, refetchOnMount: false },
   );
 
   const classesQuery = api.class.allBySchoolId.useQuery(
@@ -82,7 +82,7 @@ export function SchoolTeacherHasClassTable({
       schoolId,
       limit: 999,
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true, refetchOnMount: false },
   );
 
   const teachersQuery = api.user.allBySchoolId.useQuery(
@@ -91,7 +91,7 @@ export function SchoolTeacherHasClassTable({
       limit: 999,
       role: "TEACHER",
     },
-    { keepPreviousData: true },
+    { keepPreviousData: true, refetchOnMount: false },
   );
 
   const deleteTeacherHasClassMutation =
@@ -350,21 +350,21 @@ export function SchoolTeacherHasClassTable({
             <>
               <TableRowSkeleton />
               <TableRowSkeleton />
+              <TableRowSkeleton />
             </>
           )}
-          {!teacherHasClassesQuery.isFetching &&
-            teacherHasClassesQuery.data?.map((teacherHasClass) => {
-              return (
-                <TableRow
-                  key={`${teacherHasClass.classId}-${teacherHasClass.subjectId}-${teacherHasClass.teacherId}`}
-                  teacherHasClass={teacherHasClass}
-                  onDelete={deleteClass}
-                  onEdit={(teacherHasClass) =>
-                    onSelectClassToEdit(teacherHasClass)
-                  }
-                />
-              );
-            })}
+          {teacherHasClassesQuery.data?.map((teacherHasClass) => {
+            return (
+              <TableRow
+                key={`${teacherHasClass.classId}-${teacherHasClass.subjectId}-${teacherHasClass.teacherId}`}
+                teacherHasClass={teacherHasClass}
+                onDelete={deleteClass}
+                onEdit={(teacherHasClass) =>
+                  onSelectClassToEdit(teacherHasClass)
+                }
+              />
+            );
+          })}
         </div>
 
         <div>
