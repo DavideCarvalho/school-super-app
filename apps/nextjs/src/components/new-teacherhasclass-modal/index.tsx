@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { api } from "~/utils/api";
+import { Dropdown } from "~/components/dropdown";
 import { Modal } from "../modal";
 
 const schema = z
@@ -11,13 +13,15 @@ const schema = z
     classId: z.string({ required_error: "Qual classe?" }),
     teacherId: z.string({ required_error: "Qual professor?" }),
     subjectId: z.string({ required_error: "Qual matéria?" }),
+    weekday: z.string({ required_error: "Qual dia da semana?" }),
+    time: z.string({ required_error: "Qual horário?" }),
   })
   .required();
 
-interface NewClassModalProps {
+interface NewTeacherHasClassModalProps {
   schoolId: string;
   open: boolean;
-  onCreated: () => void | Promise<void>;
+  onCreated: () => void;
   onClickCancel: () => void;
 }
 
@@ -26,64 +30,181 @@ export function NewTeacherHasClassModal({
   open,
   onCreated,
   onClickCancel,
-}: NewClassModalProps) {
+}: NewTeacherHasClassModalProps) {
   const {
-    register,
     handleSubmit,
+    resetField,
     reset,
+    setValue,
     formState: { errors },
+    setError,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      teacherId: "",
-      classId: "",
-      subjectId: "",
-    },
   });
 
-  const createteacherHasClassMutation =
-    api.class.createBySchoolId.useMutation();
+  const subjectsQuery = api.subject.allBySchoolId.useQuery(
+    {
+      schoolId,
+      limit: 999,
+    },
+    { keepPreviousData: true },
+  );
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
+  const classesQuery = api.class.allBySchoolId.useQuery(
+    {
+      schoolId,
+      limit: 999,
+    },
+    { keepPreviousData: true },
+  );
+
+  const teachersQuery = api.user.allBySchoolId.useQuery(
+    {
+      schoolId,
+      limit: 999,
+      role: "TEACHER",
+    },
+    { keepPreviousData: true },
+  );
+
+  const createTeacherHasClassMutation =
+    api.teacherHasClass.createBySchoolId.useMutation();
+
+  const [teachersDropdownSearch, setTeachersDropdownSearch] = useState("");
+  const [subjectsDropdownSearch, setSubjectsDropdownSearch] = useState("");
+  const [classesDropdownSearch, setClassesDropdownSearch] = useState("");
+
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     toast.loading("Criando aula...");
-    createteacherHasClassMutation.mutate(
-      {
-        schoolId: schoolId,
-      },
-      {
-        async onSuccess() {
-          toast.dismiss();
-          toast.success("Classe criada com sucesso!");
-          const onCreatedReturn = onCreated();
-          const isPromise = onCreatedReturn instanceof Promise;
-          if (isPromise) await onCreatedReturn;
-          reset();
-        },
-      },
-    );
+    await createTeacherHasClassMutation.mutateAsync({
+      schoolId: schoolId,
+      teacherId: data.teacherId,
+      classId: data.classId,
+      subjectId: data.subjectId,
+      classWeekDay: data.weekday,
+      classTime: data.time,
+    });
+    toast.dismiss();
+    toast.success("Aula criada com sucesso!");
+    onCreated();
+    reset();
   };
 
   return (
-    <Modal open={open} onClose={onClickCancel} title={"Novo funcionário"}>
+    <Modal open={open} onClose={onClickCancel} title={"Nova aula"}>
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
-          {/*          <div>
-            <label className="text-sm font-bold text-gray-900">Professor</label>
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              Quem é o professor?
+            </label>
             <div className="mt-2">
-              <input
-                {...register("name")}
-                type="text"
-                inputMode="text"
-                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
-                  errors.name ? "border-red-400" : "border-grey-300"
-                }`}
-                placeholder="6 ano B"
+              <Dropdown<string>
+                cleanFilter={false}
+                onChange={setTeachersDropdownSearch}
+                search={teachersDropdownSearch}
+                searchable={true}
+                dropdownItems={
+                  teachersQuery?.data?.map(({ id, name }) => ({
+                    value: id,
+                    label: name,
+                  })) || []
+                }
+                onSelectItem={(selectedItem) => {
+                  if (selectedItem == null) {
+                    resetField("teacherId");
+                    setError("teacherId", { type: "required" });
+                    return;
+                  }
+                  setValue("teacherId", selectedItem.value);
+                  setTeachersDropdownSearch("");
+                }}
+                error={errors.teacherId != null}
               />
-              {errors.name && (
-                <p className="text-red-600">{errors.name.message}</p>
+              {errors.teacherId && (
+                <p className="text-red-600">{errors.teacherId.message}</p>
               )}
             </div>
-          </div>*/}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              Qual a matéria?
+            </label>
+            <div className="mt-2">
+              <Dropdown<string>
+                cleanFilter={false}
+                onChange={setSubjectsDropdownSearch}
+                search={subjectsDropdownSearch}
+                searchable={true}
+                dropdownItems={
+                  subjectsQuery?.data?.map(({ id, name }) => ({
+                    value: id,
+                    label: name,
+                  })) || []
+                }
+                onSelectItem={(selectedItem) => {
+                  if (selectedItem == null) {
+                    resetField("subjectId");
+                    setError("subjectId", { type: "required" });
+                    return;
+                  }
+                  setValue("subjectId", selectedItem.value);
+                  setTeachersDropdownSearch("");
+                }}
+                error={errors.subjectId != null}
+              />
+              {errors.subjectId && (
+                <p className="text-red-600">{errors.subjectId.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <label
+              htmlFor="quantity"
+              className="text-sm font-bold text-gray-900"
+            >
+              Qual a turma?
+            </label>
+            <div className="mt-2">
+              <Dropdown<string>
+                cleanFilter={false}
+                onChange={setClassesDropdownSearch}
+                search={classesDropdownSearch}
+                searchable={true}
+                dropdownItems={
+                  classesQuery?.data?.map(({ id, name }) => ({
+                    value: id,
+                    label: name,
+                  })) || []
+                }
+                onSelectItem={(selectedItem) => {
+                  if (selectedItem == null) {
+                    resetField("classId");
+                    setError("classId", { type: "required" });
+                    return;
+                  }
+                  setValue("classId", selectedItem.value);
+                  setTeachersDropdownSearch("");
+                }}
+                error={errors.classId != null}
+              />
+              {errors.classId && (
+                <p className="text-red-600">{errors.classId.message}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="mt-5 flex items-center justify-end space-x-4">

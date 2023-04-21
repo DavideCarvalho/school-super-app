@@ -20,6 +20,7 @@ import {
 import { api } from "~/utils/api";
 import { dayjsClient } from "~/utils/dayjs.client";
 import { Dropdown } from "~/components/dropdown";
+import { NewTeacherHasClassModal } from "~/components/new-teacherhasclass-modal";
 import { Pagination } from "../pagination";
 
 type TeacherHasClassWithTeacherSubjectAndClass = TeacherHasClass & {
@@ -41,7 +42,7 @@ export function SchoolTeacherHasClassTable({
   const [_selectedTeacherHasClass, setSelectedTeacherHasClass] =
     useState<TeacherHasClass>();
 
-  const [_open, setOpen] = useState(false);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const [_openEditModal, setOpenEditModal] = useState(false);
 
   const teacherHasClassesQuery = api.teacherHasClass.allBySchoolId.useQuery(
@@ -116,11 +117,11 @@ export function SchoolTeacherHasClassTable({
       ? classesQuery.data.find((class_) => class_.slug === router.query.class)
       : undefined;
 
-  /*  async function onCreated() {
-    setOpen(false);
+  async function onCreated() {
+    setOpenCreateModal(false);
     await teacherHasClassesQuery.refetch();
     await teacherHasClassesCountQuery.refetch();
-  }*/
+  }
 
   async function deleteClass(teacherHasClass: TeacherHasClass) {
     toast.loading("Removendo aula...");
@@ -150,13 +151,13 @@ export function SchoolTeacherHasClassTable({
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      {/*      <NewClassModal
+      <NewTeacherHasClassModal
         schoolId={schoolId}
-        onCreated={async () => await onCreated()}
-        open={open}
-        onClickCancel={() => setOpen(false)}
+        onCreated={() => onCreated()}
+        open={openCreateModal}
+        onClickCancel={() => setOpenCreateModal(false)}
       />
-      <EditClassModal
+      {/*      <EditClassModal
         schoolId={schoolId}
         open={openEditModal}
         selectedClass={selectedTeacherHasClass as TeacherHasClass}
@@ -177,7 +178,7 @@ export function SchoolTeacherHasClassTable({
               <button
                 type="button"
                 onClick={() => {
-                  setOpen(true);
+                  setOpenCreateModal(true);
                 }}
                 className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
               >
