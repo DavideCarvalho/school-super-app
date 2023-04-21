@@ -53,7 +53,6 @@ export function EditTeacherHasClassModal({
     formState: { errors },
     setError,
     clearErrors,
-    getValues,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -77,7 +76,7 @@ export function EditTeacherHasClassModal({
     setValue("weekday", teacherHasClass.classWeekDay);
     setValue("hour", teacherHasClass.classTime.split(":")[0] as string);
     setValue("minutes", teacherHasClass.classTime.split(":")[1] as string);
-  }, [teacherHasClass]);
+  }, [teacherHasClass, setValue, reset]);
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery(
     {
