@@ -1,4 +1,4 @@
-import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 
 import { prisma } from "@acme/db";
@@ -13,7 +13,7 @@ import { subjectRouter } from "./router/subjects";
 import { teacherRouter } from "./router/teacher";
 import { teacherHasClassRouter } from "./router/teacherHasClass";
 import { userRouter } from "./router/user";
-import { createTRPCContext, createTRPCRouter } from "./trpc";
+import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -30,7 +30,7 @@ export const appRouter = createTRPCRouter({
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });
 
-export const serverSideHelpers = createProxySSGHelpers({
+export const serverSideHelpers = createServerSideHelpers({
   router: appRouter,
   ctx: {
     session: null,
