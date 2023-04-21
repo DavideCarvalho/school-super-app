@@ -4162,7 +4162,7 @@ packages:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
     dependencies:
-      '@tanstack/react-query': 4.24.10_bblof3d6od7kdqr2urb3dykbey
+      '@tanstack/react-query': 4.24.10_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.14.0_@trpc+server@10.14.0
       '@trpc/server': 10.14.0
       react: 18.2.0

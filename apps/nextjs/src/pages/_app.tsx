@@ -3,7 +3,8 @@ import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
-import {Collapse} from 'react-collapse';
+import { Analytics } from "@vercel/analytics/react";
+import { Collapse } from "react-collapse";
 // import { AxiomReporter } from 'next-axiom';
 import { Toaster } from "react-hot-toast";
 
@@ -38,6 +39,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
         data-utcoffset="-3"
       />
       <Component {...pageProps} />
+      <Analytics />
       {/* <AxiomReporter /> */}
       <Toaster />
     </ClerkProvider>
