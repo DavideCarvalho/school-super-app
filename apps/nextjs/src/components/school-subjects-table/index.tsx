@@ -18,19 +18,9 @@ import { Pagination } from "../pagination";
 
 interface SchoolSubjectsTableProps {
   schoolId: string;
-  subjects: Subject[];
-  subjectsCount: number;
-  page: number;
-  limit: number;
 }
 
-export function SchoolSubjectsTable({
-  schoolId,
-  subjects,
-  subjectsCount,
-  page,
-  limit,
-}: SchoolSubjectsTableProps) {
+export function SchoolSubjectsTable({ schoolId }: SchoolSubjectsTableProps) {
   const router = useRouter();
   const { user } = useUser();
 
@@ -42,13 +32,17 @@ export function SchoolSubjectsTable({
   const [openEditModal, setOpenEditModal] = useState(false);
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery(
-    { schoolId, limit, page },
-    { initialData: subjects, keepPreviousData: true },
+    {
+      schoolId,
+      limit: router.query.limit ? Number(router.query.limit) : 5,
+      page: router.query.page ? Number(router.query.page) : 1,
+    },
+    { refetchOnMount: false },
   );
 
   const subjectsCountQuery = api.subject.countAllBySchoolId.useQuery(
     { schoolId },
-    { initialData: subjectsCount, keepPreviousData: true },
+    { refetchOnMount: false },
   );
 
   const deleteSubjectMutation = api.subject.deleteById.useMutation();
@@ -137,23 +131,31 @@ export function SchoolSubjectsTable({
         </div>
 
         <div className="divide-y divide-gray-200">
-          {subjectsQuery.data?.map((worker) => {
-            return (
-              <TableRow
-                key={worker.id}
-                subject={worker}
-                onDelete={deleteSchoolYear}
-                onEdit={(subject) => onSelectSchoolYearToEdit(subject)}
-              />
-            );
-          })}
+          {subjectsQuery.isFetching && (
+            <>
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+            </>
+          )}
+          {!subjectsQuery.isFetching &&
+            subjectsQuery.data?.map((worker) => {
+              return (
+                <TableRow
+                  key={worker.id}
+                  subject={worker}
+                  onDelete={deleteSchoolYear}
+                  onEdit={(subject) => onSelectSchoolYearToEdit(subject)}
+                />
+              );
+            })}
         </div>
 
         <div>
           <Pagination
-            totalCount={subjectsCountQuery.data}
-            currentPage={page}
-            itemsPerPage={limit}
+            totalCount={subjectsCountQuery.data || 0}
+            currentPage={Number(router.query.page) || 1}
+            itemsPerPage={Number(router.query.limit) || 5}
             onChangePage={(page) => {
               void router.replace({
                 query: { ...router.query, page },
@@ -240,6 +242,40 @@ function TableRow({ subject, onDelete, onEdit }: TableRowProps) {
 
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-sm font-bold text-gray-900">{subject.name}</p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <div className="grid grid-cols-2 py-4 lg:grid-cols-2 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
       </div>
     </div>
   );

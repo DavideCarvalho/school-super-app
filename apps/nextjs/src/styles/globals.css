@@ -5,11 +5,11 @@
 body,
 html,
 #__next {
-    height: 100%;
-    width: 100%;
-    overflow-x: hidden;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .ReactCollapse--collapse {
-    transition: height 500ms;
+  transition: height 500ms;
 }

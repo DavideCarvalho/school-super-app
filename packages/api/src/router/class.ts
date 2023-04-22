@@ -44,7 +44,6 @@ export const classRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.class.create({
         data: {
-          id: `uuid`,
           name: input.name,
           slug: slugify(input.name),
           schoolId: input.schoolId,

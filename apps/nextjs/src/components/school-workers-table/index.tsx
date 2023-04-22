@@ -19,11 +19,6 @@ import { Pagination } from "../pagination";
 
 interface SchoolWorkersTableProps {
   schoolId: string;
-  workers: (User & { Role: Role })[];
-  workersCount: number;
-  page: number;
-  limit: number;
-  role: "TEACHER" | "SCHOOL_WORKER" | "COORDINATOR" | "DIRECTOR" | undefined;
 }
 
 function getRole(roleName: string) {
@@ -41,14 +36,7 @@ function getRole(roleName: string) {
   }
 }
 
-export function SchoolWorkersTable({
-  schoolId,
-  workers,
-  role,
-  workersCount,
-  page,
-  limit,
-}: SchoolWorkersTableProps) {
+export function SchoolWorkersTable({ schoolId }: SchoolWorkersTableProps) {
   const router = useRouter();
   const { user } = useUser();
 
@@ -63,13 +51,42 @@ export function SchoolWorkersTable({
     (User & { Role: Role }) | undefined
   >(undefined);
   const workersQuery = api.user.allBySchoolId.useQuery(
-    { schoolId, limit, page, role },
-    { initialData: workers, keepPreviousData: true },
+    {
+      schoolId,
+      limit: router.query.limit ? Number(router.query.limit) : 5,
+      page: router.query.page ? Number(router.query.page) : 1,
+      role: isValidRole(router.query.role as string)
+        ? (router.query.role as
+            | "TEACHER"
+            | "SCHOOL_WORKER"
+            | "COORDINATOR"
+            | "DIRECTOR")
+        : undefined,
+    },
+    { refetchOnMount: false },
   );
 
+  function isValidRole(role?: string) {
+    return (
+      role === "TEACHER" ||
+      role === "SCHOOL_WORKER" ||
+      role === "COORDINATOR" ||
+      role === "DIRECTOR"
+    );
+  }
+
   const workersCountQuery = api.user.countAllBySchoolId.useQuery(
-    { schoolId, role },
-    { initialData: workersCount, keepPreviousData: true },
+    {
+      schoolId,
+      role: isValidRole(router.query.role as string)
+        ? (router.query.role as
+            | "TEACHER"
+            | "SCHOOL_WORKER"
+            | "COORDINATOR"
+            | "DIRECTOR")
+        : undefined,
+    },
+    { refetchOnMount: false },
   );
 
   const deleteWorkerMutation = api.user.deleteById.useMutation();
@@ -164,21 +181,33 @@ export function SchoolWorkersTable({
                 cleanFilter={true}
                 search={item.label}
                 initialSelectedItem={
-                  role ? { label: getRole(role), value: role } : undefined
+                  router.query.role
+                    ? {
+                        label: getRole(router.query.role as string),
+                        value: router.query.role as string,
+                      }
+                    : undefined
                 }
                 onChange={(v) => setItem((state) => ({ ...state, label: v }))}
                 onSelectItem={(selectedItem) => {
+                  const { role: _role, ...rest } = router.query;
                   setItem(() => ({
                     ...selectedItem,
                     value: selectedItem?.value,
                     label: "",
                   }));
-                  void router.replace({
-                    query: {
-                      ...router.query,
-                      role: selectedItem?.value as string,
+                  void router.replace(
+                    {
+                      query: {
+                        ...rest,
+                        ...(selectedItem?.value && {
+                          role: selectedItem.value,
+                        }),
+                      },
                     },
-                  });
+                    undefined,
+                    { shallow: true },
+                  );
                 }}
                 dropdownLabel="Cargos"
                 inputPlaceholder="Professor(a)"
@@ -195,27 +224,39 @@ export function SchoolWorkersTable({
         </div>
 
         <div className="divide-y divide-gray-200">
-          {workersQuery.data?.map((worker) => {
-            return (
-              <TableRow
-                key={worker.id}
-                worker={worker}
-                onDelete={deleteWorker}
-                onEdit={onSelectWorkerToEdit}
-              />
-            );
-          })}
+          {workersQuery.isFetching && (
+            <>
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+            </>
+          )}
+          {!workersQuery.isFetching &&
+            workersQuery.data?.map((worker) => {
+              return (
+                <TableRow
+                  key={worker.id}
+                  worker={worker}
+                  onDelete={deleteWorker}
+                  onEdit={onSelectWorkerToEdit}
+                />
+              );
+            })}
         </div>
 
         <div>
           <Pagination
-            totalCount={workersCountQuery.data}
-            currentPage={page}
-            itemsPerPage={limit}
+            totalCount={workersCountQuery?.data || 0}
+            currentPage={router.query.page ? Number(router.query.page) : 1}
+            itemsPerPage={router.query.limit ? Number(router.query.limit) : 5}
             onChangePage={(page) => {
-              void router.replace({
-                query: { ...router.query, page },
-              });
+              void router.replace(
+                {
+                  query: { ...router.query, page },
+                },
+                undefined,
+                { scroll: false },
+              );
             }}
           />
         </div>
@@ -312,6 +353,43 @@ function TableRow({ worker, onDelete, onEdit }: TableRowProps) {
             ]
           }
         </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <div className="grid grid-cols-2 py-4 lg:grid-cols-2 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
       </div>
     </div>
   );

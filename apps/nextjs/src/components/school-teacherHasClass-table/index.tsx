@@ -56,7 +56,7 @@ export function SchoolTeacherHasClassTable({
       classSlug: router.query.class as string | undefined,
       classWeekDay: router.query.weekday as string | undefined,
     },
-    { keepPreviousData: true, refetchOnMount: false },
+    { refetchOnMount: false },
   );
 
   const teacherHasClassesCountQuery =
@@ -68,7 +68,7 @@ export function SchoolTeacherHasClassTable({
         classSlug: router.query.class as string | undefined,
         classWeekDay: router.query.weekday as string | undefined,
       },
-      { keepPreviousData: true, refetchOnMount: false },
+      { refetchOnMount: false },
     );
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery(
@@ -76,7 +76,7 @@ export function SchoolTeacherHasClassTable({
       schoolId,
       limit: 999,
     },
-    { keepPreviousData: true, refetchOnMount: false },
+    { refetchOnMount: false },
   );
 
   const classesQuery = api.class.allBySchoolId.useQuery(
@@ -84,7 +84,7 @@ export function SchoolTeacherHasClassTable({
       schoolId,
       limit: 999,
     },
-    { keepPreviousData: true, refetchOnMount: false },
+    { refetchOnMount: false },
   );
 
   const teachersQuery = api.user.allBySchoolId.useQuery(
@@ -93,7 +93,7 @@ export function SchoolTeacherHasClassTable({
       limit: 999,
       role: "TEACHER",
     },
-    { keepPreviousData: true, refetchOnMount: false },
+    { refetchOnMount: false },
   );
 
   const deleteTeacherHasClassMutation =
@@ -373,8 +373,8 @@ export function SchoolTeacherHasClassTable({
         <div>
           <Pagination
             totalCount={teacherHasClassesCountQuery?.data || 0}
-            currentPage={router.query.page ? Number(router.query.page) : 1}
-            itemsPerPage={router.query.limit ? Number(router.query.limit) : 5}
+            currentPage={Number(router.query.page) || 1}
+            itemsPerPage={Number(router.query.limit) || 5}
             onChangePage={(page) => {
               void router.replace(
                 {

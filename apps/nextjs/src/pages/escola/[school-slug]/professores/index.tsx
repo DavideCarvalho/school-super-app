@@ -5,27 +5,17 @@ import {
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
-import { trpCaller } from "@acme/api";
+import { serverSideHelpers, trpCaller } from "@acme/api";
 
 import { SchoolTeachersTable } from "~/components/school-teachers-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function TeachersPage({
   school,
-  teachers,
-  teachersCount,
-  page,
-  limit,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolTeachersTable
-        schoolId={school.id}
-        teachers={teachers}
-        teachersCount={teachersCount}
-        page={page}
-        limit={limit}
-      />
+      <SchoolTeachersTable schoolId={school.id} />
     </SchoolLayout>
   );
 }
@@ -54,25 +44,23 @@ export const getServerSideProps = withServerSideAuth(
       };
     }
 
-    const teachers = await trpCaller.user.allBySchoolId({
-      schoolId: school.id,
-      page,
-      limit,
-      role: "TEACHER",
-    });
-
-    const teachersCount = await trpCaller.user.countAllBySchoolId({
-      schoolId: school.id,
-      role: "TEACHER",
-    });
+    await Promise.all([
+      serverSideHelpers.user.allBySchoolId.prefetch({
+        schoolId: school.id,
+        page,
+        limit,
+        role: "TEACHER",
+      }),
+      serverSideHelpers.user.countAllBySchoolId.prefetch({
+        schoolId: school.id,
+        role: "TEACHER",
+      }),
+    ]);
 
     return {
       props: {
         school,
-        teachers,
-        teachersCount,
-        page,
-        limit,
+        trpcState: serverSideHelpers.dehydrate(),
       },
     };
   },

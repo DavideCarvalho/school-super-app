@@ -37,8 +37,7 @@ export function NewClassModal({
     },
   });
 
-  const createClassMutation =
-    api.class.createBySchoolId.useMutation();
+  const createClassMutation = api.class.createBySchoolId.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     toast.loading("Criando ano...");
