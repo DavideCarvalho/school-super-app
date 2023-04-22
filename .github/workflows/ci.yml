@@ -12,13 +12,14 @@ on:
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
 
 jobs:
   build-lint:
     env:
       DATABASE_URL: file:./db.sqlite
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+
     runs-on: ubuntu-latest
 
     steps:
@@ -55,10 +56,12 @@ jobs:
         run: pnpm turbo db:generate
 
       - name: Build, lint and type-check
-        run: pnpm turbo build lint type-check
+        run: |
+          echo $NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+          pnpm turbo build lint type-check
         env:
           SKIP_ENV_VALIDATION: true
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
 
 
       - name: Check workspaces
