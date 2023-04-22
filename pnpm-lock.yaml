@@ -313,7 +313,7 @@ importers:
       '@react-email/container': 0.0.8
       '@react-email/head': ^0.0.5
       '@react-email/html': 0.0.4
-      '@react-email/preview': 0.0.5
+      '@react-email/preview': 0.0.6
       '@react-email/section': 0.0.9
       '@react-email/tailwind': 0.0.7
       '@react-email/text': 0.0.5
@@ -332,7 +332,7 @@ importers:
       '@react-email/container': 0.0.8
       '@react-email/head': 0.0.5
       '@react-email/html': 0.0.4
-      '@react-email/preview': 0.0.5
+      '@react-email/preview': 0.0.6
       '@react-email/section': 0.0.9
       '@react-email/tailwind': 0.0.7
       '@react-email/text': 0.0.5
@@ -3603,8 +3603,8 @@ packages:
     engines: {node: '>=16.0.0'}
     dev: false
 
-  /@react-email/preview/0.0.5:
-    resolution: {integrity: sha512-3OwWQvuxqi8MdJ1PZHH6XLrG9N8Z3uAN9cVWOlqb4WuhR1KwTVPgZwSy/zuzTiuhhejpO8/ctC7tMfZSpXdThg==}
+  /@react-email/preview/0.0.6:
+    resolution: {integrity: sha512-mXDCc3NGpm/4W7gowBtjsTxYXowLNOLsJsYhIfrsjNJWGlVhVFB9uEHm55LjBLpxSG020g6/8LIrpJU6g22qvg==}
     engines: {node: '>=16.0.0'}
     dependencies:
       react: 18.2.0
