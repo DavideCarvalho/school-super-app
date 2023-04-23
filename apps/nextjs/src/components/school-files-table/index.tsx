@@ -24,20 +24,11 @@ import { Pagination } from "../pagination";
 
 interface SchoolFilesTableProps {
   schoolId: string;
-  files?: (File & {
-    Teacher: Teacher & { User: User };
-    Subject: Subject;
-    Class: Class;
-  })[];
-  filesCount: number;
-  page: number;
-  limit: number;
-  status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED" | undefined;
 }
 
-function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
-  switch (status) {
-    case "REVIEW":
+function getStatus(status: TableRowStatusEnum) {
+  switch (status.toUpperCase()) {
+    case TableRowStatusEnum.REVIEW:
       return {
         label: "Revisão",
         value: TableRowStatusEnum.REVIEW,
@@ -51,7 +42,7 @@ function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
           </svg>
         ),
       };
-    case "REQUESTED":
+    case TableRowStatusEnum.REQUESTED:
       return {
         label: "Solicitado",
         value: TableRowStatusEnum.REQUESTED,
@@ -65,7 +56,7 @@ function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
           </svg>
         ),
       };
-    case "APPROVED":
+    case TableRowStatusEnum.APPROVED:
       return {
         label: "Aprovado",
         value: TableRowStatusEnum.APPROVED,
@@ -79,7 +70,7 @@ function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
           </svg>
         ),
       };
-    case "PRINTED":
+    case TableRowStatusEnum.PRINTED:
       return {
         label: "Impresso",
         value: TableRowStatusEnum.PRINTED,
@@ -94,16 +85,19 @@ function getStatus(status: "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED") {
         ),
       };
   }
+  12;
 }
 
-export function SchoolFilesTable({
-  schoolId,
-  files,
-  status,
-  filesCount,
-  page,
-  limit,
-}: SchoolFilesTableProps) {
+function isValidStatus(status?: string): status is TableRowStatusEnum {
+  return (
+    status === TableRowStatusEnum.REVIEW ||
+    status === TableRowStatusEnum.REQUESTED ||
+    status === TableRowStatusEnum.APPROVED ||
+    status === TableRowStatusEnum.PRINTED
+  );
+}
+
+export function SchoolFilesTable({ schoolId }: SchoolFilesTableProps) {
   const router = useRouter();
   const { user } = useUser();
 
@@ -114,13 +108,27 @@ export function SchoolFilesTable({
   }>({ label: "", value: "", icon: undefined });
   const [open, setOpen] = useState(false);
   const filesQuery = api.file.allBySchoolId.useQuery(
-    { schoolId, status, page, limit, orderBy: { dueDate: "asc" } },
-    { initialData: files, keepPreviousData: true },
+    {
+      schoolId,
+      status: isValidStatus(router.query.status as string)
+        ? (router.query.status as TableRowStatusEnum)
+        : undefined,
+      limit: router.query.limit ? Number(router.query.limit) : 5,
+      page: router.query.page ? Number(router.query.page) : 1,
+      orderBy: { dueDate: "asc" },
+    },
+    { refetchOnMount: false },
   );
 
   const filesCountQuery = api.file.countAllBySchoolId.useQuery(
-    { schoolId, status, orderBy: { dueDate: "asc" } },
-    { initialData: filesCount, keepPreviousData: true },
+    {
+      schoolId,
+      status: isValidStatus(router.query.status as string)
+        ? (router.query.status as TableRowStatusEnum)
+        : undefined,
+      orderBy: { dueDate: "asc" },
+    },
+    { refetchOnMount: false },
   );
 
   const approveFileRequest = api.file.approveRequest.useMutation();
@@ -176,10 +184,14 @@ export function SchoolFilesTable({
         <div className="flex flex-row">
           <div className="w-full">
             <div className="mx-auto max-w-xs">
-              <Dropdown<string>
+              <Dropdown<TableRowStatusEnum>
                 cleanFilter={true}
                 search={item.label}
-                initialSelectedItem={status ? getStatus(status) : undefined}
+                initialSelectedItem={
+                  router.query.status
+                    ? getStatus(router.query.status as TableRowStatusEnum)
+                    : undefined
+                }
                 onChange={(v) => setItem((state) => ({ ...state, label: v }))}
                 onSelectItem={(selectedItem) => {
                   setItem(() => ({
@@ -187,21 +199,25 @@ export function SchoolFilesTable({
                     value: selectedItem?.value,
                     label: "",
                   }));
-                  void router.replace({
-                    query: {
-                      ...router.query,
-                      status: selectedItem?.value as string,
+                  void router.replace(
+                    {
+                      query: {
+                        ...router.query,
+                        status: selectedItem?.value as string,
+                      },
                     },
-                  });
+                    undefined,
+                    { shallow: true },
+                  );
                 }}
                 dropdownLabel="Status"
                 inputPlaceholder="Aprovação"
                 dropdownPlaceholder="Selecione um status"
                 dropdownItems={[
-                  getStatus("APPROVED"),
-                  getStatus("REVIEW"),
-                  getStatus("REQUESTED"),
-                  getStatus("PRINTED"),
+                  getStatus(TableRowStatusEnum.APPROVED)!,
+                  getStatus(TableRowStatusEnum.REVIEW)!,
+                  getStatus(TableRowStatusEnum.REQUESTED)!,
+                  getStatus(TableRowStatusEnum.PRINTED)!,
                 ]}
               />
             </div>
@@ -209,91 +225,76 @@ export function SchoolFilesTable({
         </div>
 
         <div className="divide-y divide-gray-200">
-          {filesQuery.data?.map((file) => {
-            const fileStatus = file.status as keyof typeof TableRowStatusEnum;
-            const status = TableRowStatusEnum[fileStatus] as
-              | TableRowStatusEnum
-              | undefined;
-            if (!status) return null;
-            return (
-              <TableRow
-                onApprove={(fileId) => {
-                  toast.loading("Aprovando solicitação...");
-                  approveFileRequest.mutate(
-                    { id: fileId },
-                    {
-                      async onSuccess() {
-                        toast.dismiss();
-                        toast.success("Solicitação aprovada com sucesso!");
-                        await filesQuery.refetch();
-                        await filesCountQuery.refetch();
-                      },
-                    },
-                  );
-                }}
-                onReview={(fileId) => {
-                  fileReviewedRequest.mutate(
-                    { id: fileId },
-                    {
-                      async onSuccess() {
-                        toast.dismiss();
-                        toast.success("Solicitação reenviada com sucesso!");
-                        await filesQuery.refetch();
-                        await filesCountQuery.refetch();
-                      },
-                    },
-                  );
-                }}
-                setReview={(fileId) => {
-                  toast.loading('Alterando para "Revisar"...');
-                  reviewFileRequest.mutate(
-                    { id: fileId },
-                    {
-                      async onSuccess() {
-                        toast.dismiss();
-                        toast.success("Solicitação alterada com sucesso!");
-                        await filesQuery.refetch();
-                        await filesCountQuery.refetch();
-                      },
-                    },
-                  );
-                }}
-                onOpen={() => window.open(file.path, "_blank", "noreferrer")}
-                onPrint={(fileId) => {
-                  window.open(file.path, "_blank", "noreferrer");
-                  printFileRequest.mutate(
-                    { id: fileId },
-                    {
-                      async onSuccess() {
-                        await filesQuery.refetch();
-                        await filesCountQuery.refetch();
-                      },
-                    },
-                  );
-                }}
-                userRole={
-                  user?.publicMetadata?.role as
-                    | "TEACHER"
-                    | "COORDINATOR"
-                    | "SCHOOL_WORKER"
-                    | undefined
-                }
-                key={file.id}
-                status={status}
-                file={file}
-                schoolClass={file.Class}
-                teacher={file.Teacher}
-                subject={file.Subject}
-              />
-            );
-          })}
+          {filesQuery.isFetching && (
+            <>
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+              <TableRowSkeleton />
+            </>
+          )}
+
+          {!filesQuery.isFetching &&
+            filesQuery.data?.map((file) => {
+              const fileStatus = file.status as keyof typeof TableRowStatusEnum;
+              const status = TableRowStatusEnum[fileStatus] as
+                | TableRowStatusEnum
+                | undefined;
+              if (!status) return null;
+              return (
+                <TableRow
+                  onApprove={async (fileId) => {
+                    toast.loading("Aprovando solicitação...");
+                    await approveFileRequest.mutateAsync({ id: fileId });
+                    toast.dismiss();
+                    toast.success("Solicitação aprovada com sucesso!");
+                    await filesQuery.refetch();
+                    await filesCountQuery.refetch();
+                  }}
+                  onReview={async (fileId) => {
+                    await fileReviewedRequest.mutateAsync({ id: fileId });
+                    toast.dismiss();
+                    toast.success("Solicitação reenviada com sucesso!");
+                    await filesQuery.refetch();
+                    await filesCountQuery.refetch();
+                  }}
+                  setReview={async (fileId) => {
+                    toast.loading('Alterando para "Revisar"...');
+                    await reviewFileRequest.mutateAsync({ id: fileId });
+                    toast.dismiss();
+                    toast.success("Solicitação alterada com sucesso!");
+                    await filesQuery.refetch();
+                    await filesCountQuery.refetch();
+                  }}
+                  onOpen={() => window.open(file.path, "_blank", "noreferrer")}
+                  onPrint={async (fileId) => {
+                    window.open(file.path, "_blank", "noreferrer");
+                    await printFileRequest.mutateAsync({ id: fileId });
+                    await filesQuery.refetch();
+                    await filesCountQuery.refetch();
+                  }}
+                  userRole={
+                    user?.publicMetadata?.role as
+                      | "TEACHER"
+                      | "COORDINATOR"
+                      | "SCHOOL_WORKER"
+                      | undefined
+                  }
+                  key={file.id}
+                  status={status}
+                  file={file}
+                  schoolClass={file.Class}
+                  teacher={file.Teacher}
+                  subject={file.Subject}
+                />
+              );
+            })}
         </div>
 
         <div>
           <Pagination
-            totalCount={filesCountQuery.data}
-            currentPage={page}
-            itemsPerPage={limit}
+            totalCount={filesCountQuery?.data || 0}
+            currentPage={Number(router.query.page) || 1}
+            itemsPerPage={Number(router.query.limit) || 5}
             onChangePage={(page) => {
               void router.replace({
                 query: { ...router.query, page },
@@ -548,6 +549,64 @@ function TableRow({
         <p className="mt-1 text-sm font-medium text-gray-500">
           {file.frontAndBack ? "Frente e verso" : "Apenas frente"}
         </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <div className="grid grid-cols-6 py-4 lg:grid-cols-6 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <div className="mt-1 animate-pulse text-lg font-medium text-gray-500">
+          <div className="h-5 w-24 rounded-md bg-gray-300" />
+        </div>
       </div>
     </div>
   );

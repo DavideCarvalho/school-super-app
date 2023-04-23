@@ -1,49 +1,21 @@
-import { useEffect } from "react";
 import {
   type GetServerSidePropsContext,
   type InferGetServerSidePropsType,
 } from "next";
-import { useRouter } from "next/router";
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
-import { trpCaller } from "@acme/api";
+import { serverSideHelpers, trpCaller } from "@acme/api";
 
 import { SchoolFilesTable } from "~/components/school-files-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function SchoolFilesPage({
-  status,
   school,
-  files,
-  filesCount,
-  limit,
-  page,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const router = useRouter();
-  useEffect(() => {
-    const routerPage = router.query.page;
-    const routerLimit = router.query.limit;
-    if (
-      !routerPage ||
-      page !== Number(routerPage) ||
-      !routerLimit ||
-      limit !== Number(routerLimit)
-    )
-      void router.replace({ query: { ...router.query, page, limit } });
-  });
   return (
     <SchoolLayout>
-      <SchoolFilesTable
-        schoolId={school.id}
-        files={files}
-        filesCount={filesCount}
-        page={page}
-        limit={limit}
-        status={
-          status as "APPROVED" | "REVIEW" | "REQUESTED" | "PRINTED" | undefined
-        }
-      />
+      <SchoolFilesTable schoolId={school.id} />
     </SchoolLayout>
   );
 }
@@ -81,15 +53,15 @@ export const getServerSideProps = withServerSideAuth(
       status === "PRINTED"
         ? status
         : undefined;
-    const [files, filesCount] = await Promise.all([
-      trpCaller.file.allBySchoolId({
+    await Promise.all([
+      serverSideHelpers.file.allBySchoolId.prefetch({
         schoolId: school.id,
         orderBy: { dueDate: "asc" },
         status: filteredStatus,
         page: page,
         limit: limit,
       }),
-      trpCaller.file.countAllBySchoolId({
+      serverSideHelpers.file.countAllBySchoolId.prefetch({
         schoolId: school.id,
         orderBy: { dueDate: "asc" },
         status: filteredStatus,
@@ -97,12 +69,7 @@ export const getServerSideProps = withServerSideAuth(
     ]);
     return {
       props: {
-        status,
         school,
-        files,
-        filesCount,
-        page,
-        limit,
       },
     };
   },
