@@ -123,7 +123,7 @@ importers:
       '@types/react-collapse': ^5.0.1
       '@types/react-dom': ^18.0.11
       '@types/react-flatpickr': ^3.8.8
-      '@vercel/analytics': ^0.1.11
+      '@vercel/analytics': ^1.0.0
       autoprefixer: ^10.4.14
       dayjs: ^1.11.7
       eslint: ^8.39.0
@@ -175,7 +175,7 @@ importers:
       '@trpc/react-query': 10.21.1_aumgwwoau4etd3bgorn7g5bilq
       '@trpc/server': 10.21.1
       '@types/react-collapse': 5.0.1
-      '@vercel/analytics': 0.1.11_react@18.2.0
+      '@vercel/analytics': 1.0.0_react@18.2.0
       dayjs: 1.11.7
       flatpickr: 4.6.13
       highlight.run: 5.4.2
@@ -4454,8 +4454,8 @@ packages:
       wonka: 4.0.15
     dev: false
 
-  /@vercel/analytics/0.1.11_react@18.2.0:
-    resolution: {integrity: sha512-mj5CPR02y0BRs1tN3oZcBNAX9a8NxsIUl9vElDPcqxnMfP0RbRc9fI9Ud7+QDg/1Izvt5uMumsr+6YsmVHcyuw==}
+  /@vercel/analytics/1.0.0_react@18.2.0:
+    resolution: {integrity: sha512-RQmj7pv82JwGDHrnKeRc6TtSw2U7rWNubc2IH0ernTzWTj02yr9zvIYiYJeztsBzrJtWv7m8Nz6vxxb+cdEtJw==}
     peerDependencies:
       react: ^16.8||^17||^18
     dependencies:
