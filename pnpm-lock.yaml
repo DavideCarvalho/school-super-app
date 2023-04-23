@@ -103,7 +103,7 @@ importers:
       '@clerk/nextjs': ^4.16.4
       '@clerk/themes': ^1.6.3
       '@emailjs/browser': ^3.11.0
-      '@floating-ui/react': ^0.20.1
+      '@floating-ui/react': ^0.23.0
       '@headlessui/react': ^1.7.14
       '@highlight-run/react': ^2.0.1
       '@hookform/resolvers': ^3.0.0
@@ -160,7 +160,7 @@ importers:
       '@clerk/nextjs': 4.16.4_yucv4tfv7v7nrkw2uguegj6e7e
       '@clerk/themes': 1.6.3_react@18.2.0
       '@emailjs/browser': 3.11.0
-      '@floating-ui/react': 0.20.1_biqbaboplfbrettd7655fr4n2y
+      '@floating-ui/react': 0.23.1_biqbaboplfbrettd7655fr4n2y
       '@headlessui/react': 1.7.14_biqbaboplfbrettd7655fr4n2y
       '@highlight-run/react': 2.0.1_biqbaboplfbrettd7655fr4n2y
       '@hookform/resolvers': 3.1.0_react-hook-form@7.43.9
@@ -2617,8 +2617,8 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@floating-ui/react/0.20.1_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-JHTHJ+/YsIxNFH8uJDFa5OyI6dSUZcle6wAFe0zRTjgWD+rkACfBBoJtx2itTtn7C4a7xAz4jgxdEQcMel194g==}
+  /@floating-ui/react/0.23.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-OCc2ViQOBUKOGcE9NLAbpyqB+8Zz92IKIhxgz7XAkynKkVzcVSKtkWOcgyvO4SAzB2OybgRwk3WdzdzDRdh2QQ==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
