@@ -106,7 +106,7 @@ importers:
       '@floating-ui/react': ^0.20.1
       '@headlessui/react': ^1.7.14
       '@highlight-run/react': ^2.0.1
-      '@hookform/resolvers': ^2.9.11
+      '@hookform/resolvers': ^3.0.0
       '@react-buddy/ide-toolbox': ^2.3.1
       '@react-email/container': 0.0.8
       '@react-email/html': 0.0.4
@@ -163,7 +163,7 @@ importers:
       '@floating-ui/react': 0.20.1_biqbaboplfbrettd7655fr4n2y
       '@headlessui/react': 1.7.14_biqbaboplfbrettd7655fr4n2y
       '@highlight-run/react': 2.0.1_biqbaboplfbrettd7655fr4n2y
-      '@hookform/resolvers': 2.9.11_react-hook-form@7.43.9
+      '@hookform/resolvers': 3.1.0_react-hook-form@7.43.9
       '@react-buddy/ide-toolbox': 2.3.1_react@18.2.0
       '@react-email/container': 0.0.8
       '@react-email/html': 0.0.4
@@ -2674,8 +2674,8 @@ packages:
       react-dom: 18.2.0_react@18.2.0
     dev: false
 
-  /@hookform/resolvers/2.9.11_react-hook-form@7.43.9:
-    resolution: {integrity: sha512-bA3aZ79UgcHj7tFV7RlgThzwSSHZgvfbt2wprldRkYBcMopdMvHyO17Wwp/twcJasNFischFfS7oz8Katz8DdQ==}
+  /@hookform/resolvers/3.1.0_react-hook-form@7.43.9:
+    resolution: {integrity: sha512-z0A8K+Nxq+f83Whm/ajlwE6VtQlp/yPHZnXw7XWVPIGm1Vx0QV8KThU3BpbBRfAZ7/dYqCKKBNnQh85BkmBKkA==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
