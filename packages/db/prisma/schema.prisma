@@ -12,12 +12,13 @@ datasource db {
 }
 
 model School {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String
-  Users    User[]
-  Subjects Subject[]
-  Class    Class[]
+  id               String            @id @default(cuid())
+  name             String
+  slug             String
+  Users            User[]
+  Subjects         Subject[]
+  Classes          Class[]
+  PurchaseRequests PurchaseRequest[]
 }
 
 model User {
@@ -61,12 +62,12 @@ model TeacherHasClass {
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
-  @@index([teacherId])
-  @@index([classId])
-  @@index([subjectId])
   @@unique([teacherId, classId, subjectId])
   @@unique([teacherId, classWeekDay, classTime])
   @@unique([classId, classWeekDay, classTime])
+  @@index([teacherId])
+  @@index([classId])
+  @@index([subjectId])
   @@index([teacherId, classId, subjectId])
 }
 
@@ -126,4 +127,18 @@ model Class {
   File            File[]
 
   @@index([schoolId])
+}
+
+model PurchaseRequest {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String
+  schoolId    String
+  status      String
+  description String?  @db.Text
+  url         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  School School @relation(fields: [schoolId], references: [id])
 }
