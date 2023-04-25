@@ -781,10 +781,10 @@
   dependencies:
     react "18.2.0"
 
-"@react-email/tailwind@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@react-email/tailwind/-/tailwind-0.0.7.tgz#600c8a56318f3900df26ec29d81fd20aaab2b5cb"
-  integrity sha512-s4aLmnm7doGhXm+VqR587dlpFTNIDg3Vudzu7ooKNjJwW+/w21IqWs6uilE2RiItq/mgGR6MTbyJZ0Ub1kY/Qw==
+"@react-email/tailwind@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@react-email/tailwind/-/tailwind-0.0.8.tgz#d5cb9a2e55b386ce7dfb3c60527a1c98cc4d4c64"
+  integrity sha512-0BLjD5GpiyBK7YDlaDrjHIpj9eTrrZrMJud3f1UPoCZhS+0S/M8LcR8WMbQsR+8/aLGmiy4F4TGZuRQcsJEsFw==
   dependencies:
     html-react-parser "3.0.9"
     react "18.2.0"
