@@ -168,8 +168,8 @@ importers:
         specifier: ^1.7.14
         version: 1.7.14(react-dom@18.2.0)(react@18.2.0)
       '@highlight-run/react':
-        specifier: ^2.0.1
-        version: 2.0.1(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^3.0.0
+        version: 3.0.0(react-dom@18.2.0)(react@18.2.0)
       '@hookform/resolvers':
         specifier: ^3.0.0
         version: 3.0.0(react-hook-form@7.43.9)
@@ -2796,8 +2796,8 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@highlight-run/react@2.0.1(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-g2QgFblfAAlv5pkPKP6q8OuV9enmkpX5ty4aVE7PuOMwC/ZFx+qJ/qMc8H4kG6FVnHd9ts5040db1ezbeAKTLA==}
+  /@highlight-run/react@3.0.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-9uAUsWrI6N0zm5oa9LUStx+jXnNSNUIGR9Vs18a1AFK09mhQmCIVLgCJ2/h9AJ7r+hZYn6cZCvjhv4FMm/N/QQ==}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
