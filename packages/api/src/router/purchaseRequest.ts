@@ -46,6 +46,25 @@ export const purchaseRequestRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
       });
     }),
+  countAllBySchoolId: publicProcedure
+    .input(
+      z.object({
+        schoolId: z.string(),
+        status: z
+          .union([
+            z.literal("REQUESTED"),
+            z.literal("APPROVED"),
+            z.literal("REJECTED"),
+            z.literal("BOUGHT"),
+          ])
+          .optional(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.prisma.purchaseRequest.count({
+        where: { schoolId: input.schoolId, status: input.status },
+      });
+    }),
   updateStatus: publicProcedure
     .input(
       z.object({
