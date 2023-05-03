@@ -131,16 +131,17 @@ model Class {
 }
 
 model PurchaseRequest {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String
-  schoolId    String
-  status      String
-  description String?  @db.Text
-  url         String?
+  id               String    @id @default(cuid())
+  name             String
+  slug             String
+  schoolId         String
+  status           String
+  productName      String
+  description      String?   @db.Text
+  url              String?
   estimatedDueDate DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   School School @relation(fields: [schoolId], references: [id])
 
