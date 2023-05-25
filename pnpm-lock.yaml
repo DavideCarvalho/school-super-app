@@ -216,8 +216,8 @@ importers:
         specifier: ^4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: ^6.0.0
-        version: 6.0.0
+        specifier: ^7.0.0
+        version: 7.0.0
       next:
         specifier: ^13.3.0
         version: 13.3.0(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
@@ -7854,8 +7854,8 @@ packages:
       source-map: 0.7.4
     dev: false
 
-  /highlight.run@6.0.0:
-    resolution: {integrity: sha512-DVrYRJ9pvPBjcpNiKLaOtM3QN8Nm2dDhhJjRbJZU+WP4i8f50gGbYWHz7pqNAtqotyr0chMCPZMeOFgKXDyc8A==}
+  /highlight.run@7.0.0:
+    resolution: {integrity: sha512-zD1LsOd9zxd3qeTdSkczhtrGVd5+o0A3AFVx6TnGZjQj6ZcXNL2k71OWlynF800ATlzAxhZjYbu/Q7n/CVQAUA==}
     dev: false
 
   /hoist-non-react-statics@3.3.2:
