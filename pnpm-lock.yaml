@@ -229,8 +229,8 @@ importers:
         specifier: ^4.22.1
         version: 4.22.1(next@13.3.0)(nodemailer@6.9.1)(react-dom@18.2.0)(react@18.2.0)
       next-axiom:
-        specifier: ^0.17.0
-        version: 0.17.0(next@13.3.0)
+        specifier: ^0.18.0
+        version: 0.18.0(next@13.3.0)
       next-superjson:
         specifier: ^0.0.4
         version: 0.0.4(next@13.3.0)(superjson@1.12.4)(webpack@5.88.0)
@@ -10113,8 +10113,8 @@ packages:
       uuid: 8.3.2
     dev: false
 
-  /next-axiom@0.17.0(next@13.3.0):
-    resolution: {integrity: sha512-qFdnH50SvRjJUAmNjGIYLcRc4tO/U4R1h9WUuniiwaucXAH5KhL06m7TT3WWD2U1HbulwSfC0R+NlPASOx1XlQ==}
+  /next-axiom@0.18.0(next@13.3.0):
+    resolution: {integrity: sha512-OexBGAQ3l/EPCIxbaGVee+JmJZfW6DMT/NCqaRw6tsZ7dO72rsZCAMhDh6qT41+dCyb+X10Dzx3yHVy+3p1qyw==}
     engines: {node: '>=15'}
     peerDependencies:
       next: ^12.1.4 || ^13
