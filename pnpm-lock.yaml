@@ -420,11 +420,11 @@ importers:
     dependencies:
       '@prisma/client':
         specifier: ^4.13.0
-        version: 4.13.0(prisma@4.16.1)
+        version: 4.13.0(prisma@4.16.2)
     devDependencies:
       prisma:
-        specifier: 4.16.1
-        version: 4.16.1
+        specifier: 4.16.2
+        version: 4.16.2
       typescript:
         specifier: 5.1.6
         version: 5.1.6
@@ -3051,7 +3051,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
-      '@prisma/client': 4.13.0(prisma@4.16.1)
+      '@prisma/client': 4.13.0(prisma@4.16.2)
       next-auth: 4.22.1(next@13.3.0)(nodemailer@6.9.1)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
@@ -3346,7 +3346,7 @@ packages:
       tslib: 2.5.3
     dev: false
 
-  /@prisma/client@4.13.0(prisma@4.16.1):
+  /@prisma/client@4.13.0(prisma@4.16.2):
     resolution: {integrity: sha512-YaiiICcRB2hatxsbnfB66uWXjcRw3jsZdlAVxmx0cFcTc/Ad/sKdHCcWSnqyDX47vAewkjRFwiLwrOUjswVvmA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
@@ -3357,15 +3357,15 @@ packages:
         optional: true
     dependencies:
       '@prisma/engines-version': 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
-      prisma: 4.16.1
+      prisma: 4.16.2
     dev: false
 
   /@prisma/engines-version@4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a:
     resolution: {integrity: sha512-fsQlbkhPJf08JOzKoyoD9atdUijuGBekwoOPZC3YOygXEml1MTtgXVpnUNchQlRSY82OQ6pSGQ9PxUe4arcSLQ==}
     dev: false
 
-  /@prisma/engines@4.16.1:
-    resolution: {integrity: sha512-gpZG0kGGxfemgvK/LghHdBIz+crHkZjzszja94xp4oytpsXrgt/Ice82MvPsWMleVIniKuARrowtsIsim0PFJQ==}
+  /@prisma/engines@4.16.2:
+    resolution: {integrity: sha512-vx1nxVvN4QeT/cepQce68deh/Turxy5Mr+4L4zClFuK1GlxN3+ivxfuv+ej/gvidWn1cE1uAhW7ALLNlYbRUAw==}
     requiresBuild: true
 
   /@radix-ui/colors@0.1.8:
@@ -11104,13 +11104,13 @@ packages:
       react: 18.2.0
     dev: true
 
-  /prisma@4.16.1:
-    resolution: {integrity: sha512-C2Xm7yxHxjFjjscBEW4tmoraPHH/Vyu/A0XABdbaFtoiOZARsxvOM7rwc2iZ0qVxbh0bGBGBWZUSXO/52/nHBQ==}
+  /prisma@4.16.2:
+    resolution: {integrity: sha512-SYCsBvDf0/7XSJyf2cHTLjLeTLVXYfqp7pG5eEVafFLeT0u/hLFz/9W196nDRGUOo1JfPatAEb+uEnTQImQC1g==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.16.1
+      '@prisma/engines': 4.16.2
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
