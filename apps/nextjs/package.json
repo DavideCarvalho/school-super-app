@@ -43,7 +43,7 @@
     "highlight.run": "^6.0.0",
     "next": "^13.3.0",
     "next-auth": "^4.22.1",
-    "next-axiom": "^0.18.0",
+    "next-axiom": "^1.0.0",
     "next-superjson": "^0.0.4",
     "nodemailer": "^6.9.1",
     "react": "18.2.0",
