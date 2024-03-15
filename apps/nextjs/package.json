@@ -40,7 +40,7 @@
     "@vercel/analytics": "^1.0.0",
     "dayjs": "^1.11.7",
     "flatpickr": "^4.6.13",
-    "highlight.run": "^6.0.0",
+    "highlight.run": "^8.0.0",
     "next": "^13.3.0",
     "next-auth": "^4.22.1",
     "next-axiom": "^0.18.0",
