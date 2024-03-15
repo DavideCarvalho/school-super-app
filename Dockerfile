@@ -4,6 +4,8 @@ RUN npm i -g turbo
 
 RUN npm i -g pnpm
 
+RUN npm i -g prisma
+
 COPY . .
 RUN CI=true SKIP_ENV_VALIDATION=true turbo run build
 RUN pnpm install --frozen-lockfile
