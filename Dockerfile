@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN export $(grep -v '^#' .env | xargs)
+RUN env -S $(grep -v '^#' .env) env
 RUN env
 
 RUN npm i -g turbo
