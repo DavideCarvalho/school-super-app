@@ -10,8 +10,9 @@ COPY . home/node/app
 WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
 
-RUN cat .env
-RUN source .env
+# RUN cat .env
+# RUN source .env
+RUN printenv
 RUN turbo run build
 
 EXPOSE 3000
