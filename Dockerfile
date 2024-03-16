@@ -1,9 +1,15 @@
 FROM node:20-alpine
 
+COPY . home/node/app
+
+WORKDIR /home/node/app
+
+
 RUN set -a
 RUN source .env
 RUN set +a
 RUN env
+
 
 RUN npm i -g turbo
 
@@ -11,8 +17,6 @@ RUN npm i -g pnpm
 
 RUN npm i -g prisma
 
-COPY . home/node/app
-WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
 
 # RUN cat .env
