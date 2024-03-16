@@ -12,6 +12,7 @@ RUN pnpm install --frozen-lockfile
 
 # RUN cat .env
 RUN export $(grep -v '^#' my_custom.env | xargs)
+RUN env
 RUN turbo run build
 
 EXPOSE 3000
