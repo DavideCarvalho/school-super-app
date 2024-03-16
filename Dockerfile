@@ -5,10 +5,9 @@ COPY . home/node/app
 WORKDIR /home/node/app
 
 
-RUN set -a
-RUN source .env
-RUN set +a
+RUN set -o allexport source .env set +o allexport
 RUN env
+RUN printenv
 
 
 RUN npm i -g turbo
