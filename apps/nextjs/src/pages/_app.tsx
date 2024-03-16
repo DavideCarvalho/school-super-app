@@ -8,8 +8,14 @@ import { Analytics } from "@vercel/analytics/react";
 import { Toaster } from "react-hot-toast";
 
 import { api } from "~/utils/api";
+import { env } from "~/env.mjs";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
+  console.log("env", env);
+  console.log(
+    "env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+    env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+  );
   // const { user } = useUser();
 
   // const [alreadyInitiated, setAlreadyInitiated] = useState(false);
