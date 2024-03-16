@@ -8,14 +8,16 @@ export const purchaseRequestRouter = createTRPCRouter({
     .input(
       z.object({
         schoolId: z.string(),
-        name: z.string(),
+        productName: z.string(),
+        quantity: z.number(),
         url: z.string().optional(),
       }),
     )
-    .query(({ ctx, input }) => {
+    .mutation(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.create({
         data: {
           schoolId: input.schoolId,
+          productName: input.productName,
           url: input.url,
           name: input.name,
           slug: slugify(input.name),

@@ -4,10 +4,10 @@ import {
 } from "next";
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
-import { SchoolClassesTable } from "src/components/school-classes-table";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
 
+import { SchoolPurchaseRequestsTable } from "~/components/school-purchaserequests-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function PurchaseRequestsPage({
@@ -15,7 +15,7 @@ export default function PurchaseRequestsPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolClassesTable schoolId={school.id} />
+      <SchoolPurchaseRequestsTable schoolId={school.id} />
     </SchoolLayout>
   );
 }
