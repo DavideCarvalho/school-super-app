@@ -9,9 +9,10 @@ RUN npm i -g prisma
 COPY . home/node/app
 WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
-RUN turbo run build
 
+RUN cat .env
 RUN source .env
+RUN turbo run build
 
 EXPOSE 3000
 
