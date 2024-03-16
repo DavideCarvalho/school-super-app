@@ -11,6 +11,8 @@ WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
 RUN turbo run build
 
+RUN source .env
+
 EXPOSE 3000
 
 ENV NODE_ENV production
