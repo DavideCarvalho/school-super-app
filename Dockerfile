@@ -4,9 +4,9 @@ COPY . home/node/app
 
 WORKDIR /home/node/app
 
-RUN cat .env
+# RUN cat .env
 
-RUN set -o allexport source .env set +o allexport
+# RUN set -o allexport source .env set +o allexport
 RUN env
 RUN printenv
 
