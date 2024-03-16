@@ -8,7 +8,7 @@
   "scripts": {
     "build": "pnpm with-env turbo build",
     "clean": "git clean -xdf node_modules",
-    "start": "printenv && ls -la && pnpm with-env turbo start",
+    "start": "printenv && ls -la && pnpm build && pnpm with-env turbo start",
     "clean:workspaces": "turbo clean",
     "db:generate": "pnpm with-env turbo db:generate",
     "db:push": "pnpm with-env turbo db:push db:generate",
