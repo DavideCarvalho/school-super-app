@@ -37,6 +37,11 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
         data-id="c364c5f9-523a-49bd-aa09-420f80558467"
         data-utcoffset="-3"
       />
+      <Script
+        src="https://plausible.anuaapp.com.br/js/script.js"
+        data-domain="anuaapp.com.br"
+        defer={true}
+      />
       <Component {...pageProps} />
       <Analytics />
       {/* <AxiomReporter /> */}
