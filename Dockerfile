@@ -11,7 +11,7 @@ WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
 
 # RUN cat .env
-# RUN source .env
+RUN source .env
 RUN printenv
 RUN turbo run build
 
