@@ -13,7 +13,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
       <Script
         src="https://plausible.anuaapp.com.br/js/script.js"
         data-domain="anuaapp.com.br"
-        defer={true}
+        defer
       />
       <Component {...pageProps} />
       <Toaster />
