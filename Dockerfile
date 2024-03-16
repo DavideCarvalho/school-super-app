@@ -6,6 +6,8 @@ RUN npm i -g pnpm
 
 RUN npm i -g prisma
 
+RUN printenv
+
 COPY . home/node/app
 WORKDIR /home/node/app
 RUN ls -la
