@@ -1,13 +1,14 @@
 {
-  "name": "create-t3-turbo",
+  "name": "anuaapp",
   "private": true,
   "engines": {
     "node": ">=18.18.2"
   },
-  "packageManager": "pnpm@7.32.2",
+  "packageManager": "pnpm@8.10.5",
   "scripts": {
     "build": "pnpm with-env turbo build",
     "clean": "git clean -xdf node_modules",
+    "start": "pnpm with-env turbo start",
     "clean:workspaces": "turbo clean",
     "db:generate": "pnpm with-env turbo db:generate",
     "db:push": "pnpm with-env turbo db:push db:generate",
