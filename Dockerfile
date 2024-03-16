@@ -18,4 +18,6 @@ ENV NODE_ENV production
 
 RUN cd ./apps/nextjs
 
+RUN ls -la
+
 CMD ["pnpm", "start"]
