@@ -4,6 +4,7 @@ COPY . home/node/app
 
 WORKDIR /home/node/app
 
+RUN cat .env
 
 RUN set -o allexport source .env set +o allexport
 RUN env
@@ -17,8 +18,6 @@ RUN npm i -g pnpm
 RUN npm i -g prisma
 
 RUN pnpm install --frozen-lockfile
-
-# RUN cat .env
 
 RUN turbo run build
 
