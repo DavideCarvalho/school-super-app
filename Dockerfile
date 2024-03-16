@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+RUN export $(grep -v '^#' .env | xargs)
+RUN env
+
 RUN npm i -g turbo
 
 RUN npm i -g pnpm
@@ -11,8 +14,7 @@ WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
 
 # RUN cat .env
-RUN export $(grep -v '^#' my_custom.env | xargs)
-RUN env
+
 RUN turbo run build
 
 EXPOSE 3000
