@@ -1,6 +1,8 @@
 FROM node:20-alpine
 
-RUN env -S $(grep -v '^#' .env) env
+RUN set -a
+RUN source .env
+RUN set +a
 RUN env
 
 RUN npm i -g turbo
