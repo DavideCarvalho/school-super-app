@@ -11,6 +11,7 @@ import { api } from "~/utils/api";
 import { env } from "~/env.mjs";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
+  console.log('process.env', process.env);
   console.log("env", env);
   console.log(
     "env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
