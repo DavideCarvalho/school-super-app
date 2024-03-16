@@ -11,8 +11,10 @@ WORKDIR /home/node/app
 RUN pnpm install --frozen-lockfile
 
 # RUN cat .env
-RUN export $(cat .env | xargs) && env
-RUN printenv
+RUN set -a
+RUN source .env
+RUN set +a
+RUN env
 RUN turbo run build
 
 EXPOSE 3000
