@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+console.log('process.env', process.env)
+
 /**
  * Specify your server-side environment variables schema here. This way you can ensure the app isn't
  * built with invalid env vars.
