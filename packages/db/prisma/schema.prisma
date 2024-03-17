@@ -12,12 +12,13 @@ datasource db {
 }
 
 model School {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String
-  Users    User[]
-  Subjects Subject[]
-  Class    Class[]
+  id               String            @id @default(cuid())
+  name             String
+  slug             String
+  Users            User[]
+  Subjects         Subject[]
+  Classes          Class[]
+  PurchaseRequests PurchaseRequest[]
 }
 
 model User {
@@ -31,9 +32,11 @@ model User {
   updatedAt DateTime @updatedAt
   teacherId String?
 
-  School  School    @relation(fields: [schoolId], references: [id])
-  Role    Role      @relation(fields: [roleId], references: [id])
-  Teacher Teacher[]
+  School          School            @relation(fields: [schoolId], references: [id])
+  Role            Role              @relation(fields: [roleId], references: [id])
+  Teacher         Teacher[]
+  Notification    Notification[]
+  PurchaseRequest PurchaseRequest[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -61,12 +64,12 @@ model TeacherHasClass {
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
-  @@index([teacherId])
-  @@index([classId])
-  @@index([subjectId])
   @@unique([teacherId, classId, subjectId])
   @@unique([teacherId, classWeekDay, classTime])
   @@unique([classId, classWeekDay, classTime])
+  @@index([teacherId])
+  @@index([classId])
+  @@index([subjectId])
   @@index([teacherId, classId, subjectId])
 }
 
@@ -126,4 +129,48 @@ model Class {
   File            File[]
 
   @@index([schoolId])
+}
+
+model PurchaseRequest {
+  id                   String    @id @default(cuid())
+  productName          String
+  quantity             Int // quantidade do produto de acordo com quem fez o pedido
+  finalQuantity        Int? // quantidade final do produto de acordo com quem fez a compra
+  status               String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  schoolId             String
+  dueDate              DateTime // dia que a pessoa precisa usar o produto
+  value                Float // valor do produto de acordo com quem fez o pedido
+  unitValue            Float // valor unitário do produto de acordo com quem fez a compra
+  finalUnitValue       Float? // valor unitário final do produto de acordo com quem fez a compra
+  finalValue           Float? // valor final do produto de acordo com quem fez a compra
+  description          String?   @db.Text
+  productUrl           String?
+  purchaseDate         DateTime? // dia que foi comprado
+  estimatedArrivalDate DateTime? // dia que vai chegar depois de aprovado
+  arrivalDate          DateTime? // dia que chegou
+  rejectionReason      String?   @db.Text
+  requestingUserId     String
+  receiptPath          String?
+
+  School School @relation(fields: [schoolId], references: [id])
+  User   User   @relation(fields: [requestingUserId], references: [id])
+
+  @@index([schoolId])
+  @@index([requestingUserId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  body      String?  @db.Text
+  cleared   Boolean  @default(false)
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }

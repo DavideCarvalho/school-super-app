@@ -7,7 +7,11 @@ import { trpCaller } from "@acme/api";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function SchoolPage() {
-  return <SchoolLayout></SchoolLayout>;
+  return (
+    <SchoolLayout>
+      <h1>Dashboard - em construção</h1>
+    </SchoolLayout>
+  );
 }
 
 export const getServerSideProps = withServerSideAuth(

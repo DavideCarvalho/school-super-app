@@ -13,7 +13,7 @@ interface CalendarProps {
 export default function Calendar({ value, minDate, onChange }: CalendarProps) {
   return (
     <Flatpickr
-      className="focus:shadow-soft-primary-outline dark:bg-gray-950 leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 text-sm font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-indigo-600 focus:outline-none"
+      className="focus:shadow-soft-primary-outline leading-5.6 ease-soft block w-full appearance-none rounded-lg border border-solid border-gray-300 bg-white bg-clip-padding px-3 py-2 text-sm font-normal text-gray-700 outline-none transition-all placeholder:text-gray-500 focus:border-indigo-600 focus:outline-none"
       options={{
         minDate,
         dateFormat: "d/m/Y",
