@@ -102,7 +102,7 @@ export function SchoolClassesTable({ schoolId }: SchoolClassesTableProps) {
             <div>
               <p className="text-lg font-bold text-gray-900">Turmas</p>
             </div>
-            {user?.publicMetadata?.role === "SCHOOL_WORKER" && (
+            {user?.publicMetadata?.role !== "TEACHER" && (
               <button
                 type="button"
                 onClick={() => setOpen(true)}
