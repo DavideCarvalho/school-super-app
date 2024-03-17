@@ -17,7 +17,7 @@
     "@trpc/client": "^10.21.1",
     "@trpc/server": "^10.21.1",
     "nodemailer": "^6.9.1",
-    "superjson": "1.12.4",
+    "superjson": "1.13.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {
