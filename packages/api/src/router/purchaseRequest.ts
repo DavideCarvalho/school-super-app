@@ -113,28 +113,6 @@ export const purchaseRequestRouter = createTRPCRouter({
         where: { schoolId: input.schoolId, status: input.status },
       });
     }),
-  updateStatus: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-        status: z.union([
-          z.literal("REQUESTED"),
-          z.literal("APPROVED"),
-          z.literal("REJECTED"),
-          z.literal("BOUGHT"),
-          z.literal("ARRIVED"),
-        ]),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      await ctx.prisma.purchaseRequest.update({
-        where: { id: input.id },
-        data: {
-          status: input.status,
-          arrivalDate: input.status === "ARRIVED" ? new Date() : undefined,
-        },
-      });
-    }),
   deleteById: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -160,11 +138,11 @@ export const purchaseRequestRouter = createTRPCRouter({
       });
     }),
   arrivedPurchaseRequest: publicProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string(), arrivalDate: z.date() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.purchaseRequest.update({
         where: { id: input.id },
-        data: { status: "ARRIVED", arrivalDate: new Date() },
+        data: { status: "ARRIVED", arrivalDate: input.arrivalDate },
       });
     }),
   createBoughtPurchaseRequestFileSignedUrl: publicProcedure
@@ -181,6 +159,7 @@ export const purchaseRequestRouter = createTRPCRouter({
         `/school/${input.schoolId}/purchase-request/${input.fileName}`,
         60 * 60,
       );
+      console.log(`signedUrl`, signedUrl);
       return { signedUrl };
     }),
   boughtPurchaseRequest: publicProcedure

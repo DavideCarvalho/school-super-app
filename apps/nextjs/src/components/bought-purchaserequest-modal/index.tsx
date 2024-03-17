@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
@@ -9,17 +10,18 @@ import type { PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
 import Calendar from "../calendar";
+import { FileInput } from "../fileinput";
 import { Modal } from "../modal";
 
 const schema = z
   .object({
-    finalQuantity: z
+    finalQuantity: z.coerce
       .number({ required_error: "Quantos foram comprados?" })
       .min(1),
-    finalUnitValue: z
+    finalUnitValue: z.coerce
       .number({ required_error: "Qual o valor unitário?" })
       .min(0),
-    finalValue: z
+    finalValue: z.coerce
       .number({ required_error: "Qual o valor total que foi comprado?" })
       .min(0),
     estimatedArrivalDate: z.date({ required_error: "Previsão de chegada" }),
@@ -43,7 +45,6 @@ export function BoughtPurchaseRequestModal({
   onClickCancel,
   purchaseRequest,
 }: BoughtPurchaseRequestModalProps) {
-  const { user } = useUser();
   const {
     register,
     handleSubmit,
@@ -54,6 +55,15 @@ export function BoughtPurchaseRequestModal({
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
+
+  useEffect(() => {
+    if (!purchaseRequest) return;
+    console.log(`purchaseRequest`, purchaseRequest);
+    setValue("finalQuantity", purchaseRequest.quantity);
+    setValue("finalUnitValue", purchaseRequest.unitValue);
+    setValue("finalValue", purchaseRequest.value);
+    setValue("estimatedArrivalDate", purchaseRequest.dueDate);
+  }, [open]);
 
   const { mutateAsync: createBoughtPurchaseRequestFileSignedUrl } =
     api.purchaseRequest.createBoughtPurchaseRequestFileSignedUrl.useMutation();
@@ -82,7 +92,7 @@ export function BoughtPurchaseRequestModal({
         id: purchaseRequest.id,
         schoolId,
       });
-      toast.loading("Solicitação de compra alterada com sucesso!");
+      toast.success("Solicitação de compra alterada com sucesso!");
       onCreated();
       reset();
     } catch (e) {
@@ -95,6 +105,8 @@ export function BoughtPurchaseRequestModal({
   const now = dayjs();
   const watchDueDate = watch("estimatedArrivalDate", new Date());
   const watchPurchaseDate = watch("purchaseDate", new Date());
+
+  console.log(`errors`, errors);
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Item comprado"}>
@@ -195,6 +207,19 @@ export function BoughtPurchaseRequestModal({
                 onChange={(date) => setValue("estimatedArrivalDate", date)}
               />
             </div>
+          </div>
+        </div>
+
+        <div>
+          <label htmlFor="quantity" className="text-sm font-bold text-gray-900">
+            Selecione a nota fiscal
+          </label>
+          <div className="mt-2">
+            <FileInput
+              onDropFile={(file) => setValue("receiptFile", file)}
+              acceptedFileTypes={["image/jpeg"]}
+              onRemoveFile={() => setValue("receiptFile", null)}
+            />
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { DropzoneState, useDropzone } from "react-dropzone";
+import { Accept, DropzoneState, useDropzone } from "react-dropzone";
 
 import { CloseIcon } from "../icons/close-icon";
 import { FileIcon } from "../icons/file-icon";
@@ -9,42 +9,65 @@ interface InputProps {
   dropzone: DropzoneState;
 }
 
+const fileTypes = {
+  "application/pdf": [`.pdf`],
+  "image/jpeg": [`.jpg`, `.jpeg`],
+};
+
+type acceptedFileTypes = keyof typeof fileTypes;
+
 interface HasFileProps {
   file?: File;
   removeFile: () => void;
 }
 
-export const FileInput = () => {
+export function FileInput({
+  onDropFile,
+  acceptedFileTypes,
+  onRemoveFile,
+}: {
+  onDropFile: (file: File) => void;
+  onRemoveFile: () => void;
+  acceptedFileTypes: acceptedFileTypes[];
+}) {
   const [file, setFile] = useState<File | null>(null);
 
   const removeFile = useCallback(() => {
     setFile(null);
+    onRemoveFile();
   }, [file]);
 
   const onDrop = useCallback((files: File[]) => {
+    if (!files.length || !files[0]) return;
     setFile(files[0]);
+    onDropFile(files[0]);
   }, []);
+
+  const accept: Accept = acceptedFileTypes.reduce((acc, type) => {
+    return {
+      ...acc,
+      [type]: fileTypes[type],
+    };
+  }, {});
 
   const dropzone = useDropzone({
     onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-    },
+    accept,
   });
 
   if (file) return <HasFile file={file} removeFile={removeFile} />;
 
   return <Input dropzone={dropzone} />;
-};
+}
 
-const Input = ({ dropzone }: InputProps) => {
+function Input({ dropzone }: InputProps) {
   const { getRootProps, getInputProps, isDragActive } = dropzone;
 
   return (
     <div
       {...getRootProps()}
-      className={`h-full w-1/2 rounded-lg border-4 border-dashed bg-gray-700 transition-all hover:border-gray-500 hover:bg-gray-600
-      ${isDragActive ? "border-blue-500" : "border-gray-600"}`}
+      className={`h-full w-1/2 rounded-lg border-4 border-dashed transition-all hover:border-gray-300 hover:bg-gray-300
+      ${isDragActive ? "border-blue-500" : "border-gray-300"}`}
     >
       <label htmlFor="dropzone-file" className="h-full w-full cursor-pointer">
         <div className="flex h-full w-full flex-col items-center justify-center pb-6 pt-5">
@@ -69,9 +92,9 @@ const Input = ({ dropzone }: InputProps) => {
       <input {...getInputProps()} className="hidden" />
     </div>
   );
-};
+}
 
-const HasFile = ({ file, removeFile }: HasFileProps) => {
+function HasFile({ file, removeFile }: HasFileProps) {
   return (
     <div className="flex h-full w-1/2 items-center justify-center rounded-lg border-4 border-dashed border-gray-600 bg-gray-700">
       <div className="flex w-36 items-center justify-center gap-3 rounded-md bg-white shadow-md">
@@ -87,4 +110,4 @@ const HasFile = ({ file, removeFile }: HasFileProps) => {
       </div>
     </div>
   );
-};
+}

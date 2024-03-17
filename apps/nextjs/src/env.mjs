@@ -22,9 +22,6 @@ const server = z.object({
  */
 const client = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
-  NEXT_PUBLIC_MINIO_ENDPOINT: z.string(),
-  NEXT_PUBLIC_MINIO_ACCESS_KEY: z.string(),
-  NEXT_PUBLIC_MINIO_SECRET_KEY: z.string(),
 });
 
 /**

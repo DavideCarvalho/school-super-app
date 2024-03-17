@@ -13,6 +13,7 @@ import { toast } from "react-hot-toast";
 import { type PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
+import { ArrivedPurchaseRequestModal } from "../arrived-purchaserequest-modal";
 import { BoughtPurchaseRequestModal } from "../bought-purchaserequest-modal";
 import { EditRequestedPurchaseRequestModal } from "../edit-requested-purchaserequest-modal";
 import { NewPurchaseRequestModal } from "../new-purchaserequest-modal";
@@ -39,6 +40,8 @@ export function SchoolPurchaseRequestsTable({
   const [openBoughtPurchaseRequestModal, setOpenBoughtPurchaseRequestModal] =
     useState(false);
 
+  const [openArrivedPurchaseRequestModal, setOpenArrivedPurchaseRequestModal] =
+    useState(false);
   const purchaseRequestsQuery = api.purchaseRequest.allBySchoolId.useQuery(
     {
       schoolId,
@@ -54,7 +57,10 @@ export function SchoolPurchaseRequestsTable({
       { refetchOnMount: false },
     );
 
-  const deleteSchoolClassMutation = api.class.deleteById.useMutation();
+  const deletePurchaseRequestMutation =
+    api.purchaseRequest.deleteById.useMutation();
+  const { mutateAsync: approvePurchaseRequestMutation } =
+    api.purchaseRequest.approvePurchaseRequest.useMutation();
 
   async function onCreated() {
     setOpen(false);
@@ -62,10 +68,18 @@ export function SchoolPurchaseRequestsTable({
     await purchaseRequestsCountQuery.refetch();
   }
 
+  async function onApprove(purchaseRequest: PurchaseRequest) {
+    await approvePurchaseRequestMutation({
+      id: purchaseRequest.id,
+    });
+    await purchaseRequestsQuery.refetch();
+    await purchaseRequestsCountQuery.refetch();
+  }
+
   function deletePurchaseRequest(purchaseRequestId: string) {
     toast.loading("Removendo solicitação de compra...");
-    deleteSchoolClassMutation.mutate(
-      { classId: purchaseRequestId, schoolId },
+    deletePurchaseRequestMutation.mutate(
+      { id: purchaseRequestId },
       {
         async onSuccess() {
           toast.dismiss();
@@ -80,6 +94,11 @@ export function SchoolPurchaseRequestsTable({
   function onSelectPurchaseRequestToEdit(purchaseRequest: PurchaseRequest) {
     setOpenEditModal(true);
     setSelectedPurchaseRequest(purchaseRequest);
+  }
+
+  function onSelectPurchaseRequestBought(purchaseRequest: PurchaseRequest) {
+    setSelectedPurchaseRequest(purchaseRequest);
+    setOpenBoughtPurchaseRequestModal(true);
   }
 
   async function onEdited() {
@@ -107,6 +126,8 @@ export function SchoolPurchaseRequestsTable({
     await purchaseRequestsQuery.refetch();
     await purchaseRequestsCountQuery.refetch();
   }
+
+  async function onArrived(purchaseRequest: PurchaseRequest) {}
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
@@ -139,10 +160,25 @@ export function SchoolPurchaseRequestsTable({
         open={openBoughtPurchaseRequestModal}
         purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
         onClickCancel={() => {
-          setOpenRejectPurchaseRequestModal(false);
+          setOpenBoughtPurchaseRequestModal(false);
           setSelectedPurchaseRequest(undefined);
         }}
         onCreated={onCreatedBought}
+      />
+
+      <ArrivedPurchaseRequestModal
+        open={openArrivedPurchaseRequestModal}
+        purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        onClickCancel={() => {
+          setOpenArrivedPurchaseRequestModal(false);
+          setSelectedPurchaseRequest(undefined);
+        }}
+        onArrived={async () => {
+          setOpenArrivedPurchaseRequestModal(false);
+          setSelectedPurchaseRequest(undefined);
+          await purchaseRequestsQuery.refetch();
+          await purchaseRequestsCountQuery.refetch();
+        }}
       />
 
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
@@ -194,9 +230,12 @@ export function SchoolPurchaseRequestsTable({
                   onDelete={({ id }) => deletePurchaseRequest(id)}
                   onEdit={onSelectPurchaseRequestToEdit}
                   onReject={onReject}
-                  onApprove={() => {}}
-                  onBought={() => {}}
-                  onArrived={() => {}}
+                  onApprove={onApprove}
+                  onBought={onSelectPurchaseRequestBought}
+                  onArrived={() => {
+                    setSelectedPurchaseRequest(purchaseRequest);
+                    setOpenArrivedPurchaseRequestModal(true);
+                  }}
                 />
               );
             })}
@@ -246,8 +285,65 @@ function TableRow({
   onDelete,
   onEdit,
   onApprove,
+  onBought,
+  onArrived,
   onReject,
 }: TableRowProps) {
+  if (purchaseRequest.status === "REJECTED") {
+    return (
+      <TableRowRejected
+        purchaseRequest={purchaseRequest}
+        onDelete={onDelete}
+        onEdit={onEdit}
+        onApprove={onApprove}
+        onBought={onBought}
+        onReject={onReject}
+        onArrived={onArrived}
+      />
+    );
+  }
+  if (purchaseRequest.status === "REQUESTED") {
+    return (
+      <TableRowRequested
+        purchaseRequest={purchaseRequest}
+        onDelete={onDelete}
+        onEdit={onEdit}
+        onApprove={onApprove}
+        onBought={onBought}
+        onReject={onReject}
+        onArrived={onArrived}
+      />
+    );
+  }
+
+  if (purchaseRequest.status === "BOUGHT") {
+    return (
+      <TableRowBought
+        purchaseRequest={purchaseRequest}
+        onDelete={onDelete}
+        onEdit={onEdit}
+        onApprove={onApprove}
+        onBought={onBought}
+        onReject={onReject}
+        onArrived={onArrived}
+      />
+    );
+  }
+
+  if (purchaseRequest.status === "ARRIVED") {
+    return (
+      <TableRowArrived
+        purchaseRequest={purchaseRequest}
+        onDelete={onDelete}
+        onEdit={onEdit}
+        onApprove={onApprove}
+        onBought={onBought}
+        onReject={onReject}
+        onArrived={onArrived}
+      />
+    );
+  }
+
   const [isOpen, setIsOpen] = useState(false);
 
   const { x, y, strategy, refs, context } = useFloating({
@@ -328,6 +424,14 @@ function TableRow({
                     Rejeitar
                   </li>
                 )}
+                {purchaseRequest.status === "APPROVED" && (
+                  <li
+                    className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                    onClick={() => onBought(purchaseRequest)}
+                  >
+                    Comprado
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -348,13 +452,13 @@ function TableRow({
         </p>
       </div>
 
-      {purchaseRequest.estimatedDueDate && (
+      {purchaseRequest.estimatedArrivalDate && (
         <div className="px-4 sm:px-6 lg:py-4">
           <p className="text-lg font-bold text-gray-900">
             Estimativa de chegada
           </p>
           <p className="mt-1 text-lg font-medium text-gray-500">
-            {dayjs(purchaseRequest.estimatedDueDate).format("DD/MM/YYYY")}
+            {dayjs(purchaseRequest.estimatedArrivalDate).format("DD/MM/YYYY")}
           </p>
         </div>
       )}
@@ -377,6 +481,397 @@ function TableRow({
         <p className="text-lg font-bold text-gray-900">Valor unitário</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
           {purchaseRequest.value.toLocaleString("pt-BR")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowRejected({
+  purchaseRequest,
+  onDelete,
+  onEdit,
+}: TableRowProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { x, y, strategy, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps } = useInteractions([click, dismiss]);
+
+  return (
+    <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          ref={refs.setReference}
+          {...getReferenceProps()}
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+        {isOpen && (
+          <div
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: y ? y + 10 : 0,
+              left: x ?? 0,
+            }}
+          >
+            <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+              <ul className="flex flex-col">
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onDelete(purchaseRequest)}
+                >
+                  Excluir
+                </li>
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onEdit(purchaseRequest)}
+                >
+                  Editar
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Produto</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.productName}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Status</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {statusDictionary[purchaseRequest.status]}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Pra qual dia?</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {dayjs(purchaseRequest.dueDate).format("DD/MM/YYYY")}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Quantidade</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.quantity}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Valor unitário</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.value.toLocaleString("pt-BR")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowRequested({
+  purchaseRequest,
+  onDelete,
+  onEdit,
+  onApprove,
+  onBought,
+  onReject,
+}: TableRowProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { x, y, strategy, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps } = useInteractions([click, dismiss]);
+
+  return (
+    <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          ref={refs.setReference}
+          {...getReferenceProps()}
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+        {isOpen && (
+          <div
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: y ? y + 10 : 0,
+              left: x ?? 0,
+            }}
+          >
+            <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+              <ul className="flex flex-col">
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onApprove(purchaseRequest)}
+                >
+                  Aprovar
+                </li>
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onDelete(purchaseRequest)}
+                >
+                  Excluir
+                </li>
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onEdit(purchaseRequest)}
+                >
+                  Editar
+                </li>
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onReject(purchaseRequest)}
+                >
+                  Rejeitar
+                </li>
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onBought(purchaseRequest)}
+                >
+                  Comprado
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Produto</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.productName}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Status</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {statusDictionary[purchaseRequest.status]}
+        </p>
+      </div>
+
+      {purchaseRequest.estimatedArrivalDate && (
+        <div className="px-4 sm:px-6 lg:py-4">
+          <p className="text-lg font-bold text-gray-900">
+            Estimativa de chegada
+          </p>
+          <p className="mt-1 text-lg font-medium text-gray-500">
+            {dayjs(purchaseRequest.estimatedArrivalDate).format("DD/MM/YYYY")}
+          </p>
+        </div>
+      )}
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Pra qual dia?</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {dayjs(purchaseRequest.dueDate).format("DD/MM/YYYY")}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Quantidade</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.quantity}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Valor unitário</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.value.toLocaleString("pt-BR")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowBought({ purchaseRequest, onArrived }: TableRowProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { x, y, strategy, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps } = useInteractions([click, dismiss]);
+
+  return (
+    <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">
+      <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
+        <button
+          type="button"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-gray-400 transition-all duration-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          ref={refs.setReference}
+          {...getReferenceProps()}
+        >
+          <svg
+            className="h-6 w-6"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+            />
+          </svg>
+        </button>
+        {isOpen && (
+          <div
+            ref={refs.setFloating}
+            style={{
+              position: strategy,
+              top: y ? y + 10 : 0,
+              left: x ?? 0,
+            }}
+          >
+            <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
+              <ul className="flex flex-col">
+                <li
+                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                  onClick={() => onArrived(purchaseRequest)}
+                >
+                  Chegou
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Produto</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.productName}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Status</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {statusDictionary[purchaseRequest.status]}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Estimativa de chegada</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {dayjs(purchaseRequest.estimatedArrivalDate).format("DD/MM/YYYY")}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Quantidade comprada</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.finalQuantity}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">
+          Valor unitário comprado
+        </p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.finalValue!.toLocaleString("pt-BR")}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function TableRowArrived({ purchaseRequest }: TableRowProps) {
+  return (
+    <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Produto</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.productName}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Status</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {statusDictionary[purchaseRequest.status]}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Estimativa de chegada</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {dayjs(purchaseRequest.estimatedArrivalDate).format("DD/MM/YYYY")}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Quantidade comprada</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.finalQuantity}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">
+          Valor unitário comprado
+        </p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.finalValue!.toLocaleString("pt-BR")}
         </p>
       </div>
     </div>
