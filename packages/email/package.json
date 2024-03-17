@@ -30,6 +30,6 @@
     "eslint-config-acme": "0.0.0",
     "framer-motion": "^10.12.4",
     "prism-react-renderer": "^2.0.0",
-    "typescript": "5.1.6"
+    "typescript": "5.4.2"
   }
 }
