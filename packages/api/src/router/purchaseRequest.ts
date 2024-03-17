@@ -1,4 +1,4 @@
-import slugify from "slugify";
+import { StatusBar } from "expo-status-bar";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -10,7 +10,11 @@ export const purchaseRequestRouter = createTRPCRouter({
         schoolId: z.string(),
         productName: z.string(),
         quantity: z.number(),
-        url: z.string().optional(),
+        value: z.number(),
+        dueDate: z.date(),
+        productUrl: z.string().optional(),
+        description: z.string().optional(),
+        requestingUserId: z.string(),
       }),
     )
     .mutation(({ ctx, input }) => {
@@ -18,9 +22,11 @@ export const purchaseRequestRouter = createTRPCRouter({
         data: {
           schoolId: input.schoolId,
           productName: input.productName,
-          url: input.url,
-          name: input.name,
-          slug: slugify(input.name),
+          quantity: input.quantity,
+          productUrl: input.productUrl,
+          dueDate: input.dueDate,
+          requestingUserId: input.requestingUserId,
+          value: input.value,
           status: "REQUESTED",
         },
       });
@@ -37,6 +43,7 @@ export const purchaseRequestRouter = createTRPCRouter({
             z.literal("APPROVED"),
             z.literal("REJECTED"),
             z.literal("BOUGHT"),
+            z.literal("ARRIVED"),
           ])
           .optional(),
       }),
@@ -76,13 +83,33 @@ export const purchaseRequestRouter = createTRPCRouter({
           z.literal("APPROVED"),
           z.literal("REJECTED"),
           z.literal("BOUGHT"),
+          z.literal("ARRIVED"),
         ]),
       }),
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.purchaseRequest.update({
+    .query(async ({ ctx, input }) => {
+      await ctx.prisma.purchaseRequest.update({
         where: { id: input.id },
-        data: { status: input.status },
+        data: {
+          status: input.status,
+          arrivalDate: input.status === "ARRIVED" ? new Date() : undefined,
+        },
       });
+    }),
+  deleteById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const purchaseRequest = await ctx.prisma.purchaseRequest.findUnique({
+        where: { id: input.id },
+      });
+      if (!purchaseRequest) {
+        throw new Error("Purchase request not found");
+      }
+      if (purchaseRequest.status !== "REQUESTED") {
+        throw new Error(
+          "Cannot delete purchase request with status different than REQUESTED",
+        );
+      }
+      return ctx.prisma.purchaseRequest.delete({ where: { id: input.id } });
     }),
 });

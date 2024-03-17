@@ -8,12 +8,12 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
-import { EditClassModal } from "src/components/edit-class-modal";
-import { NewClassModal } from "src/components/new-class-modal";
 
 import { type PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
+import { EditClassModal } from "../edit-class-modal";
+import { NewPurchaseRequestModal } from "../new-purchaserequest-modal";
 import { Pagination } from "../pagination";
 
 interface SchoolPurchaseRequestsTableProps {
@@ -55,14 +55,14 @@ export function SchoolPurchaseRequestsTable({
     await purchaseRequestsCountQuery.refetch();
   }
 
-  function deleteClass(classId: string) {
-    toast.loading("Removendo turma...");
+  function deletePurchaseRequest(purchaseRequestId: string) {
+    toast.loading("Removendo solicitação de compra...");
     deleteSchoolClassMutation.mutate(
-      { classId, schoolId },
+      { classId: purchaseRequestId, schoolId },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Turma removida com sucesso!");
+          toast.success("Solicitação de compra removida com sucesso!");
           await purchaseRequestsQuery.refetch();
           await purchaseRequestsCountQuery.refetch();
         },
@@ -84,7 +84,7 @@ export function SchoolPurchaseRequestsTable({
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewClassModal
+      <NewPurchaseRequestModal
         schoolId={schoolId}
         onCreated={async () => await onCreated()}
         open={open}
@@ -146,7 +146,7 @@ export function SchoolPurchaseRequestsTable({
                 <TableRow
                   key={worker.id}
                   purchaseRequest={worker}
-                  onDelete={deleteClass}
+                  onDelete={deletePurchaseRequest}
                   onEdit={(schoolYear) => onSelectClassToEdit(schoolYear)}
                 />
               );

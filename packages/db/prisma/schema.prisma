@@ -32,10 +32,11 @@ model User {
   updatedAt DateTime @updatedAt
   teacherId String?
 
-  School       School         @relation(fields: [schoolId], references: [id])
-  Role         Role           @relation(fields: [roleId], references: [id])
-  Teacher      Teacher[]
-  Notification Notification[]
+  School          School            @relation(fields: [schoolId], references: [id])
+  Role            Role              @relation(fields: [roleId], references: [id])
+  Teacher         Teacher[]
+  Notification    Notification[]
+  PurchaseRequest PurchaseRequest[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -133,17 +134,25 @@ model Class {
 model PurchaseRequest {
   id               String    @id @default(cuid())
   productName      String
+  quantity         Int
   status           String
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
   schoolId         String
+  dueDate          DateTime // dia que o professor precisa usar
+  value            Float // valor do produto de acordo com o professor
+  finalValue       Float? // valor final do produto de acordo com quem fez a compra
   description      String?   @db.Text
   productUrl       String?
-  estimatedDueDate DateTime?
+  estimatedDueDate DateTime? // dia que vai chegar depois de aprovado
+  arrivalDate      DateTime? // dia que chegou
+  requestingUserId String
 
   School School @relation(fields: [schoolId], references: [id])
+  User   User   @relation(fields: [requestingUserId], references: [id])
 
   @@index([schoolId])
+  @@index([requestingUserId])
 }
 
 model Notification {
