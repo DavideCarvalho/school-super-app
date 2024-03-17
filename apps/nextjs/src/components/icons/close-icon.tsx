@@ -1,6 +1,8 @@
-import { IconProps } from "./types";
+interface CloseIconProps {
+  className?: string;
+}
 
-export const CloseIcon = (props: IconProps) => {
+export const CloseIcon = (props: CloseIconProps) => {
   return (
     <svg
       {...props}

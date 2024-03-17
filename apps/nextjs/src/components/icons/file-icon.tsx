@@ -1,6 +1,8 @@
-import { IconProps } from "./types";
+interface FileIconProps {
+  className?: string;
+}
 
-export const FileIcon = (props: IconProps) => {
+export const FileIcon = (props: FileIconProps) => {
   return (
     <svg
       {...props}

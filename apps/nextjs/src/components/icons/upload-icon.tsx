@@ -1,6 +1,8 @@
-import { IconProps } from "./types";
+interface UploadIconProps {
+  className?: string;
+}
 
-export const UploadIcon = (props: IconProps) => {
+export const UploadIcon = (props: UploadIconProps) => {
   return (
     <svg
       {...props}
