@@ -93,8 +93,8 @@ importers:
         specifier: ~3.22.0
         version: 3.22.0(react-native@0.73.6)(react@18.2.0)
       superjson:
-        specifier: 1.12.4
-        version: 1.12.4
+        specifier: 1.13.3
+        version: 1.13.3
     devDependencies:
       '@acme/api':
         specifier: ^0.1.0
@@ -233,7 +233,7 @@ importers:
         version: 1.1.1(next@13.3.0)(react@18.2.0)
       next-superjson:
         specifier: ^0.0.4
-        version: 0.0.4(next@13.3.0)(superjson@1.12.4)(webpack@5.90.3)
+        version: 0.0.4(next@13.3.0)(superjson@1.13.3)(webpack@5.90.3)
       nodemailer:
         specifier: ^6.9.1
         version: 6.9.1
@@ -265,8 +265,8 @@ importers:
         specifier: ^1.6.6
         version: 1.6.6
       superjson:
-        specifier: 1.12.4
-        version: 1.12.4
+        specifier: 1.13.3
+        version: 1.13.3
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -329,8 +329,8 @@ importers:
         specifier: ^6.9.1
         version: 6.9.1
       superjson:
-        specifier: 1.12.4
-        version: 1.12.4
+        specifier: 1.13.3
+        version: 1.13.3
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -6467,7 +6467,7 @@ packages:
     resolution: {integrity: sha512-4djr9G6fMdwQoD6LQ7hOKAm39+y12flWgovAqS1k5O8f42YQ3A1FFMyV5kKfetZuGhZO5BmNmOdRRZQ1TixtDw==}
     dev: false
 
-  /babel-plugin-superjson-next@0.4.5(next@13.3.0)(superjson@1.12.4):
+  /babel-plugin-superjson-next@0.4.5(next@13.3.0)(superjson@1.13.3):
     resolution: {integrity: sha512-k7S99Qpsbi3OSdlCMXEiklzxepM6QbYEIUsrjgSkpx+ksT0iNfdY2r1kCzBK2UjG8fLN6NZEKpDA8XpG2pbDSA==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -6478,7 +6478,7 @@ packages:
       '@babel/types': 7.24.0
       hoist-non-react-statics: 3.3.2
       next: 13.3.0(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
-      superjson: 1.12.4
+      superjson: 1.13.3
     dev: false
 
   /babel-plugin-syntax-trailing-function-commas@7.0.0-beta.0:
@@ -10250,7 +10250,7 @@ packages:
     resolution: {integrity: sha512-ju2nUXTKvh96vHPoGZH/INhSvRRKM14CbGAJXQ98+g8K5z1v3luYJ/7+dFQB202eVzJdTB2QMtBjI1jUUpooCg==}
     engines: {node: '>=16'}
     dependencies:
-      terser: 5.18.2
+      terser: 5.29.2
     dev: false
 
   /metro-minify-terser@0.80.6:
@@ -10907,7 +10907,7 @@ packages:
       whatwg-fetch: 3.6.2
     dev: false
 
-  /next-superjson@0.0.4(next@13.3.0)(superjson@1.12.4)(webpack@5.90.3):
+  /next-superjson@0.0.4(next@13.3.0)(superjson@1.13.3)(webpack@5.90.3):
     resolution: {integrity: sha512-PYtoHbPcZYED8Vm9YCIQIZi/arANNnf6grwjkPuJXzWdY1TxJxrn9dCPmVj6ALvPn9YcDThwEA9WvHq/NyzMvw==}
     peerDependencies:
       next: '>=10'
@@ -10916,7 +10916,7 @@ packages:
       '@babel/plugin-syntax-jsx': 7.22.5(@babel/core@7.21.4)
       '@babel/plugin-syntax-typescript': 7.22.5(@babel/core@7.21.4)
       babel-loader: 8.3.0(@babel/core@7.21.4)(webpack@5.90.3)
-      babel-plugin-superjson-next: 0.4.5(next@13.3.0)(superjson@1.12.4)
+      babel-plugin-superjson-next: 0.4.5(next@13.3.0)(superjson@1.13.3)
       next: 13.3.0(@babel/core@7.21.4)(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - superjson
@@ -13293,8 +13293,8 @@ packages:
     resolution: {integrity: sha512-Mu7R0g4ig9TUuGSxJavny5Rv0egCEtpZRNMrZaYS1vxkiIxGiGUwoezU3LazIQ+KE04hTrTfNPgxU5gzi7F5Pw==}
     dev: false
 
-  /superjson@1.12.4:
-    resolution: {integrity: sha512-vkpPQAxdCg9SLfPv5GPC5fnGrui/WryktoN9O5+Zif/14QIMjw+RITf/5LbBh+9QpBFb3KNvJth+puz2H8o6GQ==}
+  /superjson@1.13.3:
+    resolution: {integrity: sha512-mJiVjfd2vokfDxsQPOwJ/PtanO87LhpYY88ubI5dUB1Ab58Txbyje3+jpm+/83R/fevaq/107NNhtYBLuoTrFg==}
     engines: {node: '>=10'}
     dependencies:
       copy-anything: 3.0.5
