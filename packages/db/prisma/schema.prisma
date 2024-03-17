@@ -132,21 +132,27 @@ model Class {
 }
 
 model PurchaseRequest {
-  id               String    @id @default(cuid())
-  productName      String
-  quantity         Int
-  status           String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  schoolId         String
-  dueDate          DateTime // dia que o professor precisa usar
-  value            Float // valor do produto de acordo com o professor
-  finalValue       Float? // valor final do produto de acordo com quem fez a compra
-  description      String?   @db.Text
-  productUrl       String?
-  estimatedDueDate DateTime? // dia que vai chegar depois de aprovado
-  arrivalDate      DateTime? // dia que chegou
-  requestingUserId String
+  id                   String    @id @default(cuid())
+  productName          String
+  quantity             Int // quantidade do produto de acordo com quem fez o pedido
+  finalQuantity        Int? // quantidade final do produto de acordo com quem fez a compra
+  status               String
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  schoolId             String
+  dueDate              DateTime // dia que a pessoa precisa usar o produto
+  value                Float // valor do produto de acordo com quem fez o pedido
+  unitValue            Float // valor unitário do produto de acordo com quem fez a compra
+  finalUnitValue       Float? // valor unitário final do produto de acordo com quem fez a compra
+  finalValue           Float? // valor final do produto de acordo com quem fez a compra
+  description          String?   @db.Text
+  productUrl           String?
+  purchaseDate         DateTime? // dia que foi comprado
+  estimatedArrivalDate DateTime? // dia que vai chegar depois de aprovado
+  arrivalDate          DateTime? // dia que chegou
+  rejectionReason      String?   @db.Text
+  requestingUserId     String
+  receiptPath          String?
 
   School School @relation(fields: [schoolId], references: [id])
   User   User   @relation(fields: [requestingUserId], references: [id])

@@ -1,40 +1,40 @@
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import type { PurchaseRequest } from "@acme/db";
+
 import { api } from "~/utils/api";
-import Calendar from "../calendar";
 import { Modal } from "../modal";
+import Calendar from "../calendar";
+import dayjs from "dayjs";
+import { useEffect } from "react";
 
 const schema = z
   .object({
     productName: z.string({ required_error: "Qual nome do produto?" }),
     quantity: z.coerce.number({ required_error: "Qual a quantidade?" }).min(1),
-    unitValue: z.coerce.number({ required_error: "Quanto custa cada um?" }).min(0),
-    value: z.coerce.number({ required_error: "Quanto custa no total?" }).min(0),
+    value: z.coerce.number({ required_error: "Quanto custa?" }).min(0),
     dueDate: z.date(),
     productUrl: z.string().optional(),
     description: z.string().optional(),
   })
   .required();
 
-interface NewPurchaseRequestModalProps {
-  schoolId: string;
+interface EditRequestedPurchaseRequestModalProps {
   open: boolean;
-  onCreated: () => void | Promise<void>;
+  onEdited: () => void;
   onClickCancel: () => void;
+  selectedPurchaseRequest: PurchaseRequest;
 }
 
-export function NewPurchaseRequestModal({
-  schoolId,
+export function EditRequestedPurchaseRequestModal({
   open,
-  onCreated,
+  onEdited,
   onClickCancel,
-}: NewPurchaseRequestModalProps) {
-  const { user } = useUser();
+  selectedPurchaseRequest,
+}: EditRequestedPurchaseRequestModalProps) {
   const {
     register,
     handleSubmit,
@@ -46,18 +46,30 @@ export function NewPurchaseRequestModal({
     resolver: zodResolver(schema),
   });
 
-  const createPurchaseRequestMutation = api.purchaseRequest.create.useMutation();
+  useEffect(() => {
+    if (!selectedPurchaseRequest) {
+      reset();
+      return;
+    }
+    setValue("productName", selectedPurchaseRequest.productName);
+    setValue("quantity", selectedPurchaseRequest.quantity);
+    setValue("value", selectedPurchaseRequest.value);
+    setValue("dueDate", selectedPurchaseRequest.dueDate);
+    if (selectedPurchaseRequest?.productUrl) setValue("productUrl", selectedPurchaseRequest.productUrl);
+    if (selectedPurchaseRequest?.description) setValue("description",  selectedPurchaseRequest.description);
+  }, [selectedPurchaseRequest]);
+
+  const editRequestedPurchaseMutation = api.purchaseRequest.editRequestedPurchaseRequest.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    toast.loading("Criando solicitação de compra...");
-    createPurchaseRequestMutation.mutate(
+    if (!selectedPurchaseRequest) return;
+    toast.loading("Alterando solicitação de compra...");
+    editRequestedPurchaseMutation.mutate(
       {
+        id: selectedPurchaseRequest.id,
         productUrl: data.productUrl,
         productName: data.productName,
         quantity: data.quantity,
-        schoolId: schoolId,
-        requestingUserId: user?.publicMetadata?.id as string,
-        unitValue: data.unitValue,
         value: data.value,
         dueDate: data.dueDate,
         description: data.description,
@@ -65,8 +77,8 @@ export function NewPurchaseRequestModal({
       {
         onSuccess() {
           toast.dismiss();
-          toast.success("Solicitação de compra criada com sucesso!");
-          onCreated();
+          toast.success("Solicitação de compra alterada com sucesso!");
+          onEdited();
           reset();
         },
       },
@@ -80,7 +92,7 @@ export function NewPurchaseRequestModal({
     <Modal
       open={open}
       onClose={onClickCancel}
-      title={"Nova solicitação de compra"}
+      title={`Editar solicitação de compra`}
     >
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
@@ -127,29 +139,7 @@ export function NewPurchaseRequestModal({
 
           <div>
             <label className="text-sm font-bold text-gray-900">
-              Quanto custa cada um?
-            </label>
-            <div className="mt-2">
-              <input
-                {...register("unitValue")}
-                type="number"
-                inputMode="numeric"
-                step="any"
-                min={1}
-                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
-                  errors.unitValue ? "border-red-400" : "border-grey-300"
-                }`}
-                placeholder="10.00"
-              />
-              {errors.unitValue && (
-                <p className="text-red-600">{errors.unitValue.message}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="text-sm font-bold text-gray-900">
-              Quanto custa no total?
+              Quanto custa?
             </label>
             <div className="mt-2">
               <input
@@ -233,7 +223,7 @@ export function NewPurchaseRequestModal({
             type="submit"
             className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
           >
-            Criar
+            Alterar
           </button>
         </div>
       </form>

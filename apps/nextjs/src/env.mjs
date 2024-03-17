@@ -11,6 +11,9 @@ const server = z.object({
   SMTP_USER: z.string(),
   SMTP_PASSWORD: z.string(),
   SMTP_FROM_EMAIL: z.string(),
+  MINIO_ENDPOINT: z.string(),
+  MINIO_ACCESS_KEY: z.string(),
+  MINIO_SECRET_KEY: z.string(),
 });
 
 /**
@@ -19,6 +22,9 @@ const server = z.object({
  */
 const client = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+  NEXT_PUBLIC_MINIO_ENDPOINT: z.string(),
+  NEXT_PUBLIC_MINIO_ACCESS_KEY: z.string(),
+  NEXT_PUBLIC_MINIO_SECRET_KEY: z.string(),
 });
 
 /**
@@ -36,6 +42,12 @@ const processEnv = {
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
+  MINIO_ENDPOINT: process.env.MINIO_ENDPOINT,
+  MINIO_ACCESS_KEY: process.env.MINIO_ACCESS_KEY,
+  MINIO_SECRET_KEY: process.env.MINIO_SECRET_KEY,
+  NEXT_PUBLIC_MINIO_ENDPOINT: process.env.NEXT_PUBLIC_MINIO_ENDPOINT,
+  NEXT_PUBLIC_MINIO_ACCESS_KEY: process.env.NEXT_PUBLIC_MINIO_ACCESS_KEY,
+  NEXT_PUBLIC_MINIO_SECRET_KEY: process.env.NEXT_PUBLIC_MINIO_SECRET_KEY,
 };
 
 // Don't touch the part below

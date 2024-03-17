@@ -7,14 +7,17 @@ import {
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
+import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 
 import { type PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { EditClassModal } from "../edit-class-modal";
+import { BoughtPurchaseRequestModal } from "../bought-purchaserequest-modal";
+import { EditRequestedPurchaseRequestModal } from "../edit-requested-purchaserequest-modal";
 import { NewPurchaseRequestModal } from "../new-purchaserequest-modal";
 import { Pagination } from "../pagination";
+import { RejectPurchaseRequestModal } from "../reject-purchaserequest-modal";
 
 interface SchoolPurchaseRequestsTableProps {
   schoolId: string;
@@ -31,6 +34,10 @@ export function SchoolPurchaseRequestsTable({
 
   const [open, setOpen] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [openRejectPurchaseRequestModal, setOpenRejectPurchaseRequestModal] =
+    useState(false);
+  const [openBoughtPurchaseRequestModal, setOpenBoughtPurchaseRequestModal] =
+    useState(false);
 
   const purchaseRequestsQuery = api.purchaseRequest.allBySchoolId.useQuery(
     {
@@ -70,7 +77,7 @@ export function SchoolPurchaseRequestsTable({
     );
   }
 
-  function onSelectClassToEdit(purchaseRequest: PurchaseRequest) {
+  function onSelectPurchaseRequestToEdit(purchaseRequest: PurchaseRequest) {
     setOpenEditModal(true);
     setSelectedPurchaseRequest(purchaseRequest);
   }
@@ -78,6 +85,25 @@ export function SchoolPurchaseRequestsTable({
   async function onEdited() {
     setOpenEditModal(false);
     setSelectedPurchaseRequest(undefined);
+    await purchaseRequestsQuery.refetch();
+    await purchaseRequestsCountQuery.refetch();
+  }
+
+  async function onRejected() {
+    setOpenRejectPurchaseRequestModal(false);
+    setSelectedPurchaseRequest(undefined);
+    await purchaseRequestsQuery.refetch();
+    await purchaseRequestsCountQuery.refetch();
+  }
+
+  async function onReject(purchaseRequest: PurchaseRequest) {
+    setSelectedPurchaseRequest(purchaseRequest);
+    setOpenRejectPurchaseRequestModal(true);
+  }
+
+  async function onCreatedBought() {
+    setSelectedPurchaseRequest(undefined);
+    setOpenBoughtPurchaseRequestModal(false);
     await purchaseRequestsQuery.refetch();
     await purchaseRequestsCountQuery.refetch();
   }
@@ -90,16 +116,35 @@ export function SchoolPurchaseRequestsTable({
         open={open}
         onClickCancel={() => setOpen(false)}
       />
-      <EditClassModal
-        schoolId={schoolId}
+      <EditRequestedPurchaseRequestModal
         open={openEditModal}
-        selectedClass={selectedPurchaseRequest as PurchaseRequest}
+        selectedPurchaseRequest={selectedPurchaseRequest as PurchaseRequest}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedPurchaseRequest(undefined);
         }}
         onEdited={() => onEdited()}
       />
+      <RejectPurchaseRequestModal
+        open={openRejectPurchaseRequestModal}
+        purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        onClickCancel={() => {
+          setOpenRejectPurchaseRequestModal(false);
+          setSelectedPurchaseRequest(undefined);
+        }}
+        onRejected={() => onRejected()}
+      />
+      <BoughtPurchaseRequestModal
+        schoolId={schoolId}
+        open={openBoughtPurchaseRequestModal}
+        purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        onClickCancel={() => {
+          setOpenRejectPurchaseRequestModal(false);
+          setSelectedPurchaseRequest(undefined);
+        }}
+        onCreated={onCreatedBought}
+      />
+
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="px-4 py-5 sm:p-6">
           <div className="sm:flex sm:items-start sm:justify-between">
@@ -141,13 +186,17 @@ export function SchoolPurchaseRequestsTable({
             </>
           )}
           {!purchaseRequestsQuery.isFetching &&
-            purchaseRequestsQuery.data?.map((worker) => {
+            purchaseRequestsQuery.data?.map((purchaseRequest) => {
               return (
                 <TableRow
-                  key={worker.id}
-                  purchaseRequest={worker}
-                  onDelete={deletePurchaseRequest}
-                  onEdit={(schoolYear) => onSelectClassToEdit(schoolYear)}
+                  key={purchaseRequest.id}
+                  purchaseRequest={purchaseRequest}
+                  onDelete={({ id }) => deletePurchaseRequest(id)}
+                  onEdit={onSelectPurchaseRequestToEdit}
+                  onReject={onReject}
+                  onApprove={() => {}}
+                  onBought={() => {}}
+                  onArrived={() => {}}
                 />
               );
             })}
@@ -176,11 +225,29 @@ export function SchoolPurchaseRequestsTable({
 
 interface TableRowProps {
   purchaseRequest: PurchaseRequest;
-  onDelete: (classId: string) => void;
+  onDelete: (purchaseRequest: PurchaseRequest) => void;
+  onApprove: (purchaseRequest: PurchaseRequest) => void;
+  onBought: (purchaseRequest: PurchaseRequest) => void;
+  onArrived: (purchaseRequest: PurchaseRequest) => void;
   onEdit: (purchaseRequest: PurchaseRequest) => void;
+  onReject: (purchaseRequest: PurchaseRequest) => void;
 }
 
-function TableRow({ purchaseRequest, onDelete, onEdit }: TableRowProps) {
+const statusDictionary: Record<string, string> = {
+  REQUESTED: "Solicitado",
+  APPROVED: "Aprovado",
+  REJECTED: "Rejeitado",
+  BOUGHT: "Comprado",
+  ARRIVED: "Chegou",
+};
+
+function TableRow({
+  purchaseRequest,
+  onDelete,
+  onEdit,
+  onApprove,
+  onReject,
+}: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { x, y, strategy, refs, context } = useFloating({
@@ -194,7 +261,7 @@ function TableRow({ purchaseRequest, onDelete, onEdit }: TableRowProps) {
   const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
-    <div className="grid grid-cols-2 py-4 lg:grid-cols-2 lg:gap-0">
+    <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">
       <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
         <button
           type="button"
@@ -228,18 +295,39 @@ function TableRow({ purchaseRequest, onDelete, onEdit }: TableRowProps) {
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
-                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                  onClick={() => onDelete(purchaseRequest.id)}
-                >
-                  Excluir
-                </li>
-                <li
-                  className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                  onClick={() => onEdit(purchaseRequest)}
-                >
-                  Editar
-                </li>
+                {purchaseRequest.status === "REQUESTED" && (
+                  <li
+                    className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                    onClick={() => onApprove(purchaseRequest)}
+                  >
+                    Aprovar
+                  </li>
+                )}
+                {purchaseRequest.status === "REQUESTED" && (
+                  <li
+                    className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                    onClick={() => onDelete(purchaseRequest)}
+                  >
+                    Excluir
+                  </li>
+                )}
+                {(purchaseRequest.status === "REQUESTED" ||
+                  purchaseRequest.status === "REJECTED") && (
+                  <li
+                    className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                    onClick={() => onEdit(purchaseRequest)}
+                  >
+                    Editar
+                  </li>
+                )}
+                {purchaseRequest.status === "REQUESTED" && (
+                  <li
+                    className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                    onClick={() => onReject(purchaseRequest)}
+                  >
+                    Rejeitar
+                  </li>
+                )}
               </ul>
             </div>
           </div>
@@ -256,14 +344,39 @@ function TableRow({ purchaseRequest, onDelete, onEdit }: TableRowProps) {
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-lg font-bold text-gray-900">Status</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {purchaseRequest.status}
+          {statusDictionary[purchaseRequest.status]}
+        </p>
+      </div>
+
+      {purchaseRequest.estimatedDueDate && (
+        <div className="px-4 sm:px-6 lg:py-4">
+          <p className="text-lg font-bold text-gray-900">
+            Estimativa de chegada
+          </p>
+          <p className="mt-1 text-lg font-medium text-gray-500">
+            {dayjs(purchaseRequest.estimatedDueDate).format("DD/MM/YYYY")}
+          </p>
+        </div>
+      )}
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Pra qual dia?</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {dayjs(purchaseRequest.dueDate).format("DD/MM/YYYY")}
         </p>
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-lg font-bold text-gray-900">Estimativa de chegada</p>
+        <p className="text-lg font-bold text-gray-900">Quantidade</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {purchaseRequest.estimatedDueDate?.getUTCDate()}
+          {purchaseRequest.quantity}
+        </p>
+      </div>
+
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Valor unitário</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {purchaseRequest.value.toLocaleString("pt-BR")}
         </p>
       </div>
     </div>
