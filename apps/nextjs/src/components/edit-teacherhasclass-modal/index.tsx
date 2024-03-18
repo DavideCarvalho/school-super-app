@@ -83,13 +83,10 @@ export function EditTeacherHasClassModal({
     limit: 999,
   });
 
-  const classesQuery = api.class.allBySchoolId.useQuery(
-    {
-      schoolId,
-      limit: 999,
-    },
-    { keepPreviousData: true },
-  );
+  const classesQuery = api.class.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
 
   const teachersQuery = api.user.allBySchoolId.useQuery(
     {
@@ -97,7 +94,6 @@ export function EditTeacherHasClassModal({
       limit: 999,
       role: "TEACHER",
     },
-    { keepPreviousData: true },
   );
 
   const editTeacherHasClassMutation = api.teacherHasClass.update.useMutation();

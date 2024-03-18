@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { api } from "~/utils/api";
 import { Dropdown } from "~/components/dropdown";
+import { api } from "~/utils/api";
 import { Modal } from "../modal";
 
 const schema = z
@@ -43,30 +43,21 @@ export function NewTeacherHasClassModal({
     resolver: zodResolver(schema),
   });
 
-  const subjectsQuery = api.subject.allBySchoolId.useQuery(
-    {
-      schoolId,
-      limit: 999,
-    },
-    { keepPreviousData: true },
-  );
+  const subjectsQuery = api.subject.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
 
-  const classesQuery = api.class.allBySchoolId.useQuery(
-    {
-      schoolId,
-      limit: 999,
-    },
-    { keepPreviousData: true },
-  );
+  const classesQuery = api.class.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
 
-  const teachersQuery = api.user.allBySchoolId.useQuery(
-    {
-      schoolId,
-      limit: 999,
-      role: "TEACHER",
-    },
-    { keepPreviousData: true },
-  );
+  const teachersQuery = api.user.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+    role: "TEACHER",
+  });
 
   const createTeacherHasClassMutation =
     api.teacherHasClass.createBySchoolId.useMutation();
