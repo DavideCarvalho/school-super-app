@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { type TeacherHasClass } from "@acme/db";
+import type { TeacherHasClass } from "@acme/db";
 
-import { api } from "~/utils/api";
 import { Dropdown } from "~/components/dropdown";
+import { api } from "~/utils/api";
 import { Modal } from "../modal";
 
 const schema = z
@@ -74,17 +74,14 @@ export function EditTeacherHasClassModal({
     setValue("subjectId", teacherHasClass.subjectId);
     setValue("classId", teacherHasClass.classId);
     setValue("weekday", teacherHasClass.classWeekDay);
-    setValue("hour", teacherHasClass.classTime.split(":")[0] as string);
-    setValue("minutes", teacherHasClass.classTime.split(":")[1] as string);
+    setValue("hour", teacherHasClass.classTime.split(":")[0]!);
+    setValue("minutes", teacherHasClass.classTime.split(":")[1]!);
   }, [teacherHasClass, setValue, reset]);
 
-  const subjectsQuery = api.subject.allBySchoolId.useQuery(
-    {
-      schoolId,
-      limit: 999,
-    },
-    { keepPreviousData: true },
-  );
+  const subjectsQuery = api.subject.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
 
   const classesQuery = api.class.allBySchoolId.useQuery(
     {
@@ -297,16 +294,14 @@ export function EditTeacherHasClassModal({
               <Dropdown<string>
                 initialSelectedItem={{
                   label: teacherHasClass?.classWeekDay
-                    ? (weekdaysDictionary[
-                        teacherHasClass.classWeekDay
-                      ] as string)
+                    ? weekdaysDictionary[teacherHasClass.classWeekDay]!
                     : "",
                   value: teacherHasClass?.classWeekDay,
                 }}
                 dropdownItems={Object.keys(weekdaysDictionary).map(
                   (weekdayKey) => ({
                     value: weekdayKey,
-                    label: weekdaysDictionary[weekdayKey] as string,
+                    label: weekdaysDictionary[weekdayKey]!,
                   }),
                 )}
                 onSelectItem={(selectedItem) => {
