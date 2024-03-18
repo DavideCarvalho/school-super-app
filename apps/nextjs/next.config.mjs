@@ -19,4 +19,4 @@ const config = {
   },
 };
 
-export default withAxiom({ ...withSuperjson()(config) });
+export default withSuperjson()(config);
