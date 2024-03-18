@@ -159,7 +159,6 @@ export const purchaseRequestRouter = createTRPCRouter({
         `/school/${input.schoolId}/purchase-request/${input.fileName}`,
         60 * 60,
       );
-      console.log(`signedUrl`, signedUrl);
       return { signedUrl };
     }),
   boughtPurchaseRequest: publicProcedure

@@ -1,13 +1,5 @@
 import { z } from "zod";
 
-console.log('process.env.DATABASE_URL', process.env.DATABASE_URL);
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-console.log('process.env.CLERK_SECRET_KEY', process.env.CLERK_SECRET_KEY);
-console.log('process.env.SMTP_USER', process.env.SMTP_USER);
-console.log('process.env.SMTP_PASSWORD', process.env.SMTP_PASSWORD);
-console.log('process.env.SMTP_FROM_EMAIL', process.env.SMTP_FROM_EMAIL);
-console.log('process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY', process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY);
-
 /**
  * Specify your server-side environment variables schema here. This way you can ensure the app isn't
  * built with invalid env vars.

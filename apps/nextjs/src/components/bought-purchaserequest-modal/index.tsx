@@ -57,7 +57,6 @@ export function BoughtPurchaseRequestModal({
 
   useEffect(() => {
     if (!purchaseRequest) return;
-    console.log(`purchaseRequest`, purchaseRequest);
     setValue("finalQuantity", purchaseRequest.quantity);
     setValue("finalUnitValue", purchaseRequest.unitValue);
     setValue("finalValue", purchaseRequest.value);
@@ -104,8 +103,6 @@ export function BoughtPurchaseRequestModal({
   const now = dayjs();
   const watchDueDate = watch("estimatedArrivalDate", new Date());
   const watchPurchaseDate = watch("purchaseDate", new Date());
-
-  console.log(`errors`, errors);
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Item comprado"}>

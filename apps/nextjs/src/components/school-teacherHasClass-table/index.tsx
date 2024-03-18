@@ -9,13 +9,13 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import type {Class, Subject, Teacher, TeacherHasClass, User} from "@acme/db";
+import type { Class, Subject, Teacher, TeacherHasClass, User } from "@acme/db";
 
-import { api } from "~/utils/api";
-import { dayjsClient } from "~/utils/dayjs.client";
 import { Dropdown } from "~/components/dropdown";
 import { EditTeacherHasClassModal } from "~/components/edit-teacherhasclass-modal";
 import { NewTeacherHasClassModal } from "~/components/new-teacherhasclass-modal";
+import { api } from "~/utils/api";
+import { dayjsClient } from "~/utils/dayjs.client";
 import { Pagination } from "../pagination";
 
 type TeacherHasClassWithTeacherSubjectAndClass = TeacherHasClass & {
@@ -208,7 +208,6 @@ export function SchoolTeacherHasClassTable({
                   }
                 : undefined
             }
-            onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
               const { teacher: _teacher, ...rest } = router.query;
               void router.replace(
@@ -242,7 +241,6 @@ export function SchoolTeacherHasClassTable({
                 value: selectedClass.slug,
               }
             }
-            onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
               const { class: _class, ...rest } = router.query;
               void router.replace(
@@ -276,7 +274,6 @@ export function SchoolTeacherHasClassTable({
                 value: selectedSubject.slug,
               }
             }
-            onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
               const { subject: _subject, ...rest } = router.query;
               void router.replace(
@@ -314,7 +311,6 @@ export function SchoolTeacherHasClassTable({
                   }
                 : undefined
             }
-            onChange={(v) => console.log(v)}
             onSelectItem={(selectedItem) => {
               const { weekday: _weekday, ...rest } = router.query;
               void router.replace(
