@@ -79,16 +79,16 @@ export function NewFileRequestModal({
 
   const [useDropdownSearch, setDropdownSearch] = useState("");
 
-  const { mutate } = api.file.createRequest.useMutation();
+  const { mutateAsync: createRequest } = api.file.createRequest.useMutation();
 
   const teacherClasses = api.teacher.getClassesById.useQuery({
     id: user?.publicMetadata?.id as string,
   });
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    toast.loading("Criando solicitação...");
-    mutate(
-      {
+  async function onSubmit(data: z.infer<typeof schema>) {
+    const toastId = toast.loading("Criando solicitação...");
+    try {
+      await createRequest({
         name: data.name,
         dueDate: data.dueDate,
         frontAndBack: data.frontAndBack,
@@ -97,26 +97,23 @@ export function NewFileRequestModal({
         classId: data.teacherHasClass.classId,
         subjectId: data.teacherHasClass.subjectId,
         teacherId: user?.publicMetadata?.id as string,
-      },
-      {
-        async onSuccess() {
-          toast.dismiss();
-          toast.success("Solicitação criada com sucesso!");
-          const onCreatedReturn = onCreated();
-          const isPromise = onCreatedReturn instanceof Promise;
-          if (isPromise) await onCreatedReturn;
-          reset();
-        },
-      },
-    );
-  };
+      });
+      reset();
+      onCreated();
+      toast.success("Solicitação criada com sucesso!");
+    } catch (e) {
+      toast.error("Erro ao criar solicitação");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  }
 
   const watchFrontAndBack = watch("frontAndBack", true);
   const watchDueDate = watch("dueDate", new Date());
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Nova solicitação"}>
-      <form className="mt-6" onSubmit={void handleSubmit(onSubmit)}>
+      <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
           <div>
             <label className="text-sm font-bold text-gray-900">Nome</label>
