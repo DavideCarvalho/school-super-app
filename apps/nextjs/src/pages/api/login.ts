@@ -1,4 +1,4 @@
-import { type NextApiRequest, type NextApiResponse } from "next";
+import type {NextApiRequest, NextApiResponse} from "next";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
 
 import { prisma } from "@acme/db";

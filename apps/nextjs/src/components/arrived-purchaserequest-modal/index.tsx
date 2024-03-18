@@ -39,7 +39,7 @@ export function ArrivedPurchaseRequestModal({
   useEffect(() => {
     if (!purchaseRequest) return;
     setValue("arrivalDate", purchaseRequest.estimatedArrivalDate!);
-  }, [open]);
+  }, [open, purchaseRequest, setValue]);
 
   const { mutateAsync: arrivedPurchaseRequest } =
     api.purchaseRequest.arrivedPurchaseRequest.useMutation();

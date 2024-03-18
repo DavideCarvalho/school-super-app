@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 import { EditClassModal } from "src/components/edit-class-modal";
 import { NewClassModal } from "src/components/new-class-modal";
 
-import { type Class } from "@acme/db";
+import type {Class} from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Pagination } from "../pagination";
@@ -89,7 +89,7 @@ export function SchoolClassesTable({ schoolId }: SchoolClassesTableProps) {
       <EditClassModal
         schoolId={schoolId}
         open={openEditModal}
-        selectedClass={selectedClass as Class}
+        selectedClass={selectedClass!}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedClass(undefined);

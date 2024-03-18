@@ -26,7 +26,7 @@ export default function Calendar({ value, minDate, onChange }: CalendarProps) {
       }}
       data-enable-time
       value={value}
-      onChange={([date]) => onChange(date as Date)}
+      onChange={([date]) => onChange(date!)}
     />
   );
 }

@@ -1,6 +1,6 @@
-import {
-  type GetServerSidePropsContext,
-  type InferGetServerSidePropsType,
+import type {
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
 } from "next";
 import { SignIn } from "@clerk/nextjs";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";

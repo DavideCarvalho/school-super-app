@@ -9,13 +9,7 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import {
-  type Class,
-  type File,
-  type Subject,
-  type Teacher,
-  type User,
-} from "@acme/db";
+import type {Class, File, Subject, Teacher, User} from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";

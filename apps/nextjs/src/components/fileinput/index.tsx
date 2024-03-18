@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
-import { Accept, DropzoneState, useDropzone } from "react-dropzone";
+import type { Accept, DropzoneState} from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 
 import { CloseIcon } from "../icons/close-icon";
 import { FileIcon } from "../icons/file-icon";

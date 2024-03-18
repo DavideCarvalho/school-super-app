@@ -1,7 +1,4 @@
-import {
-  type GetServerSidePropsContext,
-  type InferGetServerSidePropsType,
-} from "next";
+import type {GetServerSidePropsContext, InferGetServerSidePropsType} from "next";
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
@@ -29,10 +26,10 @@ export const getServerSideProps = withServerSideAuth(
       throw new Error(`School with slug ${schoolSlug} not found`);
     }
 
-    let status = query?.["status"] as string | undefined;
+    let status = query?.status as string | undefined;
     status = status ? status.toUpperCase() : undefined;
-    const page = query?.["page"] ? Number(query["page"]) : 1;
-    const limit = query?.["limit"] ? Number(query["limit"]) : 5;
+    const page = query?.page ? Number(query.page) : 1;
+    const limit = query?.limit ? Number(query.limit) : 5;
 
     const clerkUser = getAuth(req);
 

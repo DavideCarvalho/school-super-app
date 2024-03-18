@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { type Role, type User } from "@acme/db";
+import type {Role, User} from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";

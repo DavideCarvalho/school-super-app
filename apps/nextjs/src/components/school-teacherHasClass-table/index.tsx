@@ -9,13 +9,7 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import {
-  type Class,
-  type Subject,
-  type Teacher,
-  type TeacherHasClass,
-  type User,
-} from "@acme/db";
+import type {Class, Subject, Teacher, TeacherHasClass, User} from "@acme/db";
 
 import { api } from "~/utils/api";
 import { dayjsClient } from "~/utils/dayjs.client";
@@ -161,7 +155,7 @@ export function SchoolTeacherHasClassTable({
       <EditTeacherHasClassModal
         schoolId={schoolId}
         open={openEditModal}
-        teacherHasClass={selectedTeacherHasClass as TeacherHasClass}
+        teacherHasClass={selectedTeacherHasClass!}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedTeacherHasClass(undefined);

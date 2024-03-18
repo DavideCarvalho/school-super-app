@@ -10,7 +10,7 @@ import {
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 
-import { type PurchaseRequest } from "@acme/db";
+import type {PurchaseRequest} from "@acme/db";
 
 import { api } from "~/utils/api";
 import { ArrivedPurchaseRequestModal } from "../arrived-purchaserequest-modal";
@@ -139,7 +139,7 @@ export function SchoolPurchaseRequestsTable({
       />
       <EditRequestedPurchaseRequestModal
         open={openEditModal}
-        selectedPurchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        selectedPurchaseRequest={selectedPurchaseRequest!}
         onClickCancel={() => {
           setOpenEditModal(false);
           setSelectedPurchaseRequest(undefined);
@@ -148,7 +148,7 @@ export function SchoolPurchaseRequestsTable({
       />
       <RejectPurchaseRequestModal
         open={openRejectPurchaseRequestModal}
-        purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        purchaseRequest={selectedPurchaseRequest!}
         onClickCancel={() => {
           setOpenRejectPurchaseRequestModal(false);
           setSelectedPurchaseRequest(undefined);
@@ -158,7 +158,7 @@ export function SchoolPurchaseRequestsTable({
       <BoughtPurchaseRequestModal
         schoolId={schoolId}
         open={openBoughtPurchaseRequestModal}
-        purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        purchaseRequest={selectedPurchaseRequest!}
         onClickCancel={() => {
           setOpenBoughtPurchaseRequestModal(false);
           setSelectedPurchaseRequest(undefined);
@@ -168,7 +168,7 @@ export function SchoolPurchaseRequestsTable({
 
       <ArrivedPurchaseRequestModal
         open={openArrivedPurchaseRequestModal}
-        purchaseRequest={selectedPurchaseRequest as PurchaseRequest}
+        purchaseRequest={selectedPurchaseRequest!}
         onClickCancel={() => {
           setOpenArrivedPurchaseRequestModal(false);
           setSelectedPurchaseRequest(undefined);

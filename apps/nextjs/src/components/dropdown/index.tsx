@@ -11,11 +11,11 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
-type DropdownItem<Value> = {
+interface DropdownItem<Value> {
   label: string;
   value: Value;
   icon?: JSX.Element;
-};
+}
 
 interface DropdownProps<Item> {
   search?: string;

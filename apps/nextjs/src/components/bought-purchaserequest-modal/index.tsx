@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -63,7 +62,7 @@ export function BoughtPurchaseRequestModal({
     setValue("finalUnitValue", purchaseRequest.unitValue);
     setValue("finalValue", purchaseRequest.value);
     setValue("estimatedArrivalDate", purchaseRequest.dueDate);
-  }, [open]);
+  }, [open, purchaseRequest, setValue]);
 
   const { mutateAsync: createBoughtPurchaseRequestFileSignedUrl } =
     api.purchaseRequest.createBoughtPurchaseRequestFileSignedUrl.useMutation();
