@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Toaster, toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { z } from "zod";
 
 import { api } from "~/utils/api";
@@ -167,7 +167,7 @@ export function Pricing() {
 
         <div className="mx-auto mt-14 grid grid-cols-1 place-items-center gap-6 sm:grid-cols-1 md:gap-9">
           <div className="max-w-md overflow-hidden rounded-md border-2 border-gray-200 bg-transparent">
-            <div className="p-6 md:py-8 md:px-9">
+            <div className="p-6 md:px-9 md:py-8">
               <h3 className="text-xl font-semibold text-black">Tudo!</h3>
 
               <div className="mt-5 flex items-end">
@@ -480,7 +480,7 @@ export function Features() {
         </p>
       </div>
       <div className="mx-auto mt-14 max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 text-center sm:grid-cols-2 md:grid-cols-3 lg:gap-y-16">
+        <div className="grid grid-flow-row grid-cols-1 gap-12 text-center sm:grid-cols-2 md:grid-cols-3 lg:gap-y-16">
           <div>
             <div className="relative mx-auto flex items-center justify-center">
               <svg
@@ -512,6 +512,42 @@ export function Features() {
             <p className="mt-4 text-base text-gray-600">
               Nos preocupamos em deixar o sistema o mais rápido possível para
               que você e sua equipe não percam tempo.
+            </p>
+          </div>
+
+          <div>
+            <div className="relative mx-auto flex items-center justify-center">
+              <svg
+                className="text-green-100"
+                width="66"
+                height="68"
+                viewBox="0 0 66 68"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M65.5 30C65.5 50.4345 46.4345 68 26 68C5.56546 68 0 50.4345 0 30C0 9.56546 12.5655 0 33 0C53.4345 0 65.5 9.56546 65.5 30Z" />
+              </svg>
+              <svg
+                className="absolute h-9 w-9 text-green-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </div>
+            <h3 className="mt-8 text-lg font-semibold text-black">
+              Solicitação de compras
+            </h3>
+            <p className="mt-4 text-base text-gray-600">
+              Gerencie solicitações de compras e tenha controle total sobre o
+              quanto está sendo gasto
             </p>
           </div>
 
