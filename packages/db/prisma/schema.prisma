@@ -192,6 +192,7 @@ model PurchaseRequest {
   status               String
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
+  proposal             String?   @db.Text
   schoolId             String
   dueDate              DateTime // dia que a pessoa precisa usar o produto
   value                Float // valor do produto de acordo com quem fez o pedido
