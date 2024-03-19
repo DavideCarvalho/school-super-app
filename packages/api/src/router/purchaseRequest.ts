@@ -29,6 +29,7 @@ export const purchaseRequestRouter = createTRPCRouter({
           requestingUserId: input.requestingUserId,
           unitValue: input.unitValue,
           value: input.value,
+          description: input.description,
           status: "REQUESTED",
         },
       });
