@@ -7,8 +7,9 @@ on:
 
 jobs:
   deploy:
-    name: Beanstalk Deploy for flip-python
+    name: Deploy to EasyPanel
     runs-on: ubuntu-latest
+    environment: production
     env:
       DEPLOY_URL: ${{ secrets.ANUA_DEPLOY_URL }}
     steps:
