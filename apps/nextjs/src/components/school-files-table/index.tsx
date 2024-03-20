@@ -9,7 +9,7 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import type {Class, File, Subject, Teacher, User} from "@acme/db";
+import type { Class, File, Subject, Teacher, User } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { Dropdown } from "../dropdown";
@@ -513,7 +513,7 @@ function TableRow({
 
       <div className="px-4 sm:px-6 lg:py-4">
         <p className="text-sm font-bold text-gray-900">
-          Professora {teacher.User.name}
+          Professor {teacher.User.name}
         </p>
         <p className="mt-1 text-sm font-medium text-gray-500">
           Matéria {subject.name}
