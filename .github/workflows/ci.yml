@@ -9,6 +9,7 @@ on:
 
 jobs:
   build-lint:
+    environment: production
     env:
       DATABASE_URL: file:./db.sqlite
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
@@ -55,7 +56,7 @@ jobs:
           pnpm turbo build lint type-check
         env:
           SKIP_ENV_VALIDATION: true
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_c3R1bm5pbmctcm91Z2h5LTk0LmNsZXJrLmFjY291bnRzLmRldiQ
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Check workspaces
