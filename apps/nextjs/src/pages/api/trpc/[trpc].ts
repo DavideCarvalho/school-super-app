@@ -1,12 +1,16 @@
+import { wrapApiHandlerWithSentry } from "@sentry/nextjs";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 
 import { appRouter, createTRPCContext } from "@acme/api";
 
 // export API handler
-export default createNextApiHandler({
-  router: appRouter,
-  createContext: createTRPCContext,
-});
+export default wrapApiHandlerWithSentry(
+  createNextApiHandler({
+    router: appRouter,
+    createContext: createTRPCContext,
+  }),
+  "/api/trpc",
+);
 
 // If you need to enable cors, you can do so like this:
 // const handler = async (req: NextApiRequest, res: NextApiResponse) => {
