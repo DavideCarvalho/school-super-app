@@ -5,7 +5,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: process.env.GLITCHTIP_DSN,
+  dsn: process.env.GLITCHTIP_DSN ?? process.env.NEXT_PUBLIC_GLITCHTIP_DSN,
   instrumenter: "otel",
 
   // Adjust this value in production, or use tracesSampler for greater control

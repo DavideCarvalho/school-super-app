@@ -23,6 +23,7 @@ const server = z.object({
  */
 const client = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+  NEXT_PUBLIC_GLITCHTIP_DSN: z.string(),
 });
 
 /**
@@ -47,6 +48,7 @@ const processEnv = {
   NEXT_PUBLIC_MINIO_ACCESS_KEY: process.env.NEXT_PUBLIC_MINIO_ACCESS_KEY,
   NEXT_PUBLIC_MINIO_SECRET_KEY: process.env.NEXT_PUBLIC_MINIO_SECRET_KEY,
   GLITCHTIP_DNS: process.env.GLITCHTIP_DNS,
+  NEXT_PUBLIC_GLITCHTIP_DSN: process.env.NEXT_PUBLIC_GLITCHTIP_DSN,
 };
 
 // Don't touch the part below
