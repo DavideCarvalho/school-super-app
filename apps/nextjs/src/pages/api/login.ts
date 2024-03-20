@@ -1,9 +1,10 @@
-import type {NextApiRequest, NextApiResponse} from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
+import { wrapApiHandlerWithSentry } from "@sentry/nextjs";
 
 import { prisma } from "@acme/db";
 
-export default async function handler(
+export default wrapApiHandlerWithSentry(async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
@@ -51,4 +52,4 @@ export default async function handler(
   const redirectUrl = `/escola/${dbUser.School.slug}`;
 
   return res.redirect(redirectUrl);
-}
+}, "/api/login");
