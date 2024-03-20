@@ -8,7 +8,7 @@ Sentry.init({
   dsn: process.env.GLITCHTIP_DSN ?? process.env.NEXT_PUBLIC_GLITCHTIP_DSN,
 
   // Adjust this value in production, or use tracesSampler for greater control
-  tracesSampleRate: 1,
+  tracesSampleRate: 0.4,
   instrumenter: "otel",
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
