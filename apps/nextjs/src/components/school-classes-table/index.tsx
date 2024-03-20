@@ -8,12 +8,12 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
-import { EditClassModal } from "src/components/edit-class-modal";
-import { NewClassModal } from "src/components/new-class-modal";
 
-import type {Class} from "@acme/db";
+import type { Class } from "@acme/db";
 
 import { api } from "~/utils/api";
+import { EditClassModal } from "../edit-class-modal";
+import { NewClassModal } from "../new-class-modal";
 import { Pagination } from "../pagination";
 
 interface SchoolClassesTableProps {
@@ -151,7 +151,7 @@ export function SchoolClassesTable({ schoolId }: SchoolClassesTableProps) {
 
         <div>
           <Pagination
-            totalCount={classesCountQuery?.data || 0}
+            totalCount={classesCountQuery?.data ?? 0}
             currentPage={Number(router.query.page) || 1}
             itemsPerPage={Number(router.query.limit) || 5}
             onChangePage={(page) => {

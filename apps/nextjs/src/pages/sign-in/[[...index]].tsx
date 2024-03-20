@@ -4,6 +4,7 @@ import type {
 } from "next";
 import { SignIn } from "@clerk/nextjs";
 import { clerkClient, getAuth } from "@clerk/nextjs/server";
+import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 
 import { prisma } from "@acme/db";
 
@@ -22,51 +23,51 @@ const SignInPage = ({
   );
 };
 
-export async function getServerSideProps({
-  req,
-  query,
-}: GetServerSidePropsContext) {
-  const redirectTo = (query.redirectTo as string | undefined) ?? "";
+export const getServerSideProps = wrapGetServerSidePropsWithSentry(
+  async function getServerSideProps({ req, query }: GetServerSidePropsContext) {
+    const redirectTo = (query.redirectTo as string | undefined) ?? "";
 
-  const clerkUser = getAuth(req);
+    const clerkUser = getAuth(req);
 
-  if (clerkUser.userId) {
-    const user = await clerkClient.users.getUser(clerkUser.userId);
-    const primaryEmailAddress = user.emailAddresses.find(
-      ({ id }) => id === user.primaryEmailAddressId,
-    );
+    if (clerkUser.userId) {
+      const user = await clerkClient.users.getUser(clerkUser.userId);
+      const primaryEmailAddress = user.emailAddresses.find(
+        ({ id }) => id === user.primaryEmailAddressId,
+      );
 
-    const dbUser = await prisma.user.findFirst({
-      where: {
-        email: primaryEmailAddress?.emailAddress,
-      },
-      include: {
-        Role: true,
-        School: true,
-      },
-    });
+      const dbUser = await prisma.user.findFirst({
+        where: {
+          email: primaryEmailAddress?.emailAddress,
+        },
+        include: {
+          Role: true,
+          School: true,
+        },
+      });
 
-    if (!dbUser) {
+      if (!dbUser) {
+        return {
+          props: {
+            redirectTo: `sign-in?redirectTo=${redirectTo}`,
+          },
+        };
+      }
+
       return {
-        props: {
-          redirectTo: `sign-in?redirectTo=${redirectTo}`,
+        redirect: {
+          destination: redirectTo || `/escola/${dbUser.School.slug}`,
+          permanent: true,
         },
       };
     }
 
     return {
-      redirect: {
-        destination: redirectTo || `/escola/${dbUser.School.slug}`,
-        permanent: true,
+      props: {
+        redirectTo: `sign-in?redirectTo=${redirectTo}`,
       },
     };
-  }
-
-  return {
-    props: {
-      redirectTo: `sign-in?redirectTo=${redirectTo}`,
-    },
-  };
-}
+  },
+  "/sign-in",
+);
 
 export default SignInPage;

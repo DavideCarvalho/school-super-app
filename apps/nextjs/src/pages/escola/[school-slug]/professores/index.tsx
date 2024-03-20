@@ -68,5 +68,5 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
     },
     { loadUser: true },
   ),
-  "/professores",
+  "/escola/[school-slug]/professores",
 );
