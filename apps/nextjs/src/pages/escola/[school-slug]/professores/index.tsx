@@ -4,6 +4,7 @@ import type {
 } from "next";
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
+import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
 
@@ -20,49 +21,52 @@ export default function TeachersPage({
   );
 }
 
-export const getServerSideProps = withServerSideAuth(
-  async ({ req, params, query }: GetServerSidePropsContext) => {
-    const schoolSlug = params?.["school-slug"] as string;
-    const school = await trpCaller.school.bySlug({ slug: schoolSlug });
-    if (!school) {
-      // TODO: Redirect to 404 page
-      throw new Error(`School with slug ${schoolSlug} not found`);
-    }
+export const getServerSideProps = wrapGetServerSidePropsWithSentry(
+  withServerSideAuth(
+    async ({ req, params, query }: GetServerSidePropsContext) => {
+      const schoolSlug = params?.["school-slug"] as string;
+      const school = await trpCaller.school.bySlug({ slug: schoolSlug });
+      if (!school) {
+        // TODO: Redirect to 404 page
+        throw new Error(`School with slug ${schoolSlug} not found`);
+      }
 
-    const page = query?.page ? Number(query.page) : 1;
-    const limit = query?.limit ? Number(query.limit) : 5;
+      const page = query?.page ? Number(query.page) : 1;
+      const limit = query?.limit ? Number(query.limit) : 5;
 
-    const clerkUser = getAuth(req);
+      const clerkUser = getAuth(req);
 
-    if (!clerkUser.userId) {
-      // Redirect to sign in page
+      if (!clerkUser.userId) {
+        // Redirect to sign in page
+        return {
+          redirect: {
+            destination: `/sign-in?redirectTo=/escola/${schoolSlug}/funcionarios?page=${page}&limit=${limit}`,
+            permanent: false,
+          },
+        };
+      }
+
+      await Promise.all([
+        serverSideHelpers.user.allBySchoolId.prefetch({
+          schoolId: school.id,
+          page,
+          limit,
+          role: "TEACHER",
+        }),
+        serverSideHelpers.user.countAllBySchoolId.prefetch({
+          schoolId: school.id,
+          role: "TEACHER",
+        }),
+      ]);
+
       return {
-        redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/funcionarios?page=${page}&limit=${limit}`,
-          permanent: false,
+        props: {
+          school,
+          trpcState: serverSideHelpers.dehydrate(),
         },
       };
-    }
-
-    await Promise.all([
-      serverSideHelpers.user.allBySchoolId.prefetch({
-        schoolId: school.id,
-        page,
-        limit,
-        role: "TEACHER",
-      }),
-      serverSideHelpers.user.countAllBySchoolId.prefetch({
-        schoolId: school.id,
-        role: "TEACHER",
-      }),
-    ]);
-
-    return {
-      props: {
-        school,
-        trpcState: serverSideHelpers.dehydrate(),
-      },
-    };
-  },
-  { loadUser: true },
+    },
+    { loadUser: true },
+  ),
+  "/professores",
 );
