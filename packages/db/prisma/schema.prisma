@@ -149,6 +149,7 @@ model File {
   path         String
   status       String
   frontAndBack Boolean  @default(false)
+  rejectedFeedback     String?  @db.Text
   quantity     Int      @default(1)
   dueDate      DateTime
   createdAt    DateTime @default(now())
