@@ -18,10 +18,15 @@ const config = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   images: {
-    domains: ["landingfoliocom.imgix.net"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "landingfoliocom.imgix.net",
+      },
+    ],
   },
   experimental: {
-    instrumentationHooks: true,
+    instrumentationHook: true,
   },
 };
 

@@ -14,6 +14,7 @@ const server = z.object({
   MINIO_ENDPOINT: z.string(),
   MINIO_ACCESS_KEY: z.string(),
   MINIO_SECRET_KEY: z.string(),
+  GLITCHTIP_DNS: z.string(),
 });
 
 /**
@@ -45,6 +46,7 @@ const processEnv = {
   NEXT_PUBLIC_MINIO_ENDPOINT: process.env.NEXT_PUBLIC_MINIO_ENDPOINT,
   NEXT_PUBLIC_MINIO_ACCESS_KEY: process.env.NEXT_PUBLIC_MINIO_ACCESS_KEY,
   NEXT_PUBLIC_MINIO_SECRET_KEY: process.env.NEXT_PUBLIC_MINIO_SECRET_KEY,
+  GLITCHTIP_DNS: process.env.GLITCHTIP_DNS,
 };
 
 // Don't touch the part below
