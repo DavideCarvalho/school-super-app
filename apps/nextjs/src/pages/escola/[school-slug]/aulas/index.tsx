@@ -1,4 +1,7 @@
-import type {GetServerSidePropsContext, InferGetServerSidePropsType} from "next";
+import type {
+  GetServerSidePropsContext,
+  InferGetServerSidePropsType,
+} from "next";
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
 
