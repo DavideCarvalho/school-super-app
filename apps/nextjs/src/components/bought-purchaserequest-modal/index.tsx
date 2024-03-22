@@ -8,6 +8,7 @@ import { z } from "zod";
 import type { PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
+import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import Calendar from "../calendar";
 import { FileInput } from "../fileinput";
 import { Modal } from "../modal";
@@ -19,9 +20,6 @@ const schema = z
       .min(1),
     finalUnitValue: z.coerce
       .number({ required_error: "Qual o valor unitário?" })
-      .min(0),
-    finalValue: z.coerce
-      .number({ required_error: "Qual o valor total que foi comprado?" })
       .min(0),
     estimatedArrivalDate: z.date({ required_error: "Previsão de chegada" }),
     purchaseDate: z.date({ required_error: "Data da compra" }),
@@ -59,7 +57,6 @@ export function BoughtPurchaseRequestModal({
     if (!purchaseRequest) return;
     setValue("finalQuantity", purchaseRequest.quantity);
     setValue("finalUnitValue", purchaseRequest.unitValue);
-    setValue("finalValue", purchaseRequest.value);
     setValue("estimatedArrivalDate", purchaseRequest.dueDate);
   }, [open, purchaseRequest, setValue]);
 
@@ -85,7 +82,7 @@ export function BoughtPurchaseRequestModal({
         estimatedArrivalDate: data.estimatedArrivalDate,
         finalQuantity: data.finalQuantity,
         finalUnitValue: data.finalUnitValue,
-        finalValue: data.finalValue,
+        finalValue: data.finalQuantity * data.finalUnitValue,
         receiptFileName: receiptFile.name,
         id: purchaseRequest.id,
         schoolId,
@@ -101,8 +98,10 @@ export function BoughtPurchaseRequestModal({
   };
 
   const now = dayjs();
-  const watchDueDate = watch("estimatedArrivalDate", new Date());
-  const watchPurchaseDate = watch("purchaseDate", new Date());
+  const watchDueDate = watch("estimatedArrivalDate", now.toDate());
+  const watchPurchaseDate = watch("purchaseDate", now.toDate());
+  const watchUnitValue = watch("finalUnitValue", 0);
+  const watchQuantity = watch("finalQuantity", 0);
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Item comprado"}>
@@ -156,20 +155,7 @@ export function BoughtPurchaseRequestModal({
               Quanto custou no total?
             </label>
             <div className="mt-2">
-              <input
-                {...register("finalValue")}
-                type="number"
-                inputMode="numeric"
-                step="any"
-                min={1}
-                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
-                  errors.finalValue ? "border-red-400" : "border-grey-300"
-                }`}
-                placeholder="10.00"
-              />
-              {errors.finalValue && (
-                <p className="text-red-600">{errors.finalValue.message}</p>
-              )}
+              <p>{brazilianRealFormatter(watchUnitValue * watchQuantity)}</p>
             </div>
           </div>
 

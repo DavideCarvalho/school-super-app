@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { api } from "~/utils/api";
+import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import Calendar from "../calendar";
 import { Modal } from "../modal";
 
@@ -13,8 +14,9 @@ const schema = z
   .object({
     productName: z.string({ required_error: "Qual nome do produto?" }),
     quantity: z.coerce.number({ required_error: "Qual a quantidade?" }).min(1),
-    unitValue: z.coerce.number({ required_error: "Quanto custa cada um?" }).min(0),
-    value: z.coerce.number({ required_error: "Quanto custa no total?" }).min(0),
+    unitValue: z.coerce
+      .number({ required_error: "Quanto custa cada um?" })
+      .min(0),
     dueDate: z.date(),
     productUrl: z.string().optional(),
     description: z.string().optional(),
@@ -24,7 +26,7 @@ const schema = z
 interface NewPurchaseRequestModalProps {
   schoolId: string;
   open: boolean;
-  onCreated: () => void | Promise<void>;
+  onCreated: () => void;
   onClickCancel: () => void;
 }
 
@@ -46,35 +48,40 @@ export function NewPurchaseRequestModal({
     resolver: zodResolver(schema),
   });
 
-  const createPurchaseRequestMutation = api.purchaseRequest.create.useMutation();
+  const { mutateAsync: createPurchaseRequestMutation } =
+    api.purchaseRequest.create.useMutation();
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    toast.loading("Criando solicitação de compra...");
-    createPurchaseRequestMutation.mutate(
-      {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    const toastId = toast.loading("Criando solicitação de compra...");
+    try {
+      await createPurchaseRequestMutation({
         productUrl: data.productUrl,
         productName: data.productName,
         quantity: data.quantity,
         schoolId: schoolId,
         requestingUserId: user?.publicMetadata?.id as string,
         unitValue: data.unitValue,
-        value: data.value,
+        value: data.unitValue * data.quantity,
         dueDate: data.dueDate,
         description: data.description,
-      },
-      {
-        onSuccess() {
-          toast.dismiss();
-          toast.success("Solicitação de compra criada com sucesso!");
-          onCreated();
-          reset();
-        },
-      },
-    );
+      });
+      toast.success("Solicitação de compra criada com sucesso!");
+    } catch (e) {
+      toast.error("Erro ao criar solicitação de compra.");
+    } finally {
+      toast.dismiss(toastId);
+      onCreated();
+      reset();
+    }
   };
 
   const now = dayjs();
-  const watchDueDate = watch("dueDate", new Date());
+  const watchDueDate = watch("dueDate");
+  const watchUnitValue = watch("unitValue", 0);
+  const watchQuantity = watch("quantity", 0);
+  if (!watchDueDate) {
+    setValue("dueDate", now.add(2, "day").toDate());
+  }
 
   return (
     <Modal
@@ -148,24 +155,11 @@ export function NewPurchaseRequestModal({
           </div>
 
           <div>
-            <label className="text-sm font-bold text-gray-900">
+            <p className="text-sm font-bold text-gray-900">
               Quanto custa no total?
-            </label>
+            </p>
             <div className="mt-2">
-              <input
-                {...register("value")}
-                type="number"
-                inputMode="numeric"
-                step="any"
-                min={1}
-                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
-                  errors.value ? "border-red-400" : "border-grey-300"
-                }`}
-                placeholder="10.00"
-              />
-              {errors.value && (
-                <p className="text-red-600">{errors.value.message}</p>
-              )}
+              <p>{brazilianRealFormatter(watchUnitValue * watchQuantity)}</p>
             </div>
           </div>
 
@@ -179,7 +173,7 @@ export function NewPurchaseRequestModal({
             <div className="mt-2">
               <Calendar
                 value={watchDueDate}
-                minDate={now.subtract(1, "hour").toDate()}
+                minDate={now.add(1, "day").toDate()}
                 onChange={(date) => setValue("dueDate", date)}
               />
             </div>

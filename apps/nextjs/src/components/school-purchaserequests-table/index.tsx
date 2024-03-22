@@ -10,9 +10,11 @@ import {
 import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 
-import type {PurchaseRequest} from "@acme/db";
+import type { PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
+import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
+import { ApprovePurchaseRequestModal } from "../approve-purchaserequest-modal";
 import { ArrivedPurchaseRequestModal } from "../arrived-purchaserequest-modal";
 import { BoughtPurchaseRequestModal } from "../bought-purchaserequest-modal";
 import { EditRequestedPurchaseRequestModal } from "../edit-requested-purchaserequest-modal";
@@ -42,6 +44,10 @@ export function SchoolPurchaseRequestsTable({
 
   const [openArrivedPurchaseRequestModal, setOpenArrivedPurchaseRequestModal] =
     useState(false);
+
+  const [openApprovePurchaseRequestModal, setOpenApprovePurchaseRequestModal] =
+    useState(false);
+
   const purchaseRequestsQuery = api.purchaseRequest.allBySchoolId.useQuery(
     {
       schoolId,
@@ -59,8 +65,6 @@ export function SchoolPurchaseRequestsTable({
 
   const deletePurchaseRequestMutation =
     api.purchaseRequest.deleteById.useMutation();
-  const { mutateAsync: approvePurchaseRequestMutation } =
-    api.purchaseRequest.approvePurchaseRequest.useMutation();
 
   async function onCreated() {
     setOpen(false);
@@ -69,9 +73,8 @@ export function SchoolPurchaseRequestsTable({
   }
 
   async function onApprove(purchaseRequest: PurchaseRequest) {
-    await approvePurchaseRequestMutation({
-      id: purchaseRequest.id,
-    });
+    setSelectedPurchaseRequest(purchaseRequest);
+    setOpenApprovePurchaseRequestModal(true);
     await purchaseRequestsQuery.refetch();
     await purchaseRequestsCountQuery.refetch();
   }
@@ -127,15 +130,29 @@ export function SchoolPurchaseRequestsTable({
     await purchaseRequestsCountQuery.refetch();
   }
 
-  async function onArrived(purchaseRequest: PurchaseRequest) {}
+  async function onApproved() {
+    setSelectedPurchaseRequest(undefined);
+    setOpenApprovePurchaseRequestModal(false);
+    await purchaseRequestsQuery.refetch();
+    await purchaseRequestsCountQuery.refetch();
+  }
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
       <NewPurchaseRequestModal
         schoolId={schoolId}
-        onCreated={async () => await onCreated()}
+        onCreated={onCreated}
         open={open}
         onClickCancel={() => setOpen(false)}
+      />
+      <ApprovePurchaseRequestModal
+        open={openApprovePurchaseRequestModal}
+        purchaseRequest={selectedPurchaseRequest!}
+        onClickCancel={() => {
+          setOpenApprovePurchaseRequestModal(false);
+          setSelectedPurchaseRequest(undefined);
+        }}
+        onApproved={onApproved}
       />
       <EditRequestedPurchaseRequestModal
         open={openEditModal}
@@ -214,14 +231,14 @@ export function SchoolPurchaseRequestsTable({
         </div>
 
         <div className="divide-y divide-gray-200">
-          {purchaseRequestsQuery.isFetching && (
+          {purchaseRequestsQuery.isLoading && (
             <>
               <TableRowSkeleton />
               <TableRowSkeleton />
               <TableRowSkeleton />
             </>
           )}
-          {!purchaseRequestsQuery.isFetching &&
+          {!purchaseRequestsQuery.isLoading &&
             purchaseRequestsQuery.data?.map((purchaseRequest) => {
               return (
                 <TableRow
@@ -478,9 +495,9 @@ function TableRow({
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-lg font-bold text-gray-900">Valor unitário</p>
+        <p className="text-lg font-bold text-gray-900">Valor total</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {purchaseRequest.value.toLocaleString("pt-BR")}
+          {brazilianRealFormatter(purchaseRequest.value)}
         </p>
       </div>
     </div>
@@ -586,9 +603,9 @@ function TableRowRejected({
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-lg font-bold text-gray-900">Valor unitário</p>
+        <p className="text-lg font-bold text-gray-900">Valor total</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {purchaseRequest.value.toLocaleString("pt-BR")}
+          {brazilianRealFormatter(purchaseRequest.value)}
         </p>
       </div>
     </div>
@@ -726,9 +743,9 @@ function TableRowRequested({
       </div>
 
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-lg font-bold text-gray-900">Valor unitário</p>
+        <p className="text-lg font-bold text-gray-900">Valor total</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {purchaseRequest.value.toLocaleString("pt-BR")}
+          {brazilianRealFormatter(purchaseRequest.value)}
         </p>
       </div>
     </div>
