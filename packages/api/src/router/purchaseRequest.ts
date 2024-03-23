@@ -191,7 +191,7 @@ export const purchaseRequestRouter = createTRPCRouter({
     .input(z.object({ schoolId: z.string() }))
     .query(async ({ ctx, input }) => {
       const data = await ctx.prisma.$queryRaw<
-        { month: string; count: string }[]
+        { month: string; count: bigint }[]
       >`
         SELECT
           EXTRACT(MONTH FROM createdAt) as month,
@@ -233,9 +233,7 @@ export const purchaseRequestRouter = createTRPCRouter({
   purchaseRequestsMonthlyValueInLast360Days: publicProcedure
     .input(z.object({ schoolId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const data = await ctx.prisma.$queryRaw<
-        { month: string; value: string }[]
-      >`
+      return ctx.prisma.$queryRaw<{ month: string; value: number }[]>`
         SELECT
           EXTRACT(MONTH FROM createdAt) as month,
           SUM(finalValue)               as value
@@ -246,6 +244,5 @@ export const purchaseRequestRouter = createTRPCRouter({
         GROUP BY month
         ORDER BY month
       `;
-      return data;
     }),
 });
