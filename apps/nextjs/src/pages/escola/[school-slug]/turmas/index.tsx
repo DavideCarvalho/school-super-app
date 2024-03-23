@@ -22,49 +22,46 @@ export default function ClassesPage({
 }
 
 export const getServerSideProps = wrapGetServerSidePropsWithSentry(
-  withServerSideAuth(
-    async ({ req, params, query }: GetServerSidePropsContext) => {
-      const schoolSlug = params?.["school-slug"] as string;
-      const school = await trpCaller.school.bySlug({ slug: schoolSlug });
-      if (!school) {
-        // TODO: Redirect to 404 page
-        throw new Error(`School with slug ${schoolSlug} not found`);
-      }
+  async ({ req, params, query }: GetServerSidePropsContext) => {
+    const schoolSlug = params?.["school-slug"] as string;
+    const school = await trpCaller.school.bySlug({ slug: schoolSlug });
+    if (!school) {
+      // TODO: Redirect to 404 page
+      throw new Error(`School with slug ${schoolSlug} not found`);
+    }
 
-      const page = query?.page ? Number(query.page) : 1;
-      const limit = query?.limit ? Number(query.limit) : 5;
+    const page = query?.page ? Number(query.page) : 1;
+    const limit = query?.limit ? Number(query.limit) : 5;
 
-      const clerkUser = getAuth(req);
+    const clerkUser = getAuth(req);
 
-      if (!clerkUser.userId) {
-        // Redirect to sign in page
-        return {
-          redirect: {
-            destination: `/sign-in?redirectTo=/escola/${schoolSlug}/anos?page=${page}&limit=${limit}`,
-            permanent: false,
-          },
-        };
-      }
-
-      await Promise.all([
-        serverSideHelpers.class.allBySchoolId.prefetch({
-          schoolId: school.id,
-          page,
-          limit,
-        }),
-        serverSideHelpers.class.countAllBySchoolId.prefetch({
-          schoolId: school.id,
-        }),
-      ]);
-
+    if (!clerkUser.userId) {
+      // Redirect to sign in page
       return {
-        props: {
-          school,
-          trpcState: serverSideHelpers.dehydrate(),
+        redirect: {
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/anos?page=${page}&limit=${limit}`,
+          permanent: false,
         },
       };
-    },
-    { loadUser: true },
-  ),
+    }
+
+    await Promise.all([
+      serverSideHelpers.class.allBySchoolId.prefetch({
+        schoolId: school.id,
+        page,
+        limit,
+      }),
+      serverSideHelpers.class.countAllBySchoolId.prefetch({
+        schoolId: school.id,
+      }),
+    ]);
+
+    return {
+      props: {
+        school,
+        trpcState: serverSideHelpers.dehydrate(),
+      },
+    };
+  },
   "/escola/[school-slug]/turmas",
 );

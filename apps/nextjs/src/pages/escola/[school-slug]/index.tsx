@@ -1,10 +1,11 @@
 import type { GetServerSidePropsContext } from "next";
 import { getAuth } from "@clerk/nextjs/server";
-import { withServerSideAuth } from "@clerk/nextjs/ssr";
+import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 import { LineChart } from "@tremor/react";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
 
+import { CustomChartTooltip } from "~/components/custom-chart-tooltip";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 import { api } from "~/utils/api";
 
@@ -47,6 +48,7 @@ export default function SchoolPage({ schoolId }: SchoolPageProps) {
         }
         index="month"
         categories={["Valor"]}
+        customTooltip={CustomChartTooltip}
       />
 
       <h3 className="text-tremor-content-strong text-lg font-medium">
@@ -64,6 +66,7 @@ export default function SchoolPage({ schoolId }: SchoolPageProps) {
         }
         index="month"
         categories={["Dias para fechar"]}
+        customTooltip={CustomChartTooltip}
       />
 
       <h3 className="text-tremor-content-strong text-lg font-medium">
@@ -81,12 +84,13 @@ export default function SchoolPage({ schoolId }: SchoolPageProps) {
         }
         index="month"
         categories={["Solicitações criadas"]}
+        customTooltip={CustomChartTooltip}
       />
     </SchoolLayout>
   );
 }
 
-export const getServerSideProps = withServerSideAuth(
+export const getServerSideProps = wrapGetServerSidePropsWithSentry(
   async ({ req, params }: GetServerSidePropsContext) => {
     const schoolSlug = params?.["school-slug"] as string;
     const school = await trpCaller.school.bySlug({ slug: schoolSlug });
@@ -132,5 +136,5 @@ export const getServerSideProps = withServerSideAuth(
       },
     };
   },
-  { loadUser: true },
+  "/escola/[school-slug]",
 );

@@ -6,6 +6,7 @@ import baseConfig from "@acme/tailwind-config";
 module.exports = {
   content: ["./src/**/*.tsx"],
   presets: [baseConfig],
+  darkMode: "class",
   theme: {
     transparent: "transparent",
     current: "currentColor",

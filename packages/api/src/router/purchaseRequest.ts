@@ -204,7 +204,7 @@ export const purchaseRequestRouter = createTRPCRouter({
       `;
       return data.map((d) => ({
         month: d.month,
-        count: parseInt(d.count),
+        count: parseInt(d.count.toString()),
       }));
     }),
   purchaseRequestsTimeToFinalStatusInLast360Days: publicProcedure
