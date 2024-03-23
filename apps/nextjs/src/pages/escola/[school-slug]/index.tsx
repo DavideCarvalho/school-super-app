@@ -1,15 +1,87 @@
-import type {GetServerSidePropsContext} from "next";
+import type { GetServerSidePropsContext } from "next";
 import { getAuth } from "@clerk/nextjs/server";
 import { withServerSideAuth } from "@clerk/nextjs/ssr";
+import { LineChart } from "@tremor/react";
 
-import { trpCaller } from "@acme/api";
+import { serverSideHelpers, trpCaller } from "@acme/api";
 
 import { SchoolLayout } from "~/layouts/SchoolLayout";
+import { api } from "~/utils/api";
 
-export default function SchoolPage() {
+interface SchoolPageProps {
+  schoolId: string;
+}
+
+export default function SchoolPage({ schoolId }: SchoolPageProps) {
+  const { data: purchaseRequestsMonthlyValueInLast360DaysData } =
+    api.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.useQuery({
+      schoolId,
+    });
+
+  const { data: purchaseRequestsTimeToFinalStatusInLast360DaysData } =
+    api.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.useQuery(
+      {
+        schoolId,
+      },
+    );
+
+  const { data: purchaseRequestsLast360DaysByMonthData } =
+    api.purchaseRequest.purchaseRequestsLast360DaysByMonth.useQuery({
+      schoolId,
+    });
+
   return (
     <SchoolLayout>
-      <h1>Dashboard - em construção</h1>
+      <h3 className="text-tremor-content-strong text-lg font-medium">
+        Valor total de solicitações de compra por mês
+      </h3>
+      <LineChart
+        className="mt-4 h-72"
+        data={
+          purchaseRequestsMonthlyValueInLast360DaysData?.length
+            ? purchaseRequestsMonthlyValueInLast360DaysData?.map((d) => ({
+                month: d.month,
+                Valor: d.value,
+              }))
+            : []
+        }
+        index="month"
+        categories={["Valor"]}
+      />
+
+      <h3 className="text-tremor-content-strong text-lg font-medium">
+        Tempo médio para finalização de solicitações de compra por mês
+      </h3>
+      <LineChart
+        className="mt-4 h-72"
+        data={
+          purchaseRequestsTimeToFinalStatusInLast360DaysData?.length
+            ? purchaseRequestsTimeToFinalStatusInLast360DaysData?.map((d) => ({
+                month: d.month,
+                "Dias para fechar": d.averageDaysToFinish,
+              }))
+            : []
+        }
+        index="month"
+        categories={["Dias para fechar"]}
+      />
+
+      <h3 className="text-tremor-content-strong text-lg font-medium">
+        Solicitações de compra por mês
+      </h3>
+      <LineChart
+        className="mt-4 h-72"
+        data={
+          purchaseRequestsLast360DaysByMonthData?.length
+            ? purchaseRequestsLast360DaysByMonthData?.map((d) => ({
+                month: d.month,
+                "Solicitações criadas": d.count,
+              }))
+            : []
+        }
+        index="month"
+        categories={["Solicitações criadas"]}
+      />
     </SchoolLayout>
   );
 }
@@ -35,8 +107,29 @@ export const getServerSideProps = withServerSideAuth(
       };
     }
 
+    await Promise.all([
+      serverSideHelpers.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.prefetch(
+        {
+          schoolId: school.id,
+        },
+      ),
+      serverSideHelpers.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.prefetch(
+        {
+          schoolId: school.id,
+        },
+      ),
+      serverSideHelpers.purchaseRequest.purchaseRequestsLast360DaysByMonth.prefetch(
+        {
+          schoolId: school.id,
+        },
+      ),
+    ]);
+
     return {
-      props: {},
+      props: {
+        schoolId: school.id,
+        trpcState: serverSideHelpers.dehydrate(),
+      },
     };
   },
   { loadUser: true },

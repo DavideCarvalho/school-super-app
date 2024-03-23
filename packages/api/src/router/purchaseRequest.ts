@@ -187,4 +187,65 @@ export const purchaseRequestRouter = createTRPCRouter({
         },
       });
     }),
+  purchaseRequestsLast360DaysByMonth: publicProcedure
+    .input(z.object({ schoolId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.$queryRaw<
+        { month: string; count: string }[]
+      >`
+        SELECT
+          EXTRACT(MONTH FROM createdAt) as month,
+          COUNT(*)                      as count
+        FROM PurchaseRequest
+        WHERE schoolId = ${input.schoolId}
+          AND createdAt > NOW() - INTERVAL 1 YEAR
+        GROUP BY YEAR(updatedAt), month
+        ORDER BY YEAR(updatedAt), month;
+      `;
+      return data.map((d) => ({
+        month: d.month,
+        count: parseInt(d.count),
+      }));
+    }),
+  purchaseRequestsTimeToFinalStatusInLast360Days: publicProcedure
+    .input(z.object({ schoolId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.$queryRaw<
+        {
+          month: string;
+          averageDaysToFinish: string;
+        }[]
+      >`
+        SELECT EXTRACT(MONTH FROM createdAt)                  as month,
+        AVG(DATEDIFF(updatedAt, createdAt)) as averageDaysToFinish
+        FROM PurchaseRequest
+        WHERE schoolId = ${input.schoolId}
+          AND updatedAt > NOW() - INTERVAL 1 YEAR
+          AND status = 'ARRIVED'
+        GROUP BY YEAR(updatedAt), month
+        ORDER BY YEAR(updatedAt), month
+      `;
+      return data.map((d) => ({
+        month: d.month,
+        averageDaysToFinish: parseFloat(d.averageDaysToFinish),
+      }));
+    }),
+  purchaseRequestsMonthlyValueInLast360Days: publicProcedure
+    .input(z.object({ schoolId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.$queryRaw<
+        { month: string; value: string }[]
+      >`
+        SELECT
+          EXTRACT(MONTH FROM createdAt) as month,
+          SUM(finalValue)               as value
+        FROM PurchaseRequest
+        WHERE
+          schoolId = ${input.schoolId}
+          AND createdAt > NOW() - INTERVAL 1 YEAR
+        GROUP BY month
+        ORDER BY month
+      `;
+      return data;
+    }),
 });

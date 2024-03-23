@@ -65,7 +65,9 @@
     "sharp": "0.33.2",
     "slugify": "1.6.6",
     "superjson": "1.13.3",
-    "zod": "3.22.4"
+    "zod": "3.22.4",
+    "@tremor/react": "3.14.1",
+    "@remixicon/react": "4.2.0"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:^0.1.0",
