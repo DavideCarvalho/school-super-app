@@ -34,10 +34,11 @@ model User {
 
   School          School            @relation(fields: [schoolId], references: [id])
   Role            Role              @relation(fields: [roleId], references: [id])
-  Teacher         Teacher[]
-  Student         Student[]
-  Notification    Notification[]
-  PurchaseRequest PurchaseRequest[]
+  Teachers         Teacher[]
+  Students         Student[]
+  Notifications    Notification[]
+  PurchaseRequests PurchaseRequest[]
+  Canteens        Canteen[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -58,7 +59,7 @@ model Student {
   User              User              @relation(fields: [id], references: [id])
   responsibleUserId String
 
-  CanteenPurchase CanteenPurchase[]
+  CanteenItemPurchases StudentCanteenItemPurchase[]
 
   @@index([id])
 }
@@ -68,8 +69,10 @@ model Canteen {
   schoolId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  responsibleUserId String
 
   School School @relation(fields: [schoolId], references: [id])
+  ResponsibleUser User @relation(fields: [responsibleUserId], references: [id])
   CanteenItem CanteenItem[]
 }
 
@@ -82,15 +85,15 @@ model CanteenItem {
   updatedAt DateTime @updatedAt
 
   Canteen Canteen @relation(fields: [canteenId], references: [id])
-  CanteenPurchase CanteenPurchase[]
+  StudentCanteenItemPurchases StudentCanteenItemPurchase[]
 
   @@index([canteenId])
 }
 
-model CanteenPurchase {
+model StudentCanteenItemPurchase {
   id        String   @id @default(cuid())
   studentId String
-  itemId    String
+  canteenItemId    String
   price     Float
   quantity  Int
   createdAt DateTime @default(now())
@@ -98,9 +101,9 @@ model CanteenPurchase {
   payed     Boolean @default(false)
 
   Student     Student     @relation(fields: [studentId], references: [id])
-  CanteenItem  CanteenItem  @relation(fields: [itemId], references: [id])
+  CanteenItem  CanteenItem  @relation(fields: [canteenItemId], references: [id])
 
-  @@index([itemId])
+  @@index([canteenItemId])
   @@index([studentId])
 }
 

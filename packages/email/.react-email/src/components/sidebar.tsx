@@ -108,12 +108,12 @@ export const Sidebar = React.forwardRef<SidebarElement, Readonly<SidebarProps>>(
                               {isCurrentPage && (
                                 <motion.span
                                   layoutId="sidebar"
-                                  className="bg-cyan-5 absolute left-0 right-0 top-0 bottom-0 rounded-md"
+                                  className="bg-cyan-5 absolute bottom-0 left-0 right-0 top-0 rounded-md"
                                   initial={{ opacity: 0 }}
                                   animate={{ opacity: 1 }}
                                   exit={{ opacity: 0 }}
                                 >
-                                  <div className="bg-cyan-11 absolute top-1 left-2.5 h-6 w-px" />
+                                  <div className="bg-cyan-11 absolute left-2.5 top-1 h-6 w-px" />
                                 </motion.span>
                               )}
                               <svg

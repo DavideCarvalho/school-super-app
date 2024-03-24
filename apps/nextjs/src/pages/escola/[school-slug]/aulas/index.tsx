@@ -38,7 +38,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/anos?page=${page}&limit=${limit}`,
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/aulas?page=${page}&limit=${limit}`,
           permanent: false,
         },
       };

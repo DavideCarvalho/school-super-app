@@ -306,6 +306,17 @@ function TableRow({
   onArrived,
   onReject,
 }: TableRowProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { x, y, strategy, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+  });
+
+  const click = useClick(context);
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps } = useInteractions([click, dismiss]);
   if (purchaseRequest.status === "REJECTED") {
     return (
       <TableRowRejected
@@ -360,18 +371,6 @@ function TableRow({
       />
     );
   }
-
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { x, y, strategy, refs, context } = useFloating({
-    open: isOpen,
-    onOpenChange: setIsOpen,
-  });
-
-  const click = useClick(context);
-  const dismiss = useDismiss(context);
-
-  const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
     <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">

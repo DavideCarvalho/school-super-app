@@ -286,7 +286,7 @@ export function SchoolFilesTable({ schoolId }: SchoolFilesTableProps) {
 
         <div>
           <Pagination
-            totalCount={filesCountQuery?.data || 0}
+            totalCount={filesCountQuery?.data ?? 0}
             currentPage={Number(router.query.page) || 1}
             itemsPerPage={Number(router.query.limit) || 5}
             onChangePage={(page) => {
@@ -393,10 +393,13 @@ function TableRow({
         </span>
       </div>
 
-      {((userRole === "TEACHER" && status === "REVIEW") ||
-        (userRole === "COORDINATOR" && status === "REQUESTED") ||
-        (userRole === "SCHOOL_WORKER" && status === "APPROVED") ||
-        (userRole === "SCHOOL_WORKER" && status === "PRINTED")) && (
+      {((userRole === "TEACHER" && status === TableRowStatusEnum.REVIEW) ||
+        (userRole === "COORDINATOR" &&
+          status === TableRowStatusEnum.REQUESTED) ||
+        (userRole === "SCHOOL_WORKER" &&
+          status === TableRowStatusEnum.APPROVED) ||
+        (userRole === "SCHOOL_WORKER" &&
+          status === TableRowStatusEnum.PRINTED)) && (
         <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
           <button
             type="button"
@@ -419,10 +422,13 @@ function TableRow({
               />
             </svg>
           </button>
-          {((userRole === "TEACHER" && status === "REVIEW") ||
-            (userRole === "COORDINATOR" && status === "REQUESTED") ||
-            (userRole === "SCHOOL_WORKER" && status === "APPROVED") ||
-            (userRole === "SCHOOL_WORKER" && status === "PRINTED")) &&
+          {((userRole === "TEACHER" && status === TableRowStatusEnum.REVIEW) ||
+            (userRole === "COORDINATOR" &&
+              status === TableRowStatusEnum.REQUESTED) ||
+            (userRole === "SCHOOL_WORKER" &&
+              status === TableRowStatusEnum.APPROVED) ||
+            (userRole === "SCHOOL_WORKER" &&
+              status === TableRowStatusEnum.PRINTED)) &&
             isOpen && (
               <div
                 ref={refs.setFloating}
@@ -434,76 +440,80 @@ function TableRow({
               >
                 <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
                   <ul className="flex flex-col">
-                    {userRole === "TEACHER" && status === "REVIEW" && (
-                      <>
-                        <li
-                          onClick={() => {
-                            onReview(file.id);
-                            setIsOpen(false);
-                          }}
-                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                        >
-                          Reenviar
-                        </li>
-                      </>
-                    )}
-                    {userRole === "COORDINATOR" && status === "REQUESTED" && (
-                      <>
-                        <li
-                          onClick={() => {
-                            onOpen();
-                            setIsOpen(false);
-                          }}
-                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                        >
-                          Abrir
-                        </li>
-                        <li
-                          onClick={() => {
-                            onApprove(file.id);
-                            setIsOpen(false);
-                          }}
-                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                        >
-                          Aprovar
-                        </li>
-                        <li
-                          onClick={() => {
-                            setReview(file.id);
-                            setIsOpen(false);
-                          }}
-                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                        >
-                          Revisar
-                        </li>
-                      </>
-                    )}
-                    {userRole === "SCHOOL_WORKER" && status === "APPROVED" && (
-                      <>
-                        <li
-                          onClick={() => {
-                            onPrint(file.id);
-                            setIsOpen(false);
-                          }}
-                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                        >
-                          Imprimir
-                        </li>
-                      </>
-                    )}
-                    {userRole === "SCHOOL_WORKER" && status === "PRINTED" && (
-                      <>
-                        <li
-                          onClick={() => {
-                            onPrint(file.id);
-                            setIsOpen(false);
-                          }}
-                          className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                        >
-                          Imprimir
-                        </li>
-                      </>
-                    )}
+                    {userRole === "TEACHER" &&
+                      status === TableRowStatusEnum.REVIEW && (
+                        <>
+                          <li
+                            onClick={() => {
+                              onReview(file.id);
+                              setIsOpen(false);
+                            }}
+                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                          >
+                            Reenviar
+                          </li>
+                        </>
+                      )}
+                    {userRole === "COORDINATOR" &&
+                      status === TableRowStatusEnum.REQUESTED && (
+                        <>
+                          <li
+                            onClick={() => {
+                              onOpen();
+                              setIsOpen(false);
+                            }}
+                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                          >
+                            Abrir
+                          </li>
+                          <li
+                            onClick={() => {
+                              onApprove(file.id);
+                              setIsOpen(false);
+                            }}
+                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                          >
+                            Aprovar
+                          </li>
+                          <li
+                            onClick={() => {
+                              setReview(file.id);
+                              setIsOpen(false);
+                            }}
+                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                          >
+                            Revisar
+                          </li>
+                        </>
+                      )}
+                    {userRole === "SCHOOL_WORKER" &&
+                      status === TableRowStatusEnum.APPROVED && (
+                        <>
+                          <li
+                            onClick={() => {
+                              onPrint(file.id);
+                              setIsOpen(false);
+                            }}
+                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                          >
+                            Imprimir
+                          </li>
+                        </>
+                      )}
+                    {userRole === "SCHOOL_WORKER" &&
+                      status === TableRowStatusEnum.PRINTED && (
+                        <>
+                          <li
+                            onClick={() => {
+                              onPrint(file.id);
+                              setIsOpen(false);
+                            }}
+                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                          >
+                            Imprimir
+                          </li>
+                        </>
+                      )}
                   </ul>
                 </div>
               </div>

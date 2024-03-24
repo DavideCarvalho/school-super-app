@@ -91,7 +91,6 @@ export function BoughtPurchaseRequestModal({
       onCreated();
       reset();
     } catch (e) {
-      console.log("error", e);
       toast.error("Erro ao alterar solicitação de compra");
     } finally {
       toast.dismiss(toastId);
@@ -103,8 +102,6 @@ export function BoughtPurchaseRequestModal({
   const watchPurchaseDate = watch("purchaseDate", now.toDate());
   const watchUnitValue = watch("finalUnitValue", 0);
   const watchQuantity = watch("finalQuantity", 0);
-
-  console.log("errors", errors);
 
   return (
     <Modal open={open} onClose={onClickCancel} title={"Item comprado"}>

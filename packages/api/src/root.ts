@@ -4,6 +4,7 @@ import superjson from "superjson";
 import { prisma } from "@acme/db";
 
 import { authRouter } from "./router/auth";
+import { canteenRouter } from "./router/canteen";
 import { classRouter } from "./router/class";
 import { emailRouter } from "./router/email";
 import { fileRouter } from "./router/file";
@@ -28,6 +29,7 @@ export const appRouter = createTRPCRouter({
   subject: subjectRouter,
   teacherHasClass: teacherHasClassRouter,
   purchaseRequest: purchaseRequestRouter,
+  canteen: canteenRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });

@@ -3,20 +3,19 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import { getAuth } from "@clerk/nextjs/server";
-import { withServerSideAuth } from "@clerk/nextjs/ssr";
 import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
 
-import { SchoolPurchaseRequestsTable } from "~/components/school-purchaserequests-table";
+import { SchoolCanteensTable } from "~/components/school-canteens-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
-export default function PurchaseRequestsPage({
+export default function CanteensPage({
   school,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolPurchaseRequestsTable schoolId={school.id} />
+      <SchoolCanteensTable schoolId={school.id} />
     </SchoolLayout>
   );
 }
@@ -39,19 +38,19 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/solitiacoes-de-compra?page=${page}&limit=${limit}`,
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/cantinas?page=${page}&limit=${limit}`,
           permanent: false,
         },
       };
     }
 
     await Promise.all([
-      serverSideHelpers.purchaseRequest.allBySchoolId.prefetch({
+      serverSideHelpers.canteen.allBySchoolId.prefetch({
         schoolId: school.id,
         page,
         limit,
       }),
-      serverSideHelpers.purchaseRequest.countAllBySchoolId.prefetch({
+      serverSideHelpers.canteen.countAllBySchoolId.prefetch({
         schoolId: school.id,
       }),
     ]);
@@ -63,5 +62,5 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       },
     };
   },
-  "/escola/[school-slug]/solicitacoes-de-compra",
+  "/escola/[school-slug]/cantinas",
 );

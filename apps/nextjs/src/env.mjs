@@ -14,7 +14,7 @@ const server = z.object({
   MINIO_ENDPOINT: z.string(),
   MINIO_ACCESS_KEY: z.string(),
   MINIO_SECRET_KEY: z.string(),
-  GLITCHTIP_DNS: z.string(),
+  GLITCHTIP_DNS: z.string().optional(),
 });
 
 /**
@@ -23,7 +23,7 @@ const server = z.object({
  */
 const client = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
-  NEXT_PUBLIC_GLITCHTIP_DSN: z.string(),
+  NEXT_PUBLIC_GLITCHTIP_DSN: z.string().optional(),
 });
 
 /**
