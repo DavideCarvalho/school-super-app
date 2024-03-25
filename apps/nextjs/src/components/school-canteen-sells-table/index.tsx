@@ -1,39 +1,41 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useUser } from "@clerk/nextjs";
 import {
   useClick,
   useDismiss,
   useFloating,
   useInteractions,
 } from "@floating-ui/react";
+import dayjs from "dayjs";
 import { toast } from "react-hot-toast";
 
-import type { CanteenItem } from "@acme/db";
+import type { StudentCanteenItemPurchase } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import { NewCanteenItemModal } from "../new-canteenitem-modal";
+import { NewCanteenSellModal } from "../new-canteensell-modal";
 import { Pagination } from "../pagination";
 
-interface SchoolCanteenItemsTableProps {
+interface SchoolCanteenSellsTableProps {
   schoolId: string;
   canteenId: string;
 }
 
-export function SchoolCanteenItemsTable({
-  schoolId,
+export function SchoolCanteenSellsTable({
   canteenId,
-}: SchoolCanteenItemsTableProps) {
+  schoolId,
+}: SchoolCanteenSellsTableProps) {
   const router = useRouter();
 
-  const [selectedCanteenItem, setSelectedCanteenItem] = useState<CanteenItem>();
+  const [selectedCanteenSell, setSelectedCanteenSell] =
+    useState<StudentCanteenItemPurchase>();
 
   const [open, setOpen] = useState(false);
   const [openEditCanteenItemModal, setOpenEditCanteenItemModal] =
     useState(false);
 
-  const allBySchoolIdQuery = api.canteen.allCanteenItems.useQuery(
+  const allCanteenSellsQuery = api.canteen.allCanteenSells.useQuery(
     {
       canteenId,
       limit: router.query.limit ? Number(router.query.limit) : 5,
@@ -42,7 +44,7 @@ export function SchoolCanteenItemsTable({
     { refetchOnMount: false },
   );
 
-  const countAllBySchoolIdQuery = api.canteen.countAllCanteenItems.useQuery(
+  const countAllCanteenSellsQuery = api.canteen.countAllCanteenSells.useQuery(
     { canteenId },
     { refetchOnMount: false },
   );
@@ -52,28 +54,31 @@ export function SchoolCanteenItemsTable({
 
   async function onCreated() {
     setOpen(false);
-    await allBySchoolIdQuery.refetch();
-    await countAllBySchoolIdQuery.refetch();
+    await allCanteenSellsQuery.refetch();
+    await countAllCanteenSellsQuery.refetch();
   }
 
-  async function deleteCanteenItem(canteenItemId: string) {
+  async function deleteCanteenSell(canteenItemId: string) {
     const toastId = toast.loading("Removendo item da cantina...");
     await deletePurchaseRequestMutation({ id: canteenItemId });
     toast.dismiss(toastId);
     toast.success("Item da cantina criado com sucesso!");
-    await allBySchoolIdQuery.refetch();
-    await countAllBySchoolIdQuery.refetch();
+    await allCanteenSellsQuery.refetch();
+    await countAllCanteenSellsQuery.refetch();
   }
 
-  function onSelectCanteenItemToEdit(canteenItem: CanteenItem) {
+  function onSelectCanteenItemToEdit(canteenSell: StudentCanteenItemPurchase) {
     setOpenEditCanteenItemModal(true);
-    setSelectedCanteenItem(canteenItem);
+    setSelectedCanteenSell(canteenSell);
   }
+
+  function onPayed(canteenSell: StudentCanteenItemPurchase) {}
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewCanteenItemModal
+      <NewCanteenSellModal
         canteenId={canteenId}
+        schoolId={schoolId}
         onCreated={onCreated}
         open={open}
         onClickCancel={() => setOpen(false)}
@@ -84,7 +89,7 @@ export function SchoolCanteenItemsTable({
           <div className="sm:flex sm:items-start sm:justify-between">
             <div>
               <p className="text-lg font-bold text-gray-900">
-                Itens da cantina
+                Vendas da cantina
               </p>
             </div>
             <button
@@ -107,27 +112,27 @@ export function SchoolCanteenItemsTable({
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
               </svg>
-              Adicionar item
+              Nova venda
             </button>
           </div>
         </div>
 
         <div className="divide-y divide-gray-200">
-          {allBySchoolIdQuery.isLoading && (
+          {allCanteenSellsQuery.isLoading && (
             <>
               <TableRowSkeleton />
               <TableRowSkeleton />
               <TableRowSkeleton />
             </>
           )}
-          {!allBySchoolIdQuery.isLoading &&
-            allBySchoolIdQuery.data?.map((canteenItem) => {
+          {!allCanteenSellsQuery.isLoading &&
+            allCanteenSellsQuery.data?.map((canteenSell) => {
               return (
                 <TableRow
-                  key={canteenItem.id}
-                  canteenItem={canteenItem}
-                  onDelete={({ id }) => deleteCanteenItem(id)}
-                  onEdit={onSelectCanteenItemToEdit}
+                  key={canteenSell.id}
+                  canteenSell={canteenSell}
+                  onDelete={({ id }) => deleteCanteenSell(id)}
+                  onPayed={onPayed}
                 />
               );
             })}
@@ -135,7 +140,7 @@ export function SchoolCanteenItemsTable({
 
         <div>
           <Pagination
-            totalCount={countAllBySchoolIdQuery?.data ?? 0}
+            totalCount={countAllCanteenSellsQuery?.data ?? 0}
             currentPage={Number(router.query.page) || 1}
             itemsPerPage={Number(router.query.limit) || 5}
             onChangePage={(page) => {
@@ -155,12 +160,12 @@ export function SchoolCanteenItemsTable({
 }
 
 interface TableRowProps {
-  canteenItem: CanteenItem;
-  onDelete: (canteenItem: CanteenItem) => void;
-  onEdit: (canteenItem: CanteenItem) => void;
+  canteenSell: StudentCanteenItemPurchase;
+  onDelete: (canteenSell: StudentCanteenItemPurchase) => void;
+  onPayed: (canteenSell: StudentCanteenItemPurchase) => void;
 }
 
-function TableRow({ canteenItem, onDelete, onEdit }: TableRowProps) {
+function TableRow({ canteenSell, onDelete, onPayed }: TableRowProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const { x, y, strategy, refs, context } = useFloating({
@@ -174,7 +179,7 @@ function TableRow({ canteenItem, onDelete, onEdit }: TableRowProps) {
   const { getReferenceProps } = useInteractions([click, dismiss]);
 
   return (
-    <div className="grid grid-cols-3 py-4 lg:grid-cols-3 lg:gap-0">
+    <div className="grid grid-cols-5 py-4 lg:grid-cols-5 lg:gap-0">
       <div className="px-4 text-right sm:px-6 lg:order-last lg:py-4">
         <button
           type="button"
@@ -212,10 +217,19 @@ function TableRow({ canteenItem, onDelete, onEdit }: TableRowProps) {
                 <li>
                   <button
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                    onClick={() => onDelete(canteenItem)}
+                    onClick={() => onDelete(canteenSell)}
                     type="button"
                   >
                     Excluir
+                  </button>
+                </li>
+                <li>
+                  <button
+                    className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                    onClick={() => onPayed(canteenSell)}
+                    type="button"
+                  >
+                    Pago
                   </button>
                 </li>
               </ul>
@@ -224,15 +238,27 @@ function TableRow({ canteenItem, onDelete, onEdit }: TableRowProps) {
         )}
       </div>
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-lg font-bold text-gray-900">Nome do item</p>
+        <p className="text-lg font-bold text-gray-900">Data</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {canteenItem.name}
+          {dayjs(canteenSell.price).format("DD/MM/YYYY")}
         </p>
       </div>
       <div className="px-4 sm:px-6 lg:py-4">
-        <p className="text-lg font-bold text-gray-900">Preço</p>
+        <p className="text-lg font-bold text-gray-900">Valor</p>
         <p className="mt-1 text-lg font-medium text-gray-500">
-          {brazilianRealFormatter(canteenItem.price / 100)}
+          {brazilianRealFormatter(canteenSell.price / 100)}
+        </p>
+      </div>
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Quantidade</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {canteenSell.quantity}
+        </p>
+      </div>
+      <div className="px-4 sm:px-6 lg:py-4">
+        <p className="text-lg font-bold text-gray-900">Pago</p>
+        <p className="mt-1 text-lg font-medium text-gray-500">
+          {canteenSell.payed ? "Sim" : "Não"}
         </p>
       </div>
     </div>

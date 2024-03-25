@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 import type { Class, File, Subject, Teacher, User } from "@acme/db";
 
 import { api } from "~/utils/api";
-import { Dropdown } from "../dropdown";
+import { Dropdown, type DropdownItem } from "../dropdown";
 import { NewFileRequestModal } from "../new-file-request-modal";
 import { Pagination } from "../pagination";
 
@@ -20,7 +20,9 @@ interface SchoolFilesTableProps {
   schoolId: string;
 }
 
-function getStatus(status: TableRowStatusEnum) {
+function getStatus(
+  status: TableRowStatusEnum,
+): DropdownItem<TableRowStatusEnum> {
   switch (status.toUpperCase()) {
     case TableRowStatusEnum.REVIEW:
       return {
@@ -32,6 +34,7 @@ function getStatus(status: TableRowStatusEnum) {
             fill="currentColor"
             viewBox="0 0 8 8"
           >
+            <title>Status</title>
             <circle cx="4" cy="4" r="3" />
           </svg>
         ),
@@ -46,6 +49,7 @@ function getStatus(status: TableRowStatusEnum) {
             fill="currentColor"
             viewBox="0 0 8 8"
           >
+            <title>Status</title>
             <circle cx="4" cy="4" r="3" />
           </svg>
         ),
@@ -60,6 +64,7 @@ function getStatus(status: TableRowStatusEnum) {
             fill="currentColor"
             viewBox="0 0 8 8"
           >
+            <title>Status</title>
             <circle cx="4" cy="4" r="3" />
           </svg>
         ),
@@ -74,12 +79,14 @@ function getStatus(status: TableRowStatusEnum) {
             fill="currentColor"
             viewBox="0 0 8 8"
           >
+            <title>Status</title>
             <circle cx="4" cy="4" r="3" />
           </svg>
         ),
       };
+    default:
+      return { label: "", value: "" };
   }
-  12;
 }
 
 function isValidStatus(status?: string): status is TableRowStatusEnum {
@@ -163,6 +170,7 @@ export function SchoolFilesTable({ schoolId }: SchoolFilesTableProps) {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
+                  <title>Adicionar</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -208,10 +216,10 @@ export function SchoolFilesTable({ schoolId }: SchoolFilesTableProps) {
                 inputPlaceholder="Aprovação"
                 dropdownPlaceholder="Selecione um status"
                 dropdownItems={[
-                  getStatus(TableRowStatusEnum.APPROVED)!,
-                  getStatus(TableRowStatusEnum.REVIEW)!,
-                  getStatus(TableRowStatusEnum.REQUESTED)!,
-                  getStatus(TableRowStatusEnum.PRINTED)!,
+                  getStatus(TableRowStatusEnum.APPROVED),
+                  getStatus(TableRowStatusEnum.REVIEW),
+                  getStatus(TableRowStatusEnum.REQUESTED),
+                  getStatus(TableRowStatusEnum.PRINTED),
                 ]}
               />
             </div>
@@ -387,6 +395,7 @@ function TableRow({
             fill="currentColor"
             viewBox="0 0 8 8"
           >
+            <title>Status</title>
             <circle cx="4" cy="4" r="3" />
           </svg>
           {label}
@@ -415,6 +424,7 @@ function TableRow({
               stroke="currentColor"
               strokeWidth="2"
             >
+              <title>Menu</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -443,74 +453,92 @@ function TableRow({
                     {userRole === "TEACHER" &&
                       status === TableRowStatusEnum.REVIEW && (
                         <>
-                          <li
-                            onClick={() => {
-                              onReview(file.id);
-                              setIsOpen(false);
-                            }}
-                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                          >
-                            Reenviar
+                          <li>
+                            <button
+                              onClick={() => {
+                                onReview(file.id);
+                                setIsOpen(false);
+                              }}
+                              className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                              type="button"
+                            >
+                              Reenviar
+                            </button>
                           </li>
                         </>
                       )}
                     {userRole === "COORDINATOR" &&
                       status === TableRowStatusEnum.REQUESTED && (
                         <>
-                          <li
-                            onClick={() => {
-                              onOpen();
-                              setIsOpen(false);
-                            }}
-                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                          >
-                            Abrir
+                          <li>
+                            <button
+                              onClick={() => {
+                                onOpen();
+                                setIsOpen(false);
+                              }}
+                              className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                              type="submit"
+                            >
+                              Abrir
+                            </button>
                           </li>
-                          <li
-                            onClick={() => {
-                              onApprove(file.id);
-                              setIsOpen(false);
-                            }}
-                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                          >
-                            Aprovar
+                          <li>
+                            <button
+                              onClick={() => {
+                                onApprove(file.id);
+                                setIsOpen(false);
+                              }}
+                              className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                              type="submit"
+                            >
+                              Aprovar
+                            </button>
                           </li>
-                          <li
-                            onClick={() => {
-                              setReview(file.id);
-                              setIsOpen(false);
-                            }}
-                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                          >
-                            Revisar
+                          <li>
+                            <button
+                              onClick={() => {
+                                setReview(file.id);
+                                setIsOpen(false);
+                              }}
+                              className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                              type="button"
+                            >
+                              Revisar
+                            </button>
                           </li>
                         </>
                       )}
                     {userRole === "SCHOOL_WORKER" &&
                       status === TableRowStatusEnum.APPROVED && (
                         <>
-                          <li
-                            onClick={() => {
-                              onPrint(file.id);
-                              setIsOpen(false);
-                            }}
-                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                          >
-                            Imprimir
+                          <li>
+                            <button
+                              onClick={() => {
+                                onPrint(file.id);
+                                setIsOpen(false);
+                              }}
+                              className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                              type="button"
+                            >
+                              Imprimir
+                            </button>
                           </li>
                         </>
                       )}
                     {userRole === "SCHOOL_WORKER" &&
                       status === TableRowStatusEnum.PRINTED && (
                         <>
-                          <li
-                            onClick={() => {
-                              onPrint(file.id);
-                              setIsOpen(false);
-                            }}
-                            className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
-                          >
-                            Imprimir
+                          <li>
+                            <button
+                              onClick={() => {
+                                onPrint(file.id);
+                                setIsOpen(false);
+                              }}
+                              className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
+                              type="button"
+                            >
+                              Imprimir
+                            </button>
                           </li>
                         </>
                       )}
@@ -574,6 +602,7 @@ function TableRowSkeleton() {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Menu</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

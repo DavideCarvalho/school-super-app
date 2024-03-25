@@ -93,7 +93,7 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  allItemsBySchoolId: publicProcedure
+  allCanteenItems: publicProcedure
     .input(
       z.object({
         canteenId: z.string(),
@@ -110,7 +110,7 @@ export const canteenRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
       });
     }),
-  countAllItemsBySchoolId: publicProcedure
+  countAllCanteenItems: publicProcedure
     .input(
       z.object({
         canteenId: z.string(),
@@ -143,6 +143,7 @@ export const canteenRouter = createTRPCRouter({
         itemId: z.string(),
         quantity: z.number(),
         studentId: z.string(),
+        payed: z.boolean(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -164,6 +165,44 @@ export const canteenRouter = createTRPCRouter({
           studentId: student.id,
           quantity: input.quantity,
           price: item.price,
+          payed: input.payed,
+        },
+      });
+    }),
+  allCanteenSells: publicProcedure
+    .input(
+      z.object({
+        canteenId: z.string(),
+        limit: z.number().optional().default(5),
+        page: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.studentCanteenItemPurchase.findMany({
+        where: {
+          CanteenItem: {
+            canteenId: input.canteenId,
+          },
+        },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }),
+  countAllCanteenSells: publicProcedure
+    .input(
+      z.object({
+        canteenId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.studentCanteenItemPurchase.count({
+        where: {
+          CanteenItem: {
+            canteenId: input.canteenId,
+          },
         },
       });
     }),

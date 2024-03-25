@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  FloatingPortal,
   autoUpdate,
   flip,
+  FloatingPortal,
   offset,
   size,
   useClick,
@@ -11,10 +11,10 @@ import {
   useInteractions,
 } from "@floating-ui/react";
 
-interface DropdownItem<Value> {
+export interface DropdownItem<Value> {
   label: string;
   value: Value;
-  icon?: JSX.Element;
+  icon?: React.JSX.Element | undefined;
 }
 
 interface DropdownProps<Item> {
@@ -59,7 +59,7 @@ export function Dropdown<Item>({
     } else {
       setSearchedValues(dropdownItems);
     }
-  }, [search, dropdownItems, setSearchedValues]);
+  }, [search, dropdownItems]);
 
   const { x, y, strategy, refs, context } = useFloating({
     open,
@@ -102,8 +102,8 @@ export function Dropdown<Item>({
         <div
           className={`block w-full rounded-lg border ${
             error ? "border-red-400" : "border-grey-300"
-          } py-3 px-4 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
-            disabled ? `bg-gray-200` : "cursor-pointer"
+          } px-4 py-3 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
+            disabled ? "bg-gray-200" : "cursor-pointer"
           }`}
         >
           <div className="flex items-center justify-between">
@@ -128,6 +128,7 @@ export function Dropdown<Item>({
               stroke="currentColor"
               strokeWidth="2"
             >
+              <title>Icon</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -161,6 +162,7 @@ export function Dropdown<Item>({
                       stroke="currentColor"
                       strokeWidth="2"
                     >
+                      <title>Icon</title>
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -173,22 +175,25 @@ export function Dropdown<Item>({
                     type="text"
                     placeholder={inputPlaceholder}
                     value={search}
-                    onChange={(e) => onChange && onChange(e.target.value)}
+                    onChange={(e) => onChange?.(e.target.value)}
                     className="block w-full rounded-lg border border-gray-300 py-2 pl-8 pr-2 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:ring-indigo-600 sm:text-sm"
                   />
                 </div>
               )}
               <ul className="flex flex-col">
                 {cleanFilter && (
-                  <div
-                    className="flex w-full cursor-pointer hover:bg-gray-100"
-                    onClick={() => {
-                      onSelectItem(null);
-                      setSelectedItem(undefined);
-                      setOpen(false);
-                    }}
-                  >
-                    <li className="rounded-md p-2">Tirar filtro</li>
+                  <div className="flex w-full cursor-pointer hover:bg-gray-100">
+                    <button
+                      type="button"
+                      className="rounded-md p-2"
+                      onClick={() => {
+                        onSelectItem(null);
+                        setSelectedItem(undefined);
+                        setOpen(false);
+                      }}
+                    >
+                      Tirar filtro
+                    </button>
                   </div>
                 )}
                 {searchedValues.map(({ label, value, icon }) => (
@@ -206,8 +211,9 @@ export function Dropdown<Item>({
                       setSelectedItem({ label, value, icon });
                       setOpen(false);
                     }}
+                    onKeyDown={() => {}}
                   >
-                    <div className="flex flex-col">{icon && icon}</div>
+                    {icon && <div className="flex flex-col">{icon}</div>}
                     <li className="rounded-md p-2">{label}</li>
                   </div>
                 ))}

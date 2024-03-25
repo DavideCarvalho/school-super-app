@@ -409,7 +409,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       href={`/escola/${
                         (user?.publicMetadata as { school?: { slug: string } })
                           ?.school?.slug
-                      }/cantinas`}
+                      }/vendas-cantina`}
                       title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >

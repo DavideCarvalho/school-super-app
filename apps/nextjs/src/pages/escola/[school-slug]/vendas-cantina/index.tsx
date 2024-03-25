@@ -9,7 +9,7 @@ import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 import { serverSideHelpers, trpCaller } from "@acme/api";
 import { prisma } from "@acme/db";
 
-import { SchoolCanteenItemsTable } from "~/components/school-canteen-items-table";
+import { SchoolCanteenSellsTable } from "~/components/school-canteen-sells-table";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
 
@@ -19,7 +19,7 @@ export default function CanteensPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolCanteenItemsTable canteenId={canteenId} schoolId={school.id} />
+      <SchoolCanteenSellsTable canteenId={canteenId} schoolId={school.id} />
     </SchoolLayout>
   );
 }
@@ -42,7 +42,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/itens-cantina?page=${page}&limit=${limit}`,
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/vendas-cantina?page=${page}&limit=${limit}`,
           permanent: false,
         },
       };
@@ -95,12 +95,12 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
     }
 
     await Promise.all([
-      serverSideHelpers.canteen.allCanteenItems.prefetch({
+      serverSideHelpers.canteen.allCanteenSells.prefetch({
         canteenId,
         page,
         limit,
       }),
-      serverSideHelpers.canteen.countAllCanteenItems.prefetch({
+      serverSideHelpers.canteen.countAllCanteenSells.prefetch({
         canteenId,
       }),
     ]);
@@ -113,5 +113,5 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       },
     };
   },
-  "/escola/[school-slug]/itens-cantina",
+  "/escola/[school-slug]/vendas-cantina",
 );

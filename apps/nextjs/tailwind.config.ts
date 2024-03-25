@@ -4,7 +4,10 @@ import colors from "tailwindcss/colors";
 import baseConfig from "@acme/tailwind-config";
 
 module.exports = {
-  content: ["./src/**/*.tsx"],
+  content: [
+    "./src/**/*.tsx",
+    "../../node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
+  ],
   presets: [baseConfig],
   darkMode: "class",
   theme: {

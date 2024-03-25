@@ -11,6 +11,7 @@ import { fileRouter } from "./router/file";
 import { purchaseRequestRouter } from "./router/purchaseRequest";
 import { roleRouter } from "./router/role";
 import { schoolRouter } from "./router/school";
+import { studentRouter } from "./router/student";
 import { subjectRouter } from "./router/subjects";
 import { teacherRouter } from "./router/teacher";
 import { teacherHasClassRouter } from "./router/teacherHasClass";
@@ -30,6 +31,7 @@ export const appRouter = createTRPCRouter({
   teacherHasClass: teacherHasClassRouter,
   purchaseRequest: purchaseRequestRouter,
   canteen: canteenRouter,
+  student: studentRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });
