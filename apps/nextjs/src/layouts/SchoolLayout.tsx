@@ -4,12 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 
+import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
+
 interface SchoolLayoutProps {
   children?: React.ReactNode;
 }
 
 export function SchoolLayout({ children }: SchoolLayoutProps) {
   const { user } = useUser();
+  if (!user) return null;
+  const userPublicMetadata = getUserPublicMetadata(user);
+  const schoolSlug = userPublicMetadata?.school?.slug;
+  const canteenId = userPublicMetadata?.canteen?.id;
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
@@ -28,6 +34,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
+                  <title>Menu</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -148,10 +155,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
               <div className="space-y-4">
                 <nav className="flex-1 space-y-1">
                   <Link
-                    href={`/escola/${
-                      (user?.publicMetadata as { school?: { slug: string } })
-                        ?.school?.slug
-                    }`}
+                    href={`/escola/${schoolSlug}`}
                     className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                   >
                     <svg
@@ -179,10 +183,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                   </p>
                   <nav className="mt-4 flex-1 space-y-1">
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/arquivos`}
+                      href={`/escola/${schoolSlug}/arquivos`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -204,10 +205,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/funcionarios`}
+                      href={`/escola/${schoolSlug}/funcionarios`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -229,10 +227,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/professores`}
+                      href={`/escola/${schoolSlug}/professores`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -254,10 +249,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/materias`}
+                      href={`/escola/${schoolSlug}/materias`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -279,10 +271,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/turmas`}
+                      href={`/escola/${schoolSlug}/turmas`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -304,10 +293,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/aulas`}
+                      href={`/escola/${schoolSlug}/aulas`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -329,10 +315,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/solicitacoes-de-compra`}
+                      href={`/escola/${schoolSlug}/solicitacoes-de-compra`}
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
                       <svg
@@ -354,10 +337,7 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </Link>
 
                     <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/cantinas`}
+                      href={`/escola/${schoolSlug}/cantinas`}
                       title="Arquivos"
                       className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                     >
@@ -379,57 +359,55 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                       Cantinas
                     </Link>
 
-                    <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/itens-cantina`}
-                      title="Arquivos"
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
+                    {canteenId && (
+                      <Link
+                        href={`/escola/${schoolSlug}/itens-cantina`}
+                        title="Arquivos"
+                        className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                       >
-                        <title>Itens da cantina</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Itens da cantina
-                    </Link>
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>Itens da cantina</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        Itens da cantina
+                      </Link>
+                    )}
 
-                    <Link
-                      href={`/escola/${
-                        (user?.publicMetadata as { school?: { slug: string } })
-                          ?.school?.slug
-                      }/vendas-cantina`}
-                      title="Arquivos"
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
+                    {canteenId && (
+                      <Link
+                        href={`/escola/${schoolSlug}/vendas-cantina`}
+                        title="Arquivos"
+                        className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
                       >
-                        <title>Vendas da cantina</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Vendas da cantina
-                    </Link>
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>Vendas da cantina</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        Vendas da cantina
+                      </Link>
+                    )}
                   </nav>
                 </div>
               </div>
