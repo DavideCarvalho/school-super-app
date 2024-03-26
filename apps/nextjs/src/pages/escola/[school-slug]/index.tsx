@@ -1,19 +1,27 @@
 import type { GetServerSidePropsContext } from "next";
+import clerk from "@clerk/clerk-sdk-node";
 import { getAuth } from "@clerk/nextjs/server";
 import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 import { LineChart } from "@tremor/react";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
+import { prisma, type Canteen, type Role, type User } from "@acme/db";
 
+import { CanteenSellsQuantityByMonthChart } from "~/components/canteen-sells-quantity-by-month-chart";
+import { CanteenSellsValueByMonthChart } from "~/components/canteen-sells-value-by-month-chart";
 import { CustomChartTooltip } from "~/components/custom-chart-tooltip";
+import { PurchaseRequestsByMonthChart } from "~/components/purchaserequests-by-month-chart";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 import { api } from "~/utils/api";
+import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
 
 interface SchoolPageProps {
   schoolId: string;
+  user: User & { Role: Role };
+  canteen?: Canteen;
 }
 
-export default function SchoolPage({ schoolId }: SchoolPageProps) {
+export default function SchoolPage({ schoolId, canteen }: SchoolPageProps) {
   const { data: purchaseRequestsMonthlyValueInLast360DaysData } =
     api.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.useQuery({
       schoolId,
@@ -25,11 +33,6 @@ export default function SchoolPage({ schoolId }: SchoolPageProps) {
         schoolId,
       },
     );
-
-  const { data: purchaseRequestsLast360DaysByMonthData } =
-    api.purchaseRequest.purchaseRequestsLast360DaysByMonth.useQuery({
-      schoolId,
-    });
 
   return (
     <SchoolLayout>
@@ -69,23 +72,14 @@ export default function SchoolPage({ schoolId }: SchoolPageProps) {
         customTooltip={CustomChartTooltip}
       />
 
-      <h3 className="text-tremor-content-strong text-lg font-medium">
-        Solicitações de compra por mês
-      </h3>
-      <LineChart
-        className="mt-4 h-72"
-        data={
-          purchaseRequestsLast360DaysByMonthData?.length
-            ? purchaseRequestsLast360DaysByMonthData?.map((d) => ({
-                month: d.month,
-                "Solicitações criadas": d.count,
-              }))
-            : []
-        }
-        index="month"
-        categories={["Solicitações criadas"]}
-        customTooltip={CustomChartTooltip}
-      />
+      <PurchaseRequestsByMonthChart schoolId={schoolId} />
+
+      {canteen && (
+        <>
+          <CanteenSellsQuantityByMonthChart canteenId={canteen.id} />
+          <CanteenSellsValueByMonthChart canteenId={canteen.id} />
+        </>
+      )}
     </SchoolLayout>
   );
 }
@@ -99,9 +93,9 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       throw new Error(`School with slug ${schoolSlug} not found`);
     }
 
-    const clerkUser = getAuth(req);
+    const clerkAuth = getAuth(req);
 
-    if (!clerkUser.userId) {
+    if (!clerkAuth.userId) {
       // Redirect to sign in page
       return {
         redirect: {
@@ -111,7 +105,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       };
     }
 
-    await Promise.all([
+    const prefetches = [
       serverSideHelpers.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.prefetch(
         {
           schoolId: school.id,
@@ -127,11 +121,56 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
           schoolId: school.id,
         },
       ),
-    ]);
+    ];
+
+    const user = await clerk.users.getUser(clerkAuth.userId);
+
+    const userPublicMetadata = getUserPublicMetadata(user);
+
+    const userId = userPublicMetadata.id;
+
+    const userFromMyDb = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      include: {
+        Role: true,
+      },
+    });
+
+    if (!userFromMyDb) {
+      return {
+        redirect: {
+          destination: `/sign-in?redirectTo=/escola/${schoolSlug}`,
+          permanent: false,
+        },
+      };
+    }
+    let canteen: Canteen | undefined = undefined;
+
+    if (userFromMyDb.Role.name === "CANTEEN_WORKER") {
+      prefetches.push(
+        serverSideHelpers.canteen.canteenSellsByMonth.prefetch({
+          canteenId: userId,
+        }),
+      );
+      const schoolCanteen = await prisma.canteen.findFirst({
+        where: {
+          responsibleUserId: userFromMyDb.id,
+        },
+      });
+      if (schoolCanteen) {
+        canteen = schoolCanteen;
+      }
+    }
+
+    await Promise.all(prefetches);
 
     return {
       props: {
         schoolId: school.id,
+        user: userFromMyDb,
+        canteen,
         trpcState: serverSideHelpers.dehydrate(),
       },
     };

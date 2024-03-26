@@ -1,10 +1,12 @@
 import "../styles/globals.css";
+
 import type { AppType } from "next/app";
 import Script from "next/script";
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 
+import { TRPCReactProvider } from "~/trpc/react";
 import { api } from "~/utils/api";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
@@ -15,7 +17,9 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
         data-domain="anuaapp.com.br"
         defer
       />
-      <Component {...pageProps} />
+      <TRPCReactProvider>
+        <Component {...pageProps} />
+      </TRPCReactProvider>
       <Toaster />
     </ClerkProvider>
   );

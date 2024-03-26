@@ -206,4 +206,39 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
+  canteenSellsByMonth: publicProcedure
+    .input(
+      z.object({
+        canteenId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.prisma.$queryRaw<
+        {
+          totalPrice: number;
+          month: string;
+          count: bigint;
+          payed: 0 | 1;
+        }[]
+      >`
+        SELECT SUM(quantity * price) as totalPrice,
+              CONCAT(
+                      UPPER(SUBSTR(MONTHNAME(createdAt), 1, 1)),
+                      LOWER(SUBSTR(MONTHNAME(createdAt), 2))
+              )                     as month,
+              COUNT(*)              as count
+        FROM StudentCanteenItemPurchase
+        WHERE canteenItemId IN (SELECT id
+                                FROM CanteenItem
+                                WHERE canteenId = ${input.canteenId})
+          AND createdAt > NOW() - INTERVAL 1 YEAR
+        GROUP BY YEAR(createdAt), MONTH(createdAt), month;
+      `;
+      return data.map((d) => ({
+        month: d.month,
+        totalPrice: d.totalPrice,
+        count: Number(d.count),
+        payed: d.payed === 1,
+      }));
+    }),
 });
