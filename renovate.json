@@ -16,5 +16,6 @@
       "automerge": true
     }
   ],
-  "updateInternalDeps": true
+  "updateInternalDeps": true,
+  "platformAutomerge": true
 }
