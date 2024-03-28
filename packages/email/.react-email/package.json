@@ -32,7 +32,7 @@
     "@react-email/html": "0.0.4",
     "@react-email/section": "0.0.9",
     "@react-email/text": "0.0.7",
-    "react-email": "1.9.4",
+    "react-email": "1.10.1",
     "@react-email/button": "0.0.14",
     "@react-email/tailwind": "0.0.14",
     "@react-email/head": "^0.0.7",
