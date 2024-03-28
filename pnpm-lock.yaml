@@ -247,8 +247,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 8.8.0
-        version: 8.8.0
+        specifier: 8.10.0
+        version: 8.10.0
       minio:
         specifier: 7.1.3
         version: 7.1.3
@@ -10353,8 +10353,8 @@ packages:
       source-map: 0.7.4
     dev: false
 
-  /highlight.run@8.8.0:
-    resolution: {integrity: sha512-giGSKqS0thINMfNXhiQbRy5UcRDtUM51a/UoKWpsih39m0Y9XBzuPgkTLDJGVaPL7CWtZwOSaE1bIkflYaGUYA==}
+  /highlight.run@8.10.0:
+    resolution: {integrity: sha512-AyLt/kxCabbatRyyejjUaCm08rAtsV4xynF7MhIYPaYerUBAAYyvGfceywHBu55AYzm0RQyuA1Ojl16Nz39LMQ==}
     dev: false
 
   /hoist-non-react-statics@3.3.2:
