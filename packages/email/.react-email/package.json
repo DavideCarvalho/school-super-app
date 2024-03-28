@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@types/classnames": "2.3.1",
-    "@types/node": "18.19.26",
+    "@types/node": "20.11.30",
     "@types/react": "18.2.73",
     "@types/react-dom": "18.2.22",
     "autoprefixer": "10.4.19",
