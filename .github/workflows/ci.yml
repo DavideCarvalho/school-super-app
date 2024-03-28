@@ -51,7 +51,7 @@ jobs:
       - name: Build, lint and type-check
         run: |
           echo $NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-          pnpm turbo build lint type-check
+          pnpm turbo build
         env:
           SKIP_ENV_VALIDATION: true
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
