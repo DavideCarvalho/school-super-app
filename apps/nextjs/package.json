@@ -76,7 +76,7 @@
     "@types/node": "20.11.28",
     "@types/nodemailer": "6.4.14",
     "@types/react": "18.2.73",
-    "@types/react-dom": "18.2.22",
+    "@types/react-dom": "18.2.23",
     "@types/react-flatpickr": "3.8.11",
     "autoprefixer": "10.4.19",
     "postcss": "8.4.38",
