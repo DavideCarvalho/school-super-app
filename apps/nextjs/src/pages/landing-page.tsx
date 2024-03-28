@@ -70,6 +70,7 @@ export default function LandingPage() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
+                      <title>Icone</title>
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -89,6 +90,7 @@ export default function LandingPage() {
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                     >
+                      <title>Icone</title>
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -182,7 +184,6 @@ export function Pricing() {
                 href="#"
                 title=""
                 className="mt-6 inline-flex w-full items-center justify-center rounded-full border-2 border-fuchsia-600 bg-transparent px-4 py-3 font-semibold text-gray-900 transition-all duration-200 hover:bg-fuchsia-600 hover:text-white focus:bg-fuchsia-600 focus:text-white"
-                role=""
               >
                 3 meses grátis!
               </a>
@@ -195,6 +196,7 @@ export function Pricing() {
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
+                    <title>Icone</title>
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -213,6 +215,7 @@ export function Pricing() {
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
+                    <title>Icone</title>
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -231,6 +234,7 @@ export function Pricing() {
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
+                    <title>Icone</title>
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -249,6 +253,7 @@ export function Pricing() {
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
+                    <title>Icone</title>
                     <path
                       fillRule="evenodd"
                       d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -491,6 +496,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M62 13.001C62 33.4355 53.9345 64.001 33.5 64.001C13.0655 64.001 0 50.435 0 30.0005C0 9.56596 2.56546 4.00021 23 4.00021C43.4345 4.00021 62 -7.43358 62 13.001Z" />
               </svg>
               <svg
@@ -500,6 +506,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -525,6 +532,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M65.5 30C65.5 50.4345 46.4345 68 26 68C5.56546 68 0 50.4345 0 30C0 9.56546 12.5655 0 33 0C53.4345 0 65.5 9.56546 65.5 30Z" />
               </svg>
               <svg
@@ -534,6 +542,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -561,6 +570,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M65.5 30C65.5 50.4345 46.4345 68 26 68C5.56546 68 0 50.4345 0 30C0 9.56546 12.5655 0 33 0C53.4345 0 65.5 9.56546 65.5 30Z" />
               </svg>
               <svg
@@ -570,6 +580,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -595,6 +606,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M65.5 30C65.5 50.4345 46.4345 68 26 68C5.56546 68 0 50.4345 0 30C0 9.56546 12.5655 0 33 0C53.4345 0 65.5 9.56546 65.5 30Z" />
               </svg>
               <svg
@@ -604,6 +616,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -633,6 +646,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
               </svg>
               <svg
@@ -642,6 +656,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -650,12 +665,7 @@ export function Features() {
                 />
               </svg>
             </div>
-            <h3 className="mt-8 text-lg font-semibold text-black">
-              Cantina
-              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
-                Em breve
-              </span>
-            </h3>
+            <h3 className="mt-8 text-lg font-semibold text-black">Cantina</h3>
             <p className="mt-4 text-base text-gray-600">
               De a sua cantina um sistema para que ela controle tudo! Produtos,
               vendas, e muito mais!
@@ -672,6 +682,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
               </svg>
               <svg
@@ -681,6 +692,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -689,12 +701,7 @@ export function Features() {
                 />
               </svg>
             </div>
-            <h3 className="mt-8 text-lg font-semibold text-black">
-              Dashboard
-              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
-                Em breve
-              </span>
-            </h3>
+            <h3 className="mt-8 text-lg font-semibold text-black">Dashboard</h3>
             <p className="mt-4 text-base text-gray-600">
               Tenha visão geral de notas, faltas, e muito mais!
             </p>
@@ -710,6 +717,7 @@ export function Features() {
                 fill="currentColor"
                 xmlns="http://www.w3.org/2000/svg"
               >
+                <title>Icone</title>
                 <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
               </svg>
               <svg
@@ -719,6 +727,7 @@ export function Features() {
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"

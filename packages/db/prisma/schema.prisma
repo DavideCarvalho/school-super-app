@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model School {
@@ -32,13 +32,14 @@ model User {
   updatedAt DateTime @updatedAt
   teacherId String?
 
-  School          School            @relation(fields: [schoolId], references: [id])
-  Role            Role              @relation(fields: [roleId], references: [id])
+  School           School            @relation(fields: [schoolId], references: [id])
+  Role             Role              @relation(fields: [roleId], references: [id])
   Teachers         Teacher[]
-  Students         Student[]
+  Students         Student[]         @relation(name: "student_user_id")
+  ResponsibleUsers Student[]         @relation(name: "student_responsible_user_id")
   Notifications    Notification[]
   PurchaseRequests PurchaseRequest[]
-  Canteens        Canteen[]
+  Canteens         Canteen[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -54,26 +55,28 @@ model Teacher {
 }
 
 model Student {
-  id                String            @id
+  id                String @id
   classId           String
-  User              User              @relation(fields: [id], references: [id])
   responsibleUserId String
+  canteenLimit      Float?
 
   CanteenItemPurchases StudentCanteenItemPurchase[]
+  User                 User                         @relation(name: "student_user_id", fields: [id], references: [id])
+  ResponsibleUser      User                         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
 
   @@index([id])
 }
 
 model Canteen {
-  id        String   @id @default(cuid())
-  schoolId  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String   @id @default(cuid())
+  schoolId          String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
   responsibleUserId String
 
-  School School @relation(fields: [schoolId], references: [id])
-  ResponsibleUser User @relation(fields: [responsibleUserId], references: [id])
-  CanteenItem CanteenItem[]
+  School          School        @relation(fields: [schoolId], references: [id])
+  ResponsibleUser User          @relation(fields: [responsibleUserId], references: [id])
+  CanteenItem     CanteenItem[]
 }
 
 model CanteenItem {
@@ -84,24 +87,24 @@ model CanteenItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Canteen Canteen @relation(fields: [canteenId], references: [id])
+  Canteen                     Canteen                      @relation(fields: [canteenId], references: [id])
   StudentCanteenItemPurchases StudentCanteenItemPurchase[]
 
   @@index([canteenId])
 }
 
 model StudentCanteenItemPurchase {
-  id        String   @id @default(cuid())
-  studentId String
-  canteenItemId    String
-  price     Float
-  quantity  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  payed     Boolean @default(false)
+  id            String   @id @default(cuid())
+  studentId     String
+  canteenItemId String
+  price         Float
+  quantity      Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  payed         Boolean  @default(false)
 
   Student     Student     @relation(fields: [studentId], references: [id])
-  CanteenItem  CanteenItem  @relation(fields: [canteenItemId], references: [id])
+  CanteenItem CanteenItem @relation(fields: [canteenItemId], references: [id])
 
   @@index([canteenItemId])
   @@index([studentId])
@@ -144,19 +147,19 @@ model Subject {
 }
 
 model File {
-  id           String   @id @default(cuid())
-  teacherId    String
-  classId      String
-  subjectId    String
-  name         String
-  path         String
-  status       String
-  frontAndBack Boolean  @default(false)
-  rejectedFeedback     String?  @db.Text
-  quantity     Int      @default(1)
-  dueDate      DateTime
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id               String   @id @default(cuid())
+  teacherId        String
+  classId          String
+  subjectId        String
+  name             String
+  path             String
+  status           String
+  frontAndBack     Boolean  @default(false)
+  rejectedFeedback String?  @db.Text
+  quantity         Int      @default(1)
+  dueDate          DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
@@ -204,7 +207,7 @@ model PurchaseRequest {
   finalUnitValue       Float? // valor unitário final do produto de acordo com quem fez a compra
   finalValue           Float? // valor final do produto de acordo com quem fez a compra
   description          String?   @db.Text
-  productUrl           String? @db.VarChar(1000)
+  productUrl           String?   @db.VarChar(1000)
   purchaseDate         DateTime? // dia que foi comprado
   estimatedArrivalDate DateTime? // dia que vai chegar depois de aprovado
   arrivalDate          DateTime? // dia que chegou
