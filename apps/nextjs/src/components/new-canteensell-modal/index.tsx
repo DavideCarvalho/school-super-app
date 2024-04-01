@@ -43,11 +43,10 @@ export function NewCanteenSellModal({
     page: 1,
   });
 
-  const allStudentsQuery = api.student.studentsBySchoolId.useQuery({
-    schoolId,
-    limit: 999,
-    page: 1,
-  });
+  const studentsWithCanteenLimitBySchoolIdQuery =
+    api.student.studentsWithCanteenLimitBySchoolId.useQuery({
+      schoolId,
+    });
   const {
     register,
     handleSubmit,
@@ -88,8 +87,6 @@ export function NewCanteenSellModal({
     }
   };
 
-  console.log(errors);
-
   return (
     <Modal
       open={open}
@@ -113,11 +110,13 @@ export function NewCanteenSellModal({
                 value={watchStudentId}
                 onValueChange={(value) => setValue("studentId", value)}
               >
-                {allStudentsQuery.data?.map((student) => (
-                  <SearchSelectItem key={student.id} value={student.id}>
-                    {student.User.name}
-                  </SearchSelectItem>
-                ))}
+                {studentsWithCanteenLimitBySchoolIdQuery.data?.map(
+                  (student) => (
+                    <SearchSelectItem key={student.id} value={student.id}>
+                      {student.userName}
+                    </SearchSelectItem>
+                  ),
+                )}
               </SearchSelect>
             </div>
           </div>
