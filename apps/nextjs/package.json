@@ -19,7 +19,7 @@
     "@ams-js/headless": "0.0.5",
     "@clerk/clerk-sdk-node": "4.13.12",
     "@clerk/localizations": "1.26.16",
-    "@clerk/nextjs": "4.29.9",
+    "@clerk/nextjs": "4.29.10",
     "@clerk/themes": "1.7.10",
     "@emailjs/browser": "4.3.3",
     "@floating-ui/react": "0.26.10",
