@@ -63,6 +63,8 @@ model Student {
   CanteenItemPurchases StudentCanteenItemPurchase[]
   User                 User                         @relation(name: "student_user_id", fields: [id], references: [id])
   ResponsibleUser      User                         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
+  StudentPei           StudentPei[]
+  Class               Class                        @relation(fields: [classId], references: [id])
 
   @@index([id])
 }
@@ -187,6 +189,7 @@ model Class {
   TeacherHasClass TeacherHasClass[]
   School          School            @relation(fields: [schoolId], references: [id])
   File            File[]
+  Student         Student[]
 
   @@index([schoolId])
 }
@@ -234,4 +237,23 @@ model Notification {
   User User @relation(fields: [userId], references: [id])
 
   @@index([userId])
+}
+
+model StudentPei {
+  id        String   @id @default(cuid())
+  studentId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  report   String?  @db.Text
+  needs   String?  @db.Text
+  interests String?  @db.Text
+  skillsToWork String?  @db.Text
+  learningObjectives String?  @db.Text
+  resourcesAndTools String?  @db.Text
+  evaluation String?  @db.Text
+
+
+  Student Student @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
 }
