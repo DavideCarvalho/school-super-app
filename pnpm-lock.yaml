@@ -154,8 +154,8 @@ importers:
         specifier: 4.13.14
         version: 4.13.14(react@18.2.0)
       '@clerk/localizations':
-        specifier: 1.28.1
-        version: 1.28.1(react@18.2.0)
+        specifier: 1.28.2
+        version: 1.28.2(react@18.2.0)
       '@clerk/nextjs':
         specifier: 4.29.11
         version: 4.29.11(next@14.1.4)(react-dom@18.2.0)(react@18.2.0)
@@ -2295,13 +2295,13 @@ packages:
       - react
     dev: false
 
-  /@clerk/localizations@1.28.1(react@18.2.0):
-    resolution: {integrity: sha512-YyBvNg9freQgzzyiIOYgHDzTKCm5+BQpo8JEWqeMwiDp4vnkA/ek29jGiZ/fmUi7FDDmG4DhkxsswRWxZfi3Zw==}
+  /@clerk/localizations@1.28.2(react@18.2.0):
+    resolution: {integrity: sha512-yHJF6FU5orVxpVgreCjjDDyFHb2IU8iJkgLT/WxMOPcORVCpHQjgiKeTZw8GrUJVx8CcOVsFcRZ9wckAwctu8g==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16'
     dependencies:
-      '@clerk/types': 3.63.0
+      '@clerk/types': 3.63.1
       react: 18.2.0
     dev: false
 
