@@ -84,7 +84,7 @@
     "tailwindcss": "3.4.3",
     "tsx": "4.7.2",
     "typescript": "5.4.5",
-    "@biomejs/biome": "1.6.4"
+    "@biomejs/biome": "1.7.0"
   },
   "prettier": "@acme/prettier-config"
 }
