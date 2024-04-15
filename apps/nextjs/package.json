@@ -23,7 +23,7 @@
     "@clerk/themes": "1.7.12",
     "@emailjs/browser": "4.3.3",
     "@floating-ui/react": "0.26.10",
-    "@headlessui/react": "1.7.18",
+    "@headlessui/react": "1.7.19",
     "@highlight-run/react": "3.2.1",
     "@hookform/resolvers": "3.3.4",
     "@react-buddy/ide-toolbox": "2.4.0",
