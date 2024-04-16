@@ -52,13 +52,13 @@ export function PeiTable({ schoolId }: PeiTableProps) {
   }
 
   function deleteClass(classId: string) {
-    toast.loading("Removendo turma...");
+    toast.loading("Removendo PEI...");
     deleteSchoolClassMutation.mutate(
       { classId, schoolId },
       {
         async onSuccess() {
           toast.dismiss();
-          toast.success("Turma removida com sucesso!");
+          toast.success("PEI removido com sucesso!");
           await epiQuery.refetch();
           await epiCountQuery.refetch();
         },

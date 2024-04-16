@@ -12,7 +12,16 @@ export const peiRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx }) => {
-      return [];
+      return ctx.prisma.studentPei.findMany({
+        where: {
+          schoolId: input.schoolId,
+        },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
+        include: {
+          Student: true,
+        },
+      });
     }),
   countAllBySchoolId: publicProcedure
     .input(
@@ -21,6 +30,10 @@ export const peiRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx }) => {
-      return 0;
+      return ctx.prisma.studentPei.count({
+        where: {
+          schoolId: input.schoolId,
+        }
+      });
     }),
 });
