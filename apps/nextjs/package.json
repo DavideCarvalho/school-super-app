@@ -40,7 +40,7 @@
     "@vercel/analytics": "1.2.2",
     "dayjs": "1.11.10",
     "flatpickr": "4.6.13",
-    "highlight.run": "8.11.1",
+    "highlight.run": "8.12.0",
     "@sentry/nextjs": "7.110.1",
     "@sentry/opentelemetry-node": "7.110.1",
     "@opentelemetry/sdk-node": "0.49.1",
