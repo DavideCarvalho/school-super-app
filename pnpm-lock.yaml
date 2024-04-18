@@ -160,8 +160,8 @@ importers:
         specifier: 4.29.12
         version: 4.29.12(next@14.2.2)(react-dom@18.2.0)(react@18.2.0)
       '@clerk/themes':
-        specifier: 1.7.12
-        version: 1.7.12(react@18.2.0)
+        specifier: 1.7.13
+        version: 1.7.13(react@18.2.0)
       '@emailjs/browser':
         specifier: 4.3.3
         version: 4.3.3
@@ -2300,13 +2300,13 @@ packages:
       swr: 2.2.0(react@18.2.0)
     dev: false
 
-  /@clerk/themes@1.7.12(react@18.2.0):
-    resolution: {integrity: sha512-puO5i91Da7IeTEw1qowce3K+6mOHnFSZ1UhSQsF9pYFUhp+j3WciwahxC4QnF6FL14jaS4XLZI/RUs66TuY+Hw==}
+  /@clerk/themes@1.7.13(react@18.2.0):
+    resolution: {integrity: sha512-uTq/m0Jh0Rb3Ow9WvrdVfRvKMsTl62fu8AkRbOAda/S4RpwDe2hWk4uMmSLceKNJ/notIwxXq+kVtJbrecPP2g==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16'
     dependencies:
-      '@clerk/types': 3.63.1
+      '@clerk/types': 3.64.0
       react: 18.2.0
       tslib: 2.4.1
     dev: false

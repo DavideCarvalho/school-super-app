@@ -20,7 +20,7 @@
     "@clerk/clerk-sdk-node": "4.13.15",
     "@clerk/localizations": "1.28.2",
     "@clerk/nextjs": "4.29.12",
-    "@clerk/themes": "1.7.12",
+    "@clerk/themes": "1.7.13",
     "@emailjs/browser": "4.3.3",
     "@floating-ui/react": "0.26.10",
     "@headlessui/react": "1.7.19",
