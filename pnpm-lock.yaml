@@ -519,8 +519,8 @@ importers:
         specifier: 8.57.0
         version: 8.57.0
       framer-motion:
-        specifier: 11.1.4
-        version: 11.1.4(react-dom@18.2.0)(react@18.2.0)
+        specifier: 11.1.5
+        version: 11.1.5(react-dom@18.2.0)(react@18.2.0)
       prism-react-renderer:
         specifier: 2.3.1
         version: 2.3.1(react@18.2.0)
@@ -9817,8 +9817,8 @@ packages:
       '@emotion/is-prop-valid': 0.8.8
     dev: false
 
-  /framer-motion@11.1.4(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Eq57iBPGVwalR9qYIvsxOdyw0bJF3Rt4Gd6IwNVmWnHBIzG3Xy0qZRvJfi0slFqOlC36tmTkuQuOdCB7J9Dbig==}
+  /framer-motion@11.1.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-ogK5fc0GBUT3AjzMXPx7f74m5V1ByRqkKQARBVHpdkYTNDxb/WriANYD+5JBo1wklQQJ1HayDZtmofQLqZFcbw==}
     peerDependencies:
       '@emotion/is-prop-valid': '*'
       react: ^18.0.0
