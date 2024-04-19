@@ -220,8 +220,8 @@ importers:
         specifier: 5.29.2
         version: 5.29.2(react@18.2.0)
       '@tremor/react':
-        specifier: 3.16.0
-        version: 3.16.0(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.3)
+        specifier: 3.16.1
+        version: 3.16.1(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.3)
       '@trpc/client':
         specifier: 11.0.0-rc.342
         version: 11.0.0-rc.342(@trpc/server@11.0.0-rc.342)
@@ -6203,8 +6203,8 @@ packages:
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
     dev: true
 
-  /@tremor/react@3.16.0(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.3):
-    resolution: {integrity: sha512-wKOGTMFwBbadYolFoOKYPjvwtgHZVB/1tS0QLaNpOpoBn3Tlx/Bb2RNsLPNGCmFTb9tNfOSGoOBwd8uukWA9xg==}
+  /@tremor/react@3.16.1(react-dom@18.2.0)(react@18.2.0)(tailwindcss@3.4.3):
+    resolution: {integrity: sha512-ablAsFL7twiUYf57gMAS2ar6YTajsQ7fs63vqlC2i9DpLuhFSrwEp69y1a6bxXP+KH0etYRMj6xxCvdCdiy8mQ==}
     peerDependencies:
       react: ^18.0.0
       react-dom: '>=16.6.0'
