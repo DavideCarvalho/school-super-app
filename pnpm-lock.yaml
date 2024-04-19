@@ -301,8 +301,8 @@ importers:
         specifier: 1.13.3
         version: 1.13.3
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.22.5
+        version: 3.22.5
     devDependencies:
       '@acme/prettier-config':
         specifier: workspace:^0.1.0
@@ -374,8 +374,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1
       zod:
-        specifier: 3.22.4
-        version: 3.22.4
+        specifier: 3.22.5
+        version: 3.22.5
     devDependencies:
       '@acme/eslint-config':
         specifier: workspace:^0.1.0
@@ -15876,6 +15876,6 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+  /zod@3.22.5:
+    resolution: {integrity: sha512-HqnGsCdVZ2xc0qWPLdO25WnseXThh0kEYKIdV5F/hTHO75hNZFp8thxSeHhiPrHZKrFTo1SOgkAj9po5bexZlw==}
     dev: false
