@@ -19,7 +19,7 @@
     "minio": "7.1.3",
     "nodemailer": "6.9.13",
     "superjson": "2.2.1",
-    "zod": "3.22.4"
+    "zod": "3.22.5"
   },
   "devDependencies": {
     "@acme/eslint-config": "workspace:^0.1.0",
