@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast, Toaster } from "react-hot-toast";
 import { z } from "zod";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 
 export default function LandingPage() {
   const [expanded, setExpanded] = useState(false);
