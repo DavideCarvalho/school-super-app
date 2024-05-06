@@ -19,12 +19,23 @@ export const schoolRouter = createTRPCRouter({
     }),
   generateSchoolCalendar: publicProcedure
     .input(
-      z.object({ schoolId: z.string(), fixedClasses: z.array(z.string()) }),
+      z.object({
+        schoolId: z.string(),
+        fixedClasses: z.array(z.string()),
+        scheduleConfig: z.object({
+          Monday: z.object({ start: z.string(), end: z.string() }),
+          Tuesday: z.object({ start: z.string(), end: z.string() }),
+          Wednesday: z.object({ start: z.string(), end: z.string() }),
+          Thursday: z.object({ start: z.string(), end: z.string() }),
+          Friday: z.object({ start: z.string(), end: z.string() }),
+        }),
+      }),
     )
     .query(async ({ input }) => {
       const schedule = generateSchoolSchedule(
         input.schoolId,
         input.fixedClasses,
+        input.scheduleConfig,
       );
       return schedule;
     }),
@@ -60,6 +71,7 @@ interface SubjectWithRemainingLessons extends Subject {
 async function generateSchoolSchedule(
   schoolId: string,
   fixedClasses: string[],
+  scheduleConfig: Record<DayOfWeek, { start: string; end: string }>,
 ): Promise<Schedule> {
   const teachers = await prisma.teacher.findMany({
     where: {
@@ -88,9 +100,9 @@ async function generateSchoolSchedule(
   );
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  const timeSlots = generateTimeSlots();
   const schedule = initializeSchedule();
 
+  // Respeitar as aulas fixas
   for (const classKey of fixedClasses) {
     const [day, timeSlot, teacherId, subjectId] = classKey.split("_") as [
       DayOfWeek,
@@ -110,13 +122,17 @@ async function generateSchoolSchedule(
         endTime,
       });
 
-      // Reduzir o número de aulas restantes para a matéria
       subject.remainingLessons--;
     }
   }
 
-  // Continuar a geração do calendário ignorando as aulas fixas
+  // Continuar a geração do calendário respeitando a configuração do horário
   for (const day of daysOfWeek) {
+    const dayConfig = scheduleConfig[day as DayOfWeek];
+    if (!dayConfig) continue; // Ignorar dias sem configuração
+
+    const timeSlots = generateTimeSlots(dayConfig.start, dayConfig.end);
+
     for (const timeSlot of timeSlots) {
       for (const teacher of teachers) {
         const existingClass = schedule[day as DayOfWeek].find(
@@ -144,7 +160,6 @@ async function generateSchoolSchedule(
             endTime: timeSlot.endTime,
           });
 
-          // Reduzir o número de aulas restantes para a matéria
           subject.remainingLessons--;
         }
       }
@@ -154,16 +169,18 @@ async function generateSchoolSchedule(
   return schedule;
 }
 
-function generateTimeSlots(): TimeSlot[] {
+function generateTimeSlots(startTime: string, endTime: string): TimeSlot[] {
   const timeSlots: TimeSlot[] = [];
-  let startTime = new Date("1970-01-01T07:00:00");
-  for (let i = 0; i < 6; i++) {
-    const endTime = new Date(startTime.getTime() + 50 * 60 * 1000); // 50 minutos para cada aula
+  let start = new Date(`1970-01-01T${startTime}:00`);
+  const end = new Date(`1970-01-01T${endTime}:00`);
+  while (start < end) {
+    const next = new Date(start.getTime() + 50 * 60 * 1000); // 50 minutos para cada aula
+    if (next > end) break;
     timeSlots.push({
-      startTime: startTime.toTimeString().substring(0, 5),
-      endTime: endTime.toTimeString().substring(0, 5),
+      startTime: start.toTimeString().substring(0, 5),
+      endTime: next.toTimeString().substring(0, 5),
     });
-    startTime = endTime; // Começa o próximo horário imediatamente após o término do anterior
+    start = next; // Começa o próximo horário imediatamente após o término do anterior
   }
   return timeSlots;
 }
