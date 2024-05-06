@@ -10,8 +10,19 @@ interface SchoolCalendarGridProps {
   schoolId: string;
 }
 
+// Função de componente
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [fixedClasses, setFixedClasses] = useState<string[]>([]);
+  const [scheduleConfig, setScheduleConfig] = useState<
+    Record<string, { start: string; end: string }>
+  >({
+    Monday: { start: "07:00", end: "11:00" },
+    Tuesday: { start: "08:00", end: "12:50" },
+    Wednesday: { start: "07:00", end: "11:00" },
+    Thursday: { start: "08:00", end: "12:50" },
+    Friday: { start: "07:00", end: "11:00" },
+  });
+
   const {
     data: schedule,
     isLoading,
@@ -21,9 +32,30 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     {
       schoolId,
       fixedClasses,
+      scheduleConfig,
     },
     { refetchOnWindowFocus: false },
   );
+
+  const updateStartTime = (day: string, startTime: string) => {
+    setScheduleConfig((prev) => ({
+      ...prev,
+      [day]: {
+        start: startTime,
+        end: prev[day].end || "11:00", // Valor padrão se undefined
+      },
+    }));
+  };
+
+  const updateEndTime = (day: string, endTime: string) => {
+    setScheduleConfig((prev) => ({
+      ...prev,
+      [day]: {
+        start: prev[day].start || "07:00", // Valor padrão se undefined
+        end: endTime,
+      },
+    }));
+  };
 
   if (isLoading) return <div className="mt-5 text-center">Loading...</div>;
   if (error) {
@@ -58,18 +90,29 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     });
   };
 
-  function generateClassKey(
-    day: string,
-    startTime: string,
-    endTime: string,
-    teacherId: string,
-    subjectId: string,
-  ) {
+  function generateClassKey(day, startTime, endTime, teacherId, subjectId) {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
 
   return (
     <div className="mt-5 overflow-x-auto">
+      {daysOfWeek.map((day) => (
+        <div key={day}>
+          <label>{day} - Início:</label>
+          <input
+            type="time"
+            value={scheduleConfig[day]?.start}
+            onChange={(e) => updateStartTime(day, e.target.value)}
+          />
+          <label> Término:</label>
+          <input
+            type="time"
+            value={scheduleConfig[day]?.end}
+            onChange={(e) => updateEndTime(day, e.target.value)}
+          />
+        </div>
+      ))}
+
       <button
         type="button"
         className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
@@ -92,6 +135,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         </svg>
         Atualizar
       </button>
+
       <table className="min-w-full border border-gray-300 bg-white">
         <thead className="bg-gray-800">
           <tr>
@@ -130,8 +174,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                   }
                   const classKey = generateClassKey(
                     day,
-                    startTime as string,
-                    endTime as string,
+                    startTime,
+                    endTime,
                     entry.Teacher.id,
                     entry.Subject.id,
                   );
