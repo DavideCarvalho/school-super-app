@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
+import { CheckBox } from "../checkbox";
 
 const daysOfWeek: DayOfWeek[] = [
   "Monday",
@@ -199,15 +200,25 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                       className="border-b border-gray-300 px-4 py-2 text-center"
                     >
                       <label>
-                        <input
-                          type="checkbox"
-                          checked={fixedClasses.includes(classKey)}
-                          onChange={() => toggleFixedClass(classKey)}
-                        />
-                        <strong>Professor:</strong> {entry.Teacher.User.name}
-                        <div>
-                          <strong>Matéria:</strong> {entry.Subject.name}
-                        </div>
+                        <CheckBox
+                          selected={fixedClasses.includes(classKey)}
+                          onClick={() => toggleFixedClass(classKey)}
+                        >
+                          <div className="flex flex-col items-start">
+                            <p>
+                              <span className="font-bold text-indigo-600">
+                                Professor:
+                              </span>{" "}
+                              {entry.Teacher.User.name}
+                            </p>
+                            <div>
+                              <span className="font-bold text-indigo-600">
+                                Matéria:
+                              </span>{" "}
+                              {entry.Subject.name}
+                            </div>
+                          </div>
+                        </CheckBox>
                       </label>
                     </td>
                   );
