@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   closestCenter,
   DndContext,
@@ -8,10 +8,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
-  arraySwap,
   rectSwappingStrategy,
   SortableContext,
   sortableKeyboardCoordinates,
@@ -171,13 +170,13 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event: DragEndEvent) {
     console.log("handleDragEnd", event);
     const { active, over } = event;
     if (!active || !over) return;
     if (!tableSchedule) return;
 
-    const activeId: ClassKey = active.id;
+    const activeId = active.id as ClassKey;
     const [activeDay, activeStartandEndTime, activeTeacherId, activeSubjectId] =
       activeId.split("_");
     const [activeStartTime, activeEndTime] =
@@ -192,7 +191,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         e.Subject.id === activeSubjectId,
     );
     if (foundActiveIndex === -1) return;
-    const overId: ClassKey = over.id;
+    const overId = over.id as ClassKey;
     const [overDay, overStartandEndTime, overTeacherId, overSubjectId] =
       overId.split("_");
     const [overStartTime, overEndTime] = overStartandEndTime?.split("-") || [];
