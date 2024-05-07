@@ -11,7 +11,7 @@ const sdk = new NodeSDK({
     [SEMRESATTRS_SERVICE_NAME]: "next-app",
   }),
   // Sentry config
-  spanProcessor: new SentrySpanProcessor(),
+  spanProcessors: [],
   textMapPropagator: new SentryPropagator(),
 });
 

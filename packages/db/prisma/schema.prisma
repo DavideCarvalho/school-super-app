@@ -64,8 +64,10 @@ model TeacherAvailability {
   day       String
   startTime String
   endTime   String
+  classId   String?
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
+  Class   Class?   @relation(fields: [classId], references: [id])
 }
 
 model Student {
@@ -217,6 +219,7 @@ model Class {
   School          School            @relation(fields: [schoolId], references: [id])
   File            File[]
   Student         Student[]
+  TeacherAvailability TeacherAvailability[]
 
   @@index([schoolId])
 }

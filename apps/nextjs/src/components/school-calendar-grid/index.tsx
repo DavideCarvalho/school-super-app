@@ -211,21 +211,18 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     const overData =
       tableSchedule[overDay as keyof typeof tableSchedule][foundOverIndex];
     if (!activeData || !overData) return;
-    newTableSchedule[overDay as keyof typeof newTableSchedule][foundOverIndex] =
-      {
-        ...JSON.parse(
-          JSON.stringify(
-            tableSchedule[activeDay as keyof typeof tableSchedule][
-              foundActiveIndex
-            ],
-          ),
+    const activeDataWithSwapedTimes = {
+      ...JSON.parse(
+        JSON.stringify(
+          tableSchedule[activeDay as keyof typeof tableSchedule][
+            foundActiveIndex
+          ],
         ),
-        startTime: overData.startTime,
-        endTime: overData.endTime,
-      };
-    newTableSchedule[activeDay as keyof typeof newTableSchedule][
-      foundActiveIndex
-    ] = {
+      ),
+      startTime: overData.startTime,
+      endTime: overData.endTime,
+    };
+    const overDataWithSwapedTimes = {
       ...JSON.parse(
         JSON.stringify(
           tableSchedule[overDay as keyof typeof tableSchedule][foundOverIndex],
@@ -234,6 +231,47 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       startTime: activeData.startTime,
       endTime: activeData.endTime,
     };
+    const activeDataClassKey = generateClassKey(
+      activeDay as keyof typeof tableSchedule,
+      activeStartTime as string,
+      activeEndTime as string,
+      activeTeacherId as string,
+      activeSubjectId as string,
+    );
+    const overDataClassKey = generateClassKey(
+      overDay as keyof typeof tableSchedule,
+      overStartTime as string,
+      overEndTime as string,
+      overTeacherId as string,
+      overSubjectId as string,
+    );
+    const currentFixedClasses = JSON.parse(JSON.stringify(fixedClasses));
+    const activeDataOnFixedClassesIndex =
+      currentFixedClasses.indexOf(activeDataClassKey);
+    if (activeDataOnFixedClassesIndex !== -1) {
+      currentFixedClasses[activeDataOnFixedClassesIndex] = generateClassKey(
+        overDay as keyof typeof tableSchedule,
+        activeDataWithSwapedTimes.startTime as string,
+        activeDataWithSwapedTimes.endTime as string,
+        activeDataWithSwapedTimes.Teacher.id as string,
+        activeDataWithSwapedTimes.Subject.id as string,
+      );
+    }
+    const overDataOnFixedClassesIndex = fixedClasses.indexOf(overDataClassKey);
+    if (overDataOnFixedClassesIndex !== -1) {
+      currentFixedClasses[overDataOnFixedClassesIndex] = generateClassKey(
+        activeDay as keyof typeof tableSchedule,
+        overDataWithSwapedTimes.startTime as string,
+        overDataWithSwapedTimes.endTime as string,
+        overDataWithSwapedTimes.Teacher.id as string,
+        overDataWithSwapedTimes.Subject.id as string,
+      );
+    }
+    newTableSchedule[overDay as keyof typeof newTableSchedule][foundOverIndex] =
+      activeDataWithSwapedTimes;
+    newTableSchedule[activeDay as keyof typeof newTableSchedule][
+      foundActiveIndex
+    ] = overDataWithSwapedTimes;
     setTableSchedule((items) => {
       if (!items) return items;
       return newTableSchedule;
@@ -254,10 +292,23 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         );
       }),
     );
+    if (
+      activeDataOnFixedClassesIndex !== -1 ||
+      overDataOnFixedClassesIndex !== -1
+    ) {
+      setFixedClasses((items) => {
+        if (!items) return items;
+        return currentFixedClasses;
+      });
+    }
   }
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
@@ -428,6 +479,9 @@ function ScheduledClass({
       style={style}
       {...attributes}
       {...listeners}
+      onClick={() => {
+        console.log("clicked");
+      }}
     >
       <label>
         <CheckBox
