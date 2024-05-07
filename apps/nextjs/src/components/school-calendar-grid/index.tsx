@@ -4,17 +4,25 @@ import { useState } from "react";
 
 import { api } from "~/trpc/react";
 
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+const daysOfWeek: DayOfWeek[] = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+];
 
 interface SchoolCalendarGridProps {
   schoolId: string;
 }
 
+type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
+
 // Função de componente
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [fixedClasses, setFixedClasses] = useState<string[]>([]);
   const [scheduleConfig, setScheduleConfig] = useState<
-    Record<string, { start: string; end: string }>
+    Record<DayOfWeek, { start: string; end: string }>
   >({
     Monday: { start: "07:00", end: "11:00" },
     Tuesday: { start: "08:00", end: "12:50" },
@@ -37,7 +45,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     { refetchOnWindowFocus: false },
   );
 
-  const updateStartTime = (day: string, startTime: string) => {
+  const updateStartTime = (day: DayOfWeek, startTime: string) => {
     setScheduleConfig((prev) => ({
       ...prev,
       [day]: {
@@ -47,7 +55,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     }));
   };
 
-  const updateEndTime = (day: string, endTime: string) => {
+  const updateEndTime = (day: DayOfWeek, endTime: string) => {
     setScheduleConfig((prev) => ({
       ...prev,
       [day]: {
@@ -90,7 +98,13 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     });
   };
 
-  function generateClassKey(day, startTime, endTime, teacherId, subjectId) {
+  function generateClassKey(
+    day: DayOfWeek,
+    startTime: string,
+    endTime: string,
+    teacherId: string,
+    subjectId: string,
+  ) {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
 
@@ -174,8 +188,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                   }
                   const classKey = generateClassKey(
                     day,
-                    startTime,
-                    endTime,
+                    startTime as string,
+                    endTime as string,
                     entry.Teacher.id,
                     entry.Subject.id,
                   );
