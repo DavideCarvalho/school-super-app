@@ -143,10 +143,10 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           if (!entry.Teacher || !entry.Subject) return undefined;
           return {
             teacherId: entry.Teacher.id,
-            classId: entry.Subject.id,
+            classId: "cltymawy6000fo3f2z968tm1b",
             subjectId: entry.Subject.id,
             classWeekDay: day,
-            classTime: new Date(),
+            classTime: "",
             startTime: entry.startTime,
             endTime: entry.endTime,
           };

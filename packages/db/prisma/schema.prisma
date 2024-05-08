@@ -140,13 +140,14 @@ model TeacherHasSubject {
 }
 
 model TeacherHasClass {
+  id        String   @id @default(cuid())
   teacherId    String
   classId      String
   subjectId    String
-  classWeekDay String
-  classTime    String
-  startTime    String?
-  endTime      String?
+  classWeekDay String @db.VarChar(10)
+  classTime    String @db.VarChar(10)
+  startTime    String @db.VarChar(10)
+  endTime      String @db.VarChar(10)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -154,13 +155,7 @@ model TeacherHasClass {
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
-  @@unique([teacherId, classId, subjectId])
-  @@unique([teacherId, classWeekDay, classTime])
-  @@unique([classId, classWeekDay, classTime])
-  @@index([teacherId])
-  @@index([classId])
-  @@index([subjectId])
-  @@index([teacherId, classId, subjectId])
+  @@unique(name: "unique_teacher_has_class", fields: [teacherId, classId, subjectId, classWeekDay, startTime, endTime])
 }
 
 model Subject {
