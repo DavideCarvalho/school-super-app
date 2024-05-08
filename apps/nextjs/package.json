@@ -22,7 +22,7 @@
     "@clerk/nextjs": "4.30.1",
     "@clerk/themes": "1.7.14",
     "@emailjs/browser": "4.3.3",
-    "@floating-ui/react": "0.26.10",
+    "@floating-ui/react": "0.26.13",
     "@headlessui/react": "1.7.19",
     "@highlight-run/react": "3.2.2",
     "@hookform/resolvers": "3.3.4",
