@@ -157,8 +157,8 @@ importers:
         specifier: 1.28.4
         version: 1.28.4(react@18.2.0)
       '@clerk/nextjs':
-        specifier: 4.30.0
-        version: 4.30.0(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: 4.30.1
+        version: 4.30.1(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@clerk/themes':
         specifier: 1.7.13
         version: 1.7.13(react@18.2.0)
@@ -1478,23 +1478,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@clerk/backend@0.38.7':
-    resolution: {integrity: sha512-Zv3aKNVKSfr16bA98or5fOAQuFXw5sBRgOII5FhKFHU8GR1INjf3z0mWilo1AyYIYkh15I6nCPlJtWe+v8CzYg==}
-    engines: {node: '>=14'}
-
   '@clerk/backend@0.38.8':
     resolution: {integrity: sha512-787JySSX7fxsg4v98PrstNygCtvQYFv1Yctqv3q4TvOMIYEfDVHSnwQGIffB6hedLHnmox0Tz8DcrgYUah3Y1Q==}
     engines: {node: '>=14'}
 
-  '@clerk/clerk-react@4.31.0':
-    resolution: {integrity: sha512-jKr+wyCN5H14KQhzLjg9KFj9c021yfAf1+D4bfG3rSH4psUF4Cv99C2tezmCyX98KM+4tBouj79/XZwK2IXQgw==}
+  '@clerk/clerk-react@4.31.1':
+    resolution: {integrity: sha512-rxzu/bmM+A/ffB3jpZ60XVOJXc9r9lnTN3QJPteCeF8yWGY89BlxaonKpEUw8pZbHM+qOF4hvWdEPo2k5w4ynw==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16'
-
-  '@clerk/clerk-sdk-node@4.13.15':
-    resolution: {integrity: sha512-+6abejj+5Q8Yg7nhcth53MUxGV++YHnvjjsW2nH7xUTpY/BOLDKcPRBMELzXMOhSSibffrQ8yNS9LwZZEmazAg==}
-    engines: {node: '>=14'}
 
   '@clerk/clerk-sdk-node@4.13.16':
     resolution: {integrity: sha512-ZmfnRPlyTM+41zebnSQl9+q+LdwZO2z3l5H2uOWSaXr3SPnXbz6kul6FdnI6Aug9hHIZVzKQEuLP+EZt1Nv63Q==}
@@ -1506,8 +1498,8 @@ packages:
     peerDependencies:
       react: '>=16'
 
-  '@clerk/nextjs@4.30.0':
-    resolution: {integrity: sha512-M60Oyq0m9z+mRpUIAONfvQEQG15AcFgbdWO7kfhTirmT84xMXjQ/5DIdZCScPalNzlQP33qQ1AOX7qCsSgjdrQ==}
+  '@clerk/nextjs@4.30.1':
+    resolution: {integrity: sha512-Hty+NUsLREeEPsgFrhZ2qcm2QbQEEJqIenWoqcRRJnVmdtLT36QNq7Ehg7NH+Fxe9VcwsSrm9n0QRHKiKE235A==}
     engines: {node: '>=14'}
     peerDependencies:
       next: '>=10'
@@ -9672,20 +9664,6 @@ snapshots:
   '@biomejs/cli-win32-x64@1.7.3':
     optional: true
 
-  '@clerk/backend@0.38.7(react@18.2.0)':
-    dependencies:
-      '@clerk/shared': 1.4.1(react@18.2.0)
-      '@clerk/types': 3.64.0
-      '@peculiar/webcrypto': 1.4.1
-      '@types/node': 16.18.6
-      cookie: 0.5.0
-      deepmerge: 4.2.2
-      node-fetch-native: 1.0.1
-      snakecase-keys: 5.4.4
-      tslib: 2.4.1
-    transitivePeerDependencies:
-      - react
-
   '@clerk/backend@0.38.8(react@18.2.0)':
     dependencies:
       '@clerk/shared': 1.4.1(react@18.2.0)
@@ -9700,26 +9678,12 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/clerk-react@4.31.0(react@18.2.0)':
+  '@clerk/clerk-react@4.31.1(react@18.2.0)':
     dependencies:
       '@clerk/shared': 1.4.1(react@18.2.0)
-      '@clerk/types': 3.64.0
+      '@clerk/types': 3.64.1
       react: 18.2.0
       tslib: 2.4.1
-
-  '@clerk/clerk-sdk-node@4.13.15(react@18.2.0)':
-    dependencies:
-      '@clerk/backend': 0.38.7(react@18.2.0)
-      '@clerk/shared': 1.4.1(react@18.2.0)
-      '@clerk/types': 3.64.0
-      '@types/cookies': 0.7.7
-      '@types/express': 4.17.14
-      '@types/node-fetch': 2.6.2
-      camelcase-keys: 6.2.2
-      snakecase-keys: 3.2.1
-      tslib: 2.4.1
-    transitivePeerDependencies:
-      - react
 
   '@clerk/clerk-sdk-node@4.13.16(react@18.2.0)':
     dependencies:
@@ -9740,13 +9704,13 @@ snapshots:
       '@clerk/types': 3.64.1
       react: 18.2.0
 
-  '@clerk/nextjs@4.30.0(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@clerk/nextjs@4.30.1(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
-      '@clerk/backend': 0.38.7(react@18.2.0)
-      '@clerk/clerk-react': 4.31.0(react@18.2.0)
-      '@clerk/clerk-sdk-node': 4.13.15(react@18.2.0)
+      '@clerk/backend': 0.38.8(react@18.2.0)
+      '@clerk/clerk-react': 4.31.1(react@18.2.0)
+      '@clerk/clerk-sdk-node': 4.13.16(react@18.2.0)
       '@clerk/shared': 1.4.1(react@18.2.0)
-      '@clerk/types': 3.64.0
+      '@clerk/types': 3.64.1
       next: 14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       path-to-regexp: 6.2.1
       react: 18.2.0
