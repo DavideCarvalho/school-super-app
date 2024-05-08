@@ -35,7 +35,7 @@
     "react-email": "2.1.1",
     "@react-email/button": "0.0.15",
     "@react-email/tailwind": "0.0.15",
-    "@react-email/head": "^0.0.7",
+    "@react-email/head": "^0.0.8",
     "@react-email/preview": "0.0.8"
   },
   "devDependencies": {
