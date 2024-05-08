@@ -27,7 +27,7 @@
     "@highlight-run/react": "3.2.2",
     "@hookform/resolvers": "3.3.4",
     "@react-buddy/ide-toolbox": "2.4.0",
-    "@react-email/container": "0.0.11",
+    "@react-email/container": "0.0.12",
     "@react-email/html": "0.0.7",
     "@react-email/section": "0.0.11",
     "@react-email/text": "0.0.7",
