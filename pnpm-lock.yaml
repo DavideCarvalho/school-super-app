@@ -154,8 +154,8 @@ importers:
         specifier: 4.13.16
         version: 4.13.16(react@18.2.0)
       '@clerk/localizations':
-        specifier: 1.28.3
-        version: 1.28.3(react@18.2.0)
+        specifier: 1.28.4
+        version: 1.28.4(react@18.2.0)
       '@clerk/nextjs':
         specifier: 4.30.0
         version: 4.30.0(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1500,8 +1500,8 @@ packages:
     resolution: {integrity: sha512-ZmfnRPlyTM+41zebnSQl9+q+LdwZO2z3l5H2uOWSaXr3SPnXbz6kul6FdnI6Aug9hHIZVzKQEuLP+EZt1Nv63Q==}
     engines: {node: '>=14'}
 
-  '@clerk/localizations@1.28.3':
-    resolution: {integrity: sha512-0VhKmDsBcBX2RAgOX5fU2IdZpRP9Zmnm32JeR++GIn6qMD9z4OrPHqSiImtzBzNo7fGllT7qloXC7aL32inEpg==}
+  '@clerk/localizations@1.28.4':
+    resolution: {integrity: sha512-tFwVb6yLEm5PkHFcgKcrW2ZioQf0U/Gi3+MCq88dmvE/BqUegoYkQwhVI5d0euRf5bK7LoVvtbQewgTzlHAzDg==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=16'
@@ -9735,9 +9735,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/localizations@1.28.3(react@18.2.0)':
+  '@clerk/localizations@1.28.4(react@18.2.0)':
     dependencies:
-      '@clerk/types': 3.64.0
+      '@clerk/types': 3.64.1
       react: 18.2.0
 
   '@clerk/nextjs@4.30.0(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
