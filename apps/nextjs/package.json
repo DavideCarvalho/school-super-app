@@ -18,7 +18,7 @@
     "@acme/tailwind-config": "workspace:^0.1.0",
     "@ams-js/headless": "0.0.5",
     "@clerk/clerk-sdk-node": "4.13.16",
-    "@clerk/localizations": "1.28.3",
+    "@clerk/localizations": "1.28.4",
     "@clerk/nextjs": "4.30.0",
     "@clerk/themes": "1.7.13",
     "@emailjs/browser": "4.3.3",
