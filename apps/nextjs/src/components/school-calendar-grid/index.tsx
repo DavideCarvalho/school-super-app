@@ -99,7 +99,11 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
             if (!Array.isArray(daySchedule)) return [];
             return daySchedule.map((entry) => {
               if (!entry.Teacher || !entry.Subject)
-                return generateBlankCellKey(day as keyof typeof schedule);
+                return generateBlankCellKey(
+                  day as keyof typeof schedule,
+                  entry.startTime,
+                  entry.endTime,
+                );
               return generateClassKey(
                 day as keyof typeof schedule,
                 entry.startTime,
@@ -136,15 +140,17 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
 
-  function generateBlankCellKey(day: DayOfWeek): ClassKey {
-    return `${day}_-_-_-`;
+  function generateBlankCellKey(
+    day: DayOfWeek,
+    startTime: string,
+    endTime: string,
+  ): ClassKey {
+    return `${day}_${startTime}-${endTime}_-_-_-BLANK`;
   }
 
   useEffect(() => {
     setScheduleConfig((prev) => ({ ...prev }));
   }, []);
-
-  console.log(scheduleConfig);
 
   const updateScheduleConfig = (
     day: DayOfWeek,
@@ -173,11 +179,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     const foundActiveIndex = tableSchedule[
       activeDay as keyof typeof tableSchedule
     ].findIndex(
-      (e) =>
-        e.startTime === activeStartTime &&
-        e.endTime === activeEndTime &&
-        e?.Teacher?.id === activeTeacherId &&
-        e?.Subject?.id === activeSubjectId,
+      (e) => e.startTime === activeStartTime && e.endTime === activeEndTime,
     );
     if (foundActiveIndex === -1) return;
     const overId = over.id as ClassKey;
@@ -187,11 +189,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     const foundOverIndex = tableSchedule[
       overDay as keyof typeof tableSchedule
     ].findIndex(
-      (e) =>
-        e.startTime === overStartTime &&
-        e.endTime === overEndTime &&
-        e?.Teacher?.id === overTeacherId &&
-        e?.Subject?.id === overSubjectId,
+      (e) => e.startTime === overStartTime && e.endTime === overEndTime,
     );
     if (foundOverIndex === -1) return;
     const newTableSchedule = JSON.parse(JSON.stringify(tableSchedule));
@@ -270,15 +268,21 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         const daySchedule =
           newTableSchedule[day as keyof typeof newTableSchedule];
         if (!Array.isArray(daySchedule)) return [];
-        return daySchedule.map((entry) =>
-          generateClassKey(
+        return daySchedule.map((entry) => {
+          if (!entry.Teacher || !entry.Subject)
+            return generateBlankCellKey(
+              day as keyof typeof schedule,
+              entry.startTime,
+              entry.endTime,
+            );
+          return generateClassKey(
             day as keyof typeof schedule,
             entry.startTime,
             entry.endTime,
             entry.Teacher.id,
             entry.Subject.id,
-          ),
-        );
+          );
+        });
       }),
     );
     if (
@@ -413,14 +417,12 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                           e.startTime === startTime && e.endTime === endTime,
                       );
                       if (!entry || !entry.Teacher || !entry.Subject) {
-                        return (
-                          <td
-                            key={day}
-                            className="border-b border-gray-300 px-4 py-2 text-center"
-                          >
-                            -
-                          </td>
+                        const blankCellKey = generateBlankCellKey(
+                          day as keyof typeof tableSchedule,
+                          startTime as string,
+                          endTime as string,
                         );
+                        return <BlankCell id={blankCellKey} />;
                       }
                       const classKey = generateClassKey(
                         day,
@@ -485,7 +487,9 @@ function BlankCell({ id }: BlankCellProps) {
       {...attributes}
       {...listeners}
     >
-      -
+      <CheckBox selected={false} onClick={() => {}}>
+        -
+      </CheckBox>
     </td>
   );
 }

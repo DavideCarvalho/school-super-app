@@ -157,14 +157,11 @@ async function generateSchoolSchedule(
 
     for (const timeSlot of timeSlots) {
       for (const teacher of teachers) {
-        const existingClass = schedule[day as DayOfWeek].find(
+        const existingEntryIndex = schedule[day as DayOfWeek].findIndex(
           (entry) =>
-            entry?.Teacher?.id === teacher.id &&
             entry.startTime === timeSlot.startTime &&
             entry.endTime === timeSlot.endTime,
         );
-
-        if (existingClass) continue;
 
         const subject = findRandomSubjectForTeacher(
           teacher,
@@ -173,17 +170,25 @@ async function generateSchoolSchedule(
           timeSlot,
           schedule,
         );
+        if (!subject) continue;
 
-        if (subject) {
+        if (existingEntryIndex !== -1) {
+          schedule[day as DayOfWeek][existingEntryIndex] = {
+            Teacher: teacher,
+            Subject: subject,
+            startTime: timeSlot.startTime,
+            endTime: timeSlot.endTime,
+          };
+        } else {
           schedule[day as DayOfWeek].push({
             Teacher: teacher,
             Subject: subject,
             startTime: timeSlot.startTime,
             endTime: timeSlot.endTime,
           });
-
-          subject.remainingLessons--;
         }
+
+        subject.remainingLessons--;
       }
     }
   }
