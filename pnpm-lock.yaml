@@ -178,8 +178,8 @@ importers:
         specifier: 1.7.19
         version: 1.7.19(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@highlight-run/react':
-        specifier: 3.2.1
-        version: 3.2.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+        specifier: 3.2.2
+        version: 3.2.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@hookform/resolvers':
         specifier: 3.3.4
         version: 3.3.4(react-hook-form@7.51.3(react@18.2.0))
@@ -2020,8 +2020,8 @@ packages:
     peerDependencies:
       tailwindcss: ^3.0
 
-  '@highlight-run/react@3.2.1':
-    resolution: {integrity: sha512-jjnXsr0T4pXX4D6Etrw081J45ruBrxi2378cVKAqtevgBGu2mQV51/bq14nwi10hrCU/qVr1IhXLHB2y8PY2ug==}
+  '@highlight-run/react@3.2.2':
+    resolution: {integrity: sha512-5iFvVk+5Gcihp/F7l6Kgr6NYpZHdbtRC2J+OQkUeBr5TU3RuoiHUXYyoL1CCnsg8supaQOiM28LX675CPVcoJw==}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
@@ -10364,7 +10364,7 @@ snapshots:
     dependencies:
       tailwindcss: 3.4.3(ts-node@10.9.2(@swc/core@1.3.101)(@types/node@20.12.7)(typescript@5.4.5))
 
-  '@highlight-run/react@3.2.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+  '@highlight-run/react@3.2.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
