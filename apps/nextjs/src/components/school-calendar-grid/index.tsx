@@ -64,6 +64,9 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     { refetchOnWindowFocus: false },
   );
 
+  const { mutateAsync: saveSchoolCalendarMutation } =
+    api.school.saveSchoolCalendar.useMutation();
+
   const [tableSchedule, setTableSchedule] = useState<typeof schedule>(schedule);
   useEffect(() => {
     setTableSchedule(schedule);
@@ -117,7 +120,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     );
   }, [tableSchedule]);
 
-  const toggleFixedClass = (classKey: string) => {
+  function toggleFixedClass(classKey: string) {
     setFixedClasses((prev) => {
       const updated = [...prev];
       const index = updated.indexOf(classKey);
@@ -128,7 +131,31 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       }
       return updated;
     });
-  };
+  }
+
+  async function saveSchedule(schedule: typeof tableSchedule) {
+    if (!schedule) return;
+    const classes = Object.keys(schedule)
+      .flatMap((day) => {
+        const daySchedule = schedule[day as keyof typeof schedule];
+        if (!Array.isArray(daySchedule)) return [];
+        return daySchedule.map((entry) => {
+          if (!entry.Teacher || !entry.Subject) return undefined;
+          return {
+            teacherId: entry.Teacher.id,
+            classId: entry.Subject.id,
+            subjectId: entry.Subject.id,
+            classWeekDay: day,
+            classTime: new Date(),
+            startTime: entry.startTime,
+            endTime: entry.endTime,
+          };
+        });
+      })
+      .filter((classItem) => classItem !== undefined);
+    // @ts-expect-error we are already filtering out undefined values
+    await saveSchoolCalendarMutation(classes);
+  }
 
   function generateClassKey(
     day: DayOfWeek,
@@ -376,6 +403,29 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           />
         </svg>
         Atualizar
+      </button>
+
+      <button
+        type="button"
+        className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+        onClick={() => saveSchedule(tableSchedule)}
+      >
+        <svg
+          className="mr-1 h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <title>Salvar</title>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0zm7 0 a1 1 0 11-2 0 1 1 0z"
+          />
+        </svg>
+        Salvar
       </button>
 
       <DndContext

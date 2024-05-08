@@ -45,6 +45,27 @@ export const schoolRouter = createTRPCRouter({
       );
       return schedule;
     }),
+  saveSchoolCalendar: publicProcedure
+    .input(
+      z.array(
+        z.object({
+          teacherId: z.string(),
+          classId: z.string(),
+          subjectId: z.string(),
+          classWeekDay: z.string(),
+          classTime: z.string(),
+          startTime: z.string(),
+          endTime: z.string(),
+        }),
+      ),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const result = await ctx.prisma.teacherHasClass.createMany({
+        data: input,
+        skipDuplicates: true, // Isso irá evitar a criação de registros duplicados
+      });
+      return result;
+    }),
 });
 
 type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";

@@ -145,6 +145,8 @@ model TeacherHasClass {
   subjectId    String
   classWeekDay String
   classTime    String
+  startTime    String?
+  endTime      String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
