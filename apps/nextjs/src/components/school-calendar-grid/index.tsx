@@ -42,14 +42,12 @@ type ClassKey = `${DayOfWeek}_${string}-${string}_${string}_${string}`;
 // Função de componente
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [fixedClasses, setFixedClasses] = useState<string[]>([]);
-  const [scheduleConfig, setScheduleConfig] = useState<
-    Record<DayOfWeek, { start: string; end: string }>
-  >({
-    Monday: { start: "07:00", end: "12:30" },
-    Tuesday: { start: "07:00", end: "12:30" },
-    Wednesday: { start: "07:00", end: "12:30" },
-    Thursday: { start: "07:00", end: "12:30" },
-    Friday: { start: "07:00", end: "12:30" },
+  const [scheduleConfig, setScheduleConfig] = useState({
+    Monday: { start: "07:00", numClasses: 6, duration: 50 },
+    Tuesday: { start: "07:00", numClasses: 6, duration: 50 },
+    Wednesday: { start: "07:00", numClasses: 6, duration: 50 },
+    Thursday: { start: "07:00", numClasses: 6, duration: 50 },
+    Friday: { start: "07:00", numClasses: 6, duration: 50 },
   });
 
   const {
@@ -70,26 +68,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   useEffect(() => {
     setTableSchedule(schedule);
   }, [schedule]);
-
-  const updateStartTime = (day: DayOfWeek, startTime: string) => {
-    setScheduleConfig((prev) => ({
-      ...prev,
-      [day]: {
-        start: startTime,
-        end: prev[day].end || "11:00", // Valor padrão se undefined
-      },
-    }));
-  };
-
-  const updateEndTime = (day: DayOfWeek, endTime: string) => {
-    setScheduleConfig((prev) => ({
-      ...prev,
-      [day]: {
-        start: prev[day].start || "07:00", // Valor padrão se undefined
-        end: endTime,
-      },
-    }));
-  };
 
   const [allTimeSlots, setAllTimeSlots] = useState<string[]>([]);
   const [allClassKeys, setAllClassKeys] = useState<string[]>([]);
@@ -119,33 +97,21 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
             const daySchedule =
               tableSchedule[day as keyof typeof tableSchedule];
             if (!Array.isArray(daySchedule)) return [];
-            return daySchedule.map((entry) =>
-              generateClassKey(
+            return daySchedule.map((entry) => {
+              if (!entry.Teacher || !entry.Subject)
+                return generateBlankCellKey(day as keyof typeof schedule);
+              return generateClassKey(
                 day as keyof typeof schedule,
                 entry.startTime,
                 entry.endTime,
                 entry.Teacher.id,
                 entry.Subject.id,
-              ),
-            );
+              );
+            });
           })
         : [],
     );
   }, [tableSchedule]);
-
-  // const allTimeSlots = schedule
-  //   ? Array.from(
-  //       new Set(
-  //         Object.keys(schedule).flatMap((day) => {
-  //           const daySchedule = schedule[day as keyof typeof schedule];
-  //           if (!Array.isArray(daySchedule)) return [];
-  //           return daySchedule.map(
-  //             (entry) => `${entry?.startTime}-${entry?.endTime}`,
-  //           );
-  //         }),
-  //       ),
-  //     ).sort()
-  //   : [];
 
   const toggleFixedClass = (classKey: string) => {
     setFixedClasses((prev) => {
@@ -170,8 +136,31 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
 
+  function generateBlankCellKey(day: DayOfWeek): ClassKey {
+    return `${day}_-_-_-`;
+  }
+
+  useEffect(() => {
+    setScheduleConfig((prev) => ({ ...prev }));
+  }, []);
+
+  console.log(scheduleConfig);
+
+  const updateScheduleConfig = (
+    day: DayOfWeek,
+    field: "start" | "numClasses" | "duration",
+    value: string | number,
+  ) => {
+    setScheduleConfig((prev) => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        [field]: value,
+      },
+    }));
+  };
+
   function handleDragEnd(event: DragEndEvent) {
-    console.log("handleDragEnd", event);
     const { active, over } = event;
     if (!active || !over) return;
     if (!tableSchedule) return;
@@ -187,8 +176,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       (e) =>
         e.startTime === activeStartTime &&
         e.endTime === activeEndTime &&
-        e.Teacher.id === activeTeacherId &&
-        e.Subject.id === activeSubjectId,
+        e?.Teacher?.id === activeTeacherId &&
+        e?.Subject?.id === activeSubjectId,
     );
     if (foundActiveIndex === -1) return;
     const overId = over.id as ClassKey;
@@ -201,8 +190,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       (e) =>
         e.startTime === overStartTime &&
         e.endTime === overEndTime &&
-        e.Teacher.id === overTeacherId &&
-        e.Subject.id === overSubjectId,
+        e?.Teacher?.id === overTeacherId &&
+        e?.Subject?.id === overSubjectId,
     );
     if (foundOverIndex === -1) return;
     const newTableSchedule = JSON.parse(JSON.stringify(tableSchedule));
@@ -329,17 +318,35 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     <div className="mt-5 overflow-x-auto">
       {daysOfWeek.map((day) => (
         <div key={day}>
-          <label>{day} - Início:</label>
+          <label>{day} - Start Time:</label>
           <input
             type="time"
-            value={scheduleConfig[day]?.start}
-            onChange={(e) => updateStartTime(day, e.target.value)}
+            value={scheduleConfig[day].start}
+            onChange={(e) => updateScheduleConfig(day, "start", e.target.value)}
           />
-          <label> Término:</label>
+          <label>Number of Classes:</label>
           <input
-            type="time"
-            value={scheduleConfig[day]?.end}
-            onChange={(e) => updateEndTime(day, e.target.value)}
+            type="number"
+            value={scheduleConfig[day].numClasses}
+            onChange={(e) =>
+              updateScheduleConfig(
+                day,
+                "numClasses",
+                Number.parseInt(e.target.value),
+              )
+            }
+          />
+          <label>Duration per Class (minutes):</label>
+          <input
+            type="number"
+            value={scheduleConfig[day].duration}
+            onChange={(e) =>
+              updateScheduleConfig(
+                day,
+                "duration",
+                Number.parseInt(e.target.value),
+              )
+            }
           />
         </div>
       ))}
@@ -405,7 +412,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                         (e) =>
                           e.startTime === startTime && e.endTime === endTime,
                       );
-                      if (!entry) {
+                      if (!entry || !entry.Teacher || !entry.Subject) {
                         return (
                           <td
                             key={day}
@@ -429,6 +436,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                           classKey={classKey}
                           isSelected={fixedClasses.includes(classKey)}
                           toggleFixedClass={toggleFixedClass}
+                          // @ts-expect-error teacher and object are populated
                           daySchedule={entry}
                         />
                       );
@@ -457,6 +465,31 @@ interface ScheduledClassProps {
   };
 }
 
+interface BlankCellProps {
+  id: string;
+}
+
+function BlankCell({ id }: BlankCellProps) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+  return (
+    <td
+      className="border-b border-gray-300 px-4 py-2 text-center"
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+    >
+      -
+    </td>
+  );
+}
+
 function ScheduledClass({
   day,
   classKey,
@@ -479,9 +512,6 @@ function ScheduledClass({
       style={style}
       {...attributes}
       {...listeners}
-      onClick={() => {
-        console.log("clicked");
-      }}
     >
       <label>
         <CheckBox

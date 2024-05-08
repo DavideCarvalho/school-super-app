@@ -11,6 +11,12 @@ import { prisma } from "@acme/db";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
+const scheduleConfigSchema = z.object({
+  start: z.string(),
+  numClasses: z.number(),
+  duration: z.number(),
+});
+
 export const schoolRouter = createTRPCRouter({
   bySlug: publicProcedure
     .input(z.object({ slug: z.string() }))
@@ -23,11 +29,11 @@ export const schoolRouter = createTRPCRouter({
         schoolId: z.string(),
         fixedClasses: z.array(z.string()),
         scheduleConfig: z.object({
-          Monday: z.object({ start: z.string(), end: z.string() }),
-          Tuesday: z.object({ start: z.string(), end: z.string() }),
-          Wednesday: z.object({ start: z.string(), end: z.string() }),
-          Thursday: z.object({ start: z.string(), end: z.string() }),
-          Friday: z.object({ start: z.string(), end: z.string() }),
+          Monday: scheduleConfigSchema,
+          Tuesday: scheduleConfigSchema,
+          Wednesday: scheduleConfigSchema,
+          Thursday: scheduleConfigSchema,
+          Friday: scheduleConfigSchema,
         }),
       }),
     )
@@ -50,12 +56,14 @@ interface TimeSlot {
 }
 
 interface ScheduleEntry {
-  Teacher: Teacher & {
-    TeacherAvailability: TeacherAvailability[];
-    TeacherHasSubject: TeacherHasSubject[];
-    User: User;
-  };
-  Subject: Subject;
+  Teacher:
+    | (Teacher & {
+        TeacherAvailability: TeacherAvailability[];
+        TeacherHasSubject: TeacherHasSubject[];
+        User: User;
+      })
+    | null;
+  Subject: Subject | null;
   startTime: string;
   endTime: string;
 }
@@ -68,10 +76,20 @@ interface SubjectWithRemainingLessons extends Subject {
   remainingLessons: number;
 }
 
+type ScheduleConfig = {
+  [key in DayOfWeek]: {
+    start: string;
+    numClasses: number;
+    duration: number;
+  };
+};
+
+type ScheduleConfigSchema = z.infer<typeof scheduleConfigSchema>;
+
 async function generateSchoolSchedule(
   schoolId: string,
   fixedClasses: string[],
-  scheduleConfig: Record<DayOfWeek, { start: string; end: string }>,
+  scheduleConfig: ScheduleConfig,
 ): Promise<Schedule> {
   const teachers = await prisma.teacher.findMany({
     where: {
@@ -100,7 +118,7 @@ async function generateSchoolSchedule(
   );
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  const schedule = initializeSchedule();
+  const schedule = initializeSchedule(scheduleConfig);
 
   // Respeitar as aulas fixas
   for (const classKey of fixedClasses) {
@@ -131,13 +149,17 @@ async function generateSchoolSchedule(
     const dayConfig = scheduleConfig[day as DayOfWeek];
     if (!dayConfig) continue; // Ignorar dias sem configuração
 
-    const timeSlots = generateTimeSlots(dayConfig.start, dayConfig.end);
+    const timeSlots = generateTimeSlots(
+      dayConfig.start,
+      dayConfig.numClasses,
+      dayConfig.duration,
+    );
 
     for (const timeSlot of timeSlots) {
       for (const teacher of teachers) {
         const existingClass = schedule[day as DayOfWeek].find(
           (entry) =>
-            entry.Teacher.id === teacher.id &&
+            entry?.Teacher?.id === teacher.id &&
             entry.startTime === timeSlot.startTime &&
             entry.endTime === timeSlot.endTime,
         );
@@ -169,30 +191,47 @@ async function generateSchoolSchedule(
   return schedule;
 }
 
-function generateTimeSlots(startTime: string, endTime: string): TimeSlot[] {
+function generateTimeSlots(
+  start: string,
+  numClasses: number,
+  duration: number,
+): TimeSlot[] {
   const timeSlots: TimeSlot[] = [];
-  let start = new Date(`1970-01-01T${startTime}:00`);
-  const end = new Date(`1970-01-01T${endTime}:00`);
-  while (start < end) {
-    const next = new Date(start.getTime() + 50 * 60 * 1000); // 50 minutos para cada aula
-    if (next > end) break;
+  let startTime = new Date(`1970-01-01T${start}:00`);
+
+  for (let i = 0; i < numClasses; i++) {
+    const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
     timeSlots.push({
-      startTime: start.toTimeString().substring(0, 5),
-      endTime: next.toTimeString().substring(0, 5),
+      startTime: startTime.toTimeString().substring(0, 5),
+      endTime: endTime.toTimeString().substring(0, 5),
     });
-    start = next; // Começa o próximo horário imediatamente após o término do anterior
+    startTime = endTime;
   }
+
   return timeSlots;
 }
 
-function initializeSchedule(): Schedule {
-  return {
-    Monday: [],
-    Tuesday: [],
-    Wednesday: [],
-    Thursday: [],
-    Friday: [],
-  };
+function initializeSchedule(scheduleConfig: ScheduleConfig): Schedule {
+  // @ts-expect-error
+  const schedule: Schedule = {};
+  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+  for (const day of daysOfWeek) {
+    const dayConfig = scheduleConfig[day as DayOfWeek];
+    const timeSlots = generateTimeSlots(
+      dayConfig.start,
+      dayConfig.numClasses,
+      dayConfig.duration,
+    );
+    schedule[day as DayOfWeek] = timeSlots.map((slot) => ({
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      Teacher: null,
+      Subject: null,
+    }));
+  }
+
+  return schedule;
 }
 
 function findRandomSubjectForTeacher(
@@ -217,7 +256,7 @@ function findRandomSubjectForTeacher(
 
   // Obter a programação do professor para o dia atual
   const teacherSchedule =
-    schedule[day]?.filter((entry) => entry.Teacher.id === teacher.id) || [];
+    schedule[day]?.filter((entry) => entry?.Teacher?.id === teacher.id) || [];
 
   // Obter a última matéria agendada no dia
   const lastSubject = teacherSchedule.length
