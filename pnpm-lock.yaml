@@ -154,8 +154,8 @@ importers:
         specifier: 5.0.4
         version: 5.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@clerk/localizations':
-        specifier: 1.28.4
-        version: 1.28.4(react@18.2.0)
+        specifier: 2.3.1
+        version: 2.3.1
       '@clerk/nextjs':
         specifier: 5.0.7
         version: 5.0.7(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1496,11 +1496,9 @@ packages:
     resolution: {integrity: sha512-nDEerHLpUBK4BGHgPVBF/d7bmVd5MIHgJESFfiWuIFaWXQsaPO6UdoVYLYA+H+RC11qEzjAECnfus6C7kkaRJw==}
     engines: {node: '>=18.17.0'}
 
-  '@clerk/localizations@1.28.4':
-    resolution: {integrity: sha512-tFwVb6yLEm5PkHFcgKcrW2ZioQf0U/Gi3+MCq88dmvE/BqUegoYkQwhVI5d0euRf5bK7LoVvtbQewgTzlHAzDg==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      react: '>=16'
+  '@clerk/localizations@2.3.1':
+    resolution: {integrity: sha512-FaxePx9ZjKCCm2touEWIV3atkUvK6YnL7ETcV5rVZb+1bOW/rHyG8rrhQwuzCxtjiURtj1CTyXSnviYlaKjY8g==}
+    engines: {node: '>=18.17.0'}
 
   '@clerk/nextjs@5.0.7':
     resolution: {integrity: sha512-HMUERoU52EnEVpG9IaFcRaEOXme8rzv40POkczt8MNHLJ7bQjf3oyc2L+o++w7lmusGNABbfTs1Aq6F2d9b2Gw==}
@@ -9647,10 +9645,7 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/localizations@1.28.4(react@18.2.0)':
-    dependencies:
-      '@clerk/types': 3.64.1
-      react: 18.2.0
+  '@clerk/localizations@2.3.1': {}
 
   '@clerk/nextjs@5.0.7(next@14.2.2(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
