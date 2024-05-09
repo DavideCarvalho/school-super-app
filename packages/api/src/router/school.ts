@@ -64,6 +64,26 @@ export const schoolRouter = createTRPCRouter({
         data: input,
       });
     }),
+  getClassSchedule: publicProcedure
+    .input(z.object({ classId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const lessons = await ctx.prisma.teacherHasClass.findMany({
+        where: {
+          classId: input.classId,
+        },
+        include: {
+          Teacher: true,
+          Subject: true,
+        },
+      });
+      return {
+        Monday: lessons.filter((lesson) => lesson.classWeekDay === "1"),
+        Tuesday: lessons.filter((lesson) => lesson.classWeekDay === "2"),
+        Wednesday: lessons.filter((lesson) => lesson.classWeekDay === "3"),
+        Thursday: lessons.filter((lesson) => lesson.classWeekDay === "4"),
+        Friday: lessons.filter((lesson) => lesson.classWeekDay === "5"),
+      };
+    }),
 });
 
 type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
