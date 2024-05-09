@@ -70,18 +70,8 @@ model TeacherAvailability {
   endTime   String
 
   Teacher         Teacher           @relation(fields: [teacherId], references: [id])
-  // TeacherAvailabilityHasClass TeacherAvailabilityHasClass[]
   TeacherHasClass TeacherHasClass[]
 }
-
-// model TeacherAvailabilityHasClass {
-//   id                    String @id @default(cuid())
-//   teacherAvailabilityId String
-//   teacherHasClassId     String
-
-//   TeacherAvailability TeacherAvailability @relation(fields: [teacherAvailabilityId], references: [id])
-//   TeacherHasClass     TeacherHasClass     @relation(fields: [teacherHasClassId], references: [id])
-// }
 
 model Student {
   id                String @id

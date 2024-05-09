@@ -244,7 +244,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       teachersAvailabilities[overTeacherId as string] ?? [];
 
     if (activeData.Teacher && !activeTeacherAvailability?.length) {
-      console.log(activeData);
       return toast.error(
         `Professor ${activeData.Teacher?.User.name} não tem mais horários disponíveis`,
       );
@@ -533,6 +532,10 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                       ].find(
                         (e) =>
                           e.startTime === startTime && e.endTime === endTime,
+                      );
+                      console.log(startTime, endTime);
+                      console.log(
+                        tableSchedule[day as keyof typeof tableSchedule],
                       );
                       if (!entry || !entry.Teacher || !entry.Subject) {
                         const blankCellKey = generateBlankCellKey(

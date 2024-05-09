@@ -198,17 +198,31 @@ async function generateSchoolSchedule(
     const [startTime, endTime] = timeSlot.split("-") as [string, string];
     const teacher = teachers.find((t) => t.id === teacherId);
     const subject = subjectsWithLessons.find((s) => s.id === subjectId);
+    console.log(teacher, subject);
 
-    if (teacher && subject) {
+    if (!teacher || !subject) continue;
+
+    const existingEntryIndex = schedule[day as DayOfWeek].findIndex(
+      (entry) => entry.startTime === startTime && entry.endTime === endTime,
+    );
+
+    if (existingEntryIndex !== -1) {
+      schedule[day as DayOfWeek][existingEntryIndex] = {
+        Teacher: teacher,
+        Subject: subject,
+        startTime: startTime,
+        endTime: endTime,
+      };
+    } else {
       schedule[day as DayOfWeek].push({
         Teacher: teacher,
         Subject: subject,
-        startTime,
-        endTime,
+        startTime: startTime,
+        endTime: endTime,
       });
-
-      subject.remainingLessons--;
     }
+
+    subject.remainingLessons--;
   }
 
   // Continuar a geração do calendário respeitando a configuração do horário
@@ -240,6 +254,9 @@ async function generateSchoolSchedule(
         if (!subject) continue;
 
         if (existingEntryIndex !== -1) {
+          if (schedule[day as DayOfWeek][existingEntryIndex]?.Teacher) {
+            continue;
+          }
           schedule[day as DayOfWeek][existingEntryIndex] = {
             Teacher: teacher,
             Subject: subject,
