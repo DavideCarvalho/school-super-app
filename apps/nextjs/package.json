@@ -38,7 +38,7 @@
     "@trpc/server": "11.0.0-rc.342",
     "@types/react-collapse": "5.0.4",
     "@vercel/analytics": "1.2.2",
-    "dayjs": "1.11.10",
+    "dayjs": "1.11.11",
     "flatpickr": "4.6.13",
     "highlight.run": "8.12.0",
     "@sentry/nextjs": "7.111.0",
