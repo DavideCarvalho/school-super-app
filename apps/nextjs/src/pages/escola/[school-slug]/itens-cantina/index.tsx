@@ -2,7 +2,7 @@ import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next";
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import { getAuth } from "@clerk/nextjs/server";
 import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 
@@ -48,7 +48,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       };
     }
 
-    const user = await clerk.users.getUser(clerkUser.userId);
+    const user = await clerkClient.users.getUser(clerkUser.userId);
     const userEmail = user.emailAddresses[0]?.emailAddress;
 
     if (!userEmail) {

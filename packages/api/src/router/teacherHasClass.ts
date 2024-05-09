@@ -92,6 +92,8 @@ export const teacherHasClassRouter = createTRPCRouter({
         subjectId: z.string(),
         classWeekDay: z.string(),
         classTime: z.string(),
+        startTime: z.string(),
+        endTime: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -136,7 +138,10 @@ export const teacherHasClassRouter = createTRPCRouter({
           classId: input.classId,
           subjectId: input.subjectId,
           classWeekDay: input.classWeekDay,
+          startTime: input.startTime,
+          endTime: input.endTime,
           classTime: input.classTime,
+          teacherAvailabilityId: "",
         },
       });
     }),
@@ -147,15 +152,21 @@ export const teacherHasClassRouter = createTRPCRouter({
         schoolId: z.string(),
         classId: z.string(),
         teacherId: z.string(),
+        classWeekDay: z.string(),
+        startTime: z.string(),
+        endTime: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const teacherHasClass = await ctx.prisma.teacherHasClass.findUnique({
         where: {
-          teacherId_classId_subjectId: {
+          unique_teacher_has_class: {
             teacherId: input.teacherId,
             classId: input.classId,
             subjectId: input.subjectId,
+            classWeekDay: input.classWeekDay,
+            startTime: input.startTime,
+            endTime: input.endTime,
           },
         },
       });
@@ -166,10 +177,13 @@ export const teacherHasClassRouter = createTRPCRouter({
       }
       await ctx.prisma.teacherHasClass.delete({
         where: {
-          teacherId_classId_subjectId: {
+          unique_teacher_has_class: {
             teacherId: input.teacherId,
             classId: input.classId,
             subjectId: input.subjectId,
+            classWeekDay: input.classWeekDay,
+            startTime: input.startTime,
+            endTime: input.endTime,
           },
         },
       });
@@ -181,8 +195,10 @@ export const teacherHasClassRouter = createTRPCRouter({
         teacherId: z.string(),
         classId: z.string(),
         subjectId: z.string(),
-        classWeekDay: z.string().optional(),
-        classTime: z.string().optional(),
+        classWeekDay: z.string(),
+        classTime: z.string(),
+        startTime: z.string(),
+        endTime: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -194,10 +210,13 @@ export const teacherHasClassRouter = createTRPCRouter({
       }
       return ctx.prisma.teacherHasClass.update({
         where: {
-          teacherId_classId_subjectId: {
+          unique_teacher_has_class: {
             teacherId: input.teacherId,
             classId: input.classId,
             subjectId: input.subjectId,
+            classWeekDay: input.classWeekDay,
+            startTime: input.startTime,
+            endTime: input.endTime,
           },
         },
         data: {

@@ -204,7 +204,7 @@ export const purchaseRequestRouter = createTRPCRouter({
       `;
       return data.map((d) => ({
         month: d.month,
-        count: parseInt(d.count.toString()),
+        count: Number.parseInt(d.count.toString()),
       }));
     }),
   purchaseRequestsTimeToFinalStatusInLast360Days: publicProcedure
@@ -227,7 +227,7 @@ export const purchaseRequestRouter = createTRPCRouter({
       `;
       return data.map((d) => ({
         month: d.month,
-        averageDaysToFinish: parseFloat(d.averageDaysToFinish),
+        averageDaysToFinish: Number.parseFloat(d.averageDaysToFinish),
       }));
     }),
   purchaseRequestsMonthlyValueInLast360Days: publicProcedure

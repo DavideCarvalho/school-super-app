@@ -60,8 +60,36 @@ export const schoolRouter = createTRPCRouter({
       ),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.teacherHasClass.createMany({
-        data: input,
+      await ctx.prisma.$transaction(async (tx) => {
+        const classIds = input.map(({ classId }) => classId);
+        await tx.teacherHasClass.deleteMany({
+          where: {
+            classId: {
+              in: classIds,
+            },
+          },
+        });
+        for (const classToCreate of input) {
+          const teacherAvailability = await tx.teacherAvailability.findFirst({
+            where: {
+              teacherId: classToCreate.teacherId,
+              day: classToCreate.classWeekDay,
+            },
+          });
+          if (!teacherAvailability) continue;
+          await tx.teacherHasClass.create({
+            data: {
+              teacherId: classToCreate.teacherId,
+              classId: classToCreate.classId,
+              subjectId: classToCreate.subjectId,
+              classWeekDay: classToCreate.classWeekDay,
+              classTime: classToCreate.classTime,
+              startTime: classToCreate.startTime,
+              endTime: classToCreate.endTime,
+              teacherAvailabilityId: teacherAvailability.id,
+            },
+          });
+        }
       });
     }),
   getClassSchedule: publicProcedure

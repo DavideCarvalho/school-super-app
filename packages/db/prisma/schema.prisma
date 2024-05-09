@@ -5,6 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator kysely {
+  provider = "prisma-kysely"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
@@ -46,12 +50,12 @@ model User {
 }
 
 model Teacher {
-  id                String            @id
-  TeacherHasClasses TeacherHasClass[]
-  User              User              @relation(fields: [id], references: [id])
-  File              File[]
+  id                  String                @id
+  TeacherHasClasses   TeacherHasClass[]
+  User                User                  @relation(fields: [id], references: [id])
+  File                File[]
   TeacherAvailability TeacherAvailability[]
-  TeacherHasSubject TeacherHasSubject[]
+  TeacherHasSubject   TeacherHasSubject[]
 
   @@index([id])
 }
@@ -64,11 +68,20 @@ model TeacherAvailability {
   day       String
   startTime String
   endTime   String
-  classId   String?
 
-  Teacher Teacher @relation(fields: [teacherId], references: [id])
-  Class   Class?   @relation(fields: [classId], references: [id])
+  Teacher         Teacher           @relation(fields: [teacherId], references: [id])
+  // TeacherAvailabilityHasClass TeacherAvailabilityHasClass[]
+  TeacherHasClass TeacherHasClass[]
 }
+
+// model TeacherAvailabilityHasClass {
+//   id                    String @id @default(cuid())
+//   teacherAvailabilityId String
+//   teacherHasClassId     String
+
+//   TeacherAvailability TeacherAvailability @relation(fields: [teacherAvailabilityId], references: [id])
+//   TeacherHasClass     TeacherHasClass     @relation(fields: [teacherHasClassId], references: [id])
+// }
 
 model Student {
   id                String @id
@@ -80,7 +93,7 @@ model Student {
   User                 User                         @relation(name: "student_user_id", fields: [id], references: [id])
   ResponsibleUser      User                         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
   StudentPei           StudentPei[]
-  Class               Class                        @relation(fields: [classId], references: [id])
+  Class                Class                        @relation(fields: [classId], references: [id])
 
   @@index([id])
 }
@@ -136,40 +149,43 @@ model TeacherHasSubject {
   updatedAt DateTime @updatedAt
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
-  Subject         Subject         @relation(fields: [subjectId], references: [id])
+  Subject Subject @relation(fields: [subjectId], references: [id])
 }
 
 model TeacherHasClass {
-  id        String   @id @default(cuid())
-  teacherId    String
-  classId      String
-  subjectId    String
-  classWeekDay String @db.VarChar(10)
-  classTime    String @db.VarChar(10)
-  startTime    String @db.VarChar(10)
-  endTime      String @db.VarChar(10)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                    String   @id @default(cuid())
+  teacherId             String
+  classId               String
+  subjectId             String
+  classWeekDay          String   @db.VarChar(10)
+  classTime             String   @db.VarChar(10)
+  startTime             String   @db.VarChar(10)
+  endTime               String   @db.VarChar(10)
+  teacherAvailabilityId String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
+  TeacherAvailability TeacherAvailability @relation(fields: [teacherAvailabilityId], references: [id])
+
   @@unique(name: "unique_teacher_has_class", fields: [teacherId, classId, subjectId, classWeekDay, startTime, endTime])
 }
 
 model Subject {
-  id              String            @id @default(cuid())
-  name            String
-  slug            String
-  schoolId        String
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  TeacherHasClass TeacherHasClass[]
-  School          School            @relation(fields: [schoolId], references: [id])
-  File            File[]
-  TeacherHasSubject TeacherHasSubject[]
-  quantityNeededScheduled Int @default(0)
+  id                      String              @id @default(cuid())
+  name                    String
+  slug                    String
+  schoolId                String
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  TeacherHasClass         TeacherHasClass[]
+  School                  School              @relation(fields: [schoolId], references: [id])
+  File                    File[]
+  TeacherHasSubject       TeacherHasSubject[]
+  quantityNeededScheduled Int                 @default(0)
 
   @@index([schoolId])
 }
@@ -216,7 +232,6 @@ model Class {
   School          School            @relation(fields: [schoolId], references: [id])
   File            File[]
   Student         Student[]
-  TeacherAvailability TeacherAvailability[]
 
   @@index([schoolId])
 }
@@ -267,18 +282,17 @@ model Notification {
 }
 
 model StudentPei {
-  id        String   @id @default(cuid())
-  studentId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  report   String?  @db.Text
-  needs   String?  @db.Text
-  interests String?  @db.Text
-  skillsToWork String?  @db.Text
+  id                 String   @id @default(cuid())
+  studentId          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  report             String?  @db.Text
+  needs              String?  @db.Text
+  interests          String?  @db.Text
+  skillsToWork       String?  @db.Text
   learningObjectives String?  @db.Text
-  resourcesAndTools String?  @db.Text
-  evaluation String?  @db.Text
-
+  resourcesAndTools  String?  @db.Text
+  evaluation         String?  @db.Text
 
   Student Student @relation(fields: [studentId], references: [id])
 

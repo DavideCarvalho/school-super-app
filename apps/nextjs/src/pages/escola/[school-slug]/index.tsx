@@ -1,5 +1,5 @@
 import type { GetServerSidePropsContext } from "next";
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import { getAuth } from "@clerk/nextjs/server";
 import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 import { LineChart } from "@tremor/react";
@@ -123,7 +123,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       ),
     ];
 
-    const user = await clerk.users.getUser(clerkAuth.userId);
+    const user = await clerkClient.users.getUser(clerkAuth.userId);
 
     const userPublicMetadata = getUserPublicMetadata(user);
 

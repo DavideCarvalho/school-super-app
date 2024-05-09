@@ -34,19 +34,29 @@ export const teacherRouter = createTRPCRouter({
       ]);
     }),
   getTeachersAvailableDays: publicProcedure
-    .input(z.object({ classId: z.string() }))
+    .input(z.object({ schoolId: z.string() }))
     .query(async ({ ctx, input }) => {
-      // TODO: Pegar apenas os dias que estão disponíveis
-      // TODO: Os dias disponíveis vão ser os que não estão com TeacherHasClass
-      // TODO: Pra isso, precisamos adicionar um id do TeacherHasClass dentro do TeacherAvailability
-      // TODO: Assim, quando salvarmos um TeacherHasClass, também devemos salvar o id no TeacherAvailability
-      return ctx.prisma.teacherAvailability.findMany({
-        where: {
-          classId: input.classId,
-        },
-        include: {
-          Teacher: true,
-        },
-      });
+      const teachersAvailabilities =
+        await ctx.prisma.teacherAvailability.findMany({
+          where: {
+            Teacher: {
+              User: {
+                schoolId: input.schoolId,
+              },
+            },
+          },
+          include: {
+            Teacher: true,
+          },
+        });
+      const teacherIds = teachersAvailabilities.map((t) => t.Teacher.id);
+      const response: Record<string, typeof teachersAvailabilities> = {};
+      for (const teacherId of teacherIds) {
+        const currentTeacherAvailabilities = teachersAvailabilities.filter(
+          (t) => t.teacherId === teacherId,
+        );
+        response[teacherId] = currentTeacherAvailabilities;
+      }
+      return response;
     }),
 });

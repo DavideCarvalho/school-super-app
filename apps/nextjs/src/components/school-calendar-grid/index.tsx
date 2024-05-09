@@ -17,6 +17,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import toast from "react-hot-toast";
 
 import type { Subject, Teacher, User } from "@acme/db";
 
@@ -63,6 +64,15 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     },
     { refetchOnWindowFocus: false },
   );
+
+  const {
+    data: teachersAvailabilities,
+    isLoading: isLoadingTeachersAvailabilities,
+    error: errorTeachersAvailabilities,
+    refetch: refetchTeachersAvailabilities,
+  } = api.teacher.getTeachersAvailableDays.useQuery({
+    schoolId,
+  });
 
   const { mutateAsync: saveSchoolCalendarMutation } =
     api.school.saveSchoolCalendar.useMutation();
@@ -225,6 +235,64 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     const overData =
       tableSchedule[overDay as keyof typeof tableSchedule][foundOverIndex];
     if (!activeData || !overData) return;
+
+    if (!teachersAvailabilities) return;
+
+    const activeTeacherAvailability =
+      teachersAvailabilities[activeTeacherId as string] ?? [];
+    const overTeacherAvailability =
+      teachersAvailabilities[overTeacherId as string] ?? [];
+
+    if (activeData.Teacher && !activeTeacherAvailability?.length) {
+      console.log(activeData);
+      return toast.error(
+        `Professor ${activeData.Teacher?.User.name} não tem mais horários disponíveis`,
+      );
+    }
+
+    if (overData.Teacher && !overTeacherAvailability?.length) {
+      return toast.error(
+        `Professor ${overData.Teacher?.User.name} não tem mais horários disponíveis`,
+      );
+    }
+
+    let doesActiveTeacherHasAvailabilityOnOverDayAndTime = false;
+    for (const teacherAvailability of activeTeacherAvailability) {
+      if (teacherAvailability.day !== overDay) continue;
+      if (
+        teacherAvailability.startTime <= (overStartTime as string) &&
+        teacherAvailability.endTime >= (overEndTime as string)
+      ) {
+        doesActiveTeacherHasAvailabilityOnOverDayAndTime = true;
+      }
+    }
+
+    if (
+      activeData.Teacher &&
+      !doesActiveTeacherHasAvailabilityOnOverDayAndTime
+    ) {
+      return toast.error(
+        `Professor ${activeData.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
+      );
+    }
+
+    let doesOverTeacherHasAvailabilityOnActiveDayAndTime = false;
+    for (const teacherAvailability of overTeacherAvailability) {
+      if (teacherAvailability.day !== activeDay) continue;
+      if (
+        teacherAvailability.startTime <= (activeStartTime as string) &&
+        teacherAvailability.endTime >= (activeEndTime as string)
+      ) {
+        doesOverTeacherHasAvailabilityOnActiveDayAndTime = true;
+      }
+    }
+
+    if (overData.Teacher && !doesOverTeacherHasAvailabilityOnActiveDayAndTime) {
+      return toast.error(
+        `Professor ${overData.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
+      );
+    }
+
     const activeDataWithSwapedTimes = {
       ...JSON.parse(
         JSON.stringify(
