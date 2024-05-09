@@ -310,8 +310,8 @@ importers:
         specifier: 1.13.3
         version: 1.13.3
       zod:
-        specifier: 3.22.5
-        version: 3.22.5
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@acme/prettier-config':
         specifier: workspace:^0.1.0
@@ -383,8 +383,8 @@ importers:
         specifier: 2.2.1
         version: 2.2.1
       zod:
-        specifier: 3.22.5
-        version: 3.22.5
+        specifier: 3.23.8
+        version: 3.23.8
     devDependencies:
       '@acme/eslint-config':
         specifier: workspace:^0.1.0
@@ -8991,8 +8991,8 @@ packages:
     resolution: {integrity: sha512-9qv4rlDiopXg4E69k+vMHjNN63YFMe9sZMrdlvKnCjlCRWeCBswPPMPUfx+ipsAWq1LXHe70RcbaHdJJpS6hyQ==}
     engines: {node: '>= 10'}
 
-  zod@3.22.5:
-    resolution: {integrity: sha512-HqnGsCdVZ2xc0qWPLdO25WnseXThh0kEYKIdV5F/hTHO75hNZFp8thxSeHhiPrHZKrFTo1SOgkAj9po5bexZlw==}
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
 snapshots:
 
@@ -16955,7 +16955,7 @@ snapshots:
       '@prisma/generator-helper': 5.3.1
       '@prisma/internals': 5.3.1
       typescript: 5.4.5
-      zod: 3.22.5
+      zod: 3.23.8
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -18816,4 +18816,4 @@ snapshots:
       compress-commons: 4.1.2
       readable-stream: 3.6.2
 
-  zod@3.22.5: {}
+  zod@3.23.8: {}
