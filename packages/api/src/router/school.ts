@@ -4,6 +4,7 @@ import type {
   Subject,
   Teacher,
   TeacherAvailability,
+  TeacherHasClass,
   TeacherHasSubject,
   User,
 } from "@acme/db";
@@ -100,17 +101,81 @@ export const schoolRouter = createTRPCRouter({
           classId: input.classId,
         },
         include: {
-          Teacher: true,
+          Teacher: {
+            include: {
+              TeacherAvailability: true,
+              User: true,
+            },
+          },
           Subject: true,
         },
       });
-      return {
-        Monday: lessons.filter((lesson) => lesson.classWeekDay === "1"),
-        Tuesday: lessons.filter((lesson) => lesson.classWeekDay === "2"),
-        Wednesday: lessons.filter((lesson) => lesson.classWeekDay === "3"),
-        Thursday: lessons.filter((lesson) => lesson.classWeekDay === "4"),
-        Friday: lessons.filter((lesson) => lesson.classWeekDay === "5"),
+      function getScheduleData(dayLessons: typeof lessons): ScheduleEntry[] {
+        return dayLessons.map((lesson) => {
+          const response: ScheduleEntry = {
+            Teacher: {
+              id: lesson.Teacher.id,
+              TeacherAvailability: lesson.Teacher.TeacherAvailability.map(
+                (availability) => {
+                  return {
+                    id: availability.id,
+                    startTime: availability.startTime,
+                    endTime: availability.endTime,
+                    day: availability.day,
+                    teacherId: availability.teacherId,
+                    createdAt: availability.createdAt,
+                    updatedAt: availability.updatedAt,
+                  };
+                },
+              ),
+              TeacherHasSubject: [],
+              User: {
+                id: lesson.Teacher.User.id,
+                name: lesson.Teacher.User.name,
+                email: lesson.Teacher.User.email,
+                schoolId: lesson.Teacher.User.schoolId,
+                roleId: lesson.Teacher.User.roleId,
+                createdAt: lesson.Teacher.User.createdAt,
+                updatedAt: lesson.Teacher.User.updatedAt,
+                slug: lesson.Teacher.User.slug,
+                teacherId: lesson.Teacher.id,
+              },
+            },
+            Subject: lesson.Subject,
+            startTime: lesson.startTime,
+            endTime: lesson.endTime,
+          };
+          return response;
+        });
+      }
+      const response: Schedule = {
+        Monday: getScheduleData(
+          lessons.filter(
+            (lesson) => lesson.classWeekDay.toUpperCase() === "MONDAY",
+          ),
+        ),
+        Tuesday: getScheduleData(
+          lessons.filter(
+            (lesson) => lesson.classWeekDay.toUpperCase() === "TUESDAY",
+          ),
+        ),
+        Wednesday: getScheduleData(
+          lessons.filter(
+            (lesson) => lesson.classWeekDay.toUpperCase() === "WEDNESDAY",
+          ),
+        ),
+        Thursday: getScheduleData(
+          lessons.filter(
+            (lesson) => lesson.classWeekDay.toUpperCase() === "THURSDAY",
+          ),
+        ),
+        Friday: getScheduleData(
+          lessons.filter(
+            (lesson) => lesson.classWeekDay.toUpperCase() === "FRIDAY",
+          ),
+        ),
       };
+      return response;
     }),
 });
 

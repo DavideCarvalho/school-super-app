@@ -74,24 +74,48 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     schoolId,
   });
 
+  const {
+    data: classSchedule,
+    isLoading: isLoadingClassSchedule,
+    error: errorClassSchedule,
+    refetch: refetchClassSchedule,
+  } = api.school.getClassSchedule.useQuery({
+    classId: "cltymawy6000fo3f2z968tm1b",
+  });
+
   const { mutateAsync: saveSchoolCalendarMutation } =
     api.school.saveSchoolCalendar.useMutation();
 
   const [tableSchedule, setTableSchedule] = useState<typeof schedule>(schedule);
   useEffect(() => {
-    setTableSchedule(schedule);
-  }, [schedule]);
+    if (classSchedule) {
+      const scheduleKeys = Object.keys(classSchedule);
+      const dailyScheduleLength = scheduleKeys.reduce(
+        (acc, key) =>
+          acc + classSchedule[key as keyof typeof classSchedule].length,
+        0,
+      );
+      if (dailyScheduleLength > 0) {
+        setTableSchedule(classSchedule);
+      } else {
+        setTableSchedule(schedule);
+      }
+    } else {
+      setTableSchedule(schedule);
+    }
+  }, [schedule, classSchedule]);
 
   const [allTimeSlots, setAllTimeSlots] = useState<string[]>([]);
   const [allClassKeys, setAllClassKeys] = useState<string[]>([]);
 
   useEffect(() => {
     setAllTimeSlots(
-      schedule
+      tableSchedule
         ? Array.from(
             new Set(
-              Object.keys(schedule).flatMap((day) => {
-                const daySchedule = schedule[day as keyof typeof schedule];
+              Object.keys(tableSchedule).flatMap((day) => {
+                const daySchedule =
+                  tableSchedule[day as keyof typeof tableSchedule];
                 if (!Array.isArray(daySchedule)) return [];
                 return daySchedule.map(
                   (entry) => `${entry?.startTime}-${entry?.endTime}`,
@@ -101,7 +125,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           ).sort()
         : [],
     );
-  }, [schedule]);
+  }, [tableSchedule]);
 
   useEffect(() => {
     setAllClassKeys(
@@ -165,6 +189,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       .filter((classItem) => classItem !== undefined);
     // @ts-expect-error we are already filtering out undefined values
     await saveSchoolCalendarMutation(classes);
+    await refetchTeachersAvailabilities();
   }
 
   function generateClassKey(
