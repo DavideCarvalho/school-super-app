@@ -40,7 +40,6 @@ type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
 
 type ClassKey = `${DayOfWeek}_${string}-${string}_${string}_${string}`;
 
-// Função de componente
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [fixedClasses, setFixedClasses] = useState<string[]>([]);
   const [scheduleConfig, setScheduleConfig] = useState({
@@ -61,6 +60,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       schoolId,
       fixedClasses,
       scheduleConfig,
+      classId: "cltymawy6000fo3f2z968tm1b",
     },
     { refetchOnWindowFocus: false },
   );

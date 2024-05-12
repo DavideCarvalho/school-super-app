@@ -153,6 +153,7 @@ export type TeacherHasSubject = {
   id: string;
   teacherId: string;
   subjectId: string;
+  classId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };

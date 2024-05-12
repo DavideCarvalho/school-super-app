@@ -135,11 +135,13 @@ model TeacherHasSubject {
   id        String   @id @default(cuid())
   teacherId String
   subjectId String
+  classId   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
+  Class   Class   @relation(fields: [classId], references: [id])
 }
 
 model TeacherHasClass {
@@ -218,10 +220,11 @@ model Class {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  TeacherHasClass TeacherHasClass[]
-  School          School            @relation(fields: [schoolId], references: [id])
-  File            File[]
-  Student         Student[]
+  TeacherHasClass   TeacherHasClass[]
+  School            School              @relation(fields: [schoolId], references: [id])
+  File              File[]
+  Student           Student[]
+  TeacherHasSubject TeacherHasSubject[]
 
   @@index([schoolId])
 }

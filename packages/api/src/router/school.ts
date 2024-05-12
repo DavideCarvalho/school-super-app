@@ -28,6 +28,7 @@ export const schoolRouter = createTRPCRouter({
     .input(
       z.object({
         schoolId: z.string(),
+        classId: z.string(),
         fixedClasses: z.array(z.string()),
         scheduleConfig: z.object({
           Monday: scheduleConfigSchema,
@@ -41,6 +42,7 @@ export const schoolRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const schedule = generateSchoolSchedule(
         input.schoolId,
+        input.classId,
         input.fixedClasses,
         input.scheduleConfig,
       );
@@ -216,10 +218,9 @@ type ScheduleConfig = {
   };
 };
 
-type ScheduleConfigSchema = z.infer<typeof scheduleConfigSchema>;
-
 async function generateSchoolSchedule(
   schoolId: string,
+  classId: string,
   fixedClasses: string[],
   scheduleConfig: ScheduleConfig,
 ): Promise<Schedule> {
@@ -228,6 +229,17 @@ async function generateSchoolSchedule(
       User: {
         schoolId,
       },
+      TeacherAvailability: {
+        some: {
+          Teacher: {
+            TeacherHasSubject: {
+              some: {
+                classId,
+              },
+            },
+          },
+        },
+      },
     },
     include: {
       TeacherAvailability: true,
@@ -235,6 +247,8 @@ async function generateSchoolSchedule(
       User: true,
     },
   });
+
+  console.log(teachers);
 
   const subjects = await prisma.subject.findMany({
     where: {
