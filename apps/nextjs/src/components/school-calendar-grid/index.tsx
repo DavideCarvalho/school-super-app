@@ -1,22 +1,22 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
+  closestCenter,
   DndContext,
-  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
   useSensor,
   useSensors,
+  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   rectSwappingStrategy,
+  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import type { Subject, Teacher, User } from "@acme/db";
@@ -95,7 +95,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
 
   const [tableSchedule, setTableSchedule] = useState<typeof schedule>(schedule);
   useEffect(() => {
-    if (classSchedule) {
+    if (!newSchedule) {
       const scheduleKeys = Object.keys(classSchedule);
       const dailyScheduleLength = scheduleKeys.reduce(
         (acc, key) =>
@@ -110,7 +110,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     } else {
       setTableSchedule(schedule);
     }
-  }, [schedule, classSchedule]);
+  }, [schedule, classSchedule, newSchedule]);
 
   const [allTimeSlots, setAllTimeSlots] = useState<string[]>([]);
   const [allClassKeys, setAllClassKeys] = useState<string[]>([]);
@@ -485,7 +485,10 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       <button
         type="button"
         className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-        onClick={() => refetch()}
+        onClick={() => {
+          setNewSchedule(true);
+          refetch();
+        }}
       >
         <svg
           className="mr-1 h-5 w-5"
@@ -495,15 +498,42 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           stroke="currentColor"
           strokeWidth="2"
         >
-          <title>Atualizar</title>
+          <title>Gerar horários</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0zm7 0 a1 1 0 11-2 0 1 1 0z"
           />
         </svg>
-        Atualizar
+        Gerar horários
       </button>
+
+      {newSchedule && (
+        <button
+          type="button"
+          className="inline-flex items-center justify-center rounded-lg border border-transparent bg-red-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+          onClick={() => {
+            setNewSchedule(false);
+          }}
+        >
+          <svg
+            className="mr-1 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <title>Cancelar geração</title>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0zm7 0 a1 1 0 11-2 0 1 1 0z"
+            />
+          </svg>
+          Cancelar geração
+        </button>
+      )}
 
       <button
         type="button"
@@ -518,7 +548,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           stroke="currentColor"
           strokeWidth="2"
         >
-          <title>Salvar</title>
+          <title>Salvar horários</title>
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

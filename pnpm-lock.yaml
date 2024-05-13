@@ -221,7 +221,7 @@ importers:
         version: 4.2.0(react@18.3.1)
       '@sentry/nextjs':
         specifier: 7.114.0
-        version: 7.114.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.91.0(@swc/core@1.3.101))
+        version: 7.114.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11))
       '@sentry/opentelemetry-node':
         specifier: 7.114.0
         version: 7.114.0(@opentelemetry/api@1.8.0)(@opentelemetry/core@1.24.1(@opentelemetry/api@1.8.0))(@opentelemetry/sdk-trace-base@1.24.1(@opentelemetry/api@1.8.0))(@opentelemetry/semantic-conventions@1.24.1)
@@ -272,7 +272,7 @@ importers:
         version: 1.2.0(@types/node@20.12.11)(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.31.0)
       next-superjson:
         specifier: 0.0.4
-        version: 0.0.4(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.91.0(@swc/core@1.3.101))
+        version: 0.0.4(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11))
       nodemailer:
         specifier: 6.9.13
         version: 6.9.13
@@ -12570,7 +12570,7 @@ snapshots:
       '@sentry/utils': 7.114.0
       localforage: 1.10.0
 
-  '@sentry/nextjs@7.114.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.91.0(@swc/core@1.3.101))':
+  '@sentry/nextjs@7.114.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11))':
     dependencies:
       '@rollup/plugin-commonjs': 24.0.0(rollup@2.78.0)
       '@sentry/core': 7.114.0
@@ -13535,7 +13535,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.24.5
 
-  babel-loader@8.3.0(@babel/core@7.24.5)(webpack@5.91.0(@swc/core@1.3.101)):
+  babel-loader@8.3.0(@babel/core@7.24.5)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)):
     dependencies:
       '@babel/core': 7.24.5
       find-cache-dir: 3.3.2
@@ -16592,12 +16592,12 @@ snapshots:
       - supports-color
       - terser
 
-  next-superjson@0.0.4(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.91.0(@swc/core@1.3.101)):
+  next-superjson@0.0.4(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)):
     dependencies:
       '@babel/core': 7.24.5
       '@babel/plugin-syntax-jsx': 7.24.1(@babel/core@7.24.5)
       '@babel/plugin-syntax-typescript': 7.24.1(@babel/core@7.24.5)
-      babel-loader: 8.3.0(@babel/core@7.24.5)(webpack@5.91.0(@swc/core@1.3.101))
+      babel-loader: 8.3.0(@babel/core@7.24.5)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11))
       babel-plugin-superjson-next: 0.4.5(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)
       next: 14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
@@ -18483,7 +18483,7 @@ snapshots:
       ansi-escapes: 4.3.2
       supports-hyperlinks: 2.3.0
 
-  terser-webpack-plugin@5.3.10(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)(webpack@5.91.0(@swc/core@1.3.101)):
+  terser-webpack-plugin@5.3.10(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
       jest-worker: 27.5.1
@@ -18984,7 +18984,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)(webpack@5.91.0(@swc/core@1.3.101))
+      terser-webpack-plugin: 5.3.10(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)(webpack@5.91.0(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11))
       watchpack: 2.4.1
       webpack-sources: 3.2.3
     transitivePeerDependencies:
