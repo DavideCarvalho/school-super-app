@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
-  closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  rectSwappingStrategy,
   SortableContext,
+  rectSwappingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import type { Subject, Teacher, User } from "@acme/db";
@@ -41,6 +41,7 @@ type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
 type ClassKey = `${DayOfWeek}_${string}-${string}_${string}_${string}`;
 
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
+  const [newSchedule, setNewSchedule] = useState<boolean>(false);
   const [fixedClasses, setFixedClasses] = useState<string[]>([]);
   const [scheduleConfig, setScheduleConfig] = useState({
     Monday: { start: "07:00", numClasses: 6, duration: 50 },
@@ -62,7 +63,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       scheduleConfig,
       classId: "cltymawy6000fo3f2z968tm1b",
     },
-    { refetchOnWindowFocus: false },
+    { refetchOnWindowFocus: false, refetchOnMount: true },
   );
 
   const {
@@ -70,18 +71,24 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     isLoading: isLoadingTeachersAvailabilities,
     error: errorTeachersAvailabilities,
     refetch: refetchTeachersAvailabilities,
-  } = api.teacher.getTeachersAvailableDays.useQuery({
-    schoolId,
-  });
+  } = api.teacher.getTeachersAvailableDays.useQuery(
+    {
+      schoolId,
+    },
+    { refetchOnWindowFocus: false, refetchOnMount: true },
+  );
 
   const {
     data: classSchedule,
     isLoading: isLoadingClassSchedule,
     error: errorClassSchedule,
     refetch: refetchClassSchedule,
-  } = api.school.getClassSchedule.useQuery({
-    classId: "cltymawy6000fo3f2z968tm1b",
-  });
+  } = api.school.getClassSchedule.useQuery(
+    {
+      classId: "cltymawy6000fo3f2z968tm1b",
+    },
+    { refetchOnWindowFocus: false, refetchOnMount: true },
+  );
 
   const { mutateAsync: saveSchoolCalendarMutation } =
     api.school.saveSchoolCalendar.useMutation();
@@ -426,7 +433,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     }),
   );
 
-  if (isLoading) return <div className="mt-5 text-center">Loading...</div>;
+  if (!schedule && isLoading)
+    return <div className="mt-5 text-center">Loading...</div>;
   if (error) {
     return <div className="mt-5 text-center">Error: {error.message}</div>;
   }
@@ -558,10 +566,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                         (e) =>
                           e.startTime === startTime && e.endTime === endTime,
                       );
-                      console.log(startTime, endTime);
-                      console.log(
-                        tableSchedule[day as keyof typeof tableSchedule],
-                      );
                       if (!entry || !entry.Teacher || !entry.Subject) {
                         const blankCellKey = generateBlankCellKey(
                           day as keyof typeof tableSchedule,
@@ -586,6 +590,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                           toggleFixedClass={toggleFixedClass}
                           // @ts-expect-error teacher and object are populated
                           daySchedule={entry}
+                          draggable={newSchedule}
                         />
                       );
                     })}
@@ -611,6 +616,7 @@ interface ScheduledClassProps {
     Teacher: Teacher & { User: User };
     Subject: Subject;
   };
+  draggable: boolean;
 }
 
 interface BlankCellProps {
@@ -640,13 +646,41 @@ function BlankCell({ id }: BlankCellProps) {
   );
 }
 
-function ScheduledClass({
+function ScheduledClass(props: ScheduledClassProps) {
+  const { draggable, ...restOfTheProps } = props;
+  if (draggable) return <DraggableSchedule {...restOfTheProps} />;
+  return <NonDraggableSchedule {...restOfTheProps} />;
+}
+
+function NonDraggableSchedule({
+  day,
+  daySchedule,
+}: Omit<ScheduledClassProps, "draggable">) {
+  return (
+    <td key={day} className="border-b border-gray-300 px-4 py-2 text-center">
+      <label>
+        <div className="flex flex-col items-start">
+          <p>
+            <span className="font-bold text-indigo-600">Professor:</span>{" "}
+            {daySchedule.Teacher.User.name}
+          </p>
+          <div>
+            <span className="font-bold text-indigo-600">Matéria:</span>{" "}
+            {daySchedule.Subject.name}
+          </div>
+        </div>
+      </label>
+    </td>
+  );
+}
+
+function DraggableSchedule({
   day,
   classKey,
   isSelected,
   toggleFixedClass,
   daySchedule,
-}: ScheduledClassProps) {
+}: Omit<ScheduledClassProps, "draggable">) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: classKey });
 
@@ -657,7 +691,7 @@ function ScheduledClass({
   return (
     <td
       key={day}
-      className="border-b border-gray-300 px-4 py-2 text-center"
+      className={`border-gray-300"px-4 border-b py-2 text-center`}
       ref={setNodeRef}
       style={style}
       {...attributes}

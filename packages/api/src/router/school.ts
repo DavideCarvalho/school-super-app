@@ -248,8 +248,6 @@ async function generateSchoolSchedule(
     },
   });
 
-  console.log(teachers);
-
   const subjects = await prisma.subject.findMany({
     where: {
       schoolId,

@@ -59,6 +59,12 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
         },
         classId: "cltymawy6000fo3f2z968tm1b",
       }),
+      serverSideHelpers.teacher.getTeachersAvailableDays.prefetch({
+        schoolId: school.id,
+      }),
+      serverSideHelpers.school.getClassSchedule.prefetch({
+        classId: "cltymawy6000fo3f2z968tm1b",
+      }),
     ]);
 
     return {
