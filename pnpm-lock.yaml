@@ -256,8 +256,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 8.12.2
-        version: 8.12.2
+        specifier: 8.12.3
+        version: 8.12.3
       minio:
         specifier: 8.0.0
         version: 8.0.0
@@ -5856,8 +5856,8 @@ packages:
     resolution: {integrity: sha512-cnN7bQUm65UWOy6cbGcCcZ3rpwW8Q/j4OP5aWRhEry4Z2t2aR1cjrbp0BS+KiBN0smvP1caBgAuxutvyvJILzQ==}
     engines: {node: '>=8'}
 
-  highlight.run@8.12.2:
-    resolution: {integrity: sha512-SRaM/IlcCatjO0zDCRqdrv9FUh1DPNdfs0qlbOug19IRr+0kUJ3HRVBtaNsPeUoCnHnVa5mdhaJ+KJvmKlanhg==}
+  highlight.run@8.12.3:
+    resolution: {integrity: sha512-zqGxump2Bfehc2nyuWJ8wxoA7CCfsBJoYnGSUuB8nbzfvipM8o9bsBo6XJOmn8F0bVw67fWXRrst7hF4lqYE+A==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -15422,7 +15422,7 @@ snapshots:
     dependencies:
       source-map: 0.7.4
 
-  highlight.run@8.12.2: {}
+  highlight.run@8.12.3: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
