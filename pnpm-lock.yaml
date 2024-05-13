@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@auth/core': 0.18.0
+  '@auth/core': 0.31.0
 
 importers:
 
