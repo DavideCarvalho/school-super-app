@@ -18,7 +18,6 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
         data-domain="anuaapp.com.br"
         defer
       />
-      <GoogleTagManager gtmId="G-7ND9Y9SETT" />
       <Script id="clarity-script" strategy="afterInteractive">
         {`
             (function(c,l,a,r,i,t,y){
@@ -30,6 +29,7 @@ const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
       </Script>
       <TRPCReactProvider>
         <Component {...pageProps} />
+        <GoogleTagManager gtmId="G-7ND9Y9SETT" />
       </TRPCReactProvider>
       <Toaster />
     </ClerkProvider>
