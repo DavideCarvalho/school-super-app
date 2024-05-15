@@ -154,8 +154,8 @@ importers:
         specifier: 5.0.7
         version: 5.0.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
-        specifier: 2.4.0
-        version: 2.4.0
+        specifier: 2.4.1
+        version: 2.4.1
       '@clerk/nextjs':
         specifier: 5.0.10
         version: 5.0.10(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1524,8 +1524,8 @@ packages:
     resolution: {integrity: sha512-AGNEkFJlHMhGEKQTLuSdyN4KsirThmo8j+I6mhwDOHF9wZwx8jeUfGpNawhWy/4Lf9M6J9Y8FQB+YsiGjk4sng==}
     engines: {node: '>=18.17.0'}
 
-  '@clerk/localizations@2.4.0':
-    resolution: {integrity: sha512-85kwwrQ8+RBK9+lp0VQnnMtFaU/4xcURUBJMYhG3knBy4tXKgIPBLEYpEAlcxoaok2tDOn6IoMuDVZ4N9ltylg==}
+  '@clerk/localizations@2.4.1':
+    resolution: {integrity: sha512-zV2uIxKce+HjlkajtoQxCair1c5uzr2q2io4edtHBUP6An7uhM4vFyHCK80D98lXfBRKrxO1GplzBHpNBmz0Ow==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/nextjs@5.0.10':
@@ -10254,7 +10254,7 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/localizations@2.4.0': {}
+  '@clerk/localizations@2.4.1': {}
 
   '@clerk/nextjs@5.0.10(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
