@@ -22,17 +22,19 @@ export default function LandingPage() {
   } = useForm<{ email: string }>({
     resolver: zodResolver(z.object({ email: z.string().email() })),
   });
-  const onSubmit = async (data: { email: string }) => {
-    toast.loading("Enviando seu email para nossa equipe...");
+  async function onSubmit(data: { email: string }) {
+    const toastId = toast.loading("Enviando seu email para nossa equipe...");
     try {
       await sendContactUsEmail({
         email: data.email,
       });
+      toast.success("Mensagem enviada com sucesso!");
     } catch (e) {
       toast.error("Erro ao enviar email");
+    } finally {
+      toast.dismiss(toastId);
     }
-    toast.success("Mensagem enviada com sucesso!");
-  };
+  }
   useEffect(() => {
     // Focus the input element
     setFocus("email");
