@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ export default function LandingPage() {
     register,
     handleSubmit,
     formState: { errors },
+    setFocus,
   } = useForm<{ email: string }>({
     resolver: zodResolver(z.object({ email: z.string().email() })),
   });
@@ -32,6 +33,10 @@ export default function LandingPage() {
     }
     toast.success("Mensagem enviada com sucesso!");
   };
+  useEffect(() => {
+    // Focus the input element
+    setFocus("email");
+  }, [setFocus]);
   return (
     <div>
       <header className="bg-white py-4 sm:py-5">
