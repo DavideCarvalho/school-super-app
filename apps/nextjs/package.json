@@ -31,7 +31,7 @@
     "@react-email/html": "0.0.8",
     "@react-email/section": "0.0.12",
     "@react-email/text": "0.0.8",
-    "@tanstack/react-query": "5.36.0",
+    "@tanstack/react-query": "5.36.1",
     "@trpc/client": "11.0.0-rc.370",
     "@trpc/next": "11.0.0-rc.370",
     "@trpc/react-query": "11.0.0-rc.370",
