@@ -36,11 +36,11 @@ export const emailRouter = createTRPCRouter({
   sendContactUsEmail: publicProcedure
     .input(
       z.object({
-        name: z.string().min(1).max(255),
+        name: z.string().min(1).max(255).optional(),
         email: z.string().email(),
-        schoolName: z.string(),
-        phone: z.string().optional(),
-        message: z.string(),
+        schoolName: z.string().optional(),
+        phone: z.string().optional().optional(),
+        message: z.string().optional(),
       }),
     )
     .mutation(async ({ input }) => {
@@ -53,12 +53,12 @@ export const emailRouter = createTRPCRouter({
               email: input.email,
               message: `
 
-                Nome da escola: ${input.schoolName}
+                Nome da escola: ${input.schoolName ?? "Não informado"}
                 
-                ${input.message}
+                ${input.message ? input.message : ""}
               `,
-              name: input.name,
-              phone: input.phone,
+              name: input.name ?? "Não informado",
+              phone: input.phone ?? "Não informado",
             }),
           ),
         });

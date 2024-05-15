@@ -5,7 +5,7 @@ import type { PurchaseRequest } from "@acme/db";
 
 import { api } from "~/utils/api";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
-import { Modal } from "../modal";
+import { Modal } from "../../../modal";
 
 interface ApprovePurchaseRequestModalProps {
   open: boolean;
@@ -14,7 +14,7 @@ interface ApprovePurchaseRequestModalProps {
   purchaseRequest: PurchaseRequest;
 }
 
-export function ApprovePurchaseRequestModal({
+export function GenerateNewCalendarApproveModal({
   open,
   onApproved,
   onClickCancel,
@@ -24,18 +24,7 @@ export function ApprovePurchaseRequestModal({
     api.purchaseRequest.approvePurchaseRequest.useMutation();
 
   async function onApprove() {
-    const toastId = toast.loading("Aprovando solicitação de compra...");
-    try {
-      await approvePurchaseRequestMutation({
-        id: purchaseRequest.id,
-      });
-      toast.success("Solicitação de compra aprovada com sucesso!");
-    } catch (e) {
-      toast.error("Erro ao criar solicitação de compra.");
-    } finally {
-      toast.dismiss(toastId);
-      onApproved();
-    }
+    onApproved();
   }
 
   if (!purchaseRequest) return null;

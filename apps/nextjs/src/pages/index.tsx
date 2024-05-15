@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
+import LandingPageBanner from "~/components/landing-page-banner";
 import LandingPage, {
   Contact,
   Features,
@@ -27,6 +28,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="scroll-smooth">
+        <LandingPageBanner />
         <LandingPage />
         <Features />
         <Pricing />

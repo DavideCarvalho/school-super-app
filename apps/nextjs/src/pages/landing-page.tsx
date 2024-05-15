@@ -12,6 +12,26 @@ import { api } from "~/trpc/react";
 
 export default function LandingPage() {
   const [expanded, setExpanded] = useState(false);
+  const { mutateAsync: sendContactUsEmail } =
+    api.email.sendContactUsEmail.useMutation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<{ email: string }>({
+    resolver: zodResolver(z.object({ email: z.string().email() })),
+  });
+  const onSubmit = async (data: { email: string }) => {
+    toast.loading("Enviando seu email para nossa equipe...");
+    try {
+      await sendContactUsEmail({
+        email: data.email,
+      });
+    } catch (e) {
+      toast.error("Erro ao enviar email");
+    }
+    toast.success("Mensagem enviada com sucesso!");
+  };
   return (
     <div>
       <header className="bg-white py-4 sm:py-5">
@@ -125,15 +145,29 @@ export default function LandingPage() {
                   controle das salas de aula, alunos, professores, até controle
                   da cantina!
                 </p>
-                <div className="mt-10">
-                  <Link
-                    href="#fale-conosco"
-                    title=""
-                    className="inline-flex items-center justify-center rounded-xl border border-transparent bg-purple-600 px-8 py-4 text-base font-medium text-white transition-all duration-200 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2"
-                    role="button"
+                <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
+                  <label
+                    htmlFor=""
+                    className="text-base font-medium text-gray-900"
                   >
-                    Interessado? Entre em contato!
-                  </Link>
+                    Email
+                  </label>
+                  <div className="relative mt-2.5">
+                    <input
+                      type="email"
+                      {...register("email")}
+                      className="block w-full rounded-md border border-gray-200 bg-white px-4 py-4 text-black placeholder-gray-500 caret-blue-600 transition-all duration-200 focus:border-blue-600 focus:outline-none"
+                    />
+                    {errors.email && <p>{errors.email?.message}</p>}
+                  </div>
+                </form>
+                <div className="mt-10">
+                  <button
+                    type="submit"
+                    className="inline-flex items-center justify-center rounded-xl border border-transparent bg-purple-600 px-8 py-4 text-base font-medium text-white transition-all duration-200 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:ring-offset-2"
+                  >
+                    Entre em contato comigo!
+                  </button>
                 </div>
               </div>
             </div>
@@ -165,7 +199,7 @@ export function Pricing() {
             Preço
           </h2>
           <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-gray-600">
-            Apenas R$1,99 por aluno!
+            Gratuito durante o período de testes!
           </p>
         </div>
 
@@ -177,18 +211,18 @@ export function Pricing() {
               <div className="mt-5 flex items-end">
                 <div className="flex items-start">
                   <span className="text-xl font-medium text-black"> R$ </span>
-                  <p className="text-6xl font-medium tracking-tight">1,99</p>
+                  <p className="text-6xl font-medium tracking-tight">0,00</p>
                 </div>
                 <span className="ml-0.5 text-lg text-gray-600"> / aluno </span>
               </div>
 
-              <a
-                href="#"
+              <Link
+                href="#fale-conosco"
                 title=""
                 className="mt-6 inline-flex w-full items-center justify-center rounded-full border-2 border-fuchsia-600 bg-transparent px-4 py-3 font-semibold text-gray-900 transition-all duration-200 hover:bg-fuchsia-600 hover:text-white focus:bg-fuchsia-600 focus:text-white"
               >
                 3 meses grátis!
-              </a>
+              </Link>
 
               <ul className="mt-8 flex flex-col space-y-4">
                 <li className="inline-flex items-center space-x-2">
@@ -747,6 +781,48 @@ export function Features() {
             <p className="mt-4 text-base text-gray-600">
               Um canal de acesso facilitado entre escola e pais sobre o
               desenvolvimento do aluno.
+            </p>
+          </div>
+
+          <div>
+            <div className="relative mx-auto flex items-center justify-center">
+              <svg
+                className="text-gray-100"
+                width="65"
+                height="70"
+                viewBox="0 0 65 70"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>Icone</title>
+                <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
+              </svg>
+              <svg
+                className="absolute h-9 w-9 text-gray-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <title>Icone</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 className="mt-8 text-lg font-semibold text-black">
+              Geração automática de calendário
+              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
+                Em breve
+              </span>
+            </h3>
+            <p className="mt-4 text-base text-gray-600">
+              Fazer a grade de horários de cada turma manualmente é muito ruim
+              né? Com a geração automática de calendário, você pode ter horários
+              automáticos para cada turma!
             </p>
           </div>
         </div>

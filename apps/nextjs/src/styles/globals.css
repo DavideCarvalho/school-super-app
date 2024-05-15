@@ -13,3 +13,7 @@ html,
 .ReactCollapse--collapse {
   transition: height 500ms;
 }
+
+* {
+  scroll-behavior: smooth;
+}
