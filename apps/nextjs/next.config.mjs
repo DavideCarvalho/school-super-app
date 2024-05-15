@@ -26,7 +26,7 @@ const config = {
 		],
 	},
 	experimental: {
-		instrumentationHook: false,
+		instrumentationHook: true,
 	},
 };
 
