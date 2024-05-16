@@ -61,11 +61,11 @@ const routes: Route[] = [
 
 export function SchoolLayout({ children }: SchoolLayoutProps) {
   const { user } = useUser();
+  const { pathname } = useRouter();
   if (!user) return null;
   const userPublicMetadata = getUserPublicMetadata(user);
   const schoolSlug = userPublicMetadata.school.slug;
   const canteenId = userPublicMetadata?.canteen?.id;
-  const { pathname } = useRouter();
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">

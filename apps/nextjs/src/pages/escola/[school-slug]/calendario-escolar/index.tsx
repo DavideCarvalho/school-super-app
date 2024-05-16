@@ -47,23 +47,8 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
     }
 
     await Promise.all([
-      serverSideHelpers.school.generateSchoolCalendar.prefetch({
-        schoolId: school.id,
-        fixedClasses: [],
-        scheduleConfig: {
-          Monday: { start: "07:00", numClasses: 6, duration: 50 },
-          Tuesday: { start: "07:00", numClasses: 6, duration: 50 },
-          Wednesday: { start: "07:00", numClasses: 6, duration: 50 },
-          Thursday: { start: "07:00", numClasses: 6, duration: 50 },
-          Friday: { start: "07:00", numClasses: 6, duration: 50 },
-        },
-        classId: "cltymawy6000fo3f2z968tm1b",
-      }),
       serverSideHelpers.teacher.getTeachersAvailableDays.prefetch({
         schoolId: school.id,
-      }),
-      serverSideHelpers.school.getClassSchedule.prefetch({
-        classId: "cltymawy6000fo3f2z968tm1b",
       }),
       serverSideHelpers.class.allBySchoolId.prefetch({
         schoolId: school.id,

@@ -1,44 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  rectSwappingStrategy,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import type { DragEndEvent } from "@dnd-kit/core";
 import toast from "react-hot-toast";
 
-import type { Class, Subject, Teacher, User } from "@acme/db";
+import type { Class } from "@acme/db";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { CheckBox } from "../checkbox";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import SelectWithSearch from "../ui/select-with-search";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
+  CalendarGrid,
+  type CalendarGridSchedule,
+  type CalendarGridScheduledClass,
+} from "./components/calendar-grid";
 import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
 
-const daysOfWeek: DayOfWeek[] = [
+export const daysOfWeek: DayOfWeek[] = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -46,7 +27,7 @@ const daysOfWeek: DayOfWeek[] = [
   "Friday",
 ];
 
-const daysOfWeekInPortuguese = [
+export const daysOfWeekInPortuguese = [
   "Segunda-feira",
   "Terça-feira",
   "Quarta-feira",
@@ -58,9 +39,14 @@ interface SchoolCalendarGridProps {
   schoolId: string;
 }
 
-type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
+export type DayOfWeek =
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday";
 
-type ClassKey = `${DayOfWeek}_${string}-${string}_${string}_${string}`;
+export type ClassKey = `${DayOfWeek}_${string}-${string}_${string}_${string}`;
 
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [newSchedule, setNewSchedule] = useState<boolean>(false);
@@ -82,29 +68,23 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     limit: 999,
   });
 
-  const {
-    data: schedule,
-    isLoading,
-    error,
-    refetch,
-  } = api.school.generateSchoolCalendar.useQuery(
-    {
-      schoolId,
-      fixedClasses,
-      scheduleConfig,
-      classId: selectedClass?.id ?? "",
-    },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      enabled: selectedClass?.id != null,
-    },
-  );
+  const { data: generatedSchedule, refetch: refetchGeneratedSchedule } =
+    api.school.generateSchoolCalendar.useQuery(
+      {
+        schoolId,
+        fixedClasses,
+        scheduleConfig,
+        classId: selectedClass?.id ?? "",
+      },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        enabled: selectedClass?.id != null,
+      },
+    );
 
   const {
     data: teachersAvailabilities,
-    isLoading: isLoadingTeachersAvailabilities,
-    error: errorTeachersAvailabilities,
     refetch: refetchTeachersAvailabilities,
   } = api.teacher.getTeachersAvailableDays.useQuery(
     {
@@ -113,95 +93,71 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     { refetchOnWindowFocus: false, refetchOnMount: true },
   );
 
-  const {
-    data: classSchedule,
-    isLoading: isLoadingClassSchedule,
-    error: errorClassSchedule,
-    refetch: refetchClassSchedule,
-  } = api.school.getClassSchedule.useQuery(
-    {
-      classId: selectedClass?.id ?? "",
-    },
-    {
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      enabled: selectedClass?.id != null,
-    },
-  );
+  const { data: classSchedule, refetch: refetchClassSchedule } =
+    api.school.getClassSchedule.useQuery(
+      {
+        classId: selectedClass?.id ?? "",
+      },
+      {
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
+        enabled: selectedClass?.id != null,
+      },
+    );
 
   const { mutateAsync: saveSchoolCalendarMutation } =
     api.school.saveSchoolCalendar.useMutation();
 
-  const [tableSchedule, setTableSchedule] = useState<typeof schedule>(schedule);
-  useEffect(() => {
-    if (!newSchedule) {
-      if (!classSchedule) return;
-      const scheduleKeys = Object.keys(classSchedule);
-      const dailyScheduleLength = scheduleKeys.reduce(
-        (acc, key) =>
-          acc + classSchedule[key as keyof typeof classSchedule].length,
-        0,
-      );
-      if (dailyScheduleLength > 0) {
-        setTableSchedule(classSchedule);
-      } else {
-        setTableSchedule(schedule);
-      }
-    } else {
-      setTableSchedule(schedule);
-    }
-  }, [schedule, classSchedule, newSchedule]);
+  const [tableSchedule, setTableSchedule] = useState<CalendarGridSchedule>({
+    Monday: generateBlankSchedule(
+      scheduleConfig.Monday.start,
+      scheduleConfig.Monday.numClasses,
+      scheduleConfig.Monday.duration,
+    ),
+    Tuesday: generateBlankSchedule(
+      scheduleConfig.Tuesday.start,
+      scheduleConfig.Tuesday.numClasses,
+      scheduleConfig.Tuesday.duration,
+    ),
+    Wednesday: generateBlankSchedule(
+      scheduleConfig.Wednesday.start,
+      scheduleConfig.Wednesday.numClasses,
+      scheduleConfig.Wednesday.duration,
+    ),
+    Thursday: generateBlankSchedule(
+      scheduleConfig.Thursday.start,
+      scheduleConfig.Thursday.numClasses,
+      scheduleConfig.Thursday.duration,
+    ),
+    Friday: generateBlankSchedule(
+      scheduleConfig.Friday.start,
+      scheduleConfig.Friday.numClasses,
+      scheduleConfig.Friday.duration,
+    ),
+  });
 
-  const [allTimeSlots, setAllTimeSlots] = useState<string[]>([]);
-  const [allClassKeys, setAllClassKeys] = useState<string[]>([]);
+  useEffect(() => {
+    console.log("to aqui 1");
+    if (!newSchedule) return;
+    console.log("to aqui 2");
+    if (!generatedSchedule) return;
+    console.log("to aqui 3", generatedSchedule);
+    setTableSchedule(generatedSchedule);
+  }, [newSchedule, generatedSchedule]);
 
   useEffect(() => {
-    setAllTimeSlots(
-      tableSchedule
-        ? Array.from(
-            new Set(
-              Object.keys(tableSchedule).flatMap((day) => {
-                const daySchedule =
-                  tableSchedule[day as keyof typeof tableSchedule];
-                if (!Array.isArray(daySchedule)) return [];
-                return daySchedule.map(
-                  (entry) => `${entry?.startTime}-${entry?.endTime}`,
-                );
-              }),
-            ),
-          ).sort()
-        : [],
+    if (!classSchedule) return;
+    const scheduleKeys = Object.keys(classSchedule);
+    const dailyScheduleLength = scheduleKeys.reduce(
+      (acc, key) =>
+        acc + classSchedule[key as keyof typeof classSchedule].length,
+      0,
     );
-  }, [tableSchedule]);
+    if (dailyScheduleLength === 0) return;
+    setTableSchedule(classSchedule);
+  }, [classSchedule]);
 
-  useEffect(() => {
-    setAllClassKeys(
-      tableSchedule
-        ? Object.keys(tableSchedule).flatMap((day) => {
-            const daySchedule =
-              tableSchedule[day as keyof typeof tableSchedule];
-            if (!Array.isArray(daySchedule)) return [];
-            return daySchedule.map((entry) => {
-              if (!entry.Teacher || !entry.Subject)
-                return generateBlankCellKey(
-                  day as keyof typeof schedule,
-                  entry.startTime,
-                  entry.endTime,
-                );
-              return generateClassKey(
-                day as keyof typeof schedule,
-                entry.startTime,
-                entry.endTime,
-                entry.Teacher.id,
-                entry.Subject.id,
-              );
-            });
-          })
-        : [],
-    );
-  }, [tableSchedule]);
-
-  function toggleFixedClass(classKey: string) {
+  function toggleFixedClass(classKey: ClassKey) {
     setFixedClasses((prev) => {
       const updated = [...prev];
       const index = updated.indexOf(classKey);
@@ -256,9 +212,11 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       toast.dismiss(toastId);
       setOpenGenerateNewCalendarModal(false);
       setNewSchedule(false);
-      await refetchTeachersAvailabilities();
-      await refetchClassSchedule();
-      await refetch();
+      await Promise.all([
+        refetchClassSchedule(),
+        refetchTeachersAvailabilities(),
+        refetchGeneratedSchedule(),
+      ]);
     }
   }
 
@@ -271,18 +229,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   ): ClassKey {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
-
-  function generateBlankCellKey(
-    day: DayOfWeek,
-    startTime: string,
-    endTime: string,
-  ): ClassKey {
-    return `${day}_${startTime}-${endTime}_-_-_-BLANK`;
-  }
-
-  useEffect(() => {
-    setScheduleConfig((prev) => ({ ...prev }));
-  }, []);
 
   const updateScheduleConfig = (
     day: DayOfWeek,
@@ -452,28 +398,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       if (!items) return items;
       return newTableSchedule;
     });
-    setAllClassKeys(
-      Object.keys(newTableSchedule).flatMap((day) => {
-        const daySchedule =
-          newTableSchedule[day as keyof typeof newTableSchedule];
-        if (!Array.isArray(daySchedule)) return [];
-        return daySchedule.map((entry) => {
-          if (!entry.Teacher || !entry.Subject)
-            return generateBlankCellKey(
-              day as keyof typeof schedule,
-              entry.startTime,
-              entry.endTime,
-            );
-          return generateClassKey(
-            day as keyof typeof schedule,
-            entry.startTime,
-            entry.endTime,
-            entry.Teacher.id,
-            entry.Subject.id,
-          );
-        });
-      }),
-    );
     if (
       activeDataOnFixedClassesIndex !== -1 ||
       overDataOnFixedClassesIndex !== -1
@@ -483,22 +407,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         return currentFixedClasses;
       });
     }
-  }
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 10,
-      },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
-  if (isLoading) return <div className="mt-5 text-center">Loading...</div>;
-  if (error) {
-    return <div className="mt-5 text-center">Error: {error.message}</div>;
   }
 
   return (
@@ -555,7 +463,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                 }
               />
               <Label htmlFor={`${day}-num-classes`}>
-                Quantas aulas no dia?:
+                Quantas aulas no dia?
               </Label>
               <Input
                 name={`${day}-num-classes`}
@@ -570,7 +478,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                 }
               />
               <Label htmlFor={`${day}-duration`}>
-                Quantos minutos por aula?:
+                Quantos minutos por aula?
               </Label>
               <Input
                 name={`${day}-duration`}
@@ -593,16 +501,20 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         <Button
           type="button"
           onClick={async () => {
+            if (!selectedClass) {
+              toast.error("Selecione uma turma");
+              return;
+            }
             if (!newSchedule) {
               setNewSchedule(true);
               return;
             }
             const toastId = toast.loading("Gerando horários...");
-            await refetch();
+            await refetchGeneratedSchedule();
             toast.dismiss(toastId);
           }}
         >
-          Gerar novos horários
+          Gerar horários
         </Button>
 
         {newSchedule && (
@@ -626,185 +538,38 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         )}
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Time</TableHead>
-              {daysOfWeek.map((day) => (
-                <TableHead key={day}>{day}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <SortableContext
-              items={allClassKeys}
-              strategy={rectSwappingStrategy}
-            >
-              {allTimeSlots.map((timeSlot) => {
-                const [startTime, endTime] = timeSlot.split("-");
-                return (
-                  <TableRow key={timeSlot} className="hover:bg-gray-100">
-                    <TableCell className="border-b border-gray-300 px-4 py-2">{`${startTime} - ${endTime}`}</TableCell>
-                    {daysOfWeek.map((day) => {
-                      const entry = tableSchedule[
-                        day as keyof typeof tableSchedule
-                      ].find(
-                        (e) =>
-                          e.startTime === startTime && e.endTime === endTime,
-                      );
-                      if (!entry || !entry.Teacher || !entry.Subject) {
-                        const blankCellKey = generateBlankCellKey(
-                          day as keyof typeof tableSchedule,
-                          startTime as string,
-                          endTime as string,
-                        );
-                        return <BlankCell id={blankCellKey} />;
-                      }
-                      const classKey = generateClassKey(
-                        day,
-                        startTime as string,
-                        endTime as string,
-                        entry.Teacher.id,
-                        entry.Subject.id,
-                      );
-                      return (
-                        <ScheduledClass
-                          key={classKey}
-                          day={day}
-                          classKey={classKey}
-                          isSelected={fixedClasses.includes(classKey)}
-                          toggleFixedClass={toggleFixedClass}
-                          daySchedule={
-                            entry as ScheduledClassProps["daySchedule"]
-                          }
-                          draggable={newSchedule}
-                        />
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
-            </SortableContext>
-          </TableBody>
-        </Table>
-      </DndContext>
+      {tableSchedule && (
+        <CalendarGrid
+          newSchedule={newSchedule}
+          schedule={tableSchedule}
+          handleDragEnd={handleDragEnd}
+          handleClickOnClass={toggleFixedClass}
+        />
+      )}
     </div>
   );
 }
 
-interface ScheduledClassProps {
-  classKey: string;
-  isSelected: boolean;
-  toggleFixedClass: (classKey: string) => void;
-  day: DayOfWeek;
-  daySchedule: {
-    startTime: string;
-    endTime: string;
-    Teacher: Teacher & { User: User };
-    Subject: Subject;
-  };
-  draggable: boolean;
-}
-
-interface BlankCellProps {
-  id: string;
-}
-
-function BlankCell({ id }: BlankCellProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-  return (
-    <TableCell
-      className="border-b border-gray-300 px-4 py-2 text-center"
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
-      <CheckBox selected={false} onClick={() => {}}>
-        -
-      </CheckBox>
-    </TableCell>
-  );
-}
-
-function ScheduledClass(props: ScheduledClassProps) {
-  const { draggable, ...restOfTheProps } = props;
-  if (draggable) return <DraggableSchedule {...restOfTheProps} />;
-  return <NonDraggableSchedule {...restOfTheProps} />;
-}
-
-function NonDraggableSchedule({
-  day,
-  daySchedule,
-}: Omit<ScheduledClassProps, "draggable">) {
-  return (
-    <TableCell key={day}>
-      <label>
-        <div className="flex flex-col items-start">
-          <p>
-            <span className="font-bold text-indigo-600">Professor:</span>{" "}
-            {daySchedule.Teacher.User.name}
-          </p>
-          <div>
-            <span className="font-bold text-indigo-600">Matéria:</span>{" "}
-            {daySchedule.Subject.name}
-          </div>
-        </div>
-      </label>
-    </TableCell>
-  );
-}
-
-function DraggableSchedule({
-  day,
-  classKey,
-  isSelected,
-  toggleFixedClass,
-  daySchedule,
-}: Omit<ScheduledClassProps, "draggable">) {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: classKey });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-  return (
-    <TableCell
-      key={day}
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
-      <label>
-        <CheckBox
-          selected={isSelected}
-          onClick={() => toggleFixedClass(classKey)}
-        >
-          <div className="flex flex-col items-start">
-            <p>
-              <span className="font-bold text-indigo-600">Professor:</span>{" "}
-              {daySchedule.Teacher.User.name}
-            </p>
-            <div>
-              <span className="font-bold text-indigo-600">Matéria:</span>{" "}
-              {daySchedule.Subject.name}
-            </div>
-          </div>
-        </CheckBox>
-      </label>
-    </TableCell>
-  );
+function generateBlankSchedule(
+  startTime: string,
+  numClasses: number,
+  classesDuration: number,
+): CalendarGridScheduledClass[] {
+  const classes: CalendarGridScheduledClass[] = [];
+  let _startTime = new Date(`1970-01-01T${startTime}:00`);
+  for (let i = 0; i < numClasses; i++) {
+    // calculate the end time of the class
+    // the endtime is the start time + the duration of the class
+    const endTime = new Date(
+      _startTime.getTime() + classesDuration * 60 * 1000,
+    );
+    classes.push({
+      startTime: _startTime.toTimeString().substring(0, 5),
+      endTime: endTime.toTimeString().substring(0, 5),
+      Teacher: null,
+      Subject: null,
+    });
+    _startTime = endTime;
+  }
+  return classes;
 }
