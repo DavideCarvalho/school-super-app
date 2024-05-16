@@ -21,8 +21,20 @@ import toast from "react-hot-toast";
 
 import type { Subject, Teacher, User } from "@acme/db";
 
+import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { CheckBox } from "../checkbox";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
 
 const daysOfWeek: DayOfWeek[] = [
   "Monday",
@@ -96,6 +108,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [tableSchedule, setTableSchedule] = useState<typeof schedule>(schedule);
   useEffect(() => {
     if (!newSchedule) {
+      if (!classSchedule) return;
       const scheduleKeys = Object.keys(classSchedule);
       const dailyScheduleLength = scheduleKeys.reduce(
         (acc, key) =>
@@ -447,139 +460,103 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
 
   return (
     <div className="mt-5 overflow-x-auto">
-      {daysOfWeek.map((day) => (
-        <div key={day}>
-          <label>{day} - Start Time:</label>
-          <input
-            type="time"
-            value={scheduleConfig[day].start}
-            onChange={(e) => updateScheduleConfig(day, "start", e.target.value)}
-          />
-          <label>Number of Classes:</label>
-          <input
-            type="number"
-            value={scheduleConfig[day].numClasses}
-            onChange={(e) =>
-              updateScheduleConfig(
-                day,
-                "numClasses",
-                Number.parseInt(e.target.value),
-              )
-            }
-          />
-          <label>Duration per Class (minutes):</label>
-          <input
-            type="number"
-            value={scheduleConfig[day].duration}
-            onChange={(e) =>
-              updateScheduleConfig(
-                day,
-                "duration",
-                Number.parseInt(e.target.value),
-              )
-            }
-          />
-        </div>
-      ))}
-
-      <button
-        type="button"
-        className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-        onClick={() => {
-          setNewSchedule(true);
-          refetch();
-        }}
-      >
-        <svg
-          className="mr-1 h-5 w-5"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth="2"
+      <div className="flex w-full items-center justify-center">
+        <div
+          className={cn(
+            "grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr,1fr,1fr,1fr,1fr,1fr]",
+          )}
         >
-          <title>Gerar horários</title>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0zm7 0 a1 1 0 11-2 0 1 1 0z"
-          />
-        </svg>
-        Gerar horários
-      </button>
+          {daysOfWeek.map((day) => (
+            <div key={day}>
+              <Label htmlFor={`${day}-start-time`}>{day} - Start Time:</Label>
+              <Input
+                name={`${day}-start-time`}
+                type="time"
+                value={scheduleConfig[day].start}
+                onChange={(e) =>
+                  updateScheduleConfig(day, "start", e.target.value)
+                }
+              />
+              <Label htmlFor={`${day}-num-classes`}>Number of Classes:</Label>
+              <Input
+                name={`${day}-num-classes`}
+                type="number"
+                value={scheduleConfig[day].numClasses}
+                onChange={(e) =>
+                  updateScheduleConfig(
+                    day,
+                    "numClasses",
+                    Number.parseInt(e.target.value),
+                  )
+                }
+              />
+              <Label htmlFor={`${day}-duration`}>
+                Duration per Class (minutes):
+              </Label>
+              <Input
+                name={`${day}-duration`}
+                type="number"
+                value={scheduleConfig[day].duration}
+                onChange={(e) =>
+                  updateScheduleConfig(
+                    day,
+                    "duration",
+                    Number.parseInt(e.target.value),
+                  )
+                }
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
-      {newSchedule && (
-        <button
+      <div className="flex justify-end gap-2">
+        <Button
           type="button"
-          className="inline-flex items-center justify-center rounded-lg border border-transparent bg-red-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
           onClick={() => {
-            setNewSchedule(false);
+            setNewSchedule(true);
+            refetch();
           }}
         >
-          <svg
-            className="mr-1 h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <title>Cancelar geração</title>
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0zm7 0 a1 1 0 11-2 0 1 1 0z"
-            />
-          </svg>
-          Cancelar geração
-        </button>
-      )}
+          Gerar novos horários
+        </Button>
 
-      <button
-        type="button"
-        className="inline-flex items-center justify-center rounded-lg border border-transparent bg-indigo-600 px-4 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-        onClick={() => saveSchedule(tableSchedule)}
-      >
-        <svg
-          className="mr-1 h-5 w-5"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <title>Salvar horários</title>
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0zm7 0 a1 1 0 11-2 0 1 1 0z"
-          />
-        </svg>
-        Salvar
-      </button>
+        {newSchedule && (
+          <Button
+            type="button"
+            className={cn(
+              "bg-red-600 transition-all duration-200 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
+            )}
+            onClick={() => {
+              setNewSchedule(false);
+            }}
+          >
+            Cancelar
+          </Button>
+        )}
+
+        {newSchedule && (
+          <Button type="button" onClick={() => saveSchedule(tableSchedule)}>
+            Salvar novos horários
+          </Button>
+        )}
+      </div>
 
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <table className="min-w-full border border-gray-300 bg-white">
-          <thead className="bg-gray-800">
-            <tr>
-              <th className="border-b border-gray-300 px-4 py-2 text-white">
-                Time
-              </th>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Time</TableHead>
               {daysOfWeek.map((day) => (
-                <th
-                  key={day}
-                  className="border-b border-gray-300 px-4 py-2 text-white"
-                >
-                  {day}
-                </th>
+                <TableHead key={day}>{day}</TableHead>
               ))}
-            </tr>
-          </thead>
-          <tbody>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             <SortableContext
               items={allClassKeys}
               strategy={rectSwappingStrategy}
@@ -587,8 +564,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
               {allTimeSlots.map((timeSlot) => {
                 const [startTime, endTime] = timeSlot.split("-");
                 return (
-                  <tr key={timeSlot} className="hover:bg-gray-100">
-                    <td className="border-b border-gray-300 px-4 py-2">{`${startTime} - ${endTime}`}</td>
+                  <TableRow key={timeSlot} className="hover:bg-gray-100">
+                    <TableCell className="border-b border-gray-300 px-4 py-2">{`${startTime} - ${endTime}`}</TableCell>
                     {daysOfWeek.map((day) => {
                       const entry = tableSchedule[
                         day as keyof typeof tableSchedule
@@ -624,12 +601,12 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                         />
                       );
                     })}
-                  </tr>
+                  </TableRow>
                 );
               })}
             </SortableContext>
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </DndContext>
     </div>
   );
@@ -662,7 +639,7 @@ function BlankCell({ id }: BlankCellProps) {
     transition,
   };
   return (
-    <td
+    <TableCell
       className="border-b border-gray-300 px-4 py-2 text-center"
       ref={setNodeRef}
       style={style}
@@ -672,7 +649,7 @@ function BlankCell({ id }: BlankCellProps) {
       <CheckBox selected={false} onClick={() => {}}>
         -
       </CheckBox>
-    </td>
+    </TableCell>
   );
 }
 
@@ -687,7 +664,7 @@ function NonDraggableSchedule({
   daySchedule,
 }: Omit<ScheduledClassProps, "draggable">) {
   return (
-    <td key={day} className="border-b border-gray-300 px-4 py-2 text-center">
+    <TableCell key={day}>
       <label>
         <div className="flex flex-col items-start">
           <p>
@@ -700,7 +677,7 @@ function NonDraggableSchedule({
           </div>
         </div>
       </label>
-    </td>
+    </TableCell>
   );
 }
 
@@ -719,9 +696,8 @@ function DraggableSchedule({
     transition,
   };
   return (
-    <td
+    <TableCell
       key={day}
-      className={`border-gray-300"px-4 border-b py-2 text-center`}
       ref={setNodeRef}
       style={style}
       {...attributes}
@@ -744,6 +720,6 @@ function DraggableSchedule({
           </div>
         </CheckBox>
       </label>
-    </td>
+    </TableCell>
   );
 }
