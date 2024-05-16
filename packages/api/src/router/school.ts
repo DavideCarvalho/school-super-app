@@ -4,7 +4,6 @@ import type {
   Subject,
   Teacher,
   TeacherAvailability,
-  TeacherHasClass,
   TeacherHasSubject,
   User,
 } from "@acme/db";
@@ -279,7 +278,6 @@ async function generateSchoolSchedule(
     const [startTime, endTime] = timeSlot.split("-") as [string, string];
     const teacher = teachers.find((t) => t.id === teacherId);
     const subject = subjectsWithLessons.find((s) => s.id === subjectId);
-    console.log(teacher, subject);
 
     if (!teacher || !subject) continue;
 
@@ -452,15 +450,4 @@ function findRandomSubjectForTeacher(
   return eligibleSubjects.length > 0
     ? eligibleSubjects[Math.floor(Math.random() * eligibleSubjects.length)]
     : null;
-}
-function getPreviousDay(day: DayOfWeek): DayOfWeek | null | undefined {
-  const daysOfWeek: DayOfWeek[] = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-  ];
-  const dayIndex = daysOfWeek.indexOf(day);
-  return dayIndex > 0 ? daysOfWeek[dayIndex - 1] : null;
 }

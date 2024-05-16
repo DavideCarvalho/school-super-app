@@ -36,7 +36,6 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { api } from "~/trpc/react";
 import { daysOfWeek, type ClassKey, type DayOfWeek } from "../..";
 
 export interface CalendarGridScheduledClass {
@@ -65,6 +64,7 @@ export interface CalendarGridProps {
   schedule: CalendarGridSchedule;
   handleDragEnd: (event: DragEndEvent) => void;
   handleClickOnClass: (classKey: ClassKey) => void;
+  fixedClasses: string[];
 }
 
 export function CalendarGrid({
@@ -72,7 +72,9 @@ export function CalendarGrid({
   schedule,
   handleDragEnd,
   handleClickOnClass,
+  fixedClasses,
 }: CalendarGridProps) {
+  console.log("schedule", schedule);
   const allTimeSlots = useMemo(
     () =>
       Array.from(
@@ -111,7 +113,6 @@ export function CalendarGrid({
       }),
     [schedule],
   );
-  const [fixedClasses, setFixedClasses] = useState<string[]>([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -155,7 +156,9 @@ export function CalendarGrid({
                         startTime as string,
                         endTime as string,
                       );
-                      return <BlankCell id={blankCellKey} />;
+                      return (
+                        <BlankCell id={blankCellKey} draggable={newSchedule} />
+                      );
                     }
                     const classKey = generateClassKey(
                       day,
@@ -222,9 +225,10 @@ interface ScheduledClassProps {
 
 interface BlankCellProps {
   id: string;
+  draggable: boolean;
 }
 
-function BlankCell({ id }: BlankCellProps) {
+function BlankCell({ id, draggable }: BlankCellProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -232,6 +236,13 @@ function BlankCell({ id }: BlankCellProps) {
     transform: CSS.Transform.toString(transform),
     transition,
   };
+  if (!draggable) {
+    return (
+      <TableCell className="border-b border-gray-300 px-4 py-2 text-center">
+        -
+      </TableCell>
+    );
+  }
   return (
     <TableCell
       className="border-b border-gray-300 px-4 py-2 text-center"

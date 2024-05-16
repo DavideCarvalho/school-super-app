@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
 import toast from "react-hot-toast";
 
-import type { Class } from "@acme/db";
+import type { Class, TeacherAvailability } from "@acme/db";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
@@ -48,6 +48,14 @@ export type DayOfWeek =
 
 export type ClassKey = `${DayOfWeek}_${string}-${string}_${string}_${string}`;
 
+interface SplitClassKey {
+  day: DayOfWeek;
+  startTime: string;
+  endTime: string;
+  teacherId: string;
+  subjectId: string;
+}
+
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [newSchedule, setNewSchedule] = useState<boolean>(false);
   const [fixedClasses, setFixedClasses] = useState<string[]>([]);
@@ -62,6 +70,57 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     useState(false);
 
   const [selectedClass, setSelectedClass] = useState<Class>();
+
+  const initializeSchedule = useCallback(() => {
+    return {
+      Monday: generateBlankSchedule(
+        "Monday",
+        scheduleConfig.Monday.start,
+        scheduleConfig.Monday.numClasses,
+        scheduleConfig.Monday.duration,
+      ),
+      Tuesday: generateBlankSchedule(
+        "Tuesday",
+        scheduleConfig.Tuesday.start,
+        scheduleConfig.Tuesday.numClasses,
+        scheduleConfig.Tuesday.duration,
+      ),
+      Wednesday: generateBlankSchedule(
+        "Wednesday",
+        scheduleConfig.Wednesday.start,
+        scheduleConfig.Wednesday.numClasses,
+        scheduleConfig.Wednesday.duration,
+      ),
+      Thursday: generateBlankSchedule(
+        "Thursday",
+        scheduleConfig.Thursday.start,
+        scheduleConfig.Thursday.numClasses,
+        scheduleConfig.Thursday.duration,
+      ),
+      Friday: generateBlankSchedule(
+        "Friday",
+        scheduleConfig.Friday.start,
+        scheduleConfig.Friday.numClasses,
+        scheduleConfig.Friday.duration,
+      ),
+    };
+  }, [
+    scheduleConfig.Monday.start,
+    scheduleConfig.Monday.numClasses,
+    scheduleConfig.Monday.duration,
+    scheduleConfig.Tuesday.start,
+    scheduleConfig.Tuesday.numClasses,
+    scheduleConfig.Tuesday.duration,
+    scheduleConfig.Wednesday.start,
+    scheduleConfig.Wednesday.numClasses,
+    scheduleConfig.Wednesday.duration,
+    scheduleConfig.Thursday.start,
+    scheduleConfig.Thursday.numClasses,
+    scheduleConfig.Thursday.duration,
+    scheduleConfig.Friday.start,
+    scheduleConfig.Friday.numClasses,
+    scheduleConfig.Friday.duration,
+  ]);
 
   const classesQuery = api.class.allBySchoolId.useQuery({
     schoolId,
@@ -108,51 +167,47 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const { mutateAsync: saveSchoolCalendarMutation } =
     api.school.saveSchoolCalendar.useMutation();
 
-  const [tableSchedule, setTableSchedule] = useState<CalendarGridSchedule>({
-    Monday: generateBlankSchedule(
-      scheduleConfig.Monday.start,
-      scheduleConfig.Monday.numClasses,
-      scheduleConfig.Monday.duration,
-    ),
-    Tuesday: generateBlankSchedule(
-      scheduleConfig.Tuesday.start,
-      scheduleConfig.Tuesday.numClasses,
-      scheduleConfig.Tuesday.duration,
-    ),
-    Wednesday: generateBlankSchedule(
-      scheduleConfig.Wednesday.start,
-      scheduleConfig.Wednesday.numClasses,
-      scheduleConfig.Wednesday.duration,
-    ),
-    Thursday: generateBlankSchedule(
-      scheduleConfig.Thursday.start,
-      scheduleConfig.Thursday.numClasses,
-      scheduleConfig.Thursday.duration,
-    ),
-    Friday: generateBlankSchedule(
-      scheduleConfig.Friday.start,
-      scheduleConfig.Friday.numClasses,
-      scheduleConfig.Friday.duration,
-    ),
-  });
+  const [tableSchedule, setTableSchedule] =
+    useState<CalendarGridSchedule>(initializeSchedule());
 
   useEffect(() => {
-    if (!newSchedule) return;
-    if (!generatedSchedule) return;
-    setTableSchedule(generatedSchedule);
-  }, [newSchedule, generatedSchedule]);
-
-  useEffect(() => {
-    if (!classSchedule) return;
+    // Esse useEffect só pode rodar quando
+    // o usuário não quer novos horários
+    if (newSchedule) return;
+    if (!classSchedule) {
+      setTableSchedule(initializeSchedule());
+      return;
+    }
     const scheduleKeys = Object.keys(classSchedule);
-    const dailyScheduleLength = scheduleKeys.reduce(
+    const totalAmmountOfClassesWithTeachers = scheduleKeys.reduce(
       (acc, key) =>
-        acc + classSchedule[key as keyof typeof classSchedule].length,
+        acc +
+        classSchedule[key as keyof typeof classSchedule].reduce(
+          (acc, clasz) => {
+            if (!clasz.Teacher || !clasz.Subject) return acc;
+            return acc + 1;
+          },
+          0,
+        ),
       0,
     );
-    if (dailyScheduleLength === 0) return;
+    if (totalAmmountOfClassesWithTeachers === 0) {
+      setTableSchedule(initializeSchedule());
+      return;
+    }
     setTableSchedule(classSchedule);
-  }, [classSchedule]);
+  }, [classSchedule, initializeSchedule, newSchedule]);
+
+  useEffect(() => {
+    // Esse useEffect só pode rodar quando
+    // o usuário quer novos horários
+    if (!newSchedule) return;
+    if (!generatedSchedule) {
+      setTableSchedule(initializeSchedule());
+      return;
+    }
+    setTableSchedule(generatedSchedule);
+  }, [newSchedule, generatedSchedule, initializeSchedule]);
 
   function toggleFixedClass(classKey: ClassKey) {
     setFixedClasses((prev) => {
@@ -241,169 +296,204 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     }));
   };
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!active || !over) return;
-    if (!tableSchedule) return;
+  function getClassDetails(classKey: ClassKey): SplitClassKey {
+    const [day, timeRange, teacherId, subjectId] = classKey.split("_");
+    const [startTime, endTime] = timeRange?.split("-") || [];
+    return {
+      day,
+      startTime,
+      endTime,
+      teacherId,
+      subjectId,
+    } as unknown as SplitClassKey;
+  }
 
-    const activeId = active.id as ClassKey;
-    const [activeDay, activeStartandEndTime, activeTeacherId, activeSubjectId] =
-      activeId.split("_");
-    const [activeStartTime, activeEndTime] =
-      activeStartandEndTime?.split("-") || [];
-    const foundActiveIndex = tableSchedule[
-      activeDay as keyof typeof tableSchedule
-    ].findIndex(
-      (e) => e.startTime === activeStartTime && e.endTime === activeEndTime,
+  function findClassIndex(
+    schedule: CalendarGridScheduledClass[],
+    startTime: string,
+    endTime: string,
+  ) {
+    return schedule.findIndex(
+      (entry) => entry.startTime === startTime && entry.endTime === endTime,
     );
-    if (foundActiveIndex === -1) return;
-    const overId = over.id as ClassKey;
-    const [overDay, overStartandEndTime, overTeacherId, overSubjectId] =
-      overId.split("_");
-    const [overStartTime, overEndTime] = overStartandEndTime?.split("-") || [];
-    const foundOverIndex = tableSchedule[
-      overDay as keyof typeof tableSchedule
-    ].findIndex(
-      (e) => e.startTime === overStartTime && e.endTime === overEndTime,
+  }
+
+  function checkTeacherAvailability(
+    availability: TeacherAvailability[],
+    day: string,
+    startTime: string,
+    endTime: string,
+  ) {
+    return availability.some(
+      (slot) =>
+        slot.day === day &&
+        slot.startTime <= startTime &&
+        slot.endTime >= endTime,
     );
-    if (foundOverIndex === -1) return;
-    const newTableSchedule = JSON.parse(JSON.stringify(tableSchedule));
-    const activeData =
-      tableSchedule[activeDay as keyof typeof tableSchedule][foundActiveIndex];
-    const overData =
-      tableSchedule[overDay as keyof typeof tableSchedule][foundOverIndex];
-    if (!activeData || !overData) return;
+  }
 
-    if (!teachersAvailabilities) return;
+  function swapClassTimes(
+    classData: CalendarGridScheduledClass,
+    newStartTime: string,
+    newEndTime: string,
+  ) {
+    return {
+      ...classData,
+      startTime: newStartTime,
+      endTime: newEndTime,
+    };
+  }
 
-    const activeTeacherAvailability =
-      teachersAvailabilities[activeTeacherId as string] ?? [];
-    const overTeacherAvailability =
-      teachersAvailabilities[overTeacherId as string] ?? [];
+  function updateFixedClasses(
+    activeDataWithSwappedTimes: CalendarGridScheduledClass,
+    overDataWithSwappedTimes: CalendarGridScheduledClass,
+    activeDetails: SplitClassKey,
+    overDetails: SplitClassKey,
+  ) {
+    if (
+      !activeDataWithSwappedTimes.Teacher ||
+      !activeDataWithSwappedTimes.Subject
+    )
+      return;
+    if (!overDataWithSwappedTimes.Teacher || !overDataWithSwappedTimes.Subject)
+      return;
+    const activeDataClassKey = generateClassKey(
+      activeDetails.day as keyof typeof tableSchedule,
+      activeDetails.startTime as string,
+      activeDetails.endTime as string,
+      activeDetails.teacherId as string,
+      activeDetails.subjectId as string,
+    );
+    const overDataClassKey = generateClassKey(
+      overDetails.day as keyof typeof tableSchedule,
+      overDetails.startTime as string,
+      overDetails.endTime as string,
+      overDetails.teacherId as string,
+      overDetails.subjectId as string,
+    );
 
-    if (activeData.Teacher && !activeTeacherAvailability?.length) {
-      return toast.error(
-        `Professor ${activeData.Teacher?.User.name} não tem mais horários disponíveis`,
+    const currentFixedClasses = JSON.parse(JSON.stringify(fixedClasses));
+    const activeDataOnFixedClassesIndex =
+      currentFixedClasses.indexOf(activeDataClassKey);
+    if (activeDataOnFixedClassesIndex !== -1) {
+      currentFixedClasses[activeDataOnFixedClassesIndex] = generateClassKey(
+        overDetails.day as keyof typeof tableSchedule,
+        activeDataWithSwappedTimes.startTime as string,
+        activeDataWithSwappedTimes.endTime as string,
+        activeDataWithSwappedTimes.Teacher.id as string,
+        activeDataWithSwappedTimes.Subject.id as string,
       );
     }
-
-    if (overData.Teacher && !overTeacherAvailability?.length) {
-      return toast.error(
-        `Professor ${overData.Teacher?.User.name} não tem mais horários disponíveis`,
+    const overDataOnFixedClassesIndex =
+      currentFixedClasses.indexOf(overDataClassKey);
+    if (overDataOnFixedClassesIndex !== -1) {
+      currentFixedClasses[overDataOnFixedClassesIndex] = generateClassKey(
+        activeDetails.day as keyof typeof tableSchedule,
+        overDataWithSwappedTimes.startTime as string,
+        overDataWithSwappedTimes.endTime as string,
+        overDataWithSwappedTimes.Teacher.id as string,
+        overDataWithSwappedTimes.Subject.id as string,
       );
-    }
-
-    let doesActiveTeacherHasAvailabilityOnOverDayAndTime = false;
-    for (const teacherAvailability of activeTeacherAvailability) {
-      if (teacherAvailability.day !== overDay) continue;
-      if (
-        teacherAvailability.startTime <= (overStartTime as string) &&
-        teacherAvailability.endTime >= (overEndTime as string)
-      ) {
-        doesActiveTeacherHasAvailabilityOnOverDayAndTime = true;
-      }
     }
 
     if (
+      activeDataOnFixedClassesIndex !== -1 ||
+      overDataOnFixedClassesIndex !== -1
+    ) {
+      setFixedClasses(() => currentFixedClasses);
+    }
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!active || !over || !tableSchedule) return;
+
+    const activeDetails = getClassDetails(active.id as ClassKey);
+    if (!activeDetails) return;
+    const overDetails = getClassDetails(over.id as ClassKey);
+
+    const activeIndex = findClassIndex(
+      tableSchedule[activeDetails.day as keyof typeof tableSchedule],
+      activeDetails.startTime as string,
+      activeDetails.endTime as string,
+    );
+    const overIndex = findClassIndex(
+      tableSchedule[overDetails.day as keyof typeof tableSchedule],
+      overDetails.startTime as string,
+      overDetails.endTime as string,
+    );
+    if (activeIndex === -1 || overIndex === -1) return;
+
+    // we create a new variable without referencing the old one
+    // so the old one is not mutated
+    const newTableSchedule = JSON.parse(JSON.stringify(tableSchedule));
+    const activeData =
+      tableSchedule[activeDetails.day as keyof typeof tableSchedule][
+        activeIndex
+      ];
+    const overData =
+      tableSchedule[overDetails.day as keyof typeof tableSchedule][overIndex];
+    if (!activeData || !overData || !teachersAvailabilities) return;
+
+    const activeTeacherAvailability =
+      teachersAvailabilities[activeDetails.teacherId as string] ?? [];
+    const overTeacherAvailability =
+      teachersAvailabilities[overDetails.teacherId as string] ?? [];
+
+    if (
       activeData.Teacher &&
-      !doesActiveTeacherHasAvailabilityOnOverDayAndTime
+      !checkTeacherAvailability(
+        activeTeacherAvailability,
+        overDetails.day as string,
+        overDetails.startTime as string,
+        overDetails.endTime as string,
+      )
     ) {
       return toast.error(
         `Professor ${activeData.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
       );
     }
 
-    let doesOverTeacherHasAvailabilityOnActiveDayAndTime = false;
-    for (const teacherAvailability of overTeacherAvailability) {
-      if (teacherAvailability.day !== activeDay) continue;
-      if (
-        teacherAvailability.startTime <= (activeStartTime as string) &&
-        teacherAvailability.endTime >= (activeEndTime as string)
-      ) {
-        doesOverTeacherHasAvailabilityOnActiveDayAndTime = true;
-      }
-    }
-
-    if (overData.Teacher && !doesOverTeacherHasAvailabilityOnActiveDayAndTime) {
+    if (
+      overData.Teacher &&
+      !checkTeacherAvailability(
+        overTeacherAvailability,
+        activeDetails.day as string,
+        activeDetails.startTime as string,
+        activeDetails.endTime as string,
+      )
+    ) {
       return toast.error(
         `Professor ${overData.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
       );
     }
 
-    const activeDataWithSwapedTimes = {
-      ...JSON.parse(
-        JSON.stringify(
-          tableSchedule[activeDay as keyof typeof tableSchedule][
-            foundActiveIndex
-          ],
-        ),
-      ),
-      startTime: overData.startTime,
-      endTime: overData.endTime,
-    };
-    const overDataWithSwapedTimes = {
-      ...JSON.parse(
-        JSON.stringify(
-          tableSchedule[overDay as keyof typeof tableSchedule][foundOverIndex],
-        ),
-      ),
-      startTime: activeData.startTime,
-      endTime: activeData.endTime,
-    };
-    const activeDataClassKey = generateClassKey(
-      activeDay as keyof typeof tableSchedule,
-      activeStartTime as string,
-      activeEndTime as string,
-      activeTeacherId as string,
-      activeSubjectId as string,
+    const activeDataWithSwappedTimes = swapClassTimes(
+      activeData,
+      overDetails.startTime as string,
+      overDetails.endTime as string,
     );
-    const overDataClassKey = generateClassKey(
-      overDay as keyof typeof tableSchedule,
-      overStartTime as string,
-      overEndTime as string,
-      overTeacherId as string,
-      overSubjectId as string,
+    const overDataWithSwappedTimes = swapClassTimes(
+      overData,
+      activeDetails.startTime as string,
+      activeDetails.endTime as string,
     );
-    const currentFixedClasses = JSON.parse(JSON.stringify(fixedClasses));
-    const activeDataOnFixedClassesIndex =
-      currentFixedClasses.indexOf(activeDataClassKey);
-    if (activeDataOnFixedClassesIndex !== -1) {
-      currentFixedClasses[activeDataOnFixedClassesIndex] = generateClassKey(
-        overDay as keyof typeof tableSchedule,
-        activeDataWithSwapedTimes.startTime as string,
-        activeDataWithSwapedTimes.endTime as string,
-        activeDataWithSwapedTimes.Teacher.id as string,
-        activeDataWithSwapedTimes.Subject.id as string,
-      );
-    }
-    const overDataOnFixedClassesIndex = fixedClasses.indexOf(overDataClassKey);
-    if (overDataOnFixedClassesIndex !== -1) {
-      currentFixedClasses[overDataOnFixedClassesIndex] = generateClassKey(
-        activeDay as keyof typeof tableSchedule,
-        overDataWithSwapedTimes.startTime as string,
-        overDataWithSwapedTimes.endTime as string,
-        overDataWithSwapedTimes.Teacher.id as string,
-        overDataWithSwapedTimes.Subject.id as string,
-      );
-    }
-    newTableSchedule[overDay as keyof typeof newTableSchedule][foundOverIndex] =
-      activeDataWithSwapedTimes;
-    newTableSchedule[activeDay as keyof typeof newTableSchedule][
-      foundActiveIndex
-    ] = overDataWithSwapedTimes;
-    setTableSchedule((items) => {
-      if (!items) return items;
-      return newTableSchedule;
-    });
-    if (
-      activeDataOnFixedClassesIndex !== -1 ||
-      overDataOnFixedClassesIndex !== -1
-    ) {
-      setFixedClasses((items) => {
-        if (!items) return items;
-        return currentFixedClasses;
-      });
-    }
+
+    updateFixedClasses(
+      activeDataWithSwappedTimes,
+      overDataWithSwappedTimes,
+      activeDetails,
+      overDetails,
+    );
+
+    newTableSchedule[overDetails.day as keyof typeof newTableSchedule][
+      overIndex
+    ] = activeDataWithSwappedTimes;
+    newTableSchedule[activeDetails.day as keyof typeof newTableSchedule][
+      activeIndex
+    ] = overDataWithSwappedTimes;
+
+    setTableSchedule(() => newTableSchedule);
   }
 
   return (
@@ -541,6 +631,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           schedule={tableSchedule}
           handleDragEnd={handleDragEnd}
           handleClickOnClass={toggleFixedClass}
+          fixedClasses={fixedClasses}
         />
       )}
     </div>
@@ -548,6 +639,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
 }
 
 function generateBlankSchedule(
+  day: DayOfWeek,
   startTime: string,
   numClasses: number,
   classesDuration: number,
