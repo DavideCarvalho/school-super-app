@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { api } from "~/utils/api";
-import { Modal } from "../modal";
-
 import type { PurchaseRequest } from "@acme/db";
+
+import { api } from "~/trpc/react";
+import { Modal } from "../modal";
 
 const schema = z
   .object({
@@ -25,7 +25,7 @@ export function RejectPurchaseRequestModal({
   open,
   onRejected,
   onClickCancel,
-  purchaseRequest
+  purchaseRequest,
 }: RejectPurchaseRequestModalProps) {
   const {
     register,
@@ -36,7 +36,8 @@ export function RejectPurchaseRequestModal({
     resolver: zodResolver(schema),
   });
 
-  const rejectPurchaseRequestMutation = api.purchaseRequest.rejectPurchaseRequest.useMutation();
+  const rejectPurchaseRequestMutation =
+    api.purchaseRequest.rejectPurchaseRequest.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     toast.loading("Rejeitando solicitação de compra...");
@@ -64,7 +65,6 @@ export function RejectPurchaseRequestModal({
     >
       <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-4">
-
           <div>
             <label className="text-sm font-bold text-gray-900">
               Porque da rejeição?

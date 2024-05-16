@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 import type { PurchaseRequest } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import { Modal } from "../modal";
 

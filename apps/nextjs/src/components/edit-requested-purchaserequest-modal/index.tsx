@@ -1,15 +1,15 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
 import type { PurchaseRequest } from "@acme/db";
 
-import { api } from "~/utils/api";
-import { Modal } from "../modal";
+import { api } from "~/trpc/react";
 import Calendar from "../calendar";
-import dayjs from "dayjs";
-import { useEffect } from "react";
+import { Modal } from "../modal";
 
 const schema = z
   .object({
@@ -55,11 +55,14 @@ export function EditRequestedPurchaseRequestModal({
     setValue("quantity", selectedPurchaseRequest.quantity);
     setValue("value", selectedPurchaseRequest.value);
     setValue("dueDate", selectedPurchaseRequest.dueDate);
-    if (selectedPurchaseRequest?.productUrl) setValue("productUrl", selectedPurchaseRequest.productUrl);
-    if (selectedPurchaseRequest?.description) setValue("description",  selectedPurchaseRequest.description);
+    if (selectedPurchaseRequest?.productUrl)
+      setValue("productUrl", selectedPurchaseRequest.productUrl);
+    if (selectedPurchaseRequest?.description)
+      setValue("description", selectedPurchaseRequest.description);
   }, [selectedPurchaseRequest]);
 
-  const editRequestedPurchaseMutation = api.purchaseRequest.editRequestedPurchaseRequest.useMutation();
+  const editRequestedPurchaseMutation =
+    api.purchaseRequest.editRequestedPurchaseRequest.useMutation();
 
   const onSubmit = (data: z.infer<typeof schema>) => {
     if (!selectedPurchaseRequest) return;

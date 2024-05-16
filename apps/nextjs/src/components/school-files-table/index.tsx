@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 
 import type { Class, File, Subject, Teacher, User } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { Dropdown, type DropdownItem } from "../dropdown";
 import { NewFileRequestModal } from "../new-file-request-modal";
 import { Pagination } from "../pagination";

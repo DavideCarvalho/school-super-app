@@ -9,9 +9,9 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import type {Role, User} from "@acme/db";
+import type { Role, User } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { EditWorkerModal } from "../edit-worker-modal";
 import { NewTeacherRequestModal } from "../new-teacher-request-modal";
 import { Pagination } from "../pagination";

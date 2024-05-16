@@ -12,7 +12,7 @@ import { CanteenSellsValueByMonthChart } from "~/components/canteen-sells-value-
 import { CustomChartTooltip } from "~/components/custom-chart-tooltip";
 import { PurchaseRequestsByMonthChart } from "~/components/purchaserequests-by-month-chart";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
 
 interface SchoolPageProps {

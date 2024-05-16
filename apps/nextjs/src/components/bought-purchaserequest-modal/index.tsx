@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import type { PurchaseRequest } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import Calendar from "../calendar";
 import { FileInput } from "../fileinput";
@@ -58,7 +58,7 @@ export function BoughtPurchaseRequestModal({
     setValue("finalQuantity", purchaseRequest.quantity);
     setValue("finalUnitValue", purchaseRequest.unitValue);
     setValue("estimatedArrivalDate", purchaseRequest.dueDate);
-  }, [open, purchaseRequest, setValue]);
+  }, [purchaseRequest, setValue]);
 
   const { mutateAsync: createBoughtPurchaseRequestFileSignedUrl } =
     api.purchaseRequest.createBoughtPurchaseRequestFileSignedUrl.useMutation();

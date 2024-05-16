@@ -14,7 +14,7 @@ import type { Class, Subject, Teacher, TeacherHasClass, User } from "@acme/db";
 import { Dropdown } from "~/components/dropdown";
 import { EditTeacherHasClassModal } from "~/components/edit-teacherhasclass-modal";
 import { NewTeacherHasClassModal } from "~/components/new-teacherhasclass-modal";
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { dayjsClient } from "~/utils/dayjs.client";
 import { Pagination } from "../pagination";
 

@@ -46,6 +46,14 @@ const daysOfWeek: DayOfWeek[] = [
   "Friday",
 ];
 
+const daysOfWeekInPortuguese = [
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+];
+
 interface SchoolCalendarGridProps {
   schoolId: string;
 }
@@ -533,9 +541,11 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
             "grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr,1fr,1fr,1fr,1fr,1fr]",
           )}
         >
-          {daysOfWeek.map((day) => (
+          {daysOfWeek.map((day, index) => (
             <div key={day}>
-              <Label htmlFor={`${day}-start-time`}>{day} - Start Time:</Label>
+              <Label htmlFor={`${day}-start-time`}>
+                {daysOfWeekInPortuguese[index]} - Que horas começa?:
+              </Label>
               <Input
                 name={`${day}-start-time`}
                 type="time"
@@ -544,7 +554,9 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                   updateScheduleConfig(day, "start", e.target.value)
                 }
               />
-              <Label htmlFor={`${day}-num-classes`}>Number of Classes:</Label>
+              <Label htmlFor={`${day}-num-classes`}>
+                Quantas aulas no dia?:
+              </Label>
               <Input
                 name={`${day}-num-classes`}
                 type="number"
@@ -558,7 +570,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                 }
               />
               <Label htmlFor={`${day}-duration`}>
-                Duration per Class (minutes):
+                Quantos minutos por aula?:
               </Label>
               <Input
                 name={`${day}-duration`}

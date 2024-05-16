@@ -9,11 +9,11 @@ import {
 } from "@floating-ui/react";
 import { toast } from "react-hot-toast";
 
-import type {Subject} from "@acme/db";
+import type { Subject } from "@acme/db";
 
-import { api } from "~/utils/api";
 import { EditSubjectModal } from "~/components/edit-subject-modal";
 import { NewSubjectModal } from "~/components/new-subject-request-modal";
+import { api } from "~/trpc/react";
 import { Pagination } from "../pagination";
 
 interface SchoolSubjectsTableProps {

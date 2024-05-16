@@ -2,20 +2,70 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useUser } from "@clerk/nextjs";
 
+import { cn } from "~/lib/utils";
 import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
+import { matchesPathname } from "~/utils/url";
 
 interface SchoolLayoutProps {
   children?: React.ReactNode;
 }
 
+interface RouteParams {
+  schoolSlug: string;
+  canteenId?: string;
+}
+
+interface Route {
+  name: string;
+  href: (params: RouteParams) => string;
+}
+
+const routes: Route[] = [
+  {
+    name: "Arquivos",
+    href: (params) => `/escola/${params.schoolSlug}/arquivos`,
+  },
+  {
+    name: "Calendário escolar",
+    href: (params) => `/escola/${params.schoolSlug}/calendario-escolar`,
+  },
+  {
+    name: "Cantinas",
+    href: (params) => `/escola/${params.schoolSlug}/cantinas`,
+  },
+  {
+    name: "Matérias",
+    href: (params) => `/escola/${params.schoolSlug}/materias`,
+  },
+  {
+    name: "Professores",
+    href: (params) => `/escola/${params.schoolSlug}/professores`,
+  },
+  {
+    name: "Turmas",
+    href: (params) => `/escola/${params.schoolSlug}/turmas`,
+  },
+  {
+    name: "Aulas",
+    href: (params) => `/escola/${params.schoolSlug}/aulas`,
+  },
+  {
+    name: "Solicitações de compra",
+    href: (params) => `/escola/${params.schoolSlug}/solicitacoes-de-compra`,
+  },
+  { name: "Escola", href: (params) => `/escola/${params.schoolSlug}` },
+];
+
 export function SchoolLayout({ children }: SchoolLayoutProps) {
   const { user } = useUser();
   if (!user) return null;
   const userPublicMetadata = getUserPublicMetadata(user);
-  const schoolSlug = userPublicMetadata?.school?.slug;
+  const schoolSlug = userPublicMetadata.school.slug;
   const canteenId = userPublicMetadata?.canteen?.id;
+  const { pathname } = useRouter();
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
@@ -175,195 +225,21 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                     </svg>
                     Dashboard
                   </Link>
-                </nav>
-
-                <div>
                   <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
                     Administrativo
                   </p>
-                  <nav className="mt-4 flex-1 space-y-1">
-                    <Link
-                      href={`/escola/${schoolSlug}/arquivos`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Arquivos</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Arquivos
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/funcionarios`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Funcionarios</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Funcionários
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/professores`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Professores</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Professores
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/materias`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Materias</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Matérias
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/turmas`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Turmas</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Turmas
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/aulas`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Aulas</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Aulas
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/solicitacoes-de-compra`}
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Solicitações de compra</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Solicitações de compra
-                    </Link>
-
-                    <Link
-                      href={`/escola/${schoolSlug}/cantinas`}
-                      title="Arquivos"
-                      className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                    >
-                      <svg
-                        className="mr-4 h-5 w-5 flex-shrink-0"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <title>Cantinas</title>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                        />
-                      </svg>
-                      Cantinas
-                    </Link>
-
-                    {canteenId && (
+                  {routes.map((route) => {
+                    const routeHref = route.href({ schoolSlug, canteenId });
+                    return (
                       <Link
-                        href={`/escola/${schoolSlug}/itens-cantina`}
-                        title="Arquivos"
-                        className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
+                        key={route.name}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname)
+                            ? "bg-gray-200"
+                            : "",
+                        )}
                       >
                         <svg
                           className="mr-4 h-5 w-5 flex-shrink-0"
@@ -373,97 +249,19 @@ export function SchoolLayout({ children }: SchoolLayoutProps) {
                           stroke="currentColor"
                           strokeWidth="2"
                         >
-                          <title>Itens da cantina</title>
+                          <title>{route.name}</title>
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                           />
                         </svg>
-                        Itens da cantina
+                        {route.name}
                       </Link>
-                    )}
-
-                    {canteenId && (
-                      <Link
-                        href={`/escola/${schoolSlug}/vendas-cantina`}
-                        title="Arquivos"
-                        className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                      >
-                        <svg
-                          className="mr-4 h-5 w-5 flex-shrink-0"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <title>Vendas da cantina</title>
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                          />
-                        </svg>
-                        Vendas da cantina
-                      </Link>
-                    )}
-                  </nav>
-                </div>
-              </div>
-
-              {/* <div className="mt-12 pb-4">
-                <nav className="flex-1 space-y-1">
-                  <Link
-                    href="#"
-                    title=""
-                    className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                  >
-                    <svg
-                      className="mr-4 h-5 w-5 flex-shrink-0"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                    Settings
-                  </Link>
-
-                  <Link
-                    href="#"
-                    title=""
-                    className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
-                  >
-                    <svg
-                      className="mr-4 h-5 w-5 flex-shrink-0"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                      />
-                    </svg>
-                    Sair
-                  </Link>
+                    );
+                  })}
                 </nav>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ import { z } from "zod";
 import type { TeacherHasClass } from "@acme/db";
 
 import { Dropdown } from "~/components/dropdown";
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { Modal } from "../modal";
 
 const schema = z
@@ -88,13 +88,11 @@ export function EditTeacherHasClassModal({
     limit: 999,
   });
 
-  const teachersQuery = api.user.allBySchoolId.useQuery(
-    {
-      schoolId,
-      limit: 999,
-      role: "TEACHER",
-    },
-  );
+  const teachersQuery = api.user.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+    role: "TEACHER",
+  });
 
   const editTeacherHasClassMutation = api.teacherHasClass.update.useMutation();
 

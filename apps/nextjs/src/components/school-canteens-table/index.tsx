@@ -10,7 +10,7 @@ import { toast } from "react-hot-toast";
 
 import type { Canteen, User } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { NewCanteenModal } from "../new-canteen-modal";
 import { NewPurchaseRequestModal } from "../new-purchaserequest-modal";
 import { Pagination } from "../pagination";

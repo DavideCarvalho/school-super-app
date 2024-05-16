@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { Dropdown } from "~/components/dropdown";
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { Modal } from "../modal";
 
 const schema = z

@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 
 import type { StudentCanteenItemPurchase } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import { NewCanteenItemModal } from "../new-canteenitem-modal";
 import { NewCanteenSellModal } from "../new-canteensell-modal";

@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import type { PurchaseRequest } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import Calendar from "../calendar";
 import { Modal } from "../modal";
 

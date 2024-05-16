@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import type { Subject } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { Modal } from "../modal";
 
 const schema = z

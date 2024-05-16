@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import Calendar from "../calendar";
 import { Modal } from "../modal";

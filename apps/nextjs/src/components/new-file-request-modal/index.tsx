@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import Calendar from "../calendar";
 import { CheckBox } from "../checkbox";
 import { Dropdown } from "../dropdown";

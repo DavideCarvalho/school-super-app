@@ -11,7 +11,7 @@ import { toast } from "react-hot-toast";
 
 import type { Class } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { EditClassModal } from "../edit-class-modal";
 import { NewClassModal } from "../new-class-modal";
 import { Pagination } from "../pagination";

@@ -12,7 +12,7 @@ import { toast } from "react-hot-toast";
 
 import type { PurchaseRequest } from "@acme/db";
 
-import { api } from "~/utils/api";
+import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 import { ApprovePurchaseRequestModal } from "../approve-purchaserequest-modal";
 import { ArrivedPurchaseRequestModal } from "../arrived-purchaserequest-modal";
