@@ -65,7 +65,10 @@ export const schoolRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$transaction(async (tx) => {
         const classIds = input.map(({ classId }) => classId);
-        await tx.teacherHasClass.deleteMany({
+        await tx.teacherHasClass.updateMany({
+          data: {
+            active: false,
+          },
           where: {
             classId: {
               in: classIds,
@@ -101,6 +104,7 @@ export const schoolRouter = createTRPCRouter({
       const lessons = await ctx.prisma.teacherHasClass.findMany({
         where: {
           classId: input.classId,
+          active: true,
         },
         include: {
           Teacher: {

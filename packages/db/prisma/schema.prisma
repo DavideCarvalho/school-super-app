@@ -156,6 +156,7 @@ model TeacherHasClass {
   teacherAvailabilityId String
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+  active                Boolean  @default(true)
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
