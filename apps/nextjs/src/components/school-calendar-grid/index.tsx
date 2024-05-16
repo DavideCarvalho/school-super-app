@@ -35,6 +35,7 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
 
 const daysOfWeek: DayOfWeek[] = [
   "Monday",
@@ -62,6 +63,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     Thursday: { start: "07:00", numClasses: 6, duration: 50 },
     Friday: { start: "07:00", numClasses: 6, duration: 50 },
   });
+  const [openGenerateNewCalendarModal, setOpenGenerateNewCalendarModal] =
+    useState(false);
 
   const {
     data: schedule,
@@ -187,7 +190,17 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     });
   }
 
-  async function saveSchedule(schedule: typeof tableSchedule) {
+  async function handleClickSave(schedule: typeof tableSchedule) {
+    if (!schedule) return;
+
+    if (classSchedule && newSchedule) {
+      setOpenGenerateNewCalendarModal(true);
+      return;
+    }
+    await saveSchedule(schedule);
+  }
+
+  async function saveSchedule(schedule: NonNullable<typeof tableSchedule>) {
     if (!schedule) return;
     const classes = Object.keys(schedule)
       .flatMap((day) => {
@@ -207,9 +220,21 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         });
       })
       .filter((classItem) => classItem !== undefined);
-    // @ts-expect-error we are already filtering out undefined values
-    await saveSchoolCalendarMutation(classes);
-    await refetchTeachersAvailabilities();
+    const toastId = toast.loading("Salvando horários...");
+    try {
+      // @ts-expect-error we are already filtering out undefined values
+      await saveSchoolCalendarMutation(classes);
+      toast.success("Horários salvos com sucesso!");
+    } catch (e) {
+      toast.error("Erro ao salvar horários");
+    } finally {
+      toast.dismiss(toastId);
+      setOpenGenerateNewCalendarModal(false);
+      setNewSchedule(false);
+      await refetchTeachersAvailabilities();
+      await refetchClassSchedule();
+      await refetch();
+    }
   }
 
   function generateClassKey(
@@ -460,6 +485,14 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
 
   return (
     <div className="mt-5 overflow-x-auto">
+      <GenerateNewCalendarApproveModal
+        open={openGenerateNewCalendarModal}
+        onContinue={async () => {
+          await saveSchedule(tableSchedule);
+          setOpenGenerateNewCalendarModal(false);
+        }}
+        closeModal={() => setOpenGenerateNewCalendarModal(false)}
+      />
       <div className="flex w-full items-center justify-center">
         <div
           className={cn(
@@ -513,9 +546,14 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       <div className="flex justify-end gap-2">
         <Button
           type="button"
-          onClick={() => {
-            setNewSchedule(true);
-            refetch();
+          onClick={async () => {
+            if (!newSchedule) {
+              setNewSchedule(true);
+              return;
+            }
+            const toastId = toast.loading("Gerando horários...");
+            await refetch();
+            toast.dismiss(toastId);
           }}
         >
           Gerar novos horários
@@ -536,7 +574,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
         )}
 
         {newSchedule && (
-          <Button type="button" onClick={() => saveSchedule(tableSchedule)}>
+          <Button type="button" onClick={() => handleClickSave(tableSchedule)}>
             Salvar novos horários
           </Button>
         )}
@@ -595,8 +633,9 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
                           classKey={classKey}
                           isSelected={fixedClasses.includes(classKey)}
                           toggleFixedClass={toggleFixedClass}
-                          // @ts-expect-error teacher and object are populated
-                          daySchedule={entry}
+                          daySchedule={
+                            entry as ScheduledClassProps["daySchedule"]
+                          }
                           draggable={newSchedule}
                         />
                       );
