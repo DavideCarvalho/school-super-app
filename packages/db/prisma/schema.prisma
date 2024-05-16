@@ -163,8 +163,6 @@ model TeacherHasClass {
   Subject Subject @relation(fields: [subjectId], references: [id])
 
   TeacherAvailability TeacherAvailability @relation(fields: [teacherAvailabilityId], references: [id])
-
-  @@unique(name: "unique_teacher_has_class", fields: [teacherId, classId, subjectId, classWeekDay, startTime, endTime])
 }
 
 model Subject {

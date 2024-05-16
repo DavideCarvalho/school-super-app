@@ -19,7 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import toast from "react-hot-toast";
 
-import type { Subject, Teacher, User } from "@acme/db";
+import type { Class, Subject, Teacher, User } from "@acme/db";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
@@ -27,6 +27,7 @@ import { CheckBox } from "../checkbox";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import SelectWithSearch from "../ui/select-with-search";
 import {
   Table,
   TableBody,
@@ -66,6 +67,13 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [openGenerateNewCalendarModal, setOpenGenerateNewCalendarModal] =
     useState(false);
 
+  const [selectedClass, setSelectedClass] = useState<Class>();
+
+  const classesQuery = api.class.allBySchoolId.useQuery({
+    schoolId,
+    limit: 999,
+  });
+
   const {
     data: schedule,
     isLoading,
@@ -76,9 +84,13 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       schoolId,
       fixedClasses,
       scheduleConfig,
-      classId: "cltymawy6000fo3f2z968tm1b",
+      classId: selectedClass?.id ?? "",
     },
-    { refetchOnWindowFocus: false, refetchOnMount: true },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      enabled: selectedClass?.id != null,
+    },
   );
 
   const {
@@ -100,9 +112,13 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     refetch: refetchClassSchedule,
   } = api.school.getClassSchedule.useQuery(
     {
-      classId: "cltymawy6000fo3f2z968tm1b",
+      classId: selectedClass?.id ?? "",
     },
-    { refetchOnWindowFocus: false, refetchOnMount: true },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+      enabled: selectedClass?.id != null,
+    },
   );
 
   const { mutateAsync: saveSchoolCalendarMutation } =
@@ -202,6 +218,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
 
   async function saveSchedule(schedule: NonNullable<typeof tableSchedule>) {
     if (!schedule) return;
+    if (!selectedClass) return;
     const classes = Object.keys(schedule)
       .flatMap((day) => {
         const daySchedule = schedule[day as keyof typeof schedule];
@@ -210,7 +227,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           if (!entry.Teacher || !entry.Subject) return undefined;
           return {
             teacherId: entry.Teacher.id,
-            classId: "cltymawy6000fo3f2z968tm1b",
+            classId: selectedClass.id,
             subjectId: entry.Subject.id,
             classWeekDay: day,
             classTime: "",
@@ -471,28 +488,45 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     }),
   );
 
-  if (!schedule && isLoading)
-    return <div className="mt-5 text-center">Loading...</div>;
+  if (isLoading) return <div className="mt-5 text-center">Loading...</div>;
   if (error) {
     return <div className="mt-5 text-center">Error: {error.message}</div>;
   }
-
-  if (!schedule || Object.keys(schedule).length === 0)
-    return <div className="mt-5 text-center">Loading...</div>;
-
-  if (!tableSchedule || Object.keys(tableSchedule).length === 0)
-    return <div className="mt-5 text-center">Loading...</div>;
 
   return (
     <div className="mt-5 overflow-x-auto">
       <GenerateNewCalendarApproveModal
         open={openGenerateNewCalendarModal}
         onContinue={async () => {
+          if (!tableSchedule) return;
           await saveSchedule(tableSchedule);
           setOpenGenerateNewCalendarModal(false);
         }}
         closeModal={() => setOpenGenerateNewCalendarModal(false)}
       />
+      <div className="mb-5 flex w-full items-center justify-center">
+        <SelectWithSearch
+          label="Turmas"
+          options={
+            classesQuery?.data?.map((c) => ({
+              label: c.name,
+              value: c.id,
+            })) || []
+          }
+          selectedOption={
+            selectedClass
+              ? { label: selectedClass.name, value: selectedClass.id }
+              : undefined
+          }
+          onSelect={(option) => {
+            const selectedClass = classesQuery?.data?.find(
+              (c) => c.id === option,
+            );
+            if (!selectedClass) return;
+            setSelectedClass(selectedClass);
+          }}
+        />
+      </div>
       <div className="flex w-full items-center justify-center">
         <div
           className={cn(

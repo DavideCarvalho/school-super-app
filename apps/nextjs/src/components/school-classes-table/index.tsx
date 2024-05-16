@@ -116,6 +116,7 @@ export function SchoolClassesTable({ schoolId }: SchoolClassesTableProps) {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
+                  <title>Icone</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -206,6 +207,7 @@ function TableRow({ schoolYear, onDelete, onEdit }: TableRowProps) {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
