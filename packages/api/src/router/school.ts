@@ -251,6 +251,8 @@ async function generateSchoolSchedule(
     },
   });
 
+  shuffleArray(teachers);
+
   const subjects = await prisma.subject.findMany({
     where: {
       schoolId,
@@ -450,4 +452,12 @@ function findRandomSubjectForTeacher(
   return eligibleSubjects.length > 0
     ? eligibleSubjects[Math.floor(Math.random() * eligibleSubjects.length)]
     : null;
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: We don't need to know the type, we just need to shuffle the array
+function shuffleArray(array: any[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
 }
