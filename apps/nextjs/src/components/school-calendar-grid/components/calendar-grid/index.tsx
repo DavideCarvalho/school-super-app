@@ -74,7 +74,6 @@ export function CalendarGrid({
   handleClickOnClass,
   fixedClasses,
 }: CalendarGridProps) {
-  console.log("schedule", schedule);
   const allTimeSlots = useMemo(
     () =>
       Array.from(
