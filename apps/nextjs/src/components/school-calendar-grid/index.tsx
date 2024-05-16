@@ -137,11 +137,8 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   });
 
   useEffect(() => {
-    console.log("to aqui 1");
     if (!newSchedule) return;
-    console.log("to aqui 2");
     if (!generatedSchedule) return;
-    console.log("to aqui 3", generatedSchedule);
     setTableSchedule(generatedSchedule);
   }, [newSchedule, generatedSchedule]);
 
