@@ -4,8 +4,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "apps/conectaprof/**"
+    paths-ignore:
+      - "apps/anua/**"
 
 jobs:
   deploy:
