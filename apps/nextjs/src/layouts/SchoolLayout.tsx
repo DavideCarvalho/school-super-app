@@ -56,7 +56,6 @@ const routes: Route[] = [
     name: "Solicitações de compra",
     href: (params) => `/escola/${params.schoolSlug}/solicitacoes-de-compra`,
   },
-  { name: "Escola", href: (params) => `/escola/${params.schoolSlug}` },
 ];
 
 export function SchoolLayout({ children }: SchoolLayoutProps) {
