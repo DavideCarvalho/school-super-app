@@ -52,7 +52,7 @@ export default function Component() {
                 </p>
                 <p className="font-semibold text-orange-600">em breve</p>
               </div>
-              <div className="w-full max-w-sm space-y-2">
+              {/* <div className="w-full max-w-sm space-y-2">
                 <form className="flex space-x-2">
                   <Input
                     className="max-w-lg flex-1"
@@ -75,7 +75,7 @@ export default function Component() {
                 >
                   Saiba mais
                 </Link>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>
@@ -96,6 +96,52 @@ export default function Component() {
                   professores apaixonados, trocar ideias, recursos e melhores
                   práticas, além de colaborar em projetos educacionais.
                 </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="mt-8 flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter text-orange-600 sm:text-5xl">
+                  Quem somos nós?
+                </h2>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Olá, somos os criadores do Anuá, uma plataforma de gestão
+                  escolar. Não somos educadores, mas vemos nas pessoas que estão
+                  no meio da educação que falta um ambiente para troca de ideias
+                  e conhecimento.
+                </p>
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Sim, o Anuá é uma empresa, e queremos usar essa empresa para
+                  colaborar com a comunidade de educação de uma forma positiva.
+                  A educação é uma luta, e como todas as lutas, precisam ser
+                  feitas em conjunto.
+                </p>
+
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  <span className="highlight width-full">
+                    O ConectaProf é uma plataforma cujo intuito é fazer os
+                    professores serem o centro do debate de educação.
+                  </span>
+                </p>
+
+                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Se você acredita no potencial potencial do ConectaProf, uma
+                  forma de nos ajudar é divulgando o Anuá em suas redes sociais
+                  e compartilhando suas experiências com a comunidade de
+                  educação. Quanto mais pessoas usarem o Anuá, mais fácil será
+                  de mantermos o ConectaProf funcionando como um apoio para a
+                  educação.
+                </p>
+                <Link
+                  className="inline-flex h-10 items-center justify-center rounded-md bg-orange-500 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-950 disabled:pointer-events-none disabled:opacity-50"
+                  href="#"
+                >
+                  Saiba mais sobre a Anua
+                </Link>
               </div>
             </div>
           </div>

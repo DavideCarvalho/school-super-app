@@ -57,3 +57,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.highlight {
+  background: url(//s2.svgbox.net/pen-brushes.svg?ic=brush-1&color=ffd580);
+}
