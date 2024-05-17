@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "apps/anua/**"
 
 jobs:
   deploy:
-    name: Deploy to EasyPanel
+    name: Deploy Anua
     runs-on: ubuntu-latest
     environment: production
     env:
