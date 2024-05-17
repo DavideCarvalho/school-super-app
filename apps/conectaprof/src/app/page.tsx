@@ -1,7 +1,8 @@
 import Link from "next/link";
 
 import { Button } from "@acme/ui/button";
-import { Input } from "@acme/ui/input";
+
+import { SubscribeForm } from "./subscribe-form";
 
 export default function Component() {
   return (
@@ -16,25 +17,16 @@ export default function Component() {
         <nav className="ml-auto flex gap-4 sm:gap-6">
           <Link
             className="text-sm font-medium text-orange-600 underline-offset-4 hover:underline"
-            href="#"
+            href="#plataforma"
           >
-            Explorar
+            Saiba mais
           </Link>
           <Link
-            className="text-sm font-medium text-orange-600 underline-offset-4 hover:underline"
-            href="#"
+            href={"#title"}
+            className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
           >
-            Grupos
-          </Link>
-          <Link
-            className="text-sm font-medium text-orange-600 underline-offset-4 hover:underline"
-            href="#"
-          >
-            Recursos
-          </Link>
-          <Button className="bg-orange-500 text-white hover:bg-orange-600">
             Junte-se agora
-          </Button>
+          </Link>
         </nav>
       </header>
       <main className="flex-1">
@@ -42,7 +34,10 @@ export default function Component() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter text-orange-600 sm:text-4xl md:text-5xl lg:text-6xl/none">
+                <h1
+                  id="title"
+                  className="text-3xl font-bold tracking-tighter text-orange-600 sm:text-4xl md:text-5xl lg:text-6xl/none"
+                >
                   Conecte-se com outros educadores
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
@@ -52,34 +47,11 @@ export default function Component() {
                 </p>
                 <p className="font-semibold text-orange-600">em breve</p>
               </div>
-              {/* <div className="w-full max-w-sm space-y-2">
-                <form className="flex space-x-2">
-                  <Input
-                    className="max-w-lg flex-1"
-                    placeholder="Digite seu e-mail"
-                    type="email"
-                  />
-                  <Button type="submit">Inscreva-se</Button>
-                </form>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Inscreva-se para ser notificado quando lançarmos.
-                </p>
-              </div>
-              <div className="space-x-4">
-                <Button className="bg-orange-500 text-white hover:bg-orange-600">
-                  Junte-se agora
-                </Button>
-                <Link
-                  className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 border-gray-200 bg-white px-4 py-2 text-sm font-medium text-orange-600 shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-                  href="#"
-                >
-                  Saiba mais
-                </Link>
-              </div> */}
+              <SubscribeForm />
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section className="w-full py-12 md:py-24 lg:py-32" id="plataforma">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
