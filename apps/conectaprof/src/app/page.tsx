@@ -110,7 +110,7 @@ export default function Component() {
                 </p>
                 <Link
                   className="inline-flex h-10 items-center justify-center rounded-md bg-orange-500 px-8 text-sm font-medium text-white shadow transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-orange-950 disabled:pointer-events-none disabled:opacity-50"
-                  href="#"
+                  href="https://anuaapp.com.br/"
                 >
                   Saiba mais sobre a Anua
                 </Link>
