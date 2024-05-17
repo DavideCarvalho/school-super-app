@@ -19,10 +19,12 @@ RUN npm i -g prisma
 
 RUN pnpm install --frozen-lockfile
 
-RUN pnpm build
+RUN pnpm with-env turbo build --filter=anua
+
+RUN pnpm db:generate
 
 EXPOSE 3000
 
 ENV NODE_ENV production
 
-CMD ["pnpm", "with-env", "turbo", "dev", "--filter=anua"]
+CMD ["pnpm", "with-env", "turbo", "start", "--filter=anua"]

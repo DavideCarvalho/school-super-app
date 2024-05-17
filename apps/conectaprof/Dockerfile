@@ -19,10 +19,12 @@ RUN npm i -g prisma
 
 RUN pnpm install --frozen-lockfile
 
-RUN pnpm build
+RUN pnpm with-env turbo build --filter=conectaprof
+
+RUN pnpm db:generate
 
 EXPOSE 3000
 
 ENV NODE_ENV production
 
-CMD ["pnpm", "with-env", "turbo", "dev", "--filter=conectaprof"]
+CMD ["pnpm", "with-env", "turbo", "start", "--filter=conectaprof"]
