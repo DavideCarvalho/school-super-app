@@ -17,7 +17,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import type {
-  Class,
   Subject,
   Teacher,
   TeacherAvailability,
@@ -26,6 +25,8 @@ import type {
 } from "@acme/db";
 
 import "~/components/ui/table";
+
+import { useFormContext } from "react-hook-form";
 
 import { CheckBox } from "~/components/checkbox";
 import {
@@ -36,7 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { daysOfWeek, type ClassKey, type DayOfWeek } from "../..";
+import type { ClassKey, DayOfWeek } from "../..";
 
 export interface CalendarGridScheduledClass {
   Teacher:
@@ -74,6 +75,9 @@ export function CalendarGrid({
   handleClickOnClass,
   fixedClasses,
 }: CalendarGridProps) {
+  const { watch } = useFormContext();
+  const scheduleConfig = watch("scheduleConfig");
+  const daysOfWeek = Object.keys(scheduleConfig) as unknown as DayOfWeek[];
   const allTimeSlots = useMemo(
     () =>
       Array.from(
@@ -133,7 +137,7 @@ export function CalendarGrid({
         <TableHeader>
           <TableRow>
             <TableHead>Time</TableHead>
-            {daysOfWeek.map((day) => (
+            {daysOfWeek.map((day: DayOfWeek) => (
               <TableHead key={day}>{day}</TableHead>
             ))}
           </TableRow>
@@ -145,7 +149,7 @@ export function CalendarGrid({
               return (
                 <TableRow key={timeSlot} className="hover:bg-gray-100">
                   <TableCell className="border-b border-gray-300 px-4 py-2">{`${startTime} - ${endTime}`}</TableCell>
-                  {daysOfWeek.map((day) => {
+                  {daysOfWeek.map((day: DayOfWeek) => {
                     const entry = schedule[day as keyof typeof schedule].find(
                       (e) => e.startTime === startTime && e.endTime === endTime,
                     );
@@ -205,7 +209,7 @@ function generateBlankCellKey(
   startTime: string,
   endTime: string,
 ): ClassKey {
-  return `${day}_${startTime}-${endTime}_-_-_-BLANK`;
+  return `${day}_${startTime}-${endTime}_-_-_-BLANK${new Date().getTime()}`;
 }
 
 interface ScheduledClassProps {

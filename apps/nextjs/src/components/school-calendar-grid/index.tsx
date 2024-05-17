@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
+import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import type { Class, TeacherAvailability } from "@acme/db";
@@ -9,8 +10,6 @@ import type { Class, TeacherAvailability } from "@acme/db";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
 import SelectWithSearch from "../ui/select-with-search";
 import {
   CalendarGrid,
@@ -18,22 +17,7 @@ import {
   type CalendarGridScheduledClass,
 } from "./components/calendar-grid";
 import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
-
-export const daysOfWeek: DayOfWeek[] = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-];
-
-export const daysOfWeekInPortuguese = [
-  "Segunda-feira",
-  "Terça-feira",
-  "Quarta-feira",
-  "Quinta-feira",
-  "Sexta-feira",
-];
+import { SchoolConfigForm } from "./components/school-config-form";
 
 interface SchoolCalendarGridProps {
   schoolId: string;
@@ -56,49 +40,62 @@ interface SplitClassKey {
   subjectId: string;
 }
 
+interface SchoolConfigFormValues {
+  selectedClass: Class | null;
+  fixedClasses: string[];
+  scheduleConfig: {
+    Monday: { start: string; numClasses: number; duration: number };
+    Tuesday: { start: string; numClasses: number; duration: number };
+    Wednesday: { start: string; numClasses: number; duration: number };
+    Thursday: { start: string; numClasses: number; duration: number };
+    Friday: { start: string; numClasses: number; duration: number };
+  };
+}
+
 export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const [newSchedule, setNewSchedule] = useState<boolean>(false);
-  const [fixedClasses, setFixedClasses] = useState<string[]>([]);
-  const [scheduleConfig, setScheduleConfig] = useState({
-    Monday: { start: "07:00", numClasses: 6, duration: 50 },
-    Tuesday: { start: "07:00", numClasses: 6, duration: 50 },
-    Wednesday: { start: "07:00", numClasses: 6, duration: 50 },
-    Thursday: { start: "07:00", numClasses: 6, duration: 50 },
-    Friday: { start: "07:00", numClasses: 6, duration: 50 },
+  const form = useForm<SchoolConfigFormValues>({
+    defaultValues: {
+      selectedClass: null,
+      fixedClasses: [],
+      scheduleConfig: {
+        Monday: { start: "07:00", numClasses: 6, duration: 50 },
+        Tuesday: { start: "07:00", numClasses: 6, duration: 50 },
+        Wednesday: { start: "07:00", numClasses: 6, duration: 50 },
+        Thursday: { start: "07:00", numClasses: 6, duration: 50 },
+        Friday: { start: "07:00", numClasses: 6, duration: 50 },
+      },
+    },
   });
+  const scheduleConfig = form.watch("scheduleConfig");
+  const fixedClasses = form.watch("fixedClasses");
+  const selectedClass = form.watch("selectedClass");
   const [openGenerateNewCalendarModal, setOpenGenerateNewCalendarModal] =
     useState(false);
-
-  const [selectedClass, setSelectedClass] = useState<Class>();
 
   const initializeSchedule = useCallback(() => {
     return {
       Monday: generateBlankSchedule(
-        "Monday",
         scheduleConfig.Monday.start,
         scheduleConfig.Monday.numClasses,
         scheduleConfig.Monday.duration,
       ),
       Tuesday: generateBlankSchedule(
-        "Tuesday",
         scheduleConfig.Tuesday.start,
         scheduleConfig.Tuesday.numClasses,
         scheduleConfig.Tuesday.duration,
       ),
       Wednesday: generateBlankSchedule(
-        "Wednesday",
         scheduleConfig.Wednesday.start,
         scheduleConfig.Wednesday.numClasses,
         scheduleConfig.Wednesday.duration,
       ),
       Thursday: generateBlankSchedule(
-        "Thursday",
         scheduleConfig.Thursday.start,
         scheduleConfig.Thursday.numClasses,
         scheduleConfig.Thursday.duration,
       ),
       Friday: generateBlankSchedule(
-        "Friday",
         scheduleConfig.Friday.start,
         scheduleConfig.Friday.numClasses,
         scheduleConfig.Friday.duration,
@@ -210,16 +207,15 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   }, [newSchedule, generatedSchedule, initializeSchedule]);
 
   function toggleFixedClass(classKey: ClassKey) {
-    setFixedClasses((prev) => {
-      const updated = [...prev];
-      const index = updated.indexOf(classKey);
-      if (index > -1) {
-        updated.splice(index, 1);
-      } else {
-        updated.push(classKey);
-      }
-      return updated;
-    });
+    const fixedClasses = form.getValues("fixedClasses");
+    const updated = JSON.parse(JSON.stringify(fixedClasses));
+    const index = updated.indexOf(classKey);
+    if (index > -1) {
+      updated.splice(index, 1);
+    } else {
+      updated.push(classKey);
+    }
+    form.setValue("fixedClasses", updated);
   }
 
   async function handleClickSave(schedule: typeof tableSchedule) {
@@ -281,20 +277,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   ): ClassKey {
     return `${day}_${startTime}-${endTime}_${teacherId}_${subjectId}`;
   }
-
-  const updateScheduleConfig = (
-    day: DayOfWeek,
-    field: "start" | "numClasses" | "duration",
-    value: string | number,
-  ) => {
-    setScheduleConfig((prev) => ({
-      ...prev,
-      [day]: {
-        ...prev[day],
-        [field]: value,
-      },
-    }));
-  };
 
   function getClassDetails(classKey: ClassKey): SplitClassKey {
     const [day, timeRange, teacherId, subjectId] = classKey.split("_");
@@ -400,7 +382,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       activeDataOnFixedClassesIndex !== -1 ||
       overDataOnFixedClassesIndex !== -1
     ) {
-      setFixedClasses(() => currentFixedClasses);
+      form.setValue("fixedClasses", currentFixedClasses);
     }
   }
 
@@ -497,135 +479,94 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   }
 
   return (
-    <div className="mt-5 overflow-x-auto">
-      <GenerateNewCalendarApproveModal
-        open={openGenerateNewCalendarModal}
-        onContinue={async () => {
-          if (!tableSchedule) return;
-          await saveSchedule(tableSchedule);
-          setOpenGenerateNewCalendarModal(false);
-        }}
-        closeModal={() => setOpenGenerateNewCalendarModal(false)}
-      />
-      <div className="mb-5 flex w-full items-center justify-center">
-        <SelectWithSearch
-          label="Turmas"
-          options={
-            classesQuery?.data?.map((c) => ({
-              label: c.name,
-              value: c.id,
-            })) || []
-          }
-          selectedOption={
-            selectedClass
-              ? { label: selectedClass.name, value: selectedClass.id }
-              : undefined
-          }
-          onSelect={(option) => {
-            const selectedClass = classesQuery?.data?.find(
-              (c) => c.id === option,
-            );
-            if (!selectedClass) return;
-            setSelectedClass(selectedClass);
+    <FormProvider {...form}>
+      <div className="mt-5 overflow-x-auto">
+        <GenerateNewCalendarApproveModal
+          open={openGenerateNewCalendarModal}
+          onContinue={async () => {
+            if (!tableSchedule) return;
+            await saveSchedule(tableSchedule);
+            setOpenGenerateNewCalendarModal(false);
           }}
+          closeModal={() => setOpenGenerateNewCalendarModal(false)}
         />
-      </div>
-      <div className="flex w-full items-center justify-center">
-        <div
-          className={cn(
-            "grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr,1fr,1fr,1fr,1fr,1fr]",
-          )}
-        >
-          {daysOfWeek.map((day, index) => (
-            <div key={day}>
-              <Label htmlFor={`${day}-start-time`}>
-                {daysOfWeekInPortuguese[index]} - Que horas começa?:
-              </Label>
-              <Input
-                name={`${day}-start-time`}
-                type="time"
-                value={scheduleConfig[day].start}
-                onChange={(e) =>
-                  updateScheduleConfig(day, "start", e.target.value)
-                }
-              />
-              <Label htmlFor={`${day}-num-classes`}>
-                Quantas aulas no dia?
-              </Label>
-              <Input
-                name={`${day}-num-classes`}
-                type="number"
-                value={scheduleConfig[day].numClasses}
-                onChange={(e) =>
-                  updateScheduleConfig(
-                    day,
-                    "numClasses",
-                    Number.parseInt(e.target.value),
-                  )
-                }
-              />
-              <Label htmlFor={`${day}-duration`}>
-                Quantos minutos por aula?
-              </Label>
-              <Input
-                name={`${day}-duration`}
-                type="number"
-                value={scheduleConfig[day].duration}
-                onChange={(e) =>
-                  updateScheduleConfig(
-                    day,
-                    "duration",
-                    Number.parseInt(e.target.value),
-                  )
-                }
-              />
-            </div>
-          ))}
+        <div className="mb-5 flex w-full items-center justify-center">
+          <SelectWithSearch
+            label="Turmas"
+            options={
+              classesQuery?.data?.map((c) => ({
+                label: c.name,
+                value: c.id,
+              })) || []
+            }
+            selectedOption={
+              selectedClass
+                ? { label: selectedClass.name, value: selectedClass.id }
+                : undefined
+            }
+            onSelect={(option) => {
+              const selectedClass = classesQuery?.data?.find(
+                (c) => c.id === option,
+              );
+              if (!selectedClass) return;
+              form.setValue("selectedClass", selectedClass);
+            }}
+          />
         </div>
-      </div>
+        <div className="flex w-full items-center justify-center">
+          <div
+            className={cn(
+              "grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr,1fr,1fr,1fr,1fr,1fr]",
+            )}
+          >
+            <SchoolConfigForm />
+          </div>
+        </div>
 
-      <div className="flex justify-end gap-2">
-        <Button
-          type="button"
-          onClick={async () => {
-            if (!selectedClass) {
-              toast.error("Selecione uma turma");
-              return;
-            }
-            if (!newSchedule) {
-              setNewSchedule(true);
-              return;
-            }
-            const toastId = toast.loading("Gerando horários...");
-            await refetchGeneratedSchedule();
-            toast.dismiss(toastId);
-          }}
-        >
-          Gerar horários
-        </Button>
-
-        {newSchedule && (
+        <div className="flex justify-end gap-2">
           <Button
             type="button"
-            className={cn(
-              "bg-red-600 transition-all duration-200 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
-            )}
-            onClick={() => {
-              setNewSchedule(false);
+            onClick={async () => {
+              if (!selectedClass) {
+                toast.error("Selecione uma turma");
+                return;
+              }
+              if (!newSchedule) {
+                setNewSchedule(true);
+                return;
+              }
+              const toastId = toast.loading("Gerando horários...");
+              await refetchGeneratedSchedule();
+              toast.dismiss(toastId);
             }}
           >
-            Cancelar
+            Gerar horários
           </Button>
-        )}
 
-        {newSchedule && (
-          <Button type="button" onClick={() => handleClickSave(tableSchedule)}>
-            Salvar novos horários
-          </Button>
-        )}
-      </div>
+          {newSchedule && (
+            <Button
+              type="button"
+              className={cn(
+                "bg-red-600 transition-all duration-200 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2",
+              )}
+              onClick={() => {
+                setNewSchedule(false);
+              }}
+            >
+              Cancelar
+            </Button>
+          )}
 
-      {tableSchedule && (
+          {newSchedule && (
+            <Button
+              type="button"
+              onClick={() => handleClickSave(tableSchedule)}
+            >
+              Salvar novos horários
+            </Button>
+          )}
+        </div>
+
         <CalendarGrid
           newSchedule={newSchedule}
           schedule={tableSchedule}
@@ -633,13 +574,12 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           handleClickOnClass={toggleFixedClass}
           fixedClasses={fixedClasses}
         />
-      )}
-    </div>
+      </div>
+    </FormProvider>
   );
 }
 
 function generateBlankSchedule(
-  day: DayOfWeek,
   startTime: string,
   numClasses: number,
   classesDuration: number,
