@@ -23,8 +23,6 @@ export function SubscribeForm() {
 
     const toastId = toast.loading("Enviando email...");
 
-    console.log("email", email);
-
     emailjs
       .send(
         "service_uwtde87",
