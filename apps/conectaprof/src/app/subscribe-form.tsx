@@ -34,21 +34,19 @@ export function SubscribeForm() {
           publicKey: "9zYFVOsSxrFrlmCBc",
         },
       )
-      .then(
-        () => {
-          toast.dismiss(toastId);
-          toast.success(
-            "Obrigado! Você será notificado quando ConectaProf for lançado!",
-          );
-        },
-        (e) => {
-          console.log("erro", e);
-          toast.dismiss(toastId);
-          toast.error(
-            "Opa, tivemos um erro tentando enviar o email, tente novamente.",
-          );
-        },
-      );
+      .then(() => {
+        toast.success(
+          "Obrigado! Você será notificado quando ConectaProf for lançado!",
+        );
+      })
+      .catch(() => {
+        toast.error(
+          "Opa, tivemos um erro tentando enviar o email, tente novamente.",
+        );
+      })
+      .finally(() => {
+        toast.dismiss(toastId);
+      });
   }
   return (
     <>
