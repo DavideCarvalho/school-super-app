@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import emailjs from "@emailjs/browser";
 import toast from "react-hot-toast";
@@ -10,6 +10,7 @@ import { Input } from "@acme/ui/input";
 
 export function SubscribeForm() {
   const form = useRef<HTMLFormElement>(null);
+  const [email, setEmail] = useState("");
 
   function sendEmail(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -20,17 +21,29 @@ export function SubscribeForm() {
       return;
     }
 
+    const toastId = toast.loading("Enviando email...");
+
+    console.log("email", email);
+
     emailjs
-      .sendForm("service_uwtde87", "template_gcr2v68", form.current, {
-        publicKey: "9zYFVOsSxrFrlmCBc",
-      })
+      .send(
+        "service_uwtde87",
+        "template_gcr2v68",
+        { email },
+        {
+          publicKey: "9zYFVOsSxrFrlmCBc",
+        },
+      )
       .then(
         () => {
+          toast.dismiss(toastId);
           toast.success(
             "Obrigado! Você será notificado quando ConectaProf for lançado!",
           );
         },
-        () => {
+        (e) => {
+          console.log("erro", e);
+          toast.dismiss(toastId);
           toast.error(
             "Opa, tivemos um erro tentando enviar o email, tente novamente.",
           );
@@ -45,6 +58,8 @@ export function SubscribeForm() {
             className="max-w-lg flex-1"
             placeholder="Digite seu e-mail"
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <p className="text-xs text-gray-500 dark:text-gray-400">
