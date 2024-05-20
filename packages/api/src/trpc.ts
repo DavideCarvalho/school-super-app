@@ -7,14 +7,13 @@
  * The pieces you will need to use are documented accordingly near the end
  */
 
-import { getAuth } from "@clerk/nextjs/server";
+import { auth, getAuth } from "@clerk/nextjs/server";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { prisma } from "@acme/db";
-
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 /**
  * 1. CONTEXT
@@ -26,7 +25,7 @@ import { prisma } from "@acme/db";
  *
  */
 type CreateContextOptions = {
-  session: Awaited<ReturnType<typeof getAuth>> | null;
+	session: Awaited<ReturnType<typeof getAuth>> | null;
 };
 
 /**
@@ -39,10 +38,10 @@ type CreateContextOptions = {
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  return {
-    session: opts.session,
-    prisma,
-  };
+	return {
+		session: opts.session,
+		prisma,
+	};
 };
 
 /**
@@ -50,15 +49,33 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = (opts: CreateNextContextOptions) => {
-  const { req } = opts;
+export const createTRPCContext = (opts: {
+	headers: Headers;
+	session: Awaited<ReturnType<typeof auth>> | null;
+}) => {
+	const session = opts.session ?? auth();
+	const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
-  // Get the session from the server using the unstable_getServerSession wrapper function
-  const session = getAuth(req);
+	console.log(">>> tRPC Request from", source, "by", session?.userId);
 
-  return createInnerTRPCContext({
-    session,
-  });
+	return createInnerTRPCContext({
+		session,
+	});
+};
+
+/**
+ * This is the actual context you'll use in your router. It will be used to
+ * process every request that goes through your tRPC endpoint
+ * @link https://trpc.io/docs/context
+ */
+export const createTRPCContextPagesRoute = (opts: CreateNextContextOptions) => {
+	const { req } = opts;
+
+	const session = getAuth(req);
+
+	return createInnerTRPCContext({
+		session,
+	});
 };
 
 /**
@@ -68,18 +85,24 @@ export const createTRPCContext = (opts: CreateNextContextOptions) => {
  * transformer
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
+	transformer: superjson,
+	errorFormatter({ shape, error }) {
+		return {
+			...shape,
+			data: {
+				...shape.data,
+				zodError:
+					error.cause instanceof ZodError ? error.cause.flatten() : null,
+			},
+		};
+	},
 });
+
+/**
+ * Create a server-side caller
+ * @see https://trpc.io/docs/server/server-side-calls
+ */
+export const createCallerFactory = t.createCallerFactory;
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -108,15 +131,21 @@ export const publicProcedure = t.procedure;
  * procedure
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
+	if (!ctx.session?.userId) {
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	const user = ctx.prisma.user.findFirst({
+		where: { externalAuthId: ctx.session.userId },
+	});
+	if (!user) {
+		throw new TRPCError({ code: "UNAUTHORIZED" });
+	}
+	return next({
+		ctx: {
+			// infers the `session` as non-nullable
+			session: { ...ctx.session, user },
+		},
+	});
 });
 
 /**

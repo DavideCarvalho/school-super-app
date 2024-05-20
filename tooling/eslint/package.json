@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "files": [
-    "./base.js",
-    "./nextjs.js",
-    "./react.js"
-  ],
+  "type": "module",
+  "exports": {
+    "./base": "./base.js",
+    "./nextjs": "./nextjs.js",
+    "./react": "./react.js"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",
@@ -16,8 +17,7 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "14.2.3",
-    "@typescript-eslint/eslint-plugin": "7.9.0",
-    "@typescript-eslint/parser": "7.9.0",
+    "typescript-eslint": "7.9.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-config-turbo": "1.13.3",
     "eslint-plugin-import": "2.29.1",
@@ -28,9 +28,9 @@
   "devDependencies": {
     "@acme/prettier-config": "workspace:^0.1.0",
     "@acme/tsconfig": "workspace:^0.1.0",
-    "@types/eslint": "8.56.10",
     "eslint": "9.3.0",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "prettier": "3.2.5"
   },
   "eslintConfig": {
     "root": true,

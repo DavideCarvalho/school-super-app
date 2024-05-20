@@ -1,12 +1,14 @@
 {
   "name": "@acme/tailwind-config",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "main": "index.ts",
   "license": "MIT",
-  "files": [
-    "index.ts"
-  ],
+  "exports": {
+    "./native": "./native.ts",
+    "./web": "./web.ts"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "eslint .",

@@ -1,6 +1,6 @@
-import { cache } from "react";
+import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
-import { auth } from "@clerk/nextjs";
+import { cache } from "react";
 
 import { createCaller, createTRPCContext } from "@acme/api";
 

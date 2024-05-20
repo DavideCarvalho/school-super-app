@@ -1,13 +1,13 @@
 import { wrapApiHandlerWithSentry } from "@sentry/nextjs";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 
-import { appRouter, createTRPCContext } from "@acme/api";
+import { appRouter, createTRPCContextPagesRoute } from "@acme/api";
 
 // export API handler
 export default wrapApiHandlerWithSentry(
   createNextApiHandler({
     router: appRouter,
-    createContext: createTRPCContext,
+    createContext: createTRPCContextPagesRoute,
   }),
   "/api/trpc",
 );

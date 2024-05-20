@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 
+import { TRPCReactProvider } from "~/trpc/react";
+
 import "./globals.css";
 
 import Script from "next/script";
 
-import { env } from "~/env.mjs";
+import { env } from "~/env";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
     env.NODE_ENV === "production"
-      ? "https://turbo.t3.gg"
-      : "http://localhost:3000",
+      ? env.NEXT_PUBLIC_CONECTAPROF_URL
+      : "http://localhost:3001",
   ),
   title: "ConectaProf",
   description: "Rede social para professores",
@@ -41,8 +43,10 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           "bg-background text-foreground min-h-screen font-sans antialiased"
         }
       >
-        {props.children}
-        <Toaster />
+        <TRPCReactProvider>
+          {props.children}
+          <Toaster />
+        </TRPCReactProvider>
       </body>
     </html>
   );

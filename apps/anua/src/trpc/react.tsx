@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
+import { useState } from "react";
 import SuperJSON from "superjson";
+import { env } from '~/env';
 
 import type { AppRouter } from "@acme/api";
 
@@ -43,8 +44,9 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   );
 }
 
-function getBaseUrl() {
+const getBaseUrl = () => {
   if (typeof window !== "undefined") return window.location.origin;
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return `http://localhost:${process.env.PORT ?? 3000}`;
-}
+  if (env.NEXT_PUBLIC_ANUA_URL) return `https://${env.NEXT_PUBLIC_ANUA_URL}`;
+  // eslint-disable-next-line no-restricted-properties
+  return `http://localhost:${process.env.PORT ?? 3001}`;
+};

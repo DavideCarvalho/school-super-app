@@ -23,20 +23,24 @@ model School {
   Classes          Class[]
   PurchaseRequests PurchaseRequest[]
   Canteen          Canteen[]
+  SchoolChain      SchoolChain?      @relation(fields: [schoolChainId], references: [id])
+  schoolChainId    String?
+  Post             Post[]
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String
-  email     String   @unique
-  schoolId  String
-  roleId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  teacherId String?
+  id             String   @id @default(cuid())
+  name           String
+  slug           String
+  email          String   @unique
+  schoolId       String?
+  roleId         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  teacherId      String?
+  externalAuthId String?
 
-  School           School            @relation(fields: [schoolId], references: [id])
+  School           School?           @relation(fields: [schoolId], references: [id])
   Role             Role              @relation(fields: [roleId], references: [id])
   Teachers         Teacher[]
   Students         Student[]         @relation(name: "student_user_id")
@@ -44,6 +48,8 @@ model User {
   Notifications    Notification[]
   PurchaseRequests PurchaseRequest[]
   Canteens         Canteen[]
+  Post             Post[]
+  UserLikedPost    UserLikedPost[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -289,4 +295,39 @@ model StudentPei {
   Student Student @relation(fields: [studentId], references: [id])
 
   @@index([studentId])
+}
+
+model SchoolChain {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Schools School[]
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  schoolId  String?
+
+  User          User            @relation(fields: [userId], references: [id])
+  School        School?         @relation(fields: [schoolId], references: [id])
+  UserLikedPost UserLikedPost[]
+}
+
+model UserLikedPost {
+  id        String   @id @default(cuid())
+  postId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  User User @relation(fields: [userId], references: [id])
+  Post Post @relation(fields: [postId], references: [id])
 }

@@ -1,11 +1,11 @@
-import type { GetServerSidePropsContext } from "next";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { getAuth } from "@clerk/nextjs/server";
 import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 import { LineChart } from "@tremor/react";
+import type { GetServerSidePropsContext } from "next";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
-import { prisma, type Canteen, type Role, type User } from "@acme/db";
+import { type Canteen, type Role, type User, prisma } from "@acme/db";
 
 import { CanteenSellsQuantityByMonthChart } from "~/components/canteen-sells-quantity-by-month-chart";
 import { CanteenSellsValueByMonthChart } from "~/components/canteen-sells-value-by-month-chart";

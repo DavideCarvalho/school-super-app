@@ -2,6 +2,7 @@
   "name": "@anua/conectaprof",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "next build",
     "clean": "git clean -xdf .next .turbo node_modules",
@@ -49,6 +50,7 @@
     "@remixicon/react": "4.2.0",
     "@sentry/nextjs": "7.116.0",
     "@sentry/opentelemetry-node": "7.114.0",
+    "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "5.37.1",
     "@tremor/react": "3.17.1",
     "@trpc/client": "11.0.0-rc.374",
@@ -86,6 +88,7 @@
     "superjson": "1.13.3",
     "tailwind-merge": "2.3.0",
     "tailwindcss-animate": "1.0.7",
+    "uuid": "^9.0.1",
     "zod": "3.23.8",
     "zod-form-data": "^2.0.2"
   },
@@ -99,12 +102,14 @@
     "@types/react": "18.3.2",
     "@types/react-dom": "18.3.0",
     "@types/react-flatpickr": "3.8.11",
+    "@types/uuid": "^9.0.8",
     "autoprefixer": "10.4.19",
     "postcss": "8.4.38",
     "prettier": "3.2.5",
     "tailwindcss": "3.4.3",
     "tsx": "4.10.5",
-    "typescript": "5.4.5"
+    "typescript": "5.4.5",
+    "jiti": "1.21.0"
   },
   "prettier": "@acme/prettier-config"
 }

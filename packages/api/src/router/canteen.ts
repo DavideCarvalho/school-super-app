@@ -1,4 +1,4 @@
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
@@ -22,7 +22,7 @@ export const canteenRouter = createTRPCRouter({
       if (!roleCanteenWorker) throw new Error("Role not found");
 
       const [firstName, ...rest] = input.responsibleName.split(" ");
-      await clerk.users.createUser({
+      const createdUserOnClerk = await clerkClient.users.createUser({
         firstName,
         lastName: rest.join(" "),
         emailAddress: [input.responsibleEmail],
@@ -34,6 +34,7 @@ export const canteenRouter = createTRPCRouter({
           slug: slugify(input.responsibleName),
           email: input.responsibleEmail,
           roleId: roleCanteenWorker.id,
+          externalAuthId: createdUserOnClerk.id,
         },
       });
       await ctx.prisma.canteen.create({

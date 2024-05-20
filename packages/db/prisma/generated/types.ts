@@ -53,6 +53,15 @@ export type Notification = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
+export type Post = {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  userId: string;
+  schoolId: string | null;
+};
 export type PurchaseRequest = {
   id: string;
   productName: string;
@@ -85,6 +94,14 @@ export type School = {
   id: string;
   name: string;
   slug: string;
+  schoolChainId: string | null;
+};
+export type SchoolChain = {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
 };
 export type Student = {
   id: string;
@@ -163,11 +180,19 @@ export type User = {
   name: string;
   slug: string;
   email: string;
-  schoolId: string;
+  schoolId: string | null;
   roleId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   teacherId: string | null;
+  externalAuthId: string | null;
+};
+export type UserLikedPost = {
+  id: string;
+  postId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  userId: string;
 };
 export type DB = {
   Canteen: Canteen;
@@ -175,9 +200,11 @@ export type DB = {
   Class: Class;
   File: File;
   Notification: Notification;
+  Post: Post;
   PurchaseRequest: PurchaseRequest;
   Role: Role;
   School: School;
+  SchoolChain: SchoolChain;
   Student: Student;
   StudentCanteenItemPurchase: StudentCanteenItemPurchase;
   StudentPei: StudentPei;
@@ -187,4 +214,5 @@ export type DB = {
   TeacherHasClass: TeacherHasClass;
   TeacherHasSubject: TeacherHasSubject;
   User: User;
+  UserLikedPost: UserLikedPost;
 };

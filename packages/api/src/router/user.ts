@@ -1,4 +1,4 @@
-import clerk from "@clerk/clerk-sdk-node";
+import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
@@ -71,6 +71,11 @@ export const userRouter = createTRPCRouter({
       try {
       } catch (e) {}
       return await ctx.prisma.$transaction(async (tx) => {
+        const createdUserOnClerk = await clerkClient.users.createUser({
+          firstName: firstName,
+          lastName: rest.join(" "),
+          emailAddress: [input.email],
+        });
         const worker = await tx.user.create({
           data: {
             schoolId: input.schoolId,
@@ -78,6 +83,7 @@ export const userRouter = createTRPCRouter({
             slug: slugify(input.name),
             email: input.email,
             roleId: role.id,
+            externalAuthId: createdUserOnClerk.id,
           },
         });
         if (role.name === "TEACHER") {
@@ -91,11 +97,6 @@ export const userRouter = createTRPCRouter({
             },
           });
         }
-        await clerk.users.createUser({
-          firstName: firstName,
-          lastName: rest.join(" "),
-          emailAddress: [input.email],
-        });
         return worker;
       });
     }),
@@ -123,20 +124,20 @@ export const userRouter = createTRPCRouter({
         where: { id: input.userId, schoolId: input.schoolId },
       });
       if (!user) throw new Error("User not found");
-      const users = await clerk.users.getUserList();
-      const userOnClerk = users.find((u) =>
-        u.emailAddresses.find((email) => email.emailAddress === user.email),
-      );
+      if (!user.externalAuthId) throw new Error("User not found on Clerk");
+      const userOnClerk = await clerkClient.users.getUser(user.externalAuthId);
       if (!userOnClerk) throw new Error("User not found on Clerk");
+      let userExternalAuthId = user.externalAuthId;
       if (user.email !== input.email) {
-        await clerk.users.deleteUser(userOnClerk.id);
-        await clerk.users.createUser({
+        await clerkClient.users.deleteUser(userOnClerk.id);
+        const createdUserOnClerk = await clerkClient.users.createUser({
           firstName: input.name.split(" ")[0],
           lastName: input.name.split(" ").slice(1).join(" "),
           emailAddress: [input.email],
         });
+        userExternalAuthId = createdUserOnClerk.id;
       } else {
-        await clerk.users.updateUser(userOnClerk.id, {
+        await clerkClient.users.updateUser(userOnClerk.id, {
           firstName: input.name.split(" ")[0],
           lastName: input.name.split(" ").slice(1).join(" "),
         });
@@ -148,6 +149,7 @@ export const userRouter = createTRPCRouter({
           slug: slugify(input.name),
           email: input.email,
           roleId: role.id,
+          externalAuthId: userExternalAuthId,
         },
       });
     }),
@@ -163,12 +165,10 @@ export const userRouter = createTRPCRouter({
         where: { id: input.userId, schoolId: input.schoolId },
       });
       if (!user) throw new Error("User not found");
-      const users = await clerk.users.getUserList();
-      const userOnClerk = users.find((u) =>
-        u.emailAddresses.find((email) => email.emailAddress === user.email),
-      );
+      if (!user.externalAuthId) throw new Error("User not found on Clerk");
+      const userOnClerk = await clerkClient.users.getUser(user.externalAuthId);
       if (!userOnClerk) throw new Error("User not found on Clerk");
-      await clerk.users.deleteUser(userOnClerk.id);
+      await clerkClient.users.deleteUser(userOnClerk.id);
       await ctx.prisma.user.delete({
         where: { id: input.userId },
       });

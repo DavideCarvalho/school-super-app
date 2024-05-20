@@ -1,9 +1,14 @@
 {
   "name": "@acme/db",
   "version": "0.1.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
   "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    }
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "db:generate": "prisma generate",

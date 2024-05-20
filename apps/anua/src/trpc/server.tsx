@@ -1,6 +1,6 @@
-import { cache } from "react";
+import { auth } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
-import { auth } from "@clerk/nextjs";
+import { cache } from "react";
 
 import { createCaller, createTRPCContext } from "@acme/api";
 
@@ -12,9 +12,8 @@ const createContext = cache(async () => {
   const heads = new Headers(headers());
   heads.set("x-trpc-source", "rsc");
 
-  const session = auth();
 
-  return createTRPCContext({ headers: heads, session });
+  return createTRPCContext({ session: auth(), headers: heads });
 });
 
 export const api = createCaller(createContext);

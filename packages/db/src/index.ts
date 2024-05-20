@@ -7,11 +7,11 @@ import {
 } from "kysely";
 import kyselyExtension from "prisma-extension-kysely";
 
-import type { DB } from "./prisma/generated/types";
+import type { DB } from "../prisma/generated/types";
 
 export * from "@prisma/client";
 export * from "kysely";
-export type { DB } from "./prisma/generated/types";
+export type { DB } from "../prisma/generated/types";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient & { $kysely: Kysely<DB> };

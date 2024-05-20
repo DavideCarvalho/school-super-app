@@ -1,7 +1,12 @@
 {
   "extends": "@acme/tsconfig/base.json",
   "compilerOptions": {
-    "allowImportingTsExtensions": true,
+    "lib": [
+      "es2022",
+      "dom",
+      "dom.iterable"
+    ],
+    "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
       "~/*": [
@@ -14,19 +19,14 @@
       }
     ],
     "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo.json",
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "module": "esnext",
     "strictNullChecks": true
   },
+  "include": [
+    ".",
+    ".next/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
-  ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.mjs",
-    ".next/types/**/*.ts"
   ]
 }
