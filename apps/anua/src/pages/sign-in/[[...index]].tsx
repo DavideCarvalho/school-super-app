@@ -45,7 +45,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
         },
       });
 
-      if (!dbUser) {
+      if (!dbUser || !dbUser.School) {
         return {
           props: {
             redirectTo: `sign-in?redirectTo=${redirectTo}`,
