@@ -1,54 +1,43 @@
 "use client";
 
-import type { IGunOnEvent } from "gun";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+import type { RouterOutputs } from "@acme/api";
 import { Button } from "@acme/ui/button";
 
-
-interface FeedItem {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  school: {
-    id: string;
-    name: string;
-  };
-}
+import { api } from "~/trpc/react";
 
 interface PostProps {
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  post: FeedItem;
+  userId: string;
+  post: NonNullable<RouterOutputs["post"]["getPosts"][0]>;
 }
 
-export function Post({ post, user }: PostProps) {
-  const [likedByYou, setLikedByYou] = useState(false);
-  const [likedBy, setLikedBy] = useState<
-    {
-      id: string;
-      name: string;
-      avatar: string;
-    }[]
-  >([]);
+export function Post({ post, userId }: PostProps) {
+  const { data: userLikedPost, refetch: refetchUserLikedPost } =
+    api.post.userLikedPost.useQuery({
+      postId: post.id,
+      userId,
+    });
 
-  useEffect(() => {
-  }, []);
+  const { mutateAsync: likePost } = api.post.likePost.useMutation();
+  const { mutateAsync: unlikePost } = api.post.unlikePost.useMutation();
 
-  useEffect(() => {
-  }, []);
-
-  function handleLikeClick() {
+  async function handleLikeClick() {
+    if (userLikedPost) {
+      await unlikePost({
+        postId: post.id,
+        userId,
+      });
+    } else {
+      await likePost({
+        postId: post.id,
+        userId,
+      });
+    }
+    await refetchUserLikedPost();
   }
+
+  if (!post.School) return null;
 
   return (
     <div className="rounded-lg bg-white p-6 shadow">
@@ -65,15 +54,18 @@ export function Post({ post, user }: PostProps) {
           width={48}
         />
         <div>
-          <h3 className="text-lg font-medium">{post.user.name}</h3>
-          <p className="text-gray-500">{post.school.name}</p>
+          <h3 className="text-lg font-medium">{post.User.name}</h3>
+          <p className="text-gray-500">{post.School.name}</p>
         </div>
       </div>
       <p className="mt-4">{post.content}</p>
       <div className="mt-4 flex items-center space-x-4">
-        <LikeButton handleLikeClick={handleLikeClick} userLiked={likedByYou} />
-        <CommentButton post={post} />
-        <ShareButton post={post} />
+        <LikeButton
+          handleLikeClick={handleLikeClick}
+          userLiked={userLikedPost}
+        />
+        <CommentButton />
+        <ShareButton />
       </div>
     </div>
   );
@@ -81,10 +73,10 @@ export function Post({ post, user }: PostProps) {
 
 function LikeButton({
   handleLikeClick,
-  userLiked,
+  userLiked = false,
 }: {
   handleLikeClick: () => void;
-  userLiked: boolean;
+  userLiked: boolean | undefined;
 }) {
   return (
     <Button size="icon" variant="ghost" onClick={handleLikeClick}>
@@ -94,7 +86,7 @@ function LikeButton({
   );
 }
 
-function CommentButton({ post }: { post: FeedItem }) {
+function CommentButton() {
   return (
     <Button size="icon" variant="ghost">
       <MessageCircleIcon className="h-5 w-5" />
@@ -103,7 +95,7 @@ function CommentButton({ post }: { post: FeedItem }) {
   );
 }
 
-function ShareButton({ post }: { post: FeedItem }) {
+function ShareButton() {
   return (
     <Button size="icon" variant="ghost">
       <Share2Icon className="h-5 w-5" />

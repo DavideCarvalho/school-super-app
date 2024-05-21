@@ -55,7 +55,6 @@ export type Notification = {
 };
 export type Post = {
   id: string;
-  title: string;
   content: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;

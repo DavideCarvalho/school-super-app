@@ -1,49 +1,47 @@
 "use client";
 
-import Link from "next/link";
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { v4 } from "uuid";
 
 import { Button } from "@acme/ui/button";
-import { Input } from "@acme/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@acme/ui/sheet";
 
 import { api } from "~/trpc/react";
 import { Post } from "./_components/post";
-
-interface FeedItem {
-  id: string;
-  title: string;
-  content: string;
-  createdAt: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string;
-  };
-  school: {
-    id: string;
-    name: string;
-  };
-}
+import { HashtagTextarea } from "./_components/post-textarea";
 
 export default function FeedPage() {
-  const userId = useRef(v4());
-  const [posts, setPosts] = useState<FeedItem[]>([]);
+  const [text, setText] = useState("");
 
-  const getPostsQuery = api.post.getPosts.useQuery({
-    page: 1,
-    limit: 5,
-    schoolId: userId.current,
-  });
+  const { data: posts, refetch: refetchPosts } = api.post.getPosts.useQuery(
+    {
+      page: 1,
+      limit: 5,
+      schoolId: "cce04c60-0220-46bd-a8a9-56972fe8ad6d",
+    },
+    {
+      initialData: [],
+    },
+  );
+
+  const { mutateAsync: createPost } = api.post.createPost.useMutation();
 
   const currentUser = {
-    id: userId.current,
+    id: "a72c1c8a-8290-45a2-be24-6ad66530f62c",
     name: "some name",
     avatar: "some avatar",
   };
 
-  function handlePostClick() {}
+  async function handlePostClick() {
+    if (!text.trim()) return;
+    await createPost({
+      content: text.trim(),
+      schoolId: "cce04c60-0220-46bd-a8a9-56972fe8ad6d",
+      userId: currentUser.id,
+    });
+    await refetchPosts();
+  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -96,11 +94,7 @@ export default function FeedPage() {
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="text-lg font-medium">Pesquisar</h2>
               <div className="mt-4">
-                <Input
-                  className="w-full"
-                  placeholder="Pesquisar professores, tópicos e muito mais"
-                  type="text"
-                />
+                <HashtagTextarea text={text} setText={setText} />
                 <Button
                   onClick={handlePostClick}
                   className="mt-4 w-full"
@@ -115,7 +109,7 @@ export default function FeedPage() {
           <div className="col-span-8">
             <div className="space-y-6">
               {posts.map((item) => (
-                <Post post={item} key={item.id} user={currentUser} />
+                <Post post={item} key={item.id} userId={currentUser.id} />
               ))}
             </div>
           </div>

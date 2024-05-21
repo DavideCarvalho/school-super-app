@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useUser } from "@clerk/nextjs";
 import {
   useClick,
   useDismiss,
