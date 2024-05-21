@@ -8,6 +8,24 @@ export interface HashtagTextareaProps {
   setText: (text: string) => void;
 }
 
+const highlightHashtags = (text: string): string => {
+  const parts = text.split(/(\s+)/);
+  return parts
+    .map((part) => {
+      if (part.startsWith("#")) {
+        const renderedToString = ReactDOMServer.renderToString(
+          <HighLightedText key={part} content={part} />,
+        );
+        return renderedToString;
+      }
+      if (part.match(/\n+/)) {
+        return part.replace(/\n/g, "<br/>"); // Manter as quebras de linha na saída HTML
+      }
+      return part;
+    })
+    .join(" ");
+};
+
 function HighLightedText({ content }: { content: string }) {
   const [, text] = content.split("#");
   return (

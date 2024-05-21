@@ -97,8 +97,7 @@ export function Post({ post, userId }: PostProps) {
           handleLikeClick={handleLikeClick}
           userLiked={userLikedPost}
         />
-        <CommentButton />
-        {/* <ShareButton /> */}
+        <CommentButton post={post} />
       </div>
     </div>
   );
@@ -119,21 +118,16 @@ function LikeButton({
   );
 }
 
-function CommentButton() {
+function CommentButton({
+  post,
+}: {
+  post: RouterOutputs["post"]["getPosts"][0];
+}) {
   return (
-    <Button size="icon" variant="ghost">
+    <Link href={`?post=${post.id}`}>
       <MessageCircleIcon className="h-5 w-5" />
       <span className="sr-only">Comentar</span>
-    </Button>
-  );
-}
-
-function ShareButton() {
-  return (
-    <Button size="icon" variant="ghost">
-      <Share2Icon className="h-5 w-5" />
-      <span className="sr-only">Compartilhar</span>
-    </Button>
+    </Link>
   );
 }
 

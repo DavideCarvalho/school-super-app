@@ -1,18 +1,42 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { v4 } from "uuid";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@acme/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@acme/ui/sheet";
 
 import { api } from "~/trpc/react";
 import { Post } from "./_components/post";
+import { PostDialog } from "./_components/post-dialog";
 import { HashtagTextarea } from "./_components/post-textarea";
 
 export default function FeedPage() {
   const [text, setText] = useState("");
+  const [postId, setPostId] = useState("");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [open, setOpen] = useState(searchParams.has("post"));
+
+  useEffect(() => {
+    if (searchParams.has("post")) {
+      setOpen(true);
+      setPostId(searchParams.get("post") as string);
+    } else {
+      setOpen(false);
+      setPostId("");
+    }
+  }, [searchParams]);
+
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("post");
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  }
 
   const { data: posts, refetch: refetchPosts } = api.post.getPosts.useQuery(
     {
@@ -92,6 +116,9 @@ export default function FeedPage() {
         </div>
       </header>
       <main className="flex-1 bg-gray-100 py-8">
+        {open && (
+          <PostDialog open={open} setOpen={handleOpenChange} postId={postId} />
+        )}
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 md:grid-cols-12">
           <div className="col-span-12">
             <div className="rounded-lg bg-white p-6 shadow">
