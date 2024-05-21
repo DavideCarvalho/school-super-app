@@ -14,15 +14,17 @@ interface PostProps {
 }
 
 const highlightHashtags = (text: string): string => {
-  const parts = text.split(" ");
+  const parts = text.split(/(\s+)/);
   return parts
     .map((part) => {
       if (part.startsWith("#")) {
-        console.log("part", part);
         const renderedToString = ReactDOMServer.renderToString(
           <HighLightedText key={part} content={part} />,
         );
         return renderedToString;
+      }
+      if (part.match(/\n+/)) {
+        return part.replace(/\n/g, "<br/>"); // Manter as quebras de linha na saída HTML
       }
       return part;
     })
@@ -96,7 +98,7 @@ export function Post({ post, userId }: PostProps) {
           userLiked={userLikedPost}
         />
         <CommentButton />
-        <ShareButton />
+        {/* <ShareButton /> */}
       </div>
     </div>
   );

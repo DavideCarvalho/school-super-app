@@ -1,9 +1,20 @@
 import type { ChangeEvent } from "react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import Link from "next/link";
+import ReactDOMServer from "react-dom/server";
 
 export interface HashtagTextareaProps {
   text: string;
   setText: (text: string) => void;
+}
+
+function HighLightedText({ content }: { content: string }) {
+  const [, text] = content.split("#");
+  return (
+    <Link href={`/tags/${text}`} className="text-blue-500">
+      {content}
+    </Link>
+  );
 }
 
 export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
@@ -15,11 +26,17 @@ export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
   };
 
   const highlightHashtags = (text: string): string => {
-    const parts = text.split(" ");
+    const parts = text.split(/(\s+)/);
     return parts
-      .map((part, index) => {
+      .map((part) => {
         if (part.startsWith("#")) {
-          return `<span key=${index} class="text-blue-500">${part}</span>`;
+          const renderedToString = ReactDOMServer.renderToString(
+            <HighLightedText key={part} content={part} />,
+          );
+          return renderedToString;
+        }
+        if (part.match(/\n+/)) {
+          return part.replace(/\n/g, "<br/>"); // Manter as quebras de linha na saída HTML
         }
         return part;
       })

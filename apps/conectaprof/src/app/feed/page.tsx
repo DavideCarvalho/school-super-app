@@ -36,7 +36,7 @@ export default function FeedPage() {
   async function handlePostClick() {
     if (!text.trim()) return;
     await createPost({
-      content: text.trim(),
+      content: text,
       schoolId: "cce04c60-0220-46bd-a8a9-56972fe8ad6d",
       userId: currentUser.id,
     });
