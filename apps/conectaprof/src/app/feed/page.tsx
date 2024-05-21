@@ -25,7 +25,8 @@ export default function FeedPage() {
     },
   );
 
-  const { mutateAsync: createPost } = api.post.createPost.useMutation();
+  const { mutateAsync: createPost, reset: resetCreatePost } =
+    api.post.createPost.useMutation();
 
   const currentUser = {
     id: "a72c1c8a-8290-45a2-be24-6ad66530f62c",
@@ -40,6 +41,8 @@ export default function FeedPage() {
       schoolId: "cce04c60-0220-46bd-a8a9-56972fe8ad6d",
       userId: currentUser.id,
     });
+    setText("");
+    await resetCreatePost();
     await refetchPosts();
   }
 

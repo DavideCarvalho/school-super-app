@@ -18,6 +18,9 @@ export const postRouter = createTRPCRouter({
         },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
+        orderBy: {
+          createdAt: "desc",
+        },
         include: {
           User: true,
           School: true,
