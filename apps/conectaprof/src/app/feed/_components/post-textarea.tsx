@@ -15,7 +15,7 @@ export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
   };
 
   const highlightHashtags = (text: string): string => {
-    const parts = text.split(/(#[a-zA-Z0-9-_]+)/g);
+    const parts = text.split(" ");
     return parts
       .map((part, index) => {
         if (part.startsWith("#")) {
@@ -23,7 +23,7 @@ export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
         }
         return part;
       })
-      .join("");
+      .join(" ");
   };
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: we need to listen for the text change to update the height

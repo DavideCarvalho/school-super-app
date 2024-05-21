@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import ReactDOMServer from "react-dom/server";
 
 import type { RouterOutputs } from "@acme/api";
 import { Button } from "@acme/ui/button";
@@ -12,6 +13,31 @@ interface PostProps {
   post: NonNullable<RouterOutputs["post"]["getPosts"][0]>;
 }
 
+const highlightHashtags = (text: string): string => {
+  const parts = text.split(" ");
+  return parts
+    .map((part) => {
+      if (part.startsWith("#")) {
+        console.log("part", part);
+        const renderedToString = ReactDOMServer.renderToString(
+          <HighLightedText key={part} content={part} />,
+        );
+        return renderedToString;
+      }
+      return part;
+    })
+    .join(" ");
+};
+
+function HighLightedText({ content }: { content: string }) {
+  const [, text] = content.split("#");
+  return (
+    <Link href={`/tags/${text}`} className="text-blue-500">
+      {content}
+    </Link>
+  );
+}
+
 export function Post({ post, userId }: PostProps) {
   const { data: userLikedPost, refetch: refetchUserLikedPost } =
     api.post.userLikedPost.useQuery({
@@ -21,6 +47,8 @@ export function Post({ post, userId }: PostProps) {
 
   const { mutateAsync: likePost } = api.post.likePost.useMutation();
   const { mutateAsync: unlikePost } = api.post.unlikePost.useMutation();
+
+  const postContentHighlighted = highlightHashtags(post.content);
 
   async function handleLikeClick() {
     if (userLikedPost) {
@@ -58,7 +86,10 @@ export function Post({ post, userId }: PostProps) {
           <p className="text-gray-500">{post.School.name}</p>
         </div>
       </div>
-      <p className="mt-4">{post.content}</p>
+      <p
+        dangerouslySetInnerHTML={{ __html: postContentHighlighted }}
+        className="mt-4"
+      />
       <div className="mt-4 flex items-center space-x-4">
         <LikeButton
           handleLikeClick={handleLikeClick}
