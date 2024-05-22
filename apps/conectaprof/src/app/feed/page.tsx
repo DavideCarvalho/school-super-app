@@ -16,7 +16,7 @@ import { HashtagTextarea } from "./_components/post-textarea";
 
 export default function FeedPage() {
   const { user } = useUser();
-  const userId = user?.publicMetadata?.id;
+  const userId = user?.publicMetadata?.id as unknown as string | undefined;
   const [text, setText] = useState("");
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
 
@@ -31,9 +31,7 @@ export default function FeedPage() {
     api.post.createPost.useMutation();
 
   async function handlePostClick() {
-    console.log("userId", userId);
-    if (!user?.id) {
-      console.log("to aqui");
+    if (!userId) {
       setNeedLoginFormOpen(true);
       return;
     }

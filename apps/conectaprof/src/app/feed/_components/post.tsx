@@ -46,10 +46,15 @@ function HighLightedText({ content }: { content: string }) {
 export function Post({ post, userId }: PostProps) {
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
   const { data: userLikedPost, refetch: refetchUserLikedPost } =
-    api.post.userLikedPost.useQuery({
-      postUuid: post.uuid,
-      userId: userId ?? "",
-    });
+    api.post.userLikedPost.useQuery(
+      {
+        postUuid: post.uuid,
+        userId: userId ?? "",
+      },
+      {
+        enabled: userId != null,
+      },
+    );
 
   const { mutateAsync: likePost } = api.post.likePost.useMutation();
   const { mutateAsync: unlikePost } = api.post.unlikePost.useMutation();
@@ -75,8 +80,6 @@ export function Post({ post, userId }: PostProps) {
     await refetchUserLikedPost();
   }
 
-  if (!post.School) return null;
-
   return (
     <div className="rounded-lg bg-white p-6 shadow">
       <NeedLoginDialog
@@ -84,7 +87,7 @@ export function Post({ post, userId }: PostProps) {
         setOpen={setNeedLoginFormOpen}
       />
       <div className="flex items-center space-x-4">
-        <img
+        {/* <img
           alt="Avatar do Professor"
           className="h-12 w-12 rounded-full"
           height={48}
@@ -94,10 +97,10 @@ export function Post({ post, userId }: PostProps) {
             objectFit: "cover",
           }}
           width={48}
-        />
+        /> */}
         <div>
           <h3 className="text-lg font-medium">{post.User.name}</h3>
-          <p className="text-gray-500">{post.School.name}</p>
+          <p className="text-gray-500">{post?.School?.name}</p>
         </div>
       </div>
       <p
