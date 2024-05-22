@@ -12,7 +12,7 @@ import { api } from "~/trpc/react";
 import NeedLoginDialog from "./need-login-dialog";
 
 interface PostProps {
-  userId: string;
+  userId?: string;
   post: NonNullable<RouterOutputs["post"]["getPosts"][0]>;
 }
 

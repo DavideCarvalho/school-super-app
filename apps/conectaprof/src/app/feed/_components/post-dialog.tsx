@@ -22,7 +22,7 @@ interface PostDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   postId: string;
-  userId: string;
+  userId?: string;
 }
 
 export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
