@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
@@ -14,29 +14,6 @@ import { HashtagTextarea } from "./_components/post-textarea";
 
 export default function FeedPage() {
   const [text, setText] = useState("");
-  const [postId, setPostId] = useState("");
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const [open, setOpen] = useState(searchParams.has("post"));
-
-  useEffect(() => {
-    if (searchParams.has("post")) {
-      setOpen(true);
-      setPostId(searchParams.get("post") as string);
-    } else {
-      setOpen(false);
-      setPostId("");
-    }
-  }, [searchParams]);
-
-  function handleOpenChange(open: boolean) {
-    if (!open) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("post");
-      router.push(`${pathname}?${params.toString()}`);
-    }
-  }
 
   const { data: posts, refetch: refetchPosts } = api.post.getPosts.useQuery(
     {
@@ -116,9 +93,9 @@ export default function FeedPage() {
         </div>
       </header>
       <main className="flex-1 bg-gray-100 py-8">
-        {open && (
-          <PostDialog open={open} setOpen={handleOpenChange} postId={postId} />
-        )}
+        <Suspense>
+          <PostDialogListener />
+        </Suspense>
         <div className="container mx-auto grid grid-cols-1 gap-8 px-4 md:grid-cols-12">
           <div className="col-span-12">
             <div className="rounded-lg bg-white p-6 shadow">
@@ -186,6 +163,33 @@ export default function FeedPage() {
       </main>
     </div>
   );
+}
+
+function PostDialogListener() {
+  const [postId, setPostId] = useState("");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [open, setOpen] = useState(searchParams.has("post"));
+  useEffect(() => {
+    if (searchParams.has("post")) {
+      setOpen(true);
+      setPostId(searchParams.get("post") as string);
+    } else {
+      setOpen(false);
+      setPostId("");
+    }
+  }, [searchParams]);
+
+  function handleOpenChange(open: boolean) {
+    if (!open) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("post");
+      router.push(`${pathname}?${params.toString()}`);
+    }
+  }
+
+  return <PostDialog open={open} setOpen={handleOpenChange} postId={postId} />;
 }
 
 function HeartIcon(props: React.SVGProps<SVGSVGElement>) {

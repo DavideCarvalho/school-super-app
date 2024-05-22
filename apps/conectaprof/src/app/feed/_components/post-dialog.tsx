@@ -43,7 +43,7 @@ export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
     await addComment({
       postId: post.id,
       comment: commentText,
-      userId: post.User.id,
+      userId: userId,
     });
     await Promise.all([refetchPost(), resetAddComment()]);
     setAddNewComment(false);
