@@ -33,10 +33,8 @@ export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
   });
   const { mutateAsync: addComment, reset: resetAddComment } =
     api.post.addComment.useMutation();
-  const { mutateAsync: likeCommentMutation } =
-    api.post.likeComment.useMutation();
-  const { mutateAsync: unlikeCommentMutation } =
-    api.post.unlikeComment.useMutation();
+  const { mutateAsync: likeComment } = api.post.likeComment.useMutation();
+  const { mutateAsync: unlikeComment } = api.post.unlikeComment.useMutation();
 
   async function handleAddComment() {
     if (!post) return;

@@ -11,15 +11,7 @@ import { api, TRPCReactProvider } from "~/trpc/react";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (
-    <ClerkProvider
-      localization={ptBR}
-      {...pageProps}
-      appearance={{
-        elements: {
-          footer: "hidden",
-        },
-      }}
-    >
+    <ClerkProvider localization={ptBR} {...pageProps}>
       <Script
         src="https://plausible.anuaapp.com.br/js/script.js"
         data-domain="anuaapp.com.br"

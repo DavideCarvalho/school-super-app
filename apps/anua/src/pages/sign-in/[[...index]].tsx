@@ -18,6 +18,11 @@ const SignInPage = ({
         routing="path"
         afterSignInUrl={redirectTo}
         redirectUrl={redirectTo}
+        appearance={{
+          elements: {
+            footer: "hidden",
+          },
+        }}
       />
     </main>
   );
