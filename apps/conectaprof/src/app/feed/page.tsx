@@ -3,23 +3,26 @@
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 
 import { Button } from "@acme/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@acme/ui/sheet";
 
 import { api } from "~/trpc/react";
+import NeedLoginDialog from "./_components/need-login-dialog";
 import { Post } from "./_components/post";
 import { PostDialog } from "./_components/post-dialog";
 import { HashtagTextarea } from "./_components/post-textarea";
 
 export default function FeedPage() {
+  const { user } = useUser();
   const [text, setText] = useState("");
+  const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
 
   const { data: posts, refetch: refetchPosts } = api.post.getPosts.useQuery(
     {
       page: 1,
       limit: 5,
-      schoolId: "cce04c60-0220-46bd-a8a9-56972fe8ad6d",
     },
     {
       initialData: [],
@@ -29,18 +32,16 @@ export default function FeedPage() {
   const { mutateAsync: createPost, reset: resetCreatePost } =
     api.post.createPost.useMutation();
 
-  const currentUser = {
-    id: "a72c1c8a-8290-45a2-be24-6ad66530f62c",
-    name: "some name",
-    avatar: "some avatar",
-  };
-
   async function handlePostClick() {
+    if (!user?.id) {
+      console.log("to aqui");
+      setNeedLoginFormOpen(true);
+      return;
+    }
     if (!text.trim()) return;
     await createPost({
       content: text,
-      schoolId: "cce04c60-0220-46bd-a8a9-56972fe8ad6d",
-      userId: currentUser.id,
+      userId: user.id,
     });
     setText("");
     await resetCreatePost();
@@ -51,7 +52,7 @@ export default function FeedPage() {
     <div className="flex min-h-screen flex-col">
       <header className="bg-orange-600 py-4 text-white">
         <div className="container mx-auto flex flex-wrap items-center justify-between px-4">
-          <h1 className="text-2xl font-bold">Ensina Conecta</h1>
+          <h1 className="text-2xl font-bold">ConectaProf</h1>
           <nav className="mt-4 flex items-center space-x-4 lg:mt-0 lg:flex">
             <Sheet>
               <SheetTrigger asChild>
@@ -93,6 +94,10 @@ export default function FeedPage() {
         </div>
       </header>
       <main className="flex-1 bg-gray-100 py-8">
+        <NeedLoginDialog
+          open={needLoginFormOpen}
+          setOpen={setNeedLoginFormOpen}
+        />
         <Suspense>
           <PostDialogListener />
         </Suspense>
@@ -116,7 +121,7 @@ export default function FeedPage() {
           <div className="col-span-8">
             <div className="space-y-6">
               {posts.map((item) => (
-                <Post post={item} key={item.id} userId={currentUser.id} />
+                <Post post={item} key={item.id} userId={user?.id} />
               ))}
             </div>
           </div>

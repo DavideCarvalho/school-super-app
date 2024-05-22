@@ -71,40 +71,44 @@ export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
         <DialogFooter>
           <div className="w-full border-t border-gray-200 pt-4 dark:border-gray-800">
             <div className="space-y-4 py-4">
-              {!addNewComment && (
-                <Button
-                  onClick={() => setAddNewComment(true)}
-                  variant="outline"
-                  size="sm"
-                >
-                  Comentar
-                </Button>
-              )}
-              {addNewComment && (
-                <div className="flex items-start gap-4">
-                  <HashtagTextarea
-                    text={commentText}
-                    setText={setCommentText}
-                  />
-                  <Button
-                    onClick={handleAddComment}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Enviar
-                  </Button>
-                  <Button
-                    onClick={async () => {
-                      setAddNewComment(false);
-                      setCommentText("");
-                    }}
-                    variant="outline"
-                    size="sm"
-                    className="text-red-500"
-                  >
-                    Cancelar
-                  </Button>
-                </div>
+              {userId && (
+                <>
+                  {!addNewComment && (
+                    <Button
+                      onClick={() => setAddNewComment(true)}
+                      variant="outline"
+                      size="sm"
+                    >
+                      Comentar
+                    </Button>
+                  )}
+                  {addNewComment && (
+                    <div className="flex items-start gap-4">
+                      <HashtagTextarea
+                        text={commentText}
+                        setText={setCommentText}
+                      />
+                      <Button
+                        onClick={handleAddComment}
+                        variant="outline"
+                        size="sm"
+                      >
+                        Enviar
+                      </Button>
+                      <Button
+                        onClick={async () => {
+                          setAddNewComment(false);
+                          setCommentText("");
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-500"
+                      >
+                        Cancelar
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
             <h3 className="font-semibold">Comentários</h3>

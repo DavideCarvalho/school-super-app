@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import ReactDOMServer from "react-dom/server";
 
@@ -7,6 +8,7 @@ import type { RouterOutputs } from "@acme/api";
 import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/react";
+import NeedLoginDialog from "./need-login-dialog";
 
 interface PostProps {
   userId: string;
@@ -41,6 +43,7 @@ function HighLightedText({ content }: { content: string }) {
 }
 
 export function Post({ post, userId }: PostProps) {
+  const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
   const { data: userLikedPost, refetch: refetchUserLikedPost } =
     api.post.userLikedPost.useQuery({
       postId: post.id,
@@ -53,6 +56,10 @@ export function Post({ post, userId }: PostProps) {
   const postContentHighlighted = highlightHashtags(post.content);
 
   async function handleLikeClick() {
+    if (!userId) {
+      setNeedLoginFormOpen(true);
+      return;
+    }
     if (userLikedPost) {
       await unlikePost({
         postId: post.id,
@@ -71,6 +78,10 @@ export function Post({ post, userId }: PostProps) {
 
   return (
     <div className="rounded-lg bg-white p-6 shadow">
+      <NeedLoginDialog
+        open={needLoginFormOpen}
+        setOpen={setNeedLoginFormOpen}
+      />
       <div className="flex items-center space-x-4">
         <img
           alt="Avatar do Professor"

@@ -60,7 +60,7 @@ export const postRouter = createTRPCRouter({
     .input(
       z.object({
         content: z.string(),
-        schoolId: z.string(),
+        schoolId: z.string().optional(),
         userId: z.string(),
       }),
     )
