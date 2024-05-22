@@ -22,15 +22,16 @@ interface PostDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   postId: string;
+  userId: string;
 }
 
-export function PostDialog({ open, setOpen, postId }: PostDialogProps) {
+export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
   const [addNewComment, setAddNewComment] = useState<boolean>(false);
   const [commentText, setCommentText] = useState<string>("");
   const { data: post, refetch: refetchPost } = api.post.getPostById.useQuery({
     postId,
   });
-  const { mutateAsync: addCommentMutation, reset: resetCommentMutation } =
+  const { mutateAsync: addComment, reset: resetAddComment } =
     api.post.addComment.useMutation();
   const { mutateAsync: likeCommentMutation } =
     api.post.likeComment.useMutation();
@@ -39,13 +40,12 @@ export function PostDialog({ open, setOpen, postId }: PostDialogProps) {
 
   async function handleAddComment() {
     if (!post) return;
-    await addCommentMutation({
+    await addComment({
       postId: post.id,
       comment: commentText,
       userId: post.User.id,
     });
-    await Promise.all([refetchPost(), resetCommentMutation()]);
-    refetchPost();
+    await Promise.all([refetchPost(), resetAddComment()]);
     setAddNewComment(false);
     setCommentText("");
   }
@@ -55,12 +55,14 @@ export function PostDialog({ open, setOpen, postId }: PostDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
-          <DialogTitle>The Joke Tax Chronicles</DialogTitle>
+          <DialogTitle>Post</DialogTitle>
           <DialogDescription>
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <div>By Jared Palmer</div>
+              <div>De {post?.User.name}</div>
               <div>•</div>
-              <div>May 21, 2024</div>
+              <div>
+                {new Intl.DateTimeFormat("pt-BR").format(post?.createdAt)}
+              </div>
             </div>
           </DialogDescription>
         </DialogHeader>
@@ -87,16 +89,20 @@ export function PostDialog({ open, setOpen, postId }: PostDialogProps) {
                     setText={setCommentText}
                   />
                   <Button
-                    onClick={() => {
-                      handleAddComment();
-                    }}
+                    onClick={handleAddComment}
                     variant="outline"
                     size="sm"
                   >
                     Enviar
                   </Button>
                   <Button
-                    onClick={() => {
+                    onClick={async () => {
+                      if (!post) return;
+                      await addComment({
+                        postId: post.id,
+                        userId,
+                        comment: commentText,
+                      });
                       setAddNewComment(false);
                       setCommentText("");
                     }}
