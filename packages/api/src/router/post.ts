@@ -6,21 +6,24 @@ export const postRouter = createTRPCRouter({
   getPosts: publicProcedure
     .input(
       z.object({
-        page: z.number().optional().default(1),
-        limit: z.number().optional().default(5),
+        lastId: z.number().optional(),
         schoolId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
+      const where = input.lastId
+        ? {
+            id: {
+              lt: input.lastId,
+            },
+          }
+        : {};
       const posts = await ctx.prisma.post.findMany({
-        where: {
-          schoolId: input.schoolId,
-        },
-        take: input.limit,
-        skip: (input.page - 1) * input.limit,
+        where,
         orderBy: {
           createdAt: "desc",
         },
+        take: 20,
         include: {
           User: true,
           School: true,
@@ -36,7 +39,7 @@ export const postRouter = createTRPCRouter({
             },
             take: 3,
             orderBy: {
-              createdAt: "desc",
+              id: "asc",
             },
           },
         },
@@ -46,14 +49,20 @@ export const postRouter = createTRPCRouter({
   userLikedPost: publicProcedure
     .input(
       z.object({
-        postId: z.string(),
+        postUuid: z.string(),
         userId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          uuid: input.postUuid,
+        },
+      });
+      if (!post) return;
       const count = await ctx.prisma.post.findFirst({
         where: {
-          id: input.postId,
+          uuid: post.uuid,
         },
         include: {
           _count: {
@@ -86,14 +95,20 @@ export const postRouter = createTRPCRouter({
   likePost: publicProcedure
     .input(
       z.object({
-        postId: z.string(),
+        postUuid: z.string(),
         userId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          uuid: input.postUuid,
+        },
+      });
+      if (!post) return;
       return ctx.prisma.userLikedPost.create({
         data: {
-          postId: input.postId,
+          postId: post.id,
           userId: input.userId,
         },
       });
@@ -101,24 +116,30 @@ export const postRouter = createTRPCRouter({
   unlikePost: publicProcedure
     .input(
       z.object({
-        postId: z.string(),
+        postUuid: z.string(),
         userId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          uuid: input.postUuid,
+        },
+      });
+      if (!post) return;
       return ctx.prisma.userLikedPost.deleteMany({
         where: {
-          postId: input.postId,
+          postId: post.id,
           userId: input.userId,
         },
       });
     }),
-  getPostById: publicProcedure
-    .input(z.object({ postId: z.string() }))
+  getPostByUuid: publicProcedure
+    .input(z.object({ postUuid: z.string() }))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.post.findFirst({
         where: {
-          id: input.postId,
+          uuid: input.postUuid,
         },
         include: {
           User: true,
@@ -135,15 +156,21 @@ export const postRouter = createTRPCRouter({
   addComment: publicProcedure
     .input(
       z.object({
-        postId: z.string(),
+        postUuid: z.string(),
         comment: z.string(),
         userId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findFirst({
+        where: {
+          uuid: input.postUuid,
+        },
+      });
+      if (!post) return;
       return ctx.prisma.comment.create({
         data: {
-          postId: input.postId,
+          postId: post.id,
           comment: input.comment,
           userId: input.userId,
         },
@@ -152,14 +179,20 @@ export const postRouter = createTRPCRouter({
   likeComment: publicProcedure
     .input(
       z.object({
-        commentId: z.string(),
+        commentUuid: z.string(),
         userId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const comment = await ctx.prisma.comment.findFirst({
+        where: {
+          uuid: input.commentUuid,
+        },
+      });
+      if (!comment) return;
       return ctx.prisma.commentLike.create({
         data: {
-          commentId: input.commentId,
+          commentId: comment.id,
           userId: input.userId,
         },
       });
@@ -167,14 +200,20 @@ export const postRouter = createTRPCRouter({
   unlikeComment: publicProcedure
     .input(
       z.object({
-        commentId: z.string(),
+        commentUuid: z.string(),
         userId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const comment = await ctx.prisma.comment.findFirst({
+        where: {
+          uuid: input.commentUuid,
+        },
+      });
+      if (!comment) return;
       return ctx.prisma.commentLike.deleteMany({
         where: {
-          commentId: input.commentId,
+          commentId: comment.id,
           userId: input.userId,
         },
       });

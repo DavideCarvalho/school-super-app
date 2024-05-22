@@ -16,14 +16,12 @@ import { HashtagTextarea } from "./_components/post-textarea";
 
 export default function FeedPage() {
   const { user } = useUser();
+  const userId = user?.publicMetadata?.id;
   const [text, setText] = useState("");
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
 
   const { data: posts, refetch: refetchPosts } = api.post.getPosts.useQuery(
-    {
-      page: 1,
-      limit: 5,
-    },
+    {},
     {
       initialData: [],
     },
@@ -33,6 +31,7 @@ export default function FeedPage() {
     api.post.createPost.useMutation();
 
   async function handlePostClick() {
+    console.log("userId", userId);
     if (!user?.id) {
       console.log("to aqui");
       setNeedLoginFormOpen(true);
@@ -41,7 +40,7 @@ export default function FeedPage() {
     if (!text.trim()) return;
     await createPost({
       content: text,
-      userId: user.id,
+      userId,
     });
     setText("");
     await resetCreatePost();
@@ -121,7 +120,7 @@ export default function FeedPage() {
           <div className="col-span-12">
             <div className="space-y-6">
               {posts.map((item) => (
-                <Post post={item} key={item.id} userId={user?.id} />
+                <Post post={item} key={item.id} userId={userId} />
               ))}
             </div>
           </div>
@@ -171,7 +170,7 @@ export default function FeedPage() {
 }
 
 function PostDialogListener() {
-  const [postId, setPostId] = useState("");
+  const [postUuid, setPostUuid] = useState("");
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -179,10 +178,10 @@ function PostDialogListener() {
   useEffect(() => {
     if (searchParams.has("post")) {
       setOpen(true);
-      setPostId(searchParams.get("post") as string);
+      setPostUuid(searchParams.get("post") as string);
     } else {
       setOpen(false);
-      setPostId("");
+      setPostUuid("");
     }
   }, [searchParams]);
 
@@ -194,7 +193,9 @@ function PostDialogListener() {
     }
   }
 
-  return <PostDialog open={open} setOpen={handleOpenChange} postId={postId} />;
+  return (
+    <PostDialog open={open} setOpen={handleOpenChange} postUuid={postUuid} />
+  );
 }
 
 function HeartIcon(props: React.SVGProps<SVGSVGElement>) {

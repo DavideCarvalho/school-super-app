@@ -21,25 +21,36 @@ import { HashtagTextarea } from "./post-textarea";
 interface PostDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  postId: string;
+  postUuid?: string;
   userId?: string;
 }
 
-export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
+export function PostDialog({
+  open,
+  setOpen,
+  postUuid,
+  userId,
+}: PostDialogProps) {
   const [addNewComment, setAddNewComment] = useState<boolean>(false);
   const [commentText, setCommentText] = useState<string>("");
-  const { data: post, refetch: refetchPost } = api.post.getPostById.useQuery({
-    postId,
-  });
+  const { data: post, refetch: refetchPost } = api.post.getPostByUuid.useQuery(
+    {
+      postUuid,
+    },
+    {
+      enabled: !!postUuid,
+    },
+  );
   const { mutateAsync: addComment, reset: resetAddComment } =
     api.post.addComment.useMutation();
   const { mutateAsync: likeComment } = api.post.likeComment.useMutation();
   const { mutateAsync: unlikeComment } = api.post.unlikeComment.useMutation();
 
   async function handleAddComment() {
+    if (!userId) return;
     if (!post) return;
     await addComment({
-      postId: post.id,
+      postUuid: post.uuid,
       comment: commentText,
       userId: userId,
     });

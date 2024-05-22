@@ -47,8 +47,8 @@ export function Post({ post, userId }: PostProps) {
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
   const { data: userLikedPost, refetch: refetchUserLikedPost } =
     api.post.userLikedPost.useQuery({
-      postId: post.id,
-      userId,
+      postUuid: post.uuid,
+      userId: userId ?? "",
     });
 
   const { mutateAsync: likePost } = api.post.likePost.useMutation();
@@ -63,12 +63,12 @@ export function Post({ post, userId }: PostProps) {
     }
     if (userLikedPost) {
       await unlikePost({
-        postId: post.id,
+        postUuid: post.uuid,
         userId,
       });
     } else {
       await likePost({
-        postId: post.id,
+        postUuid: post.uuid,
         userId,
       });
     }

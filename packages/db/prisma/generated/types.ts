@@ -30,8 +30,9 @@ export type Class = {
   updatedAt: Timestamp;
 };
 export type Comment = {
-  id: string;
-  postId: string;
+  id: Generated<number>;
+  uuid: string;
+  postId: number;
   comment: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
@@ -39,7 +40,7 @@ export type Comment = {
 };
 export type CommentLike = {
   id: string;
-  commentId: string;
+  commentId: number;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   userId: string;
@@ -69,7 +70,8 @@ export type Notification = {
   updatedAt: Timestamp;
 };
 export type Post = {
-  id: string;
+  id: Generated<number>;
+  uuid: string;
   content: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
@@ -203,7 +205,7 @@ export type User = {
 };
 export type UserLikedPost = {
   id: string;
-  postId: string;
+  postId: number;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   userId: string;

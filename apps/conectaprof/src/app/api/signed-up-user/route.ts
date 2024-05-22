@@ -29,7 +29,7 @@ async function handler(req: Request) {
       },
     });
     if (role) {
-      await prisma.user.create({
+      const createdUser = await prisma.user.create({
         data: {
           name: "Novo Usuário",
           slug: slugify(`novo usuário-${body.email}-${new Date().getTime()}`),
@@ -38,13 +38,13 @@ async function handler(req: Request) {
           roleId: role.id,
         },
       });
+      await clerkClient.users.updateUser(body.externalAuthId, {
+        publicMetadata: {
+          id: createdUser.id,
+          role: role.name,
+        },
+      });
     }
-    await clerkClient.users.updateUser(body.externalAuthId, {
-      publicMetadata: {
-        id: body.externalAuthId,
-        role: "CONECTAPROF_USER",
-      },
-    });
   }
   return new Response("OK", { status: 200 });
 }
