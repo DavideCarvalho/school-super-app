@@ -15,6 +15,7 @@ const SignInPage = ({
   if (redirectTo.includes("conectaprof")) {
     hideSignUp = false;
   }
+  console.log("redirectTo", redirectTo);
   return (
     <main className="flex h-full w-full items-center justify-center">
       <SignIn
@@ -22,6 +23,7 @@ const SignInPage = ({
         routing="path"
         afterSignInUrl={redirectTo}
         redirectUrl={redirectTo}
+        fallbackRedirectUrl={redirectTo}
         appearance={
           hideSignUp
             ? {
