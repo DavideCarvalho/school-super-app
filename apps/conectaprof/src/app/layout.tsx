@@ -44,14 +44,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           "min-h-screen bg-background font-sans text-foreground antialiased"
         }
       >
-        <ClerkProvider
-          isSatellite
-          domain={(url) => url.host}
-          signInUrl={`${env.PRIMARY_SIGN_IN_URL}?redirectTo=${env.NEXT_PUBLIC_CONECTAPROF_URL}`}
-          signInFallbackRedirectUrl={
-            env.NEXT_PUBLIC_CONECTAPROF_URL ?? "http://localhost:3001"
-          }
-        >
+        <ClerkProvider>
           <TRPCReactProvider>
             {props.children}
             <Toaster />
