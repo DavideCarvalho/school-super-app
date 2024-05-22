@@ -1,73 +1,80 @@
-import type { ChangeEvent } from "react";
-import React, { useEffect, useRef } from "react";
-import Link from "next/link";
-import ReactDOMServer from "react-dom/server";
+import type { ContentBlock, DraftDecoratorComponentProps } from "draft-js";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { CompositeDecorator, Editor, EditorState } from "draft-js";
+
+import "draft-js/dist/Draft.css";
 
 export interface HashtagTextareaProps {
   text: string;
   setText: (text: string) => void;
 }
 
-const highlightHashtags = (text: string): string => {
-  const parts = text.split(/(\s+)/);
-  return parts
-    .map((part) => {
-      if (part.startsWith("#")) {
-        const renderedToString = ReactDOMServer.renderToString(
-          <HighLightedText key={part} content={part} />,
-        );
-        return renderedToString;
-      }
-      if (part.match(/\n+/)) {
-        return part.replace(/\n/g, "<br/>"); // Manter as quebras de linha na saída HTML
-      }
-      return part;
-    })
-    .join(" ");
+const HashtagSpan = (props: DraftDecoratorComponentProps) => {
+  return (
+    <span {...props} className="text-blue-500">
+      {props.children}
+    </span>
+  );
 };
 
-function HighLightedText({ content }: { content: string }) {
-  const [, text] = content.split("#");
-  return (
-    <Link href={`/tags/${text}`} className="text-blue-500">
-      {content}
-    </Link>
-  );
-}
-
 export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const highlightRef = useRef<HTMLDivElement>(null);
+  const HASHTAG_REGEX = /#\w+/g;
 
-  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
-  };
+  const findWithRegex = useCallback(
+    (
+      regex: RegExp,
+      contentBlock: ContentBlock,
+      callback: (start: number, end: number) => void,
+    ) => {
+      const text = contentBlock.getText();
+      let matchArr: RegExpExecArray | null;
+      let start: number;
+      // biome-ignore lint/suspicious/noAssignInExpressions: Not bad here
+      while ((matchArr = regex.exec(text)) !== null) {
+        start = matchArr.index;
+        callback(start, start + matchArr[0].length);
+      }
+    },
+    [],
+  );
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: we need to listen for the text change to update the height
+  const hashtagStrategy = useCallback(
+    (
+      contentBlock: ContentBlock,
+      callback: (start: number, end: number) => void,
+    ) => {
+      findWithRegex(HASHTAG_REGEX, contentBlock, callback);
+    },
+    [findWithRegex],
+  );
+
+  const compositeDecorator = useMemo(
+    () =>
+      new CompositeDecorator([
+        {
+          strategy: hashtagStrategy,
+          component: HashtagSpan,
+        },
+      ]),
+    [hashtagStrategy],
+  );
+
+  const [editorState, setEditorState] = useState<EditorState | null>(null);
+
   useEffect(() => {
-    const textarea = textareaRef.current;
-    const highlight = highlightRef.current;
-    if (highlight && textarea) {
-      textarea.style.height = "auto";
-      textarea.style.height = `${highlight.scrollHeight}px`;
-    }
-  }, [text]);
+    setEditorState(() => EditorState.createEmpty(compositeDecorator));
+  }, [compositeDecorator]);
 
+  function handleChange(editorState: EditorState) {
+    const content = editorState.getCurrentContent();
+    setText(content.getPlainText());
+    setEditorState(editorState);
+  }
+
+  if (!editorState) return null;
   return (
     <div className="relative w-full">
-      <div
-        ref={highlightRef}
-        className="pointer-events-none absolute left-0 top-0 z-10 w-full whitespace-pre-wrap break-words p-2"
-        dangerouslySetInnerHTML={{ __html: highlightHashtags(text) }}
-      />
-      <textarea
-        ref={textareaRef}
-        value={text}
-        onChange={handleChange}
-        className="relative z-20 min-h-[3rem] w-full resize-none overflow-hidden rounded-md border border-gray-300 bg-transparent p-2 caret-black"
-        placeholder="Digite algo com #hashtags"
-        style={{ color: "transparent", height: "auto" }}
-      />
+      <Editor editorState={editorState} onChange={handleChange} />
     </div>
   );
 }
