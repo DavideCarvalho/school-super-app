@@ -7,7 +7,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { Toaster } from "react-hot-toast";
 
-import { api, TRPCReactProvider } from "~/trpc/react";
+import { TRPCReactProvider } from "~/trpc/react";
 
 const MyApp: AppType = ({ Component, pageProps: { ...pageProps } }) => {
   return (

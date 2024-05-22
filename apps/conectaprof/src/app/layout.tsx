@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 
@@ -44,7 +45,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
           "min-h-screen bg-background font-sans text-foreground antialiased"
         }
       >
-        <ClerkProvider>
+        <ClerkProvider localization={ptBR}>
           <TRPCReactProvider>
             {props.children}
             <Toaster />
