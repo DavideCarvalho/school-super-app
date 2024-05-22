@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import ReactDOMServer from "react-dom/server";
 
 import { RouterOutputs } from "@acme/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@acme/ui/avatar";
