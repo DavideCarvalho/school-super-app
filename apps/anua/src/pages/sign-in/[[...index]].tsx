@@ -11,6 +11,10 @@ import { prisma } from "@acme/db";
 const SignInPage = ({
   redirectTo,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  let hideSignUp = true;
+  if (redirectTo.includes("conectaprof")) {
+    hideSignUp = false;
+  }
   return (
     <main className="flex h-full w-full items-center justify-center">
       <SignIn
@@ -18,11 +22,15 @@ const SignInPage = ({
         routing="path"
         afterSignInUrl={redirectTo}
         redirectUrl={redirectTo}
-        appearance={{
-          elements: {
-            footer: "hidden",
-          },
-        }}
+        appearance={
+          hideSignUp
+            ? {
+                elements: {
+                  footer: "hidden",
+                },
+              }
+            : undefined
+        }
       />
     </main>
   );

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "react-hot-toast";
 
 import { TRPCReactProvider } from "~/trpc/react";
@@ -40,13 +41,22 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       />
       <body
         className={
-          "bg-background text-foreground min-h-screen font-sans antialiased"
+          "min-h-screen bg-background font-sans text-foreground antialiased"
         }
       >
-        <TRPCReactProvider>
-          {props.children}
-          <Toaster />
-        </TRPCReactProvider>
+        <ClerkProvider
+          isSatellite
+          domain={(url) => url.host}
+          signInUrl={`${env.PRIMARY_SIGN_IN_URL}?redirectTo=${env.NEXT_PUBLIC_CONECTAPROF_URL}`}
+          signInFallbackRedirectUrl={
+            env.NEXT_PUBLIC_CONECTAPROF_URL ?? "http://localhost:3001"
+          }
+        >
+          <TRPCReactProvider>
+            {props.children}
+            <Toaster />
+          </TRPCReactProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
