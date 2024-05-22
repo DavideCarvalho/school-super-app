@@ -113,6 +113,59 @@ export const postRouter = createTRPCRouter({
         include: {
           User: true,
           School: true,
+          Comments: {
+            include: {
+              Likes: true,
+              User: true,
+            },
+          },
+        },
+      });
+    }),
+  addComment: publicProcedure
+    .input(
+      z.object({
+        postId: z.string(),
+        comment: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.comment.create({
+        data: {
+          postId: input.postId,
+          comment: input.comment,
+          userId: input.userId,
+        },
+      });
+    }),
+  likeComment: publicProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.commentLike.create({
+        data: {
+          commentId: input.commentId,
+          userId: input.userId,
+        },
+      });
+    }),
+  unlikeComment: publicProcedure
+    .input(
+      z.object({
+        commentId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.commentLike.deleteMany({
+        where: {
+          commentId: input.commentId,
+          userId: input.userId,
         },
       });
     }),

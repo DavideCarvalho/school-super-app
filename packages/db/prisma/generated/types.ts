@@ -29,6 +29,21 @@ export type Class = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
+export type Comment = {
+  id: string;
+  postId: string;
+  comment: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  userId: string;
+};
+export type CommentLike = {
+  id: string;
+  commentId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  userId: string;
+};
 export type File = {
   id: string;
   teacherId: string;
@@ -197,6 +212,8 @@ export type DB = {
   Canteen: Canteen;
   CanteenItem: CanteenItem;
   Class: Class;
+  Comment: Comment;
+  CommentLike: CommentLike;
   File: File;
   Notification: Notification;
   Post: Post;

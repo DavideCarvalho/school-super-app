@@ -50,6 +50,8 @@ model User {
   Canteens         Canteen[]
   Post             Post[]
   UserLikedPost    UserLikedPost[]
+  Comments         Comment[]
+  CommentLikes     CommentLike[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -318,6 +320,7 @@ model Post {
   User          User            @relation(fields: [userId], references: [id])
   School        School?         @relation(fields: [schoolId], references: [id])
   UserLikedPost UserLikedPost[]
+  Comments      Comment[]
 }
 
 model UserLikedPost {
@@ -329,4 +332,28 @@ model UserLikedPost {
 
   User User @relation(fields: [userId], references: [id])
   Post Post @relation(fields: [postId], references: [id])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  postId    String
+  comment   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  User  User          @relation(fields: [userId], references: [id])
+  Post  Post          @relation(fields: [postId], references: [id])
+  Likes CommentLike[]
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  commentId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+
+  User    User    @relation(fields: [userId], references: [id])
+  Comment Comment @relation(fields: [commentId], references: [id])
 }

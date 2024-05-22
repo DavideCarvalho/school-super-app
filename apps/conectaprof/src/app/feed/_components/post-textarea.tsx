@@ -43,24 +43,6 @@ export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
     setText(e.target.value);
   };
 
-  const highlightHashtags = (text: string): string => {
-    const parts = text.split(/(\s+)/);
-    return parts
-      .map((part) => {
-        if (part.startsWith("#")) {
-          const renderedToString = ReactDOMServer.renderToString(
-            <HighLightedText key={part} content={part} />,
-          );
-          return renderedToString;
-        }
-        if (part.match(/\n+/)) {
-          return part.replace(/\n/g, "<br/>"); // Manter as quebras de linha na saída HTML
-        }
-        return part;
-      })
-      .join(" ");
-  };
-
   // biome-ignore lint/correctness/useExhaustiveDependencies: we need to listen for the text change to update the height
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -86,7 +68,6 @@ export function HashtagTextarea({ text, setText }: HashtagTextareaProps) {
         placeholder="Digite algo com #hashtags"
         style={{ color: "transparent", height: "auto" }}
       />
-      <div className="hidden">{text}</div>
     </div>
   );
 }
