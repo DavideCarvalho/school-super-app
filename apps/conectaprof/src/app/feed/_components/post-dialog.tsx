@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ReactDOMServer from "react-dom/server";
 
-import { RouterOutputs } from "@acme/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@acme/ui/avatar";
 import { Button } from "@acme/ui/button";
 import {
@@ -66,7 +64,7 @@ export function PostDialog({ open, setOpen, postId }: PostDialogProps) {
             </div>
           </DialogDescription>
         </DialogHeader>
-        <div className="prose prose-gray dark:prose-invert mx-auto">
+        <div className="flex w-full items-start text-left">
           <p dangerouslySetInnerHTML={{ __html: postContentHighlighted }} />
         </div>
 
