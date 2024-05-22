@@ -1,5 +1,6 @@
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { clerkMiddleware } from "@clerk/nextjs/server";
+import axios from "axios";
 
 import { env } from "./env";
 
@@ -23,17 +24,18 @@ export default clerkMiddleware(async (auth, req) => {
       Object.keys(signedInUser.publicMetadata).length === 0
     ) {
       const userEmail = signedInUser.emailAddresses[0]?.emailAddress;
-      await fetch(`${CONECTAPROF_URL}/api/signed-up-user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Internal-API-Key": env.CONECTAPROF_API_KEY,
-        },
-        body: JSON.stringify({
+      await axios.post(
+        `${CONECTAPROF_URL}/api/signed-up-user`,
+        {
           email: userEmail,
           externalAuthId: maybeSignedInUser.userId,
-        }),
-      });
+        },
+        {
+          headers: {
+            "X-Internal-API-Key": env.CONECTAPROF_API_KEY,
+          },
+        },
+      );
     }
   }
 });
