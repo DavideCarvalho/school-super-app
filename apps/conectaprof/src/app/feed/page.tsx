@@ -118,14 +118,14 @@ export default function FeedPage() {
               </div>
             </div>
           </div>
-          <div className="col-span-8">
+          <div className="col-span-12">
             <div className="space-y-6">
               {posts.map((item) => (
                 <Post post={item} key={item.id} userId={user?.id} />
               ))}
             </div>
           </div>
-          <div className="col-span-4 space-y-6">
+          {/* <div className="col-span-4 space-y-6">
             <div className="rounded-lg bg-white p-6 shadow">
               <h2 className="text-lg font-medium">Tópicos em Alta</h2>
               <ul className="mt-4 space-y-2">
@@ -163,7 +163,7 @@ export default function FeedPage() {
                 </li>
               </ul>
             </div>
-          </div>
+          </div> */}
         </div>
       </main>
     </div>
