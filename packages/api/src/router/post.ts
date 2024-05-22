@@ -29,6 +29,16 @@ export const postRouter = createTRPCRouter({
               UserLikedPost: true,
             },
           },
+          Comments: {
+            include: {
+              Likes: true,
+              User: true,
+            },
+            take: 3,
+            orderBy: {
+              createdAt: "desc",
+            },
+          },
         },
       });
       return posts;

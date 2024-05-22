@@ -5,6 +5,7 @@ import Link from "next/link";
 import ReactDOMServer from "react-dom/server";
 
 import type { RouterOutputs } from "@acme/api";
+import { Avatar, AvatarFallback, AvatarImage } from "@acme/ui/avatar";
 import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/react";
@@ -109,6 +110,37 @@ export function Post({ post, userId }: PostProps) {
           userLiked={userLikedPost}
         />
         <CommentButton post={post} />
+      </div>
+      {post.Comments.length > 0 && (
+        <h3 className="font-semibold">Comentários</h3>
+      )}
+      <div className="space-y-4 py-4">
+        {post.Comments.map((comment) => {
+          const commentContentHighlighted = highlightHashtags(
+            comment.comment ?? "",
+          );
+          return (
+            <div key={comment.id} className="flex items-start gap-4">
+              <Avatar className="h-10 w-10 border">
+                <AvatarImage alt="@shadcn" src="/placeholder-user.jpg" />
+                <AvatarFallback>AC</AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="font-semibold">{comment.User.name}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {new Intl.DateTimeFormat("pt-BR").format(comment.createdAt)}
+                  </div>
+                </div>
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: commentContentHighlighted,
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
