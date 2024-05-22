@@ -8,7 +8,8 @@ const CONECTAPROF_URL =
     ? "http://localhost:3001"
     : env.NEXT_PUBLIC_CONECTAPROF_URL;
 
-export default clerkMiddleware(async (auth) => {
+export default clerkMiddleware(async (auth, req) => {
+  if (req.url.includes("criar-conta")) return;
   const maybeSignedInUser = auth();
   if (maybeSignedInUser?.userId) {
     const signedInUser = await clerkClient.users.getUser(
