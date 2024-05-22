@@ -97,12 +97,6 @@ export function PostDialog({ open, setOpen, postId, userId }: PostDialogProps) {
                   </Button>
                   <Button
                     onClick={async () => {
-                      if (!post) return;
-                      await addComment({
-                        postId: post.id,
-                        userId,
-                        comment: commentText,
-                      });
                       setAddNewComment(false);
                       setCommentText("");
                     }}
