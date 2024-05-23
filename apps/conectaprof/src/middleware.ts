@@ -36,6 +36,18 @@ export default clerkMiddleware(async (auth, req) => {
           },
         },
       );
+
+      axios.post(
+        `${CONECTAPROF_URL}/api/update-user-image-url`,
+        {
+          externalAuthId: maybeSignedInUser.userId,
+        },
+        {
+          headers: {
+            "X-Internal-API-Key": env.CONECTAPROF_API_KEY,
+          },
+        },
+      );
     }
   }
 });

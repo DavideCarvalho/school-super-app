@@ -39,6 +39,7 @@ model User {
   updatedAt      DateTime @updatedAt
   teacherId      String?
   externalAuthId String?
+  imageUrl       String?
 
   School           School?           @relation(fields: [schoolId], references: [id])
   Role             Role              @relation(fields: [roleId], references: [id])

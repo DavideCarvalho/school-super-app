@@ -173,4 +173,46 @@ export const userRouter = createTRPCRouter({
         where: { id: input.userId },
       });
     }),
+  editConectaProfUser: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        name: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findFirst({
+        where: { id: input.userId },
+      });
+      if (!user) throw new Error("User not found");
+      if (!user.externalAuthId) throw new Error("User not found on Clerk");
+      const userOnClerk = await clerkClient.users.getUser(user.externalAuthId);
+      if (!userOnClerk) throw new Error("User not found on Clerk");
+      await clerkClient.users.updateUser(userOnClerk.id, {
+        firstName: input.name.split(" ")[0],
+        lastName: input.name.split(" ").slice(1).join(" "),
+      });
+      const countUsersWithSameName = await ctx.prisma.user.count({
+        where: {
+          name: input.name,
+        },
+      });
+      const countPrefix =
+        countUsersWithSameName > 0 ? `-${String(countUsersWithSameName)}` : "";
+      await ctx.prisma.user.update({
+        where: { id: input.userId },
+        data: {
+          name: input.name,
+          slug: slugify(`${input.name}${countPrefix}`),
+          imageUrl: userOnClerk.imageUrl,
+        },
+      });
+    }),
+  getUserById: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.user.findFirst({
+        where: { id: input.userId },
+      });
+    }),
 });

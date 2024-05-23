@@ -7,7 +7,6 @@ const CONECTAPROF_API_KEY = process.env.CONECTAPROF_API_KEY;
 
 interface Body {
   externalAuthId: string;
-  email: string;
 }
 
 async function handler(req: Request) {
@@ -17,36 +16,23 @@ async function handler(req: Request) {
     return new Response("Forbidden", { status: 403 });
   }
   const body: Body = await req.json();
+  const clerkUser = await clerkClient.users.getUser(body.externalAuthId);
+  if (!clerkUser) return;
   const userInOurDb = await prisma.user.findFirst({
     where: {
       externalAuthId: body.externalAuthId,
     },
   });
-  if (!userInOurDb) {
-    const role = await prisma.role.findFirst({
-      where: {
-        name: "CONECTAPROF_USER",
-      },
-    });
-    if (role) {
-      const createdUser = await prisma.user.create({
-        data: {
-          name: "Novo Usuário",
-          slug: slugify(`novo usuário-${body.email}-${new Date().getTime()}`),
-          email: body.email,
-          externalAuthId: body.externalAuthId,
-          roleId: role.id,
-        },
-      });
-      await clerkClient.users.updateUser(body.externalAuthId, {
-        firstName: "Novo Usuário",
-        publicMetadata: {
-          id: createdUser.id,
-          role: role.name,
-        },
-      });
-    }
-  }
+  if (!userInOurDb) return;
+  if (userInOurDb.imageUrl === clerkUser.imageUrl) return;
+  await prisma.user.update({
+    data: {
+      imageUrl: clerkUser.imageUrl,
+    },
+    where: {
+      id: userInOurDb.id,
+    },
+  });
   return new Response("OK", { status: 200 });
 }
 

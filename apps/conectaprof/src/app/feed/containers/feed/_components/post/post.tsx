@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import ReactDOMServer from "react-dom/server";
 
@@ -92,17 +93,19 @@ export function Post({ post, userId }: PostProps) {
         setOpen={setNeedLoginFormOpen}
       />
       <div className="flex items-center space-x-4">
-        {/* <img
-          alt="Avatar do Professor"
-          className="h-12 w-12 rounded-full"
-          height={48}
-          src="/placeholder.svg"
-          style={{
-            aspectRatio: "48/48",
-            objectFit: "cover",
-          }}
-          width={48}
-        /> */}
+        {post.User.imageUrl ? (
+          <Image
+            alt="Avatar do Professor"
+            className="h-12 w-12 rounded-full"
+            height={48}
+            src={post.User.imageUrl}
+            style={{
+              aspectRatio: "48/48",
+              objectFit: "cover",
+            }}
+            width={48}
+          />
+        ) : null}
         <div>
           <h3 className="text-lg font-medium">{post.User.name}</h3>
           <p className="text-gray-500">{post?.School?.name}</p>

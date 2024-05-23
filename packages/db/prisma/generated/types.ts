@@ -202,6 +202,7 @@ export type User = {
   updatedAt: Timestamp;
   teacherId: string | null;
   externalAuthId: string | null;
+  imageUrl: string | null;
 };
 export type UserLikedPost = {
   id: string;

@@ -22,10 +22,10 @@ export default function Component() {
             Saiba mais
           </Link>
           <Link
-            href={"#title"}
+            href={"/feed"}
             className="inline-flex h-9 items-center justify-center rounded-md border border-gray-200 bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-orange-600 focus-visible:outline-none focus-visible:ring-1  disabled:pointer-events-none disabled:opacity-50 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
           >
-            Junte-se agora
+            Vá para o feed!
           </Link>
         </nav>
       </header>
@@ -40,14 +40,14 @@ export default function Component() {
                 >
                   Conecte-se com outros educadores
                 </h1>
-                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                <p className="mx-auto max-w-[700px] text-gray-500 dark:text-gray-400 md:text-xl">
                   Junte-se à nossa vibrante comunidade de professores,
                   compartilhe recursos e colabore para aprimorar a experiência
                   de aprendizado.
                 </p>
-                <p className="font-semibold text-orange-600">em breve</p>
+                {/* <p className="font-semibold text-orange-600">em breve</p> */}
               </div>
-              <SubscribeForm />
+              {/* <SubscribeForm /> */}
             </div>
           </div>
         </section>
@@ -61,7 +61,7 @@ export default function Component() {
                 <h2 className="text-3xl font-bold tracking-tighter text-orange-600 sm:text-5xl">
                   Uma plataforma feita para educadores
                 </h2>
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   A ConectaProf é uma plataforma que permite aos educadores
                   compartilhar suas experiências e interagir uns com os outros.
                   Aqui, você pode encontrar uma comunidade vibrante de
@@ -80,27 +80,27 @@ export default function Component() {
                 <h2 className="text-3xl font-bold tracking-tighter text-orange-600 sm:text-5xl">
                   Quem somos?
                 </h2>
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Olá, somos os criadores do Anuá, uma plataforma de gestão
                   escolar. Não somos educadores, mas vemos nas pessoas que estão
                   no meio da educação que falta um ambiente para troca de ideias
                   e conhecimento.
                 </p>
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Sim, o Anuá é uma empresa, e queremos usar essa empresa para
                   colaborar com a comunidade de educação de uma forma positiva.
                   A educação é uma luta, e como todas as lutas, precisam ser
                   feitas em conjunto.
                 </p>
 
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   <span className="highlight width-full">
                     O ConectaProf é uma plataforma cujo intuito é fazer os
                     professores serem o centro do debate de educação.
                   </span>
                 </p>
 
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                <p className="max-w-[900px] text-gray-500 dark:text-gray-400 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                   Se você acredita no potencial potencial do ConectaProf, uma
                   forma de nos ajudar é divulgando o Anuá em suas redes sociais
                   e compartilhando suas experiências com a comunidade de
@@ -184,7 +184,7 @@ export default function Component() {
   );
 }
 
-function BookIcon(props) {
+function BookIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
