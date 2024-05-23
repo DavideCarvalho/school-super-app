@@ -11,6 +11,7 @@ export const postRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      // TODO: adicionar cursor pra pegar próximos posts
       const where = input.lastId
         ? {
             id: {
@@ -23,7 +24,7 @@ export const postRouter = createTRPCRouter({
         orderBy: {
           createdAt: "desc",
         },
-        take: 20,
+        // take: 20,
         include: {
           User: true,
           School: true,

@@ -14,6 +14,14 @@ interface CreatePostClientProps {
 
 export function CreatePostClient({ userId }: CreatePostClientProps) {
   const utils = api.useUtils();
+  const { data: userInOurDb } = api.user.getUserById.useQuery(
+    {
+      userId: userId ?? "",
+    },
+    {
+      enabled: !!userId,
+    },
+  );
   const { mutateAsync: createPost, reset: resetCreatePost } =
     api.post.createPost.useMutation();
   const [text, setText] = useState("");
@@ -42,7 +50,9 @@ export function CreatePostClient({ userId }: CreatePostClientProps) {
       <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-4 md:grid-cols-12">
         <div className="col-span-12">
           <div className="rounded-lg bg-white p-6 shadow">
-            <h2 className="text-lg font-medium">Pesquisar</h2>
+            <h2 className="text-lg font-medium">
+              {userInOurDb?.name ? `Olá ${userInOurDb.name}` : ""}
+            </h2>
             <div className="mt-4">
               <HashtagTextarea
                 text={text}

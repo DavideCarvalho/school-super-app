@@ -18,6 +18,8 @@ interface FeedClientProps {
       | RouterOutputs["post"]["getPosts"];
   };
 }
+const ONE_MINUTE = 60 * 1000;
+const STALE_TIME = ONE_MINUTE / 2;
 
 export function FeedClient({ userId, initialData }: FeedClientProps) {
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
@@ -30,6 +32,7 @@ export function FeedClient({ userId, initialData }: FeedClientProps) {
           ? use(initialData.posts)
           : initialData.posts
         : [],
+      staleTime: STALE_TIME,
     },
   );
 
