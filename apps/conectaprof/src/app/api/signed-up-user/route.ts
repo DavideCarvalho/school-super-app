@@ -42,6 +42,7 @@ async function handler(req: Request) {
         firstName: "Novo Usuário",
         publicMetadata: {
           id: createdUser.id,
+          name: createdUser.name,
           role: role.name,
         },
       });

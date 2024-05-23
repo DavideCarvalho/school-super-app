@@ -191,6 +191,9 @@ export const userRouter = createTRPCRouter({
       await clerkClient.users.updateUser(userOnClerk.id, {
         firstName: input.name.split(" ")[0],
         lastName: input.name.split(" ").slice(1).join(" "),
+        publicMetadata: {
+          name: input.name,
+        },
       });
       const countUsersWithSameName = await ctx.prisma.user.count({
         where: {
