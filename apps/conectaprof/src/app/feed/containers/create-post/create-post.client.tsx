@@ -10,18 +10,11 @@ import { HashtagTextarea } from "./_components/post-textarea/post-textarea";
 
 interface CreatePostClientProps {
   userId?: string;
+  userName?: string;
 }
 
-export function CreatePostClient({ userId }: CreatePostClientProps) {
+export function CreatePostClient({ userId, userName }: CreatePostClientProps) {
   const utils = api.useUtils();
-  const { data: userInOurDb } = api.user.getUserById.useQuery(
-    {
-      userId: userId ?? "",
-    },
-    {
-      enabled: !!userId,
-    },
-  );
   const { mutateAsync: createPost, reset: resetCreatePost } =
     api.post.createPost.useMutation();
   const [text, setText] = useState("");
@@ -51,7 +44,7 @@ export function CreatePostClient({ userId }: CreatePostClientProps) {
         <div className="col-span-12">
           <div className="rounded-lg bg-white p-6 shadow">
             <h2 className="text-lg font-medium">
-              {userInOurDb?.name ? `Olá ${userInOurDb.name}` : ""}
+              {userName ? `Olá ${userName}` : ""}
             </h2>
             <div className="mt-4">
               <HashtagTextarea

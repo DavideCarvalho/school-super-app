@@ -9,6 +9,7 @@ interface CreatePostServerProps {
     name: string;
   };
   userId?: string;
+  userName?: string;
 }
 
 export async function CreatePostServer(props: CreatePostServerProps) {
