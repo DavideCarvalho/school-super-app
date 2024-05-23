@@ -45,6 +45,10 @@ function HighLightedText({ content }: { content: string }) {
 
 export function Post({ post, userId }: PostProps) {
   const utils = api.useUtils();
+
+  utils.post.getPostByUuid.prefetch({
+    postUuid: post.uuid,
+  });
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
   const { data: userLikedPost, refetch: refetchUserLikedPost } =
     api.post.userLikedPost.useQuery(
@@ -171,7 +175,7 @@ function CommentButton({
   post: RouterOutputs["post"]["getPosts"][0];
 }) {
   return (
-    <Link href={`?post=${post.id}`}>
+    <Link href={`?post=${post.uuid}`}>
       <MessageCircleIcon className="h-5 w-5" />
       <span className="sr-only">Comentar</span>
     </Link>
