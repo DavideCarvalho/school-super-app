@@ -54,8 +54,8 @@ importers:
         specifier: ^0.4.5
         version: 0.4.6(@clerk/clerk-react@5.2.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.2)(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(ws@8.17.0)
       '@clerk/localizations':
-        specifier: 2.4.2
-        version: 2.4.2
+        specifier: 2.4.3
+        version: 2.4.3
       '@clerk/nextjs':
         specifier: 5.1.0
         version: 5.1.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -316,8 +316,8 @@ importers:
         specifier: 5.0.9
         version: 5.0.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
-        specifier: 2.4.2
-        version: 2.4.2
+        specifier: 2.4.3
+        version: 2.4.3
       '@clerk/nextjs':
         specifier: 5.1.0
         version: 5.1.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1975,8 +1975,8 @@ packages:
       next:
         optional: true
 
-  '@clerk/localizations@2.4.2':
-    resolution: {integrity: sha512-bDxHZ6YG+oHB03h0fl7jlOmwTwwtsrB9KFVepwI9L7vJixPNFRdnGcCgAcOFZ+E+dn6EBY/W2RgP3hbVRdWV8g==}
+  '@clerk/localizations@2.4.3':
+    resolution: {integrity: sha512-ixpzudbb1IKQCgwz35s4PVhT7oOc1wh2A7hFvkV/Crzp4zHynZX8KSvBPL5bFTjhuDJewygzt6GQaSN6FwNy6Q==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/nextjs@5.1.0':
@@ -11203,7 +11203,7 @@ snapshots:
       - '@types/react-dom'
       - ws
 
-  '@clerk/localizations@2.4.2': {}
+  '@clerk/localizations@2.4.3': {}
 
   '@clerk/nextjs@5.1.0(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
