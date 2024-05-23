@@ -27,7 +27,8 @@ export default function NeedLoginDialog({
           <DialogDescription>
             Pra participar da nossa comunidade, você precisa logar na sua conta.
             Se você não tiver uma conta, não sei preocupe, você pode criar uma
-            conta, é simples e fácil!
+            conta, é simples e fácil! Se você já tem uma conta pelo Anuá, você
+            pode colocar o mesmo email aqui para entrar.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="justify-between">
