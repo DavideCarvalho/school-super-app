@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 
+import { CreatePostServer } from "./containers/create-post/create-post.server";
 import { FeedServer } from "./containers/feed/feed.server";
 
 export default async function FeedPage() {
@@ -10,5 +11,10 @@ export default async function FeedPage() {
     name: string;
   };
 
-  return <FeedServer userId={userId} School={userSchool} />;
+  return (
+    <>
+      <CreatePostServer userId={userId} School={userSchool} />
+      <FeedServer userId={userId} School={userSchool} />
+    </>
+  );
 }

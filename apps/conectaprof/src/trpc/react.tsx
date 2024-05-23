@@ -18,7 +18,9 @@ const getQueryClient = () => {
     // Server: always make a new query client
     return createQueryClient();
   }
-  clientQueryClientSingleton ??= createQueryClient();
+  if (!clientQueryClientSingleton) {
+    clientQueryClientSingleton = createQueryClient();
+  }
   return clientQueryClientSingleton;
 };
 

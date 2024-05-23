@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@acme/ui/avatar";
 import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/react";
-import NeedLoginDialog from "./need-login-dialog";
+import NeedLoginDialog from "../../../../_components/need-login-dialog";
 
 interface PostProps {
   userId?: string;
@@ -44,6 +44,7 @@ function HighLightedText({ content }: { content: string }) {
 }
 
 export function Post({ post, userId }: PostProps) {
+  const utils = api.useUtils();
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
   const { data: userLikedPost, refetch: refetchUserLikedPost } =
     api.post.userLikedPost.useQuery(

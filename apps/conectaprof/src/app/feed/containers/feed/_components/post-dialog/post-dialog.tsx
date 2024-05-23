@@ -16,12 +16,12 @@ import {
 } from "@acme/ui/dialog";
 
 import { api } from "~/trpc/react";
-import { HashtagTextarea } from "./post-textarea";
+import { HashtagTextarea } from "../../../create-post/_components/post-textarea/post-textarea";
 
 interface PostDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  postUuid?: string;
+  postUuid: string;
   userId?: string;
 }
 
