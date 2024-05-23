@@ -22,7 +22,6 @@ interface FeedClientProps {
 export function FeedClient({ userId, initialData }: FeedClientProps) {
   const [needLoginFormOpen, setNeedLoginFormOpen] = useState(false);
 
-  const utils = api.useUtils();
   const [posts] = api.post.getPosts.useSuspenseQuery(
     {},
     {
@@ -41,7 +40,7 @@ export function FeedClient({ userId, initialData }: FeedClientProps) {
         setOpen={setNeedLoginFormOpen}
       />
       <Suspense>
-        <PostDialogListener />
+        <PostDialogListener userId={userId} />
       </Suspense>
       <div className="container mx-auto grid grid-cols-1 gap-8 px-4 py-4 md:grid-cols-12">
         <div className="col-span-12">
