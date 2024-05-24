@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useClerk } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 import { Button } from "@acme/ui/button";
@@ -14,7 +14,9 @@ import {
 } from "@acme/ui/dropdown-menu";
 
 export function NavbarMenu() {
+  const { user } = useUser();
   const { signOut } = useClerk();
+  if (!user) return null;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
