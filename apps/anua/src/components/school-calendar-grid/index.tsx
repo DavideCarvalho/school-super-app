@@ -1,21 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
+import { useCallback, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import type { Class, TeacherAvailability } from "@acme/db";
 
+import type {
+  CalendarGridSchedule,
+  CalendarGridScheduledClass,
+} from "./components/calendar-grid";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import SelectWithSearch from "../ui/select-with-search";
-import {
-  CalendarGrid,
-  type CalendarGridSchedule,
-  type CalendarGridScheduledClass,
-} from "./components/calendar-grid";
+import { CalendarGrid } from "./components/calendar-grid";
 import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
 import { SchoolConfigForm } from "./components/school-config-form";
 
@@ -251,7 +251,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       .filter((classItem) => classItem !== undefined);
     const toastId = toast.loading("Salvando horários...");
     try {
-      // @ts-expect-error we are already filtering out undefined values
       await saveSchoolCalendarMutation(classes);
       toast.success("Horários salvos com sucesso!");
     } catch (e) {
@@ -551,6 +550,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
               )}
               onClick={() => {
                 setNewSchedule(false);
+                form.setValue("fixedClasses", []);
               }}
             >
               Cancelar
