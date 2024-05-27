@@ -203,6 +203,7 @@ export type User = {
   teacherId: string | null;
   externalAuthId: string | null;
   imageUrl: string | null;
+  active: Generated<number>;
 };
 export type UserLikedPost = {
   id: string;

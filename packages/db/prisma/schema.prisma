@@ -40,6 +40,7 @@ model User {
   teacherId      String?
   externalAuthId String?
   imageUrl       String?
+  active         Boolean  @default(true)
 
   School           School?           @relation(fields: [schoolId], references: [id])
   Role             Role              @relation(fields: [roleId], references: [id])

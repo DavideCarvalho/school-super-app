@@ -116,4 +116,41 @@ export const teacherRouter = createTRPCRouter({
         console.log(error);
       }
     }),
+  getSchoolTeachers: publicProcedure
+    .input(
+      z.object({
+        schoolId: z.string(),
+        limit: z.number().optional().default(5),
+        page: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.teacher.findMany({
+        where: {
+          User: {
+            schoolId: input.schoolId,
+            Role: {
+              name: "TEACHER",
+            },
+            active: true,
+          },
+        },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
+        include: {
+          User: true,
+          TeacherAvailability: true,
+          TeacherHasSubject: {
+            include: {
+              Subject: true,
+            },
+          },
+          TeacherHasClasses: {
+            include: {
+              Class: true,
+            },
+          },
+        },
+      });
+    }),
 });

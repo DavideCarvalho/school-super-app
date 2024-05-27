@@ -48,7 +48,7 @@ interface NewTeacherModalV2Props {
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
-export default function NewTeacherModalV2({
+export function NewTeacherModalV2({
   schoolId,
   open,
   onClickCancel,
@@ -70,8 +70,6 @@ export default function NewTeacherModalV2({
       },
     });
   const availabilities = watch("availability");
-
-  console.log(formState.errors);
 
   const { mutateAsync: createTeacher } =
     api.teacher.createTeacher.useMutation();
@@ -187,7 +185,7 @@ export default function NewTeacherModalV2({
           </div>
           <DialogFooter>
             <div>
-              <Button variant="outline" onClick={onClickCancel}>
+              <Button variant="outline" onClick={() => onClickCancel(false)}>
                 Cancelar
               </Button>
             </div>

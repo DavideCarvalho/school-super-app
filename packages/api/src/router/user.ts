@@ -21,7 +21,11 @@ export const userRouter = createTRPCRouter({
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.user.count({
-        where: { schoolId: input.schoolId, Role: { name: input.role } },
+        where: {
+          schoolId: input.schoolId,
+          Role: { name: input.role },
+          active: true,
+        },
       });
     }),
   allBySchoolId: publicProcedure
@@ -42,7 +46,11 @@ export const userRouter = createTRPCRouter({
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.user.findMany({
-        where: { schoolId: input.schoolId, Role: { name: input.role } },
+        where: {
+          schoolId: input.schoolId,
+          Role: { name: input.role },
+          active: true,
+        },
         include: { Role: true },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
@@ -169,8 +177,11 @@ export const userRouter = createTRPCRouter({
       const userOnClerk = await clerkClient.users.getUser(user.externalAuthId);
       if (!userOnClerk) throw new Error("User not found on Clerk");
       await clerkClient.users.deleteUser(userOnClerk.id);
-      await ctx.prisma.user.delete({
+      await ctx.prisma.user.update({
         where: { id: input.userId },
+        data: {
+          active: false,
+        },
       });
     }),
   editConectaProfUser: publicProcedure

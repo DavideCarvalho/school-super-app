@@ -7,7 +7,7 @@ import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";
 
-import { SchoolTeachersTable } from "~/components/school-teachers-table";
+import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
 import { SchoolLayout } from "~/layouts/SchoolLayout";
 
 export default function TeachersPage({
@@ -15,7 +15,8 @@ export default function TeachersPage({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <SchoolLayout>
-      <SchoolTeachersTable schoolId={school.id} />
+      {/* <SchoolTeachersTable schoolId={school.id} /> */}
+      <TeachersTableV2 schoolId={school.id} />
     </SchoolLayout>
   );
 }
@@ -54,6 +55,11 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       serverSideHelpers.user.countAllBySchoolId.prefetch({
         schoolId: school.id,
         role: "TEACHER",
+      }),
+      serverSideHelpers.teacher.getSchoolTeachers.prefetch({
+        schoolId: school.id,
+        page,
+        limit,
       }),
     ]);
 

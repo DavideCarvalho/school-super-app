@@ -13,8 +13,7 @@ import type { Role, User } from "@acme/db";
 
 import { api } from "~/trpc/react";
 import { EditWorkerModal } from "../edit-worker-modal";
-import { NewTeacherModal } from "../new-teacher-modal";
-import NewTeacherModalV2 from "../new-teacher-modal-v2";
+import { NewTeacherModalV2 } from "../new-teacher-modal-v2";
 import { Pagination } from "../pagination";
 
 interface SchoolTeachersTableProps {
@@ -46,9 +45,6 @@ export function SchoolTeachersTable({ schoolId }: SchoolTeachersTableProps) {
   );
 
   const deleteTeacherMutation = api.teacher.deleteById.useMutation();
-
-  const { mutateAsync: createTeacher } =
-    api.teacher.createTeacher.useMutation();
 
   async function onCreated() {
     setOpen(false);
