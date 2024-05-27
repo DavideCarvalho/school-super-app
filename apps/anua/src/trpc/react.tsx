@@ -2,7 +2,12 @@
 
 import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
+import {
+  httpBatchLink,
+  loggerLink,
+  unstable_httpBatchStreamLink,
+} from "@trpc/client";
+import { createTRPCNext } from "@trpc/next";
 import { createTRPCReact } from "@trpc/react-query";
 import SuperJSON from "superjson";
 
@@ -65,3 +70,26 @@ const getBaseUrl = () => {
   // eslint-disable-next-line no-restricted-properties
   return `http://localhost:${process.env.PORT ?? 3000}`;
 };
+
+export const _oldapi = createTRPCNext<AppRouter>({
+  config() {
+    return {
+      /**
+       * @link https://trpc.io/docs/v11/client/links
+       */
+      links: [
+        httpBatchLink({
+          url: `${getBaseUrl()}/api/trpc`,
+          /**
+           * @link https://trpc.io/docs/v11/data-transformers
+           */
+          transformer: SuperJSON,
+        }),
+      ],
+    };
+  },
+  ssr: false,
+  transformer: SuperJSON,
+});
+
+export const withTRPC = _oldapi.withTRPC;

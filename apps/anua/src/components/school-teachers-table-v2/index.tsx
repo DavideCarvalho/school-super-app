@@ -4,6 +4,15 @@ import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
 import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@acme/ui/pagination";
+import {
   Table,
   TableBody,
   TableCell,
@@ -31,15 +40,11 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
-  const teachersQuery = api.teacher.getSchoolTeachers.useQuery(
-    {
-      schoolId,
-      limit: router.query.limit ? Number(router.query.limit) : 5,
-      page: router.query.page ? Number(router.query.page) : 1,
-    },
-    { refetchOnMount: false },
-  );
-
+  const teachersQuery = api.teacher.getSchoolTeachers.useQuery({
+    schoolId,
+    limit: router.query.limit ? Number(router.query.limit) : 5,
+    page: router.query.page ? Number(router.query.page) : 1,
+  });
   console.log("teachersQuery", teachersQuery);
 
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
@@ -58,19 +63,26 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     }
   }
 
+  async function handleOnClose() {
+    setOpen(false);
+    await teachersQuery.refetch();
+    // await teachersCountQuery.refetch();
+  }
+
   async function onCreated() {
     setOpen(false);
     await teachersQuery.refetch();
     // await teachersCountQuery.refetch();
   }
+
   return (
     <>
       <NewTeacherModalV2
         schoolId={schoolId}
         onClickSubmit={onCreated}
         open={open}
-        onClickCancel={() => setOpen(false)}
-        onClose={() => setOpen(false)}
+        onClickCancel={handleOnClose}
+        onClose={handleOnClose}
       />
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Lista de Professores</h2>
@@ -129,6 +141,30 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
           })}
         </TableBody>
       </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">1</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#" isActive>
+              2
+            </PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">3</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </>
   );
 }

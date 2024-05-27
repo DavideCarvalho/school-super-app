@@ -53,6 +53,7 @@ export function NewTeacherModalV2({
   open,
   onClickCancel,
   onClose,
+  onClickSubmit,
 }: NewTeacherModalV2Props) {
   const { handleSubmit, getValues, watch, setValue, formState, register } =
     useForm({
@@ -84,7 +85,7 @@ export function NewTeacherModalV2({
         availabilities: data.availability,
       });
       toast.success("Professor criado com sucesso!");
-      await onClose();
+      await onClickSubmit();
     } catch (e) {
       toast.error("Erro ao criar professor");
     } finally {
