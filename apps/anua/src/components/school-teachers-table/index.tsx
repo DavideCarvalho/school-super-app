@@ -85,12 +85,6 @@ export function SchoolTeachersTable({ schoolId }: SchoolTeachersTableProps) {
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      {/* <NewTeacherModal
-        schoolId={schoolId}
-        onCreated={() => onCreated()}
-        open={open}
-        onClickCancel={() => setOpen(false)}
-      /> */}
       <NewTeacherModalV2
         schoolId={schoolId}
         onClickSubmit={onCreated}

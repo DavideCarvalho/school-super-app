@@ -44,14 +44,12 @@ interface NewTeacherModalV2Props {
   onClose: () => void;
   open: boolean;
   onClickCancel: (open: boolean) => void;
-  onClose(): void;
 }
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 export default function NewTeacherModalV2({
   schoolId,
-  onClickSubmit,
   open,
   onClickCancel,
   onClose,
@@ -189,7 +187,9 @@ export default function NewTeacherModalV2({
           </div>
           <DialogFooter>
             <div>
-              <Button variant="outline">Cancelar</Button>
+              <Button variant="outline" onClick={onClickCancel}>
+                Cancelar
+              </Button>
             </div>
             <Button type="submit">Salvar</Button>
           </DialogFooter>
