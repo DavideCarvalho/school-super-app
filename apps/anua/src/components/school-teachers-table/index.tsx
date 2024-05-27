@@ -13,7 +13,8 @@ import type { Role, User } from "@acme/db";
 
 import { api } from "~/trpc/react";
 import { EditWorkerModal } from "../edit-worker-modal";
-import { NewTeacherRequestModal } from "../new-teacher-request-modal";
+import { NewTeacherModal } from "../new-teacher-modal";
+import NewTeacherModalV2 from "../new-teacher-modal-v2";
 import { Pagination } from "../pagination";
 
 interface SchoolTeachersTableProps {
@@ -45,6 +46,9 @@ export function SchoolTeachersTable({ schoolId }: SchoolTeachersTableProps) {
   );
 
   const deleteTeacherMutation = api.teacher.deleteById.useMutation();
+
+  const { mutateAsync: createTeacher } =
+    api.teacher.createTeacher.useMutation();
 
   async function onCreated() {
     setOpen(false);
@@ -81,11 +85,18 @@ export function SchoolTeachersTable({ schoolId }: SchoolTeachersTableProps) {
 
   return (
     <div className="bg-white py-12 sm:py-16 lg:py-20">
-      <NewTeacherRequestModal
+      {/* <NewTeacherModal
         schoolId={schoolId}
         onCreated={() => onCreated()}
         open={open}
         onClickCancel={() => setOpen(false)}
+      /> */}
+      <NewTeacherModalV2
+        schoolId={schoolId}
+        onClickSubmit={onCreated}
+        open={open}
+        onClickCancel={() => setOpen(false)}
+        onClose={() => setOpen(false)}
       />
       <EditWorkerModal
         schoolId={schoolId}
@@ -117,6 +128,7 @@ export function SchoolTeachersTable({ schoolId }: SchoolTeachersTableProps) {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
+                  <title>icone</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -214,6 +226,7 @@ function TableRow({ worker, onDelete, onEdit }: TableRowProps) {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -232,18 +245,20 @@ function TableRow({ worker, onDelete, onEdit }: TableRowProps) {
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onDelete(worker.id)}
                 >
                   Excluir
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onEdit(worker)}
                 >
                   Editar
-                </li>
+                </button>
               </ul>
             </div>
           </div>
@@ -280,6 +295,7 @@ function TableRowSkeleton() {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

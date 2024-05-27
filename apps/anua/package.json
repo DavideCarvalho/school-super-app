@@ -90,6 +90,7 @@
     "@acme/prettier-config": "workspace:^0.1.0",
     "@acme/tailwind-config": "workspace:^0.1.0",
     "@acme/tsconfig": "workspace:^0.1.0",
+    "@acme/ui": "workspace:^0.1.0",
     "@biomejs/biome": "1.7.3",
     "@types/node": "20.12.12",
     "@types/nodemailer": "6.4.15",

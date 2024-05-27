@@ -61,7 +61,7 @@ model User {
 model Teacher {
   id                  String                @id
   TeacherHasClasses   TeacherHasClass[]
-  User                User                  @relation(fields: [id], references: [id])
+  User                User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   File                File[]
   TeacherAvailability TeacherAvailability[]
   TeacherHasSubject   TeacherHasSubject[]
@@ -78,7 +78,7 @@ model TeacherAvailability {
   startTime String
   endTime   String
 
-  Teacher         Teacher           @relation(fields: [teacherId], references: [id])
+  Teacher         Teacher           @relation(fields: [teacherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   TeacherHasClass TeacherHasClass[]
 }
 
@@ -89,7 +89,7 @@ model Student {
   canteenLimit      Float?
 
   CanteenItemPurchases StudentCanteenItemPurchase[]
-  User                 User                         @relation(name: "student_user_id", fields: [id], references: [id])
+  User                 User                         @relation(name: "student_user_id", fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   ResponsibleUser      User                         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
   StudentPei           StudentPei[]
   Class                Class                        @relation(fields: [classId], references: [id])

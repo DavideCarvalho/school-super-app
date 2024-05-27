@@ -18,19 +18,19 @@ const schema = z
   })
   .required();
 
-interface NewWorkerRequestModalProps {
+interface NewTeacherModalProps {
   schoolId: string;
   open: boolean;
   onCreated: () => void;
   onClickCancel: () => void;
 }
 
-export function NewTeacherRequestModal({
+export function NewTeacherModal({
   schoolId,
   open,
   onCreated,
   onClickCancel,
-}: NewWorkerRequestModalProps) {
+}: NewTeacherModalProps) {
   const {
     register,
     handleSubmit,
