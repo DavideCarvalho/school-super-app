@@ -31,7 +31,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_GLITCHTIP_DSN: z.string().optional(),
-    NEXT_PUBLIC_CLARITY_PROJECT_ID: z.string(),
+    NEXT_PUBLIC_CLARITY_PROJECT_ID: z.string().optional(),
     NEXT_PUBLIC_ANUA_URL: z.string().url().optional(),
     NEXT_PUBLIC_CONECTAPROF_URL: z.string().url().optional(),
   },

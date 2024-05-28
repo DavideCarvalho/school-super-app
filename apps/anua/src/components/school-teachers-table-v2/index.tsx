@@ -1,5 +1,7 @@
+"use client";
+
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
@@ -40,10 +42,15 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
   const [open, setOpen] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const page = searchParams?.get("page") ? Number(searchParams.get("page")) : 1;
+  const limit = searchParams?.get("limit")
+    ? Number(searchParams.get("limit"))
+    : 5;
   const teachersQuery = api.teacher.getSchoolTeachers.useQuery({
     schoolId,
-    limit: router.query.limit ? Number(router.query.limit) : 5,
-    page: router.query.page ? Number(router.query.page) : 1,
+    page,
+    limit,
   });
 
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
