@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useHash } from "hooks/use-hash";
 import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
@@ -35,6 +37,8 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
 
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const [, setHash] = useHash();
   const page = searchParams?.get("page") ? Number(searchParams.get("page")) : 1;
   const limit = searchParams?.get("limit")
     ? Number(searchParams.get("limit"))
@@ -96,17 +100,6 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
 
   return (
     <>
-      <NewTeacherModalV2
-        schoolId={schoolId}
-        onClickSubmit={onCreated}
-        open={open}
-        onClickCancel={handleOnClose}
-        onClose={handleOnClose}
-      />
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Lista de Professores</h2>
-        <Button onClick={() => setOpen(true)}>Adicionar Professor</Button>
-      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -164,32 +157,7 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
         currentPage={page}
         itemsPerPage={limit}
         totalCount={teachersCount}
-        onPageChange={() => {}}
       />
-      {/* <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive>
-              2
-            </PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination> */}
     </>
   );
 }

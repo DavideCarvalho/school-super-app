@@ -1,6 +1,25 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { authMiddleware, clerkMiddleware } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+export default clerkMiddleware((auth, req) => {
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-url", req.url);
+
+  return NextResponse.next({
+    request: {
+      // Apply new request headers
+      headers: requestHeaders,
+    },
+  });
+});
+
+// export default authMiddleware({
+//   afterAuth(auth, req) {
+//     console.log(`to aqui por favor funciona`);
+//     return req.headers.set("x-url", req.url);
+//   },
+//   publicRoutes: ["/"],
+// });
 
 // Stop Middleware running on static files
 export const config = {

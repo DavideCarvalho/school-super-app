@@ -8,22 +8,18 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@acme/ui/pagination";
 
 interface PaginationV2Props {
   currentPage: number;
   totalCount: number;
   itemsPerPage: number;
-  onPageChange: (page: number) => void;
 }
 
 export function PaginationV2({
   currentPage,
   totalCount,
   itemsPerPage,
-  onPageChange,
 }: PaginationV2Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -58,7 +54,6 @@ export function PaginationV2({
             <PaginationLink
               href={pageUrl(page)}
               isActive={page === currentPage}
-              onClick={() => onPageChange(page)}
             >
               {page}
             </PaginationLink>
