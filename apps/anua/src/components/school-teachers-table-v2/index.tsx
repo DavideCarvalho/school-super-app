@@ -6,15 +6,6 @@ import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@acme/ui/pagination";
-import {
   Table,
   TableBody,
   TableCell,
@@ -25,6 +16,7 @@ import {
 
 import { api } from "~/trpc/react";
 import { NewTeacherModalV2 } from "../new-teacher-modal-v2";
+import { PaginationV2 } from "../pagination-v2";
 
 const daysOfWeekToPortuguese = {
   Monday: "Segunda-feira",
@@ -51,6 +43,10 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     schoolId,
     page,
     limit,
+  });
+
+  const [teachersCount] = api.teacher.countSchoolTeachers.useSuspenseQuery({
+    schoolId,
   });
 
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
@@ -155,7 +151,13 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
           })}
         </TableBody>
       </Table>
-      <Pagination>
+      <PaginationV2
+        currentPage={page}
+        itemsPerPage={limit}
+        totalCount={teachersCount}
+        onPageChange={() => {}}
+      />
+      {/* <Pagination>
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious href="#" />
@@ -178,7 +180,7 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
             <PaginationNext href="#" />
           </PaginationItem>
         </PaginationContent>
-      </Pagination>
+      </Pagination> */}
     </>
   );
 }

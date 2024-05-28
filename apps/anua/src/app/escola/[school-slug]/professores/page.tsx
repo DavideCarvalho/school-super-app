@@ -18,6 +18,9 @@ export default async function TeachersPage({
     page: searchParams?.page ? parseInt(searchParams.page as string) : 1,
     limit: searchParams?.limit ? parseInt(searchParams.limit as string) : 10,
   });
+  await helper.teacher.countSchoolTeachers.prefetch({
+    schoolId: school.id,
+  });
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>

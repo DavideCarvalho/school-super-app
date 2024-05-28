@@ -153,4 +153,19 @@ export const teacherRouter = createTRPCRouter({
         },
       });
     }),
+  countSchoolTeachers: publicProcedure
+    .input(z.object({ schoolId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.teacher.count({
+        where: {
+          User: {
+            schoolId: input.schoolId,
+            Role: {
+              name: "TEACHER",
+            },
+            active: true,
+          },
+        },
+      });
+    }),
 });
