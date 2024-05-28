@@ -5,16 +5,18 @@ import { api, createSSRHelper } from "~/trpc/server";
 
 export default async function TeachersPage({
   params,
+  searchParams,
 }: {
   params: { "school-slug": string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
   await helper.teacher.getSchoolTeachers.prefetch({
     schoolId: school.id,
-    page: 1,
-    limit: 5,
+    page: searchParams?.page ? parseInt(searchParams.page as string) : 1,
+    limit: searchParams?.limit ? parseInt(searchParams.limit as string) : 10,
   });
   const dehydratedState = dehydrate(helper.queryClient);
   return (
