@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
@@ -59,7 +59,6 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     const toastId = toast.loading("Removendo professor...");
     try {
       await deleteUser({ userId: teacherId });
-
       toast.success("Professor removido com sucesso!");
     } catch (e) {
       toast.error("Erro ao remover professor");
@@ -80,6 +79,15 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     await teachersQuery.refetch();
     // await teachersCountQuery.refetch();
   }
+
+  useEffect(() => {
+    if (!searchParams) return;
+    if (searchParams.has("page") && searchParams.has("limit")) return;
+    const newSearchParams = new URLSearchParams(searchParams.toString());
+    newSearchParams.set("page", searchParams.get("page") || "1");
+    newSearchParams.set("limit", searchParams.get("limit") || "5");
+    router.push(`?${newSearchParams.toString()}`);
+  }, [searchParams, router.push]);
 
   return (
     <>
