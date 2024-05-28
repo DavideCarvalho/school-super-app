@@ -38,7 +38,7 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
   const page = searchParams?.get("page") ? Number(searchParams.get("page")) : 1;
   const limit = searchParams?.get("limit")
     ? Number(searchParams.get("limit"))
-    : 5;
+    : 10;
   const teachersQuery = api.teacher.getSchoolTeachers.useQuery({
     schoolId,
     page,
@@ -48,6 +48,8 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
   const [teachersCount] = api.teacher.countSchoolTeachers.useSuspenseQuery({
     schoolId,
   });
+
+  const utils = api.useUtils();
 
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
 
@@ -60,20 +62,27 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
       toast.error("Erro ao remover professor");
     } finally {
       toast.dismiss(toastId);
-      await teachersQuery.refetch();
+      await Promise.all([
+        utils.teacher.getSchoolTeachers.invalidate(),
+        utils.teacher.countSchoolTeachers.invalidate(),
+      ]);
     }
   }
 
   async function handleOnClose() {
     setOpen(false);
-    await teachersQuery.refetch();
-    // await teachersCountQuery.refetch();
+    await Promise.all([
+      utils.teacher.getSchoolTeachers.invalidate(),
+      utils.teacher.countSchoolTeachers.invalidate(),
+    ]);
   }
 
   async function onCreated() {
     setOpen(false);
-    await teachersQuery.refetch();
-    // await teachersCountQuery.refetch();
+    await Promise.all([
+      utils.teacher.getSchoolTeachers.invalidate(),
+      utils.teacher.countSchoolTeachers.invalidate(),
+    ]);
   }
 
   useEffect(() => {
@@ -81,7 +90,7 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     if (searchParams.has("page") && searchParams.has("limit")) return;
     const newSearchParams = new URLSearchParams(searchParams.toString());
     newSearchParams.set("page", searchParams.get("page") || "1");
-    newSearchParams.set("limit", searchParams.get("limit") || "5");
+    newSearchParams.set("limit", searchParams.get("limit") || "10");
     router.push(`?${newSearchParams.toString()}`);
   }, [searchParams, router.push]);
 
