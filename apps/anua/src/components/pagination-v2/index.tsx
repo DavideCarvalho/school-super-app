@@ -39,9 +39,11 @@ export function PaginationV2({
   return (
     <Pagination>
       <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious href={pageUrl(currentPage - 1)} />
-        </PaginationItem>
+        {currentPage > 1 && (
+          <PaginationItem>
+            <PaginationPrevious href={pageUrl(currentPage - 1)} />
+          </PaginationItem>
+        )}
         {pagesList[0]! > 1 && (
           <>
             <PaginationItem className="ml-2">
@@ -72,9 +74,11 @@ export function PaginationV2({
             </PaginationItem>
           </>
         )}
-        <PaginationItem className="ml-2">
-          <PaginationNext href={pageUrl(currentPage + 1)} />
-        </PaginationItem>
+        {currentPage !== pages && (
+          <PaginationItem className="ml-2">
+            <PaginationNext href={pageUrl(currentPage + 1)} />
+          </PaginationItem>
+        )}
       </PaginationContent>
     </Pagination>
   );
