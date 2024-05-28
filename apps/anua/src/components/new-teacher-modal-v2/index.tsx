@@ -1,5 +1,3 @@
-"use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -55,8 +53,8 @@ export function NewTeacherModalV2({
   onClose,
   onClickSubmit,
 }: NewTeacherModalV2Props) {
-  const { handleSubmit, getValues, watch, setValue, formState, register } =
-    useForm({
+  const { handleSubmit, getValues, watch, setValue, register, reset } = useForm(
+    {
       resolver: zodResolver(schema),
       defaultValues: {
         name: "",
@@ -69,7 +67,8 @@ export function NewTeacherModalV2({
           },
         ],
       },
-    });
+    },
+  );
   const availabilities = watch("availability");
 
   const { mutateAsync: createTeacher } =
@@ -85,6 +84,7 @@ export function NewTeacherModalV2({
         availabilities: data.availability,
       });
       toast.success("Professor criado com sucesso!");
+      reset();
       await onClickSubmit();
     } catch (e) {
       toast.error("Erro ao criar professor");
@@ -172,8 +172,10 @@ export function NewTeacherModalV2({
                         day:
                           daysOfWeek[availabilities.length] ??
                           (daysOfWeek[0] as string),
-                        startTime: "",
-                        endTime: "",
+                        // @ts-expect-error
+                        startTime: undefined,
+                        // @ts-expect-error
+                        endTime: undefined,
                       });
                     }}
                   >

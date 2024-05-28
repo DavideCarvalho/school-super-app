@@ -45,7 +45,6 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     limit: router.query.limit ? Number(router.query.limit) : 5,
     page: router.query.page ? Number(router.query.page) : 1,
   });
-  console.log("teachersQuery", teachersQuery);
 
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
 
