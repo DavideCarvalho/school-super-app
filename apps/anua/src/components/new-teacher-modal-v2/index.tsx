@@ -38,10 +38,9 @@ const schema = z.object({
 
 interface NewTeacherModalV2Props {
   schoolId: string;
-  onClickSubmit: () => void;
-  onClose: () => void;
   open: boolean;
-  onClickCancel: (open: boolean) => void;
+  onClickSubmit: () => void;
+  onClickCancel: () => void;
 }
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
@@ -50,20 +49,19 @@ export function NewTeacherModalV2({
   schoolId,
   open,
   onClickCancel,
-  onClose,
   onClickSubmit,
 }: NewTeacherModalV2Props) {
   const { handleSubmit, getValues, watch, setValue, register, reset } = useForm(
     {
       resolver: zodResolver(schema),
       defaultValues: {
-        name: "",
-        email: "",
+        name: undefined,
+        email: undefined,
         availability: [
           {
-            day: "Monday",
-            startTime: "07:00",
-            endTime: "12:30",
+            day: undefined,
+            startTime: undefined,
+            endTime: undefined,
           },
         ],
       },

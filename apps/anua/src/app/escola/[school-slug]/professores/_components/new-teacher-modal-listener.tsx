@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
 import { NewTeacherModalV2 } from "~/components/new-teacher-modal-v2";
@@ -14,14 +13,10 @@ interface NewTeacherModalListenerProps {
 export function NewTeacherModalListener({
   schoolId,
 }: NewTeacherModalListenerProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
 
   useEffect(() => {
-    if (!searchParams) return;
     if (hash === "adicionar-professor") {
       setOpenNewTeacherModal(true);
     }
@@ -38,7 +33,7 @@ export function NewTeacherModalListener({
     setHash("");
   }
 
-  async function handleOnClose() {
+  async function handleOnClickCancel() {
     setOpenNewTeacherModal(false);
     await Promise.all([
       utils.teacher.getSchoolTeachers.invalidate(),
@@ -50,10 +45,9 @@ export function NewTeacherModalListener({
   return (
     <NewTeacherModalV2
       schoolId={schoolId}
-      onClickSubmit={handleOnClickSubmit}
       open={openNewTeacherModal}
-      onClickCancel={handleOnClose}
-      onClose={handleOnClose}
+      onClickSubmit={handleOnClickSubmit}
+      onClickCancel={handleOnClickCancel}
     />
   );
 }
