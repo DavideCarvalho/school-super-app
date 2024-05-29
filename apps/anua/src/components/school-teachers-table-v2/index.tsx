@@ -103,7 +103,7 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
                   height: "60px",
                 }}
               >
-                <TableCell>{teacher?.User?.name ?? ""}</TableCell>
+                <TableCell>{teacher?.User?.name ?? "-"}</TableCell>
                 <TableCell>
                   {teacher?.TeacherHasSubject?.map(
                     ({ Subject }) => Subject.name,

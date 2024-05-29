@@ -31,7 +31,7 @@ export function PaginationV2({
   );
 
   function pageUrl(page: number) {
-    const newSearchParams = new URLSearchParams(searchParams!.toString());
+    const newSearchParams = new URLSearchParams(searchParams?.toString());
     newSearchParams.set("page", page.toString());
     return `${pathname}?${newSearchParams.toString()}`;
   }
@@ -39,12 +39,12 @@ export function PaginationV2({
   return (
     <Pagination>
       <PaginationContent>
-        {currentPage > 1 && (
-          <PaginationItem>
-            <PaginationPrevious href={pageUrl(currentPage - 1)} />
-          </PaginationItem>
-        )}
-        {pagesList[0]! > 1 && (
+        <PaginationItem>
+          <PaginationPrevious
+            href={currentPage > 1 ? pageUrl(currentPage - 1) : pageUrl(1)}
+          />
+        </PaginationItem>
+        {pagesList[0] > 1 && (
           <>
             <PaginationItem className="ml-2">
               <PaginationLink href={pageUrl(1)}>1</PaginationLink>
@@ -64,7 +64,7 @@ export function PaginationV2({
             </PaginationLink>
           </PaginationItem>
         ))}
-        {pagesList[pagesList.length - 1]! < pages && (
+        {pagesList[pagesList.length - 1] < pages && (
           <>
             <PaginationItem className="ml-2">
               <PaginationEllipsis />
@@ -74,11 +74,13 @@ export function PaginationV2({
             </PaginationItem>
           </>
         )}
-        {currentPage !== pages && (
-          <PaginationItem className="ml-2">
-            <PaginationNext href={pageUrl(currentPage + 1)} />
-          </PaginationItem>
-        )}
+        <PaginationItem className="ml-2">
+          <PaginationNext
+            href={
+              currentPage < pages ? pageUrl(currentPage + 1) : pageUrl(pages)
+            }
+          />
+        </PaginationItem>
       </PaginationContent>
     </Pagination>
   );
