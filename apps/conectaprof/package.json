@@ -72,7 +72,7 @@
     "draft-js": "^0.11.7",
     "emailjs": "^4.0.3",
     "flatpickr": "4.6.13",
-    "highlight.run": "8.12.3",
+    "highlight.run": "8.13.0",
     "lucide-react": "0.378.0",
     "minio": "8.0.0",
     "next": "14.2.3",
