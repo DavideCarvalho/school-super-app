@@ -913,13 +913,8 @@ importers:
         specifier: 9.3.0
         version: 9.3.0
       framer-motion:
-<<<<<<< HEAD
         specifier: 11.2.9
-        version: 11.2.9(@emotion/is-prop-valid@0.8.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-=======
-        specifier: 11.2.6
-        version: 11.2.6(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
->>>>>>> 70d0985 (mudando hook pra pegar valor de query string do hash)
+        version: 11.2.9(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       prism-react-renderer:
         specifier: 2.3.1
         version: 2.3.1(react@18.3.1)
@@ -16460,11 +16455,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-<<<<<<< HEAD
-  framer-motion@11.2.9(@emotion/is-prop-valid@0.8.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-=======
-  framer-motion@11.2.6(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
->>>>>>> 70d0985 (mudando hook pra pegar valor de query string do hash)
+  framer-motion@11.2.9(@emotion/is-prop-valid@1.2.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       tslib: 2.6.2
     optionalDependencies:
