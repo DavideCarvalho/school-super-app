@@ -40,7 +40,9 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
   const limit = searchParams?.get("limit")
     ? Number(searchParams.get("limit"))
     : 10;
-  const teachersQuery = api.teacher.getSchoolTeachers.useQuery({
+
+  const rowList = Array(limit).fill(0);
+  const { data: teachers } = api.teacher.getSchoolTeachers.useQuery({
     schoolId,
     page,
     limit,
@@ -70,22 +72,6 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
     }
   }
 
-  async function handleOnClose() {
-    setOpen(false);
-    await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
-    ]);
-  }
-
-  async function onCreated() {
-    setOpen(false);
-    await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
-    ]);
-  }
-
   useEffect(() => {
     if (!searchParams) return;
     if (searchParams.has("page") && searchParams.has("limit")) return;
@@ -108,46 +94,54 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {teachersQuery.data?.map((teacher) => {
+          {rowList.map((_row, index) => {
+            const teacher = teachers ? teachers[index] : undefined;
             return (
-              <TableRow key={teacher.id}>
-                <TableCell>{teacher.User.name}</TableCell>
+              <TableRow
+                key={teacher?.id ?? `${_row}-${index}-${page}`}
+                style={{
+                  height: "60px",
+                }}
+              >
+                <TableCell>{teacher?.User?.name ?? ""}</TableCell>
                 <TableCell>
-                  {teacher.TeacherHasSubject.map(
+                  {teacher?.TeacherHasSubject?.map(
                     ({ Subject }) => Subject.name,
-                  ).join(", ")}
+                  )?.join(", ") ?? "-"}
                 </TableCell>
                 <TableCell>
-                  {teacher.TeacherHasClasses.map(
+                  {teacher?.TeacherHasClasses?.map(
                     ({ Class }) => Class.name,
-                  ).join(", ")}
+                  )?.join(", ") ?? "-"}
                 </TableCell>
                 <TableCell>
-                  {teacher.TeacherAvailability.map(
+                  {teacher?.TeacherAvailability?.map(
                     (availability) =>
                       `${daysOfWeekToPortuguese[availability.day as keyof typeof daysOfWeekToPortuguese]} - ${availability.startTime} - ${availability.endTime}`,
-                  ).join(", ")}
+                  )?.join(", ") ?? "-"}
                 </TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Link
-                      href={`${pathname}?${searchParams?.toString()}#editar-professor?professor=${teacher.User.slug}`}
-                    >
-                      <Button size="sm" variant="ghost">
-                        <UserIcon className="h-4 w-4" />
-                        <span className="sr-only">Editar</span>
+                  {teacher ? (
+                    <div className="flex items-center gap-2">
+                      <Link
+                        href={`${pathname}?${searchParams?.toString()}#editar-professor?professor=${teacher.User.slug}`}
+                      >
+                        <Button size="sm" variant="ghost">
+                          <UserIcon className="h-4 w-4" />
+                          <span className="sr-only">Editar</span>
+                        </Button>
+                      </Link>
+                      <Button
+                        className="text-red-600 hover:text-red-800"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteTeacher(teacher.id)}
+                      >
+                        <Trash2Icon className="h-4 w-4" />
+                        <span className="sr-only">Remover</span>
                       </Button>
-                    </Link>
-                    <Button
-                      className="text-red-600 hover:text-red-800"
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => deleteTeacher(teacher.id)}
-                    >
-                      <Trash2Icon className="h-4 w-4" />
-                      <span className="sr-only">Remover</span>
-                    </Button>
-                  </div>
+                    </div>
+                  ) : null}
                 </TableCell>
               </TableRow>
             );
