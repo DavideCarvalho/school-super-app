@@ -118,6 +118,7 @@ export function SchoolSubjectsTable({ schoolId }: SchoolSubjectsTableProps) {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
+                  <title>icone</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -204,6 +205,7 @@ function TableRow({ subject, onDelete, onEdit }: TableRowProps) {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -222,18 +224,20 @@ function TableRow({ subject, onDelete, onEdit }: TableRowProps) {
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onDelete(subject.id)}
                 >
                   Excluir
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onEdit(subject)}
                 >
                   Editar
-                </li>
+                </button>
               </ul>
             </div>
           </div>
@@ -263,6 +267,7 @@ function TableRowSkeleton() {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

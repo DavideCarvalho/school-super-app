@@ -4,12 +4,9 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
-import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
-import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
 
-export default async function TeachersPage({
+export default async function SubjectsPage({
   params,
 }: {
   params: { "school-slug": string };
@@ -40,16 +37,13 @@ export default async function TeachersPage({
   return (
     <HydrationBoundary state={dehydratedState}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Professores</h2>
+        <h2 className="text-xl font-semibold">Matérias</h2>
         <Link
-          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-professor`}
+          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-materia`}
         >
-          <Button>Adicionar Professor</Button>
+          <Button>Adicionar Matéria</Button>
         </Link>
       </div>
-      <NewTeacherModalListener schoolId={school.id} />
-      <EditTeacherModalListener schoolId={school.id} />
-      <TeachersTableV2 schoolId={school.id} />
     </HydrationBoundary>
   );
 }
