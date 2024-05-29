@@ -51,22 +51,22 @@ export function NewTeacherModalV2({
   onClickCancel,
   onClickSubmit,
 }: NewTeacherModalV2Props) {
-  const { handleSubmit, getValues, watch, setValue, register, reset } = useForm(
-    {
-      resolver: zodResolver(schema),
-      defaultValues: {
-        name: undefined,
-        email: undefined,
-        availability: [
-          {
-            day: undefined,
-            startTime: undefined,
-            endTime: undefined,
-          },
-        ],
-      },
+  const { handleSubmit, getValues, watch, setValue, register, reset } = useForm<
+    z.infer<typeof schema>
+  >({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: undefined,
+      email: undefined,
+      availability: [
+        {
+          day: undefined,
+          startTime: undefined,
+          endTime: undefined,
+        },
+      ],
     },
-  );
+  });
   const availabilities = watch("availability");
 
   const { mutateAsync: createTeacher } =
@@ -141,8 +141,16 @@ export function NewTeacherModalV2({
                           <SelectItem value="Friday">Sexta-feira</SelectItem>
                         </SelectContent>
                       </Select>
-                      <Input placeholder="Início" type="time" />
-                      <Input placeholder="Fim" type="time" />
+                      <Input
+                        placeholder="Início"
+                        type="time"
+                        {...register(`availability.${index}.startTime`)}
+                      />
+                      <Input
+                        placeholder="Fim"
+                        type="time"
+                        {...register(`availability.${index}.endTime`)}
+                      />
                       {index > 0 ? (
                         <Button
                           className="flex items-center justify-center"
@@ -186,7 +194,7 @@ export function NewTeacherModalV2({
           </div>
           <DialogFooter>
             <div>
-              <Button variant="outline" onClick={() => onClickCancel(false)}>
+              <Button variant="outline" onClick={() => onClickCancel()}>
                 Cancelar
               </Button>
             </div>

@@ -93,7 +93,6 @@ export const teacherRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log(ctx.session);
       try {
         const roleTeacher = await ctx.prisma.role.findFirst({
           where: { name: "TEACHER" },
@@ -130,6 +129,94 @@ export const teacherRouter = createTRPCRouter({
         });
       } catch (error) {
         console.log(error);
+      }
+    }),
+  editTeacher: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        availabilities: z.array(
+          z.object({
+            day: z.enum([
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+            ]),
+            startTime: z.string(),
+            endTime: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const teacher = await ctx.prisma.teacher.findFirst({
+        where: { id: input.id },
+        include: {
+          User: true,
+        },
+      });
+      if (!teacher) throw new Error("Teacher not found");
+
+      if (!teacher.User.externalAuthId)
+        throw new Error("Teacher not found on Clerk");
+
+      if (teacher.User.email !== input.email) {
+        const userOnClerk = await clerkClient.users.getUser(
+          teacher.User.externalAuthId,
+        );
+
+        if (!userOnClerk) throw new Error("Teacher not found on Clerk");
+
+        await clerkClient.users.updateUser(teacher.User.externalAuthId, {
+          primaryEmailAddressID: input.email,
+        });
+      }
+
+      await ctx.prisma.teacher.update({
+        where: { id: input.id },
+        data: {
+          User: {
+            update: {
+              name: input.name,
+              slug: slugify(input.name),
+              email: input.email,
+            },
+          },
+        },
+      });
+
+      for (const availability of input.availabilities) {
+        const teacherAvailability =
+          await ctx.prisma.teacherAvailability.findFirst({
+            where: {
+              teacherId: teacher.id,
+              day: availability.day,
+            },
+          });
+        if (!teacherAvailability) {
+          await ctx.prisma.teacherAvailability.create({
+            data: {
+              teacherId: teacher.id,
+              day: availability.day,
+              startTime: availability.startTime,
+              endTime: availability.endTime,
+            },
+          });
+        } else {
+          await ctx.prisma.teacherAvailability.update({
+            where: {
+              id: teacherAvailability.id,
+            },
+            data: {
+              startTime: availability.startTime,
+              endTime: availability.endTime,
+            },
+          });
+        }
       }
     }),
   getSchoolTeachers: publicProcedure

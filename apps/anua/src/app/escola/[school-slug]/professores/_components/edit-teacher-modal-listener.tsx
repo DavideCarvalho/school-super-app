@@ -16,7 +16,7 @@ export function EditTeacherModalListener({
 }: EditTeacherModalListenerProps) {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
-  const [hashValue, setHashValue] = useHashQueryValue("professor");
+  const [hashValue] = useHashQueryValue("professor");
 
   useEffect(() => {
     if (hash === "editar-professor" && hashValue) {

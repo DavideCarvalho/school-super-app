@@ -84,8 +84,7 @@ export function EditTeacherModal({
   });
   const availabilities = watch("availability");
 
-  const { mutateAsync: createTeacher } =
-    api.teacher.createTeacher.useMutation();
+  const { mutateAsync: editTeacher } = api.teacher.editTeacher.useMutation();
 
   useEffect(() => {
     if (!teacher) return;
@@ -102,21 +101,24 @@ export function EditTeacherModal({
   }, [teacher, setValue]);
 
   async function onSubmit(data: z.infer<typeof schema>) {
+    if (!teacher) return;
     const toastId = toast.loading("Alterando professor...");
     try {
-      await createTeacher({
+      await editTeacher({
+        id: teacher.id,
         name: data.name,
         email: data.email,
         schoolId: schoolId,
+        // @ts-expect-error
         availabilities: data.availability,
       });
+      toast.dismiss(toastId);
       toast.success("Professor alterado com sucesso!");
       reset();
       await onClickSubmit();
     } catch (e) {
-      toast.error("Erro ao alterar professor");
-    } finally {
       toast.dismiss(toastId);
+      toast.error("Erro ao alterar professor");
     }
   }
 
@@ -197,12 +199,12 @@ export function EditTeacherModal({
                       <Input
                         placeholder="Início"
                         type="time"
-                        value={availability.startTime}
+                        {...register(`availability.${index}.startTime`)}
                       />
                       <Input
                         placeholder="Fim"
                         type="time"
-                        value={availability.endTime}
+                        {...register(`availability.${index}.endTime`)}
                       />
                       {index > 0 ? (
                         <Button
