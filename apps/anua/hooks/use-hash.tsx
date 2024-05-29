@@ -8,10 +8,14 @@ import queryString from "query-string";
 // source: https://github.com/vercel/next.js/discussions/49465
 export const useHash = () => {
   const getCurrentHash = useMemo(
-    () => () =>
-      typeof window !== "undefined"
-        ? window.location.hash.replace(/^#!?/, "")
-        : "",
+    () => () => {
+      const hash =
+        typeof window !== "undefined"
+          ? window.location.hash.replace(/^#!?/, "")
+          : "";
+      const [hashWithoutQueryString] = hash.split("?");
+      return hashWithoutQueryString as string;
+    },
     [],
   );
   const router = useRouter();

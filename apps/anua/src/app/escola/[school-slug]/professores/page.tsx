@@ -7,6 +7,7 @@ import { Button } from "@acme/ui/button";
 import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
+import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 
 export default async function TeachersPage({
   params,
@@ -47,6 +48,7 @@ export default async function TeachersPage({
         </Link>
       </div>
       <NewTeacherModalListener schoolId={school.id} />
+      <EditTeacherModalListener schoolId={school.id} />
       <TeachersTableV2 schoolId={school.id} />
     </HydrationBoundary>
   );

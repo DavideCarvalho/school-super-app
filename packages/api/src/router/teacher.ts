@@ -5,6 +5,22 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
 export const teacherRouter = createTRPCRouter({
+  findBySlug: publicProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.teacher.findFirst({
+        where: { User: { slug: input.slug } },
+        include: {
+          User: true,
+          TeacherAvailability: true,
+          TeacherHasClasses: {
+            where: {
+              active: true,
+            },
+          },
+        },
+      });
+    }),
   getClassesById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {
