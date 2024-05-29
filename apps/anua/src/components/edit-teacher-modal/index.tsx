@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
+import { Oval } from "react-loader-spinner";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
@@ -24,6 +26,7 @@ import {
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { TimePickerField } from "../time-picker-field";
 
 const schema = z.object({
   name: z.string(),
@@ -54,21 +57,22 @@ export function EditTeacherModal({
   onClickCancel,
   onClickSubmit,
 }: EditTeacherModalProps) {
-  const { data: teacher } = api.teacher.findBySlug.useQuery(
-    {
-      slug: teacherSlug,
-    },
-    {
-      enabled: teacherSlug != null,
-    },
-  );
+  const { data: teacher, isLoading: teacherLoading } =
+    api.teacher.findBySlug.useQuery(
+      {
+        slug: teacherSlug,
+      },
+      {
+        enabled: teacherSlug != null,
+      },
+    );
   const { handleSubmit, getValues, watch, setValue, register, reset } = useForm<
     z.infer<typeof schema>
   >({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: undefined,
-      email: undefined,
+      name: "Carregando...",
+      email: "Carregando...",
       availability: [
         {
           day: undefined,
@@ -126,17 +130,41 @@ export function EditTeacherModal({
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">Nome do Professor</Label>
-              <Input
-                placeholder="Digite o nome do professor"
-                {...register("name")}
-              />
+              <div className="grid grid-cols-12 gap-2">
+                <Input
+                  placeholder="Digite o nome do professor"
+                  {...register("name")}
+                  readOnly={teacherLoading}
+                  className={cn(teacherLoading ? "col-span-11" : "col-span-12")}
+                />
+                <Oval
+                  visible={teacherLoading}
+                  height="30"
+                  width="30"
+                  color="hsl(262.1 83.3% 57.8%)"
+                  secondaryColor="hsl(262.1deg 83.3% 57.8% / 90%)"
+                  ariaLabel="oval-loading"
+                />
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email do Professor</Label>
-              <Input
-                placeholder="Digite o email do professor"
-                {...register("email")}
-              />
+              <div className="grid grid-cols-12 gap-2">
+                <Input
+                  placeholder="Digite o email do professor"
+                  {...register("email")}
+                  readOnly={teacherLoading}
+                  className={cn(teacherLoading ? "col-span-11" : "col-span-12")}
+                />
+                <Oval
+                  visible={teacherLoading}
+                  height="80"
+                  width="80"
+                  color="hsl(262.1 83.3% 57.8%)"
+                  secondaryColor="hsl(262.1deg 83.3% 57.8% / 90%)"
+                  ariaLabel="oval-loading"
+                />
+              </div>
             </div>
             <div className="grid gap-4">
               <div className="grid gap-2">
@@ -152,7 +180,7 @@ export function EditTeacherModal({
                           : "gap-3 sm:grid-cols-3",
                       )}
                     >
-                      <Select>
+                      <Select value={availability.day}>
                         <SelectTrigger>
                           <SelectValue placeholder="Dia" />
                         </SelectTrigger>
@@ -166,8 +194,16 @@ export function EditTeacherModal({
                           <SelectItem value="Friday">Sexta-feira</SelectItem>
                         </SelectContent>
                       </Select>
-                      <Input placeholder="Início" type="time" />
-                      <Input placeholder="Fim" type="time" />
+                      <Input
+                        placeholder="Início"
+                        type="time"
+                        value={availability.startTime}
+                      />
+                      <Input
+                        placeholder="Fim"
+                        type="time"
+                        value={availability.endTime}
+                      />
                       {index > 0 ? (
                         <Button
                           className="flex items-center justify-center"

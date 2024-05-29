@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
-import useHashParam from "hooks/use-hash-value";
+import { useHashQueryValue } from "hooks/use-hash-value";
 
 import { EditTeacherModal } from "~/components/edit-teacher-modal";
 import { api } from "~/trpc/react";
@@ -16,11 +16,9 @@ export function EditTeacherModalListener({
 }: EditTeacherModalListenerProps) {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
-  const [hashValue, setHashValue] = useHashParam("professor");
+  const [hashValue, setHashValue] = useHashQueryValue("professor");
 
   useEffect(() => {
-    console.log("hashValue", hashValue);
-    console.log("hash", hash);
     if (hash === "editar-professor" && hashValue) {
       setOpenEditTeacherModal(true);
     }
@@ -34,7 +32,6 @@ export function EditTeacherModalListener({
       utils.teacher.getSchoolTeachers.invalidate(),
       utils.teacher.countSchoolTeachers.invalidate(),
     ]);
-    setHashValue("");
     setHash("");
   }
 
@@ -44,7 +41,6 @@ export function EditTeacherModalListener({
       utils.teacher.getSchoolTeachers.invalidate(),
       utils.teacher.countSchoolTeachers.invalidate(),
     ]);
-    setHashValue("");
     setHash("");
   }
 
