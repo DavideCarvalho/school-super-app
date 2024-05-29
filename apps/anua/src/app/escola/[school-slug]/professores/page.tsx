@@ -10,13 +10,14 @@ import { NewTeacherModalListener } from "./_components/new-teacher-modal-listene
 
 export default async function TeachersPage({
   params,
-  searchParams,
 }: {
   params: { "school-slug": string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  console.log(headers().get("host"));
-  const url = new URL(headers().get("x-url")!);
+  const requestHeaders = headers();
+  const xUrl = requestHeaders.get("x-url");
+  if (!xUrl) throw new Error("unreachable");
+  const url = new URL(xUrl);
   if (!url.searchParams.has("page")) {
     url.searchParams.set("page", "1");
   }
@@ -28,8 +29,8 @@ export default async function TeachersPage({
   const helper = await createSSRHelper();
   await helper.teacher.getSchoolTeachers.prefetch({
     schoolId: school.id,
-    page: Number(url.searchParams.get("page")!),
-    limit: Number(url.searchParams.get("limit")!),
+    page: Number(url.searchParams.get("page")),
+    limit: Number(url.searchParams.get("limit")),
   });
   await helper.teacher.countSchoolTeachers.prefetch({
     schoolId: school.id,
@@ -40,7 +41,7 @@ export default async function TeachersPage({
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Lista de Professores</h2>
         <Link
-          href={`${url.pathname}?${url.searchParams!.toString()}#adicionar-professor`}
+          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-professor`}
         >
           <Button>Adicionar Professor</Button>
         </Link>

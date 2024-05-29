@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
+import useHashParam from "hooks/use-hash-value";
 
 import { NewTeacherModalV2 } from "~/components/new-teacher-modal-v2";
 import { api } from "~/trpc/react";
@@ -15,12 +16,15 @@ export function NewTeacherModalListener({
 }: NewTeacherModalListenerProps) {
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
+  const [hashValue, setHashValue] = useHashParam("professor");
+
+  console.log(hashValue);
 
   useEffect(() => {
     if (hash === "adicionar-professor") {
       setOpenNewTeacherModal(true);
     }
-  }, [hash, setOpenNewTeacherModal]);
+  }, [hash]);
 
   const utils = api.useUtils();
 

@@ -33,12 +33,9 @@ interface TeachersTableV2Props {
 }
 
 export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
-  const [open, setOpen] = useState(false);
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const [, setHash] = useHash();
   const page = searchParams?.get("page") ? Number(searchParams.get("page")) : 1;
   const limit = searchParams?.get("limit")
     ? Number(searchParams.get("limit"))
@@ -133,10 +130,14 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <Button size="sm" variant="ghost">
-                      <UserIcon className="h-4 w-4" />
-                      <span className="sr-only">Editar</span>
-                    </Button>
+                    <Link
+                      href={`${pathname}?${searchParams?.toString()}#editar-professor?professor=${teacher.User.slug}`}
+                    >
+                      <Button size="sm" variant="ghost">
+                        <UserIcon className="h-4 w-4" />
+                        <span className="sr-only">Editar</span>
+                      </Button>
+                    </Link>
                     <Button
                       className="text-red-600 hover:text-red-800"
                       size="sm"
