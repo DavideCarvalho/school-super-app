@@ -127,7 +127,12 @@ export function NewTeacherModalV2({
                           : "gap-3 sm:grid-cols-3",
                       )}
                     >
-                      <Select>
+                      <Select
+                        value={availability.day}
+                        onValueChange={(e) =>
+                          setValue(`availability.${index}.day`, e)
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Dia" />
                         </SelectTrigger>

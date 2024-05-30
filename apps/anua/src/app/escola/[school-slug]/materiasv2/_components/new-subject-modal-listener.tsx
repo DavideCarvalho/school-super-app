@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewTeacherModalV2 } from "~/components/new-teacher-modal-v2";
+import { NewSubjectModalV2 } from "~/components/new-subject-modal-v2";
 import { api } from "~/trpc/react";
 
 interface NewTeacherModalListenerProps {
@@ -43,7 +43,7 @@ export function NewTeacherModalListener({
   }
 
   return (
-    <NewTeacherModalV2
+    <NewSubjectModalV2
       schoolId={schoolId}
       open={openNewTeacherModal}
       onClickSubmit={handleOnClickSubmit}
