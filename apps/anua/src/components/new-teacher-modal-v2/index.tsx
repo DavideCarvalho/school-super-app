@@ -176,6 +176,7 @@ export function NewTeacherModalV2({
                     </div>
                   ))}
                   <Button
+                    type="button"
                     className="flex items-center gap-2"
                     variant="outline"
                     onClick={() => {
