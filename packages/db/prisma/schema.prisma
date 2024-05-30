@@ -57,6 +57,7 @@ model User {
 
   @@index([schoolId])
   @@index([roleId])
+  @@index([externalAuthId])
 }
 
 model Teacher {

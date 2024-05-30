@@ -1,39 +1,49 @@
 import slugify from "slugify";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const subjectRouter = createTRPCRouter({
-  allBySchoolId: publicProcedure
+  findBySlug: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.subject.findFirst({
+        where: { slug: input.slug, schoolId: ctx.session.school.id },
+      });
+    }),
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(5),
       }),
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.subject.findMany({
-        where: { schoolId: input.schoolId },
+        where: { schoolId: ctx.session.school.id },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
+        include: {
+          TeacherHasSubject: {
+            include: {
+              Teacher: {
+                include: {
+                  User: true,
+                },
+              },
+            },
+          },
+        },
       });
     }),
-  countAllBySchoolId: publicProcedure
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(({ ctx }) => {
+    return ctx.prisma.subject.count({
+      where: { schoolId: ctx.session.school.id },
+    });
+  }),
+  createBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
-      }),
-    )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.subject.count({
-        where: { schoolId: input.schoolId },
-      });
-    }),
-  createBySchoolId: publicProcedure
-    .input(
-      z.object({
-        schoolId: z.string(),
         name: z.string(),
       }),
     )
@@ -42,11 +52,11 @@ export const subjectRouter = createTRPCRouter({
         data: {
           name: input.name,
           slug: slugify(input.name),
-          School: { connect: { id: input.schoolId } },
+          School: { connect: { id: ctx.session.school.id } },
         },
       });
     }),
-  deleteById: publicProcedure
+  deleteById: isUserLoggedInAndAssignedToSchool
     .input(z.object({ subjectId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const subject = await ctx.prisma.subject.findUnique({
@@ -62,23 +72,22 @@ export const subjectRouter = createTRPCRouter({
         where: { id: input.subjectId },
       });
     }),
-  updateById: publicProcedure
+  updateById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         subjectId: z.string(),
         name: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const subject = await ctx.prisma.subject.findUnique({
-        where: { id: input.subjectId },
+        where: { id: input.subjectId, schoolId: ctx.session.school.id },
       });
       if (!subject) {
         throw new Error(`Matéria com id ${input.subjectId} não encontrado`);
       }
       return ctx.prisma.subject.update({
-        where: { id: input.subjectId },
+        where: { id: input.subjectId, schoolId: ctx.session.school.id },
         data: {
           name: input.name,
           slug: slugify(input.name),

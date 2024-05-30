@@ -7,13 +7,13 @@
  * The pieces you will need to use are documented accordingly near the end
  */
 
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { auth, getAuth } from "@clerk/nextjs/server";
-import { TRPCError, initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
 import { prisma } from "@acme/db";
-import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 /**
  * 1. CONTEXT
@@ -25,7 +25,7 @@ import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
  *
  */
 type CreateContextOptions = {
-	session: Awaited<ReturnType<typeof getAuth>> | null;
+  session: Awaited<ReturnType<typeof getAuth>> | null;
 };
 
 /**
@@ -38,10 +38,10 @@ type CreateContextOptions = {
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
-	return {
-		session: opts.session,
-		prisma,
-	};
+  return {
+    session: opts.session,
+    prisma,
+  };
 };
 
 /**
@@ -50,17 +50,17 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContext = (opts: {
-	headers: Headers;
-	session: Awaited<ReturnType<typeof auth>> | null;
+  headers: Headers;
+  session: Awaited<ReturnType<typeof auth>> | null;
 }) => {
-	const session = opts.session ?? auth();
-	const source = opts.headers.get("x-trpc-source") ?? "unknown";
+  const session = opts.session ?? auth();
+  const source = opts.headers.get("x-trpc-source") ?? "unknown";
 
-	console.log(">>> tRPC Request from", source, "by", session?.userId);
+  console.log(">>> tRPC Request from", source, "by", session?.userId);
 
-	return createInnerTRPCContext({
-		session,
-	});
+  return createInnerTRPCContext({
+    session,
+  });
 };
 
 /**
@@ -69,13 +69,13 @@ export const createTRPCContext = (opts: {
  * @link https://trpc.io/docs/context
  */
 export const createTRPCContextPagesRoute = (opts: CreateNextContextOptions) => {
-	const { req } = opts;
+  const { req } = opts;
 
-	const session = getAuth(req);
+  const session = getAuth(req);
 
-	return createInnerTRPCContext({
-		session,
-	});
+  return createInnerTRPCContext({
+    session,
+  });
 };
 
 /**
@@ -85,17 +85,17 @@ export const createTRPCContextPagesRoute = (opts: CreateNextContextOptions) => {
  * transformer
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
-	transformer: superjson,
-	errorFormatter({ shape, error }) {
-		return {
-			...shape,
-			data: {
-				...shape.data,
-				zodError:
-					error.cause instanceof ZodError ? error.cause.flatten() : null,
-			},
-		};
-	},
+  transformer: superjson,
+  errorFormatter({ shape, error }) {
+    return {
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.cause instanceof ZodError ? error.cause.flatten() : null,
+      },
+    };
+  },
 });
 
 /**
@@ -130,22 +130,46 @@ export const publicProcedure = t.procedure;
  * Reusable middleware that enforces users are logged in before running the
  * procedure
  */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-	if (!ctx.session?.userId) {
-		throw new TRPCError({ code: "UNAUTHORIZED" });
-	}
-	const user = ctx.prisma.user.findFirst({
-		where: { externalAuthId: ctx.session.userId },
-	});
-	if (!user) {
-		throw new TRPCError({ code: "UNAUTHORIZED" });
-	}
-	return next({
-		ctx: {
-			// infers the `session` as non-nullable
-			session: { ...ctx.session, user },
-		},
-	});
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session?.userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const user = await ctx.prisma.user.findFirst({
+    where: { externalAuthId: ctx.session.userId },
+  });
+  if (!user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user },
+    },
+  });
+});
+
+const enforceUserIsAssignedToSchool = t.middleware(async ({ ctx, next }) => {
+  if (!ctx.session?.userId) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const user = await ctx.prisma.user.findFirst({
+    where: { externalAuthId: ctx.session.userId },
+  });
+  if (!user || !user.schoolId) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  const school = await ctx.prisma.school.findFirst({
+    where: { id: user.schoolId },
+  });
+  if (!school) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user, school },
+    },
+  });
 });
 
 /**
@@ -158,3 +182,6 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const isUserLoggedInAndAssignedToSchool = t.procedure.use(
+  enforceUserIsAssignedToSchool,
+);

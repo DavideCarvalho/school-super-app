@@ -44,7 +44,6 @@ export function NewSubjectModal({
     createSchoolYearMutation.mutate(
       {
         name: data.name,
-        schoolId: schoolId,
       },
       {
         async onSuccess() {

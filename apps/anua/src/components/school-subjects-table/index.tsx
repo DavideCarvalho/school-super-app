@@ -41,7 +41,7 @@ export function SchoolSubjectsTable({ schoolId }: SchoolSubjectsTableProps) {
   );
 
   const subjectsCountQuery = api.subject.countAllBySchoolId.useQuery(
-    { schoolId },
+    undefined,
     { refetchOnMount: false },
   );
 

@@ -6,18 +6,17 @@ import { useHash } from "hooks/use-hash";
 import { NewSubjectModalV2 } from "~/components/new-subject-modal-v2";
 import { api } from "~/trpc/react";
 
-interface NewTeacherModalListenerProps {
+interface NewSubjectModalListenerProps {
   schoolId: string;
 }
 
-export function NewTeacherModalListener({
+export function NewSubjectModalListener({
   schoolId,
-}: NewTeacherModalListenerProps) {
+}: NewSubjectModalListenerProps) {
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
 
   useEffect(() => {
-    console.log("hash", hash);
     if (hash === "adicionar-materia") {
       setOpenNewTeacherModal(true);
     }

@@ -72,7 +72,6 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
         role: "TEACHER",
       }),
       serverSideHelpers.subject.allBySchoolId.prefetch({
-        schoolId: school.id,
         limit: 999,
       }),
       serverSideHelpers.class.allBySchoolId.prefetch({

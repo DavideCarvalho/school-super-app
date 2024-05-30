@@ -67,7 +67,6 @@ export function SchoolTeacherHasClassTable({
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery(
     {
-      schoolId,
       limit: 999,
     },
     { refetchOnMount: false },
@@ -185,6 +184,7 @@ export function SchoolTeacherHasClassTable({
                   stroke="currentColor"
                   strokeWidth="2"
                 >
+                  <title>icone</title>
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

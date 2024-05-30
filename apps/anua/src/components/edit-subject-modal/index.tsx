@@ -58,7 +58,6 @@ export function EditSubjectModal({
     toast.loading("Alterando matéria...");
     editSchoolYearMutation.mutate(
       {
-        schoolId,
         subjectId: selectedSubject.id,
         name: data.name,
       },

@@ -46,13 +46,10 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
 
     await Promise.all([
       serverSideHelpers.subject.allBySchoolId.prefetch({
-        schoolId: school.id,
         page,
         limit,
       }),
-      serverSideHelpers.subject.countAllBySchoolId.prefetch({
-        schoolId: school.id,
-      }),
+      serverSideHelpers.subject.countAllBySchoolId.prefetch(),
     ]);
 
     return {
