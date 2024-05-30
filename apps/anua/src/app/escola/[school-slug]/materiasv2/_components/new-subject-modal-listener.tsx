@@ -17,6 +17,7 @@ export function NewTeacherModalListener({
   const [hash, setHash] = useHash();
 
   useEffect(() => {
+    console.log("hash", hash);
     if (hash === "adicionar-materia") {
       setOpenNewTeacherModal(true);
     }

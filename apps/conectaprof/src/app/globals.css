@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
+/* @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
@@ -56,7 +56,7 @@
   body {
     @apply bg-background text-foreground;
   }
-}
+} */
 
 .highlight {
   background: url(//s2.svgbox.net/pen-brushes.svg?ic=brush-1&color=ffd580);

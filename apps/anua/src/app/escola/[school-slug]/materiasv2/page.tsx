@@ -5,6 +5,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
+import { NewTeacherModalListener } from "./_components/new-subject-modal-listener";
 
 export default async function SubjectsPage({
   params,
@@ -44,6 +45,7 @@ export default async function SubjectsPage({
           <Button>Adicionar Matéria</Button>
         </Link>
       </div>
+      <NewTeacherModalListener schoolId={school.id} />
     </HydrationBoundary>
   );
 }
