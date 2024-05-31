@@ -18,12 +18,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <ClerkProvider localization={ptBR}>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </ClerkProvider>
+      <body className="min-h-screen bg-background text-foreground antialiased">
+        <Toaster position="top-center" />
+        <div>
+          <ClerkProvider localization={ptBR}>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </ClerkProvider>
+        </div>
       </body>
-      <Toaster position="top-center" />
     </html>
   );
 }
