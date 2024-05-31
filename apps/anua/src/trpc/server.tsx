@@ -14,7 +14,7 @@ const createContext = cache(async () => {
   const heads = new Headers(headers());
   heads.set("x-trpc-source", "rsc");
 
-  return createTRPCContext({ session: auth(), headers: heads });
+  return createTRPCContext({ session: null, headers: heads });
 });
 
 export const api = createCaller(createContext);

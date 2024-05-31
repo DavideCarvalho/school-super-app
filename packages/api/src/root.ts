@@ -44,7 +44,7 @@ export const trpCaller = appRouter.createCaller({ prisma, session: null });
 export const serverSideHelpers = createServerSideHelpers({
   router: appRouter,
   ctx: {
-    session: auth(),
+    session: null,
     prisma,
   },
   transformer: superjson,
