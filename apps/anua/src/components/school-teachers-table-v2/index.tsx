@@ -38,7 +38,7 @@ export function TeachersTableV2() {
     : 10;
 
   const rowList = Array(limit).fill(0);
-  const { data: teachers } = api.teacher.getSchoolTeachers.useQuery({
+  const [teachers] = api.teacher.getSchoolTeachers.useSuspenseQuery({
     page,
     limit,
   });

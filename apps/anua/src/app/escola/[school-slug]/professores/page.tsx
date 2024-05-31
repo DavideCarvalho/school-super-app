@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -46,7 +47,9 @@ export default async function TeachersPage({
       </div>
       <NewTeacherModalListener />
       <EditTeacherModalListener />
-      <TeachersTableV2 />
+      <Suspense>
+        <TeachersTableV2 />
+      </Suspense>
     </HydrationBoundary>
   );
 }

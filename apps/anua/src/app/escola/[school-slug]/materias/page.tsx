@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
@@ -29,13 +30,10 @@ export default async function SubjectsPage({
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
   await helper.subject.allBySchoolId.prefetch({
-    schoolId: school.id,
     page: Number(url.searchParams.get("page")),
     limit: Number(url.searchParams.get("limit")),
   });
-  await helper.subject.countAllBySchoolId.prefetch({
-    schoolId: school.id,
-  });
+  await helper.subject.countAllBySchoolId.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>
@@ -47,9 +45,12 @@ export default async function SubjectsPage({
           <Button>Adicionar Matéria</Button>
         </Link>
       </div>
+
       <NewSubjectModalListener schoolId={school.id} />
       <EditSubjectModalListener />
-      <SubjectsTableV2 schoolId={school.id} />
+      <Suspense>
+        <SubjectsTableV2 schoolId={school.id} />
+      </Suspense>
     </HydrationBoundary>
   );
 }

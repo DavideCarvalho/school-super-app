@@ -32,7 +32,7 @@ export function SubjectsTableV2({ schoolId }: SubjectsTableV2Props) {
     : 10;
 
   const rowList = Array(limit).fill(0);
-  const { data: subjects } = api.subject.allBySchoolId.useQuery({
+  const [subjects] = api.subject.allBySchoolId.useSuspenseQuery({
     page,
     limit,
   });
