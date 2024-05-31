@@ -48,7 +48,10 @@ export const teacherRouter = createTRPCRouter({
       }
       await ctx.prisma.$transaction([
         ctx.prisma.teacherHasClass.deleteMany({
-          where: { teacherId: input.userId },
+          where: {
+            teacherId: input.userId,
+            Teacher: { User: { schoolId: ctx.session.school.id } },
+          },
         }),
         ctx.prisma.teacher.delete({
           where: {
@@ -160,7 +163,7 @@ export const teacherRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const teacher = await ctx.prisma.teacher.findFirst({
-        where: { id: input.id },
+        where: { id: input.id, User: { schoolId: ctx.session.school.id } },
         include: {
           User: true,
         },

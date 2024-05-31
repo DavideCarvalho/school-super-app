@@ -28,7 +28,6 @@ import { api } from "~/trpc/react";
 const schema = z
   .object({
     name: z.string({ required_error: "Qual o nome da matéria?" }),
-    teacherId: z.string().optional(),
   })
   .required();
 
@@ -53,25 +52,22 @@ export function NewSubjectModalV2({
     },
   });
 
-  const { mutateAsync: createTeacher } =
-    api.teacher.createTeacher.useMutation();
-
-  const { data: teachers } = api.teacher.getSchoolTeachers.useQuery({
-    limit: 999,
-  });
+  const { mutateAsync: createSubject } =
+    api.subject.createSubject.useMutation();
 
   async function onSubmit(data: z.infer<typeof schema>) {
-    const toastId = toast.loading("Criando professor...");
+    const toastId = toast.loading("Criando matéria...");
     try {
-      // await createTeacher({
-      //   name: data.name,
-      //   teacherId: data.teacherId,
-      // });
-      toast.success("Professor criado com sucesso!");
+      await createSubject({
+        name: data.name,
+      });
+      toast.dismiss(toastId);
+      toast.success("Matéria criado com sucesso!");
       reset();
       await onClickSubmit();
     } catch (e) {
-      toast.error("Erro ao criar professor");
+      toast.dismiss(toastId);
+      toast.error("Erro ao criar matéria");
     } finally {
       toast.dismiss(toastId);
     }
@@ -91,27 +87,6 @@ export function NewSubjectModalV2({
                 placeholder="Digite o nome do matéria"
                 {...register("name")}
               />
-            </div>
-            <div className="grid gap-2">
-              <Label>Já tem um professor pra essa matéria?</Label>
-              <div className="grid gap-4">
-                <Select value={getValues("teacherId")}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Professor" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teachers?.map((teacher) => (
-                      <SelectItem
-                        key={teacher.id}
-                        value={teacher.id}
-                        onClick={() => setValue("teacherId", teacher.id)}
-                      >
-                        {teacher.User.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </div>
           <DialogFooter>

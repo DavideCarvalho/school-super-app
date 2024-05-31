@@ -41,13 +41,13 @@ export const subjectRouter = createTRPCRouter({
       where: { schoolId: ctx.session.school.id },
     });
   }),
-  createBySchoolId: isUserLoggedInAndAssignedToSchool
+  createSubject: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         name: z.string(),
       }),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       return ctx.prisma.subject.create({
         data: {
           name: input.name,

@@ -23,8 +23,8 @@ export function EditSubjectModalListener() {
   async function handleOnClickSubmit() {
     setOpenEditSubjectModal(false);
     await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
+      utils.subject.allBySchoolId.invalidate(),
+      utils.subject.countAllBySchoolId.invalidate(),
     ]);
     setHash("");
   }
@@ -32,15 +32,16 @@ export function EditSubjectModalListener() {
   async function handleOnClickCancel() {
     setOpenEditSubjectModal(false);
     await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
+      utils.subject.allBySchoolId.invalidate(),
+      utils.subject.countAllBySchoolId.invalidate(),
+      utils.subject.findBySlug.invalidate(),
     ]);
     setHash("");
   }
 
   return (
     <EditSubjectModalV2
-      teacherSlug={hashValue ?? ""}
+      subjectSlug={hashValue ?? ""}
       open={openEditSubjectModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

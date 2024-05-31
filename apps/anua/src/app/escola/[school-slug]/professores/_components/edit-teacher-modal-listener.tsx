@@ -25,6 +25,7 @@ export function EditTeacherModalListener() {
     await Promise.all([
       utils.teacher.getSchoolTeachers.invalidate(),
       utils.teacher.countSchoolTeachers.invalidate(),
+      utils.teacher.findBySlug.invalidate(),
     ]);
     setHash("");
   }
@@ -34,6 +35,7 @@ export function EditTeacherModalListener() {
     await Promise.all([
       utils.teacher.getSchoolTeachers.invalidate(),
       utils.teacher.countSchoolTeachers.invalidate(),
+      utils.teacher.findBySlug.invalidate(),
     ]);
     setHash("");
   }
