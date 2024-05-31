@@ -6,6 +6,7 @@ import { Button } from "@acme/ui/button";
 
 import { SubjectsTableV2 } from "~/components/school-subjects-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
+import { EditSubjectModalListener } from "./_components/edit-subject-modal-listener";
 import { NewSubjectModalListener } from "./_components/new-subject-modal-listener";
 
 export default async function SubjectsPage({
@@ -47,6 +48,7 @@ export default async function SubjectsPage({
         </Link>
       </div>
       <NewSubjectModalListener schoolId={school.id} />
+      <EditSubjectModalListener />
       <SubjectsTableV2 schoolId={school.id} />
     </HydrationBoundary>
   );

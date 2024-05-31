@@ -28,11 +28,7 @@ const daysOfWeekToPortuguese = {
   Friday: "Sexta-feira",
 };
 
-interface TeachersTableV2Props {
-  schoolId: string;
-}
-
-export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
+export function TeachersTableV2() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -43,14 +39,11 @@ export function TeachersTableV2({ schoolId }: TeachersTableV2Props) {
 
   const rowList = Array(limit).fill(0);
   const { data: teachers } = api.teacher.getSchoolTeachers.useQuery({
-    schoolId,
     page,
     limit,
   });
 
-  const [teachersCount] = api.teacher.countSchoolTeachers.useSuspenseQuery({
-    schoolId,
-  });
+  const [teachersCount] = api.teacher.countSchoolTeachers.useSuspenseQuery();
 
   const utils = api.useUtils();
 

@@ -15,31 +15,15 @@ import {
 } from "@acme/ui/dialog";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@acme/ui/select";
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 const schema = z.object({
   name: z.string(),
-  email: z.string().email(),
-  availability: z.array(
-    z.object({
-      day: z.string(),
-      startTime: z.string(),
-      endTime: z.string(),
-    }),
-  ),
 });
 
 interface EditSubjectModalV2Props {
-  schoolId: string;
   subjectSlug: string;
   open: boolean;
   onClickSubmit: () => void;
@@ -47,7 +31,6 @@ interface EditSubjectModalV2Props {
 }
 
 export function EditSubjectModalV2({
-  schoolId,
   subjectSlug,
   open,
   onClickCancel,
@@ -68,14 +51,6 @@ export function EditSubjectModalV2({
     resolver: zodResolver(schema),
     defaultValues: {
       name: "Carregando...",
-      email: "Carregando...",
-      availability: [
-        {
-          day: undefined,
-          startTime: undefined,
-          endTime: undefined,
-        },
-      ],
     },
   });
 
@@ -143,46 +118,5 @@ export function EditSubjectModalV2({
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>icone</title>
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
-  );
-}
-
-function MinusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>icone</title>
-      <path d="M5 12h14" />
-    </svg>
   );
 }

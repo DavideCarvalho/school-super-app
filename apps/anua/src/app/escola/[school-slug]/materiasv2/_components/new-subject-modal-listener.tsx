@@ -44,7 +44,6 @@ export function NewSubjectModalListener({
 
   return (
     <NewSubjectModalV2
-      schoolId={schoolId}
       open={openNewTeacherModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

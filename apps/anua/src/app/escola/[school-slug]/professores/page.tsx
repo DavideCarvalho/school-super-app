@@ -29,13 +29,10 @@ export default async function TeachersPage({
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
   await helper.teacher.getSchoolTeachers.prefetch({
-    schoolId: school.id,
     page: Number(url.searchParams.get("page")),
     limit: Number(url.searchParams.get("limit")),
   });
-  await helper.teacher.countSchoolTeachers.prefetch({
-    schoolId: school.id,
-  });
+  await helper.teacher.countSchoolTeachers.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>
@@ -47,9 +44,9 @@ export default async function TeachersPage({
           <Button>Adicionar Professor</Button>
         </Link>
       </div>
-      <NewTeacherModalListener schoolId={school.id} />
-      <EditTeacherModalListener schoolId={school.id} />
-      <TeachersTableV2 schoolId={school.id} />
+      <NewTeacherModalListener />
+      <EditTeacherModalListener />
+      <TeachersTableV2 />
     </HydrationBoundary>
   );
 }

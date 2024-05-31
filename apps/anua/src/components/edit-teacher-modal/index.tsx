@@ -41,7 +41,6 @@ const schema = z.object({
 });
 
 interface EditTeacherModalProps {
-  schoolId: string;
   teacherSlug: string;
   open: boolean;
   onClickSubmit: () => void;
@@ -51,7 +50,6 @@ interface EditTeacherModalProps {
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 export function EditTeacherModal({
-  schoolId,
   teacherSlug,
   open,
   onClickCancel,
@@ -108,7 +106,6 @@ export function EditTeacherModal({
         id: teacher.id,
         name: data.name,
         email: data.email,
-        schoolId: schoolId,
         // @ts-expect-error
         availabilities: data.availability,
       });

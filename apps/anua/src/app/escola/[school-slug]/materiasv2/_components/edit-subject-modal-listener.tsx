@@ -2,24 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
+import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { NewTeacherModalV2 } from "~/components/new-teacher-modal-v2";
+import { EditSubjectModalV2 } from "~/components/edit-subject-modal-v2";
 import { api } from "~/trpc/react";
 
-export function NewTeacherModalListener() {
-  const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
+export function EditSubjectModalListener() {
+  const [openEditSubjectModal, setOpenEditSubjectModal] = useState(false);
   const [hash, setHash] = useHash();
+  const [hashValue] = useHashQueryValue("materia");
 
   useEffect(() => {
-    if (hash === "adicionar-professor") {
-      setOpenNewTeacherModal(true);
+    if (hash === "editar-materia" && hashValue) {
+      setOpenEditSubjectModal(true);
     }
-  }, [hash]);
+  }, [hash, hashValue]);
 
   const utils = api.useUtils();
 
   async function handleOnClickSubmit() {
-    setOpenNewTeacherModal(false);
+    setOpenEditSubjectModal(false);
     await Promise.all([
       utils.teacher.getSchoolTeachers.invalidate(),
       utils.teacher.countSchoolTeachers.invalidate(),
@@ -28,7 +30,7 @@ export function NewTeacherModalListener() {
   }
 
   async function handleOnClickCancel() {
-    setOpenNewTeacherModal(false);
+    setOpenEditSubjectModal(false);
     await Promise.all([
       utils.teacher.getSchoolTeachers.invalidate(),
       utils.teacher.countSchoolTeachers.invalidate(),
@@ -37,8 +39,9 @@ export function NewTeacherModalListener() {
   }
 
   return (
-    <NewTeacherModalV2
-      open={openNewTeacherModal}
+    <EditSubjectModalV2
+      teacherSlug={hashValue ?? ""}
+      open={openEditSubjectModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}
     />

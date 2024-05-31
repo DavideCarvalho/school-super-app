@@ -39,7 +39,6 @@ const schema = z.object({
 });
 
 interface NewTeacherModalV2Props {
-  schoolId: string;
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
@@ -48,7 +47,6 @@ interface NewTeacherModalV2Props {
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 export function NewTeacherModalV2({
-  schoolId,
   open,
   onClickCancel,
   onClickSubmit,
@@ -80,7 +78,6 @@ export function NewTeacherModalV2({
       await createTeacher({
         name: data.name,
         email: data.email,
-        schoolId: schoolId,
         availabilities: data.availability,
       });
       toast.success("Professor criado com sucesso!");

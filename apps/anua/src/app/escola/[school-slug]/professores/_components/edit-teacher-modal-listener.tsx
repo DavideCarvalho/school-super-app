@@ -7,13 +7,7 @@ import { useHashQueryValue } from "hooks/use-hash-value";
 import { EditTeacherModal } from "~/components/edit-teacher-modal";
 import { api } from "~/trpc/react";
 
-interface EditTeacherModalListenerProps {
-  schoolId: string;
-}
-
-export function EditTeacherModalListener({
-  schoolId,
-}: EditTeacherModalListenerProps) {
+export function EditTeacherModalListener() {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
   const [hashValue] = useHashQueryValue("professor");
@@ -46,7 +40,6 @@ export function EditTeacherModalListener({
 
   return (
     <EditTeacherModal
-      schoolId={schoolId}
       teacherSlug={hashValue ?? ""}
       open={openEditTeacherModal}
       onClickSubmit={handleOnClickSubmit}

@@ -33,14 +33,12 @@ const schema = z
   .required();
 
 interface NewSubjectModalV2Props {
-  schoolId: string;
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
 export function NewSubjectModalV2({
-  schoolId,
   open,
   onClickCancel,
   onClickSubmit,
@@ -59,7 +57,6 @@ export function NewSubjectModalV2({
     api.teacher.createTeacher.useMutation();
 
   const { data: teachers } = api.teacher.getSchoolTeachers.useQuery({
-    schoolId,
     limit: 999,
   });
 

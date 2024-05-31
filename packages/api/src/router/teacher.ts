@@ -2,14 +2,18 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  isUserLoggedInAndAssignedToSchool,
+  publicProcedure,
+} from "../trpc";
 
 export const teacherRouter = createTRPCRouter({
-  findBySlug: publicProcedure
+  findBySlug: isUserLoggedInAndAssignedToSchool
     .input(z.object({ slug: z.string() }))
     .query(({ ctx, input }) => {
       return ctx.prisma.teacher.findFirst({
-        where: { User: { slug: input.slug } },
+        where: { User: { slug: input.slug, schoolId: ctx.session.school.id } },
         include: {
           User: true,
           TeacherAvailability: true,
@@ -33,11 +37,11 @@ export const teacherRouter = createTRPCRouter({
         },
       });
     }),
-  deleteById: publicProcedure
+  deleteById: isUserLoggedInAndAssignedToSchool
     .input(z.object({ userId: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const teacher = await ctx.prisma.teacher.findUnique({
-        where: { id: input.userId },
+        where: { id: input.userId, User: { schoolId: ctx.session.school.id } },
       });
       if (!teacher) {
         throw new Error(`Professor com id ${input.userId} não encontrado`);
@@ -47,11 +51,14 @@ export const teacherRouter = createTRPCRouter({
           where: { teacherId: input.userId },
         }),
         ctx.prisma.teacher.delete({
-          where: { id: input.userId },
+          where: {
+            id: input.userId,
+            User: { schoolId: ctx.session.school.id },
+          },
         }),
       ]);
     }),
-  getTeachersAvailableDays: publicProcedure
+  getTeachersAvailableDays: isUserLoggedInAndAssignedToSchool
     .input(z.object({ schoolId: z.string() }))
     .query(async ({ ctx, input }) => {
       const teachersAvailabilities =
@@ -59,7 +66,7 @@ export const teacherRouter = createTRPCRouter({
           where: {
             Teacher: {
               User: {
-                schoolId: input.schoolId,
+                schoolId: ctx.session.school.id,
               },
             },
           },
@@ -77,12 +84,11 @@ export const teacherRouter = createTRPCRouter({
       }
       return response;
     }),
-  createTeacher: publicProcedure
+  createTeacher: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         name: z.string(),
         email: z.string().email(),
-        schoolId: z.string(),
         availabilities: z.array(
           z.object({
             day: z.string(),
@@ -113,7 +119,7 @@ export const teacherRouter = createTRPCRouter({
                 slug: slugify(input.name),
                 email: input.email,
                 roleId: roleTeacher.id,
-                schoolId: input.schoolId,
+                schoolId: ctx.session.school.id,
                 externalAuthId: createdUserOnClerk.id,
               },
             },
@@ -131,7 +137,7 @@ export const teacherRouter = createTRPCRouter({
         console.log(error);
       }
     }),
-  editTeacher: publicProcedure
+  editTeacher: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         id: z.string(),
@@ -219,10 +225,9 @@ export const teacherRouter = createTRPCRouter({
         }
       }
     }),
-  getSchoolTeachers: publicProcedure
+  getSchoolTeachers: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         limit: z.number().optional().default(5),
         page: z.number().optional().default(1),
       }),
@@ -231,7 +236,7 @@ export const teacherRouter = createTRPCRouter({
       return ctx.prisma.teacher.findMany({
         where: {
           User: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
             Role: {
               name: "TEACHER",
             },
@@ -256,13 +261,12 @@ export const teacherRouter = createTRPCRouter({
         },
       });
     }),
-  countSchoolTeachers: publicProcedure
-    .input(z.object({ schoolId: z.string() }))
-    .query(async ({ ctx, input }) => {
+  countSchoolTeachers: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx }) => {
       return ctx.prisma.teacher.count({
         where: {
           User: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
             Role: {
               name: "TEACHER",
             },
@@ -270,5 +274,6 @@ export const teacherRouter = createTRPCRouter({
           },
         },
       });
-    }),
+    },
+  ),
 });
