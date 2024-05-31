@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 
@@ -43,7 +44,7 @@ export const trpCaller = appRouter.createCaller({ prisma, session: null });
 export const serverSideHelpers = createServerSideHelpers({
   router: appRouter,
   ctx: {
-    session: null,
+    session: auth(),
     prisma,
   },
   transformer: superjson,
