@@ -29,11 +29,11 @@ export default async function SubjectsPage({
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
-  await helper.subject.allBySchoolId.prefetch({
+  await helper.class.allBySchoolId.prefetch({
     page: Number(url.searchParams.get("page")),
     limit: Number(url.searchParams.get("limit")),
   });
-  await helper.subject.countAllBySchoolId.prefetch();
+  await helper.class.countAllBySchoolId.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>
