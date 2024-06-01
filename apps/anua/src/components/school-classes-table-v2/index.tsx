@@ -42,6 +42,7 @@ export function ClassesTableV2() {
   async function deleteClass(classId: string) {
     const toastId = toast.loading("Removendo classe...");
     try {
+      console.log("deleting class", classId);
       await deleteById({ classId });
       toast.dismiss(toastId);
       toast.success("Classe removida com sucesso!");

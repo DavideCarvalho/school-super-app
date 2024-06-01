@@ -55,7 +55,7 @@ export const classRouter = createTRPCRouter({
         },
       });
     }),
-  updateById: publicProcedure
+  updateById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         schoolId: z.string(),
@@ -67,32 +67,26 @@ export const classRouter = createTRPCRouter({
       const foundClass = await ctx.prisma.class.findUnique({
         where: { id: input.classId },
       });
-      if (!foundClass || foundClass.schoolId !== input.schoolId) {
-        throw new Error(`Turma não encontrada`);
+      if (!foundClass || foundClass.schoolId !== ctx.session.school.id) {
+        throw new Error("Turma não encontrada");
       }
       return ctx.prisma.class.update({
-        where: { id: input.classId },
+        where: { id: input.classId, schoolId: ctx.session.school.id },
         data: {
           name: input.name,
           slug: slugify(input.name),
         },
       });
     }),
-  deleteById: publicProcedure
+  deleteById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         classId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const foundClass = await ctx.prisma.class.findUnique({
-        where: { id: input.classId },
-      });
-      if (!foundClass || foundClass.schoolId !== input.schoolId) {
-        throw new Error(`Turma não encontrada`);
-      }
       return ctx.prisma.class.delete({
-        where: { id: input.classId },
+        where: { id: input.classId, schoolId: ctx.session.school.id },
       });
     }),
 });
