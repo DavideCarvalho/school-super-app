@@ -120,7 +120,6 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   ]);
 
   const classesQuery = api.class.allBySchoolId.useQuery({
-    schoolId,
     limit: 999,
   });
 

@@ -79,12 +79,10 @@ export function EditTeacherHasClassModal({
   }, [teacherHasClass, setValue, reset]);
 
   const subjectsQuery = api.subject.allBySchoolId.useQuery({
-    schoolId,
     limit: 999,
   });
 
   const classesQuery = api.class.allBySchoolId.useQuery({
-    schoolId,
     limit: 999,
   });
 

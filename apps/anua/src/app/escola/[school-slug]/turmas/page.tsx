@@ -1,10 +1,14 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
+import { ClassesTableV2 } from "~/components/school-classes-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
+import { EditClassModalListener } from "./_components/edit-class-modal-listener";
+import { NewClassModalListener } from "./_components/new-class-modal-listener";
 
 export default async function SubjectsPage({
   params,
@@ -41,6 +45,11 @@ export default async function SubjectsPage({
           <Button>Adicionar Turma</Button>
         </Link>
       </div>
+      <NewClassModalListener />
+      <EditClassModalListener />
+      <Suspense>
+        <ClassesTableV2 />
+      </Suspense>
     </HydrationBoundary>
   );
 }

@@ -46,10 +46,10 @@ export default async function SubjectsPage({
         </Link>
       </div>
 
-      <NewSubjectModalListener schoolId={school.id} />
+      <NewSubjectModalListener />
       <EditSubjectModalListener />
       <Suspense>
-        <SubjectsTableV2 schoolId={school.id} />
+        <SubjectsTableV2 />
       </Suspense>
     </HydrationBoundary>
   );

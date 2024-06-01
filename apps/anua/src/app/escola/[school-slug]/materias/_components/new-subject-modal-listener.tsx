@@ -6,13 +6,7 @@ import { useHash } from "hooks/use-hash";
 import { NewSubjectModalV2 } from "~/components/new-subject-modal-v2";
 import { api } from "~/trpc/react";
 
-interface NewSubjectModalListenerProps {
-  schoolId: string;
-}
-
-export function NewSubjectModalListener({
-  schoolId,
-}: NewSubjectModalListenerProps) {
+export function NewSubjectModalListener() {
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
 

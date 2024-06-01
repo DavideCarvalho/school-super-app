@@ -1,13 +1,23 @@
-import { z } from "zod";
 import slugify from "slugify";
+import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  isUserLoggedInAndAssignedToSchool,
+  publicProcedure,
+} from "../trpc";
 
 export const classRouter = createTRPCRouter({
-  allBySchoolId: publicProcedure
+  findBySlug: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.class.findFirst({
+        where: { slug: input.slug, schoolId: ctx.session.school.id },
+      });
+    }),
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(10),
       }),
@@ -15,29 +25,24 @@ export const classRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return ctx.prisma.class.findMany({
         where: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
         },
         skip: (input.page - 1) * input.limit,
         take: input.limit,
       });
     }),
-  countAllBySchoolId: publicProcedure
-    .input(
-      z.object({
-        schoolId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx }) => {
       return ctx.prisma.class.count({
         where: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
         },
       });
-    }),
-  createBySchoolId: publicProcedure
+    },
+  ),
+  create: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         name: z.string(),
       }),
     )
@@ -46,7 +51,7 @@ export const classRouter = createTRPCRouter({
         data: {
           name: input.name,
           slug: slugify(input.name),
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
         },
       });
     }),
@@ -76,7 +81,6 @@ export const classRouter = createTRPCRouter({
   deleteById: publicProcedure
     .input(
       z.object({
-        schoolId: z.string(),
         classId: z.string(),
       }),
     )

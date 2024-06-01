@@ -31,17 +31,15 @@ export function SchoolClassesTable({ schoolId }: SchoolClassesTableProps) {
 
   const classesQuery = api.class.allBySchoolId.useQuery(
     {
-      schoolId,
       limit: router.query.limit ? Number(router.query.limit) : 5,
       page: router.query.page ? Number(router.query.page) : 1,
     },
     { refetchOnMount: false },
   );
 
-  const classesCountQuery = api.class.countAllBySchoolId.useQuery(
-    { schoolId },
-    { refetchOnMount: false },
-  );
+  const classesCountQuery = api.class.countAllBySchoolId.useQuery(undefined, {
+    refetchOnMount: false,
+  });
 
   const deleteSchoolClassMutation = api.class.deleteById.useMutation();
 
@@ -54,7 +52,7 @@ export function SchoolClassesTable({ schoolId }: SchoolClassesTableProps) {
   function deleteClass(classId: string) {
     toast.loading("Removendo turma...");
     deleteSchoolClassMutation.mutate(
-      { classId, schoolId },
+      { classId },
       {
         async onSuccess() {
           toast.dismiss();
@@ -226,18 +224,20 @@ function TableRow({ schoolYear, onDelete, onEdit }: TableRowProps) {
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onDelete(schoolYear.id)}
                 >
                   Excluir
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onEdit(schoolYear)}
                 >
                   Editar
-                </li>
+                </button>
               </ul>
             </div>
           </div>
@@ -267,6 +267,7 @@ function TableRowSkeleton() {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

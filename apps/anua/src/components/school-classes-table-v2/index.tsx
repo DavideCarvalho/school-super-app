@@ -18,7 +18,7 @@ import {
 import { api } from "~/trpc/react";
 import { PaginationV2 } from "../pagination-v2";
 
-export function SubjectsTableV2() {
+export function ClassesTableV2() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -28,29 +28,31 @@ export function SubjectsTableV2() {
     : 10;
 
   const rowList = Array(limit).fill(0);
-  const [subjects] = api.subject.allBySchoolId.useSuspenseQuery({
+  const [classes] = api.class.allBySchoolId.useSuspenseQuery({
     page,
     limit,
   });
 
-  const [subjectsCount] = api.subject.countAllBySchoolId.useSuspenseQuery();
+  const [classesCount] = api.class.countAllBySchoolId.useSuspenseQuery();
 
   const utils = api.useUtils();
 
-  const { mutateAsync: deleteById } = api.subject.deleteById.useMutation();
+  const { mutateAsync: deleteById } = api.class.deleteById.useMutation();
 
-  async function deleteSubject(subjectId: string) {
-    const toastId = toast.loading("Removendo matéria...");
+  async function deleteClass(classId: string) {
+    const toastId = toast.loading("Removendo classe...");
     try {
-      await deleteById({ subjectId });
-      toast.success("Matéria removido com sucesso!");
+      await deleteById({ classId });
+      toast.dismiss(toastId);
+      toast.success("Classe removida com sucesso!");
     } catch (e) {
-      toast.error("Erro ao remover matéria");
+      toast.dismiss(toastId);
+      toast.error("Erro ao remover classe");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
-        utils.teacher.getSchoolTeachers.invalidate(),
-        utils.teacher.countSchoolTeachers.invalidate(),
+        utils.class.allBySchoolId.invalidate(),
+        utils.class.countAllBySchoolId.invalidate(),
       ]);
     }
   }
@@ -70,31 +72,25 @@ export function SubjectsTableV2() {
         <TableHeader>
           <TableRow>
             <TableHead>Nome da Matéria</TableHead>
-            <TableHead>Professores</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rowList.map((_row, index) => {
-            const subject = subjects ? subjects[index] : undefined;
+            const clasz = classes ? classes[index] : undefined;
             return (
               <TableRow
-                key={subject?.id ?? `${_row}-${index}-${page}`}
+                key={clasz?.id ?? `${_row}-${index}-${page}`}
                 style={{
                   height: "60px",
                 }}
               >
-                <TableCell>{subject?.name ?? "-"}</TableCell>
+                <TableCell>{clasz?.name ?? "-"}</TableCell>
                 <TableCell>
-                  {subject?.TeacherHasSubject?.map(
-                    ({ Teacher }) => Teacher.User.name,
-                  )?.join(", ") ?? "-"}
-                </TableCell>
-                <TableCell>
-                  {subject ? (
+                  {clasz ? (
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`${pathname}?${searchParams?.toString()}#editar-materia?materia=${subject.slug}`}
+                        href={`${pathname}?${searchParams?.toString()}#editar-turma?turma=${clasz.slug}`}
                       >
                         <Button size="sm" variant="ghost">
                           <UserIcon className="h-4 w-4" />
@@ -105,7 +101,7 @@ export function SubjectsTableV2() {
                         className="text-red-600 hover:text-red-800"
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteTeacher(subject.id)}
+                        onClick={() => deleteClass(clasz.id)}
                       >
                         <Trash2Icon className="h-4 w-4" />
                         <span className="sr-only">Remover</span>
@@ -121,7 +117,7 @@ export function SubjectsTableV2() {
       <PaginationV2
         currentPage={page}
         itemsPerPage={limit}
-        totalCount={subjectsCount}
+        totalCount={classesCount}
       />
     </>
   );

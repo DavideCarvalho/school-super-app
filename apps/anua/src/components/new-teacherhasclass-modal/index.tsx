@@ -48,7 +48,6 @@ export function NewTeacherHasClassModal({
   });
 
   const classesQuery = api.class.allBySchoolId.useQuery({
-    schoolId,
     limit: 999,
   });
 

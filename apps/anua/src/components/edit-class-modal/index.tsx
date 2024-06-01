@@ -58,7 +58,6 @@ export function EditClassModal({
     toast.loading("Alterando turma...");
     editClassMutation.mutate(
       {
-        schoolId,
         classId: selectedClass.id,
         name: data.name,
       },

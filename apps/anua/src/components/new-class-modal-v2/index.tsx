@@ -20,21 +20,21 @@ import { api } from "~/trpc/react";
 
 const schema = z
   .object({
-    name: z.string({ required_error: "Qual o nome da matéria?" }),
+    name: z.string({ required_error: "Qual o nome da turma?" }),
   })
   .required();
 
-interface NewSubjectModalV2Props {
+interface NewClassModalV2Props {
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
-export function NewSubjectModalV2({
+export function NewClassModalV2({
   open,
-  onClickCancel,
   onClickSubmit,
-}: NewSubjectModalV2Props) {
+  onClickCancel,
+}: NewClassModalV2Props) {
   const { handleSubmit, register, reset } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -42,22 +42,21 @@ export function NewSubjectModalV2({
     },
   });
 
-  const { mutateAsync: createSubject } =
-    api.subject.createSubject.useMutation();
+  const { mutateAsync: createSubject } = api.class.create.useMutation();
 
   async function onSubmit(data: z.infer<typeof schema>) {
-    const toastId = toast.loading("Criando matéria...");
+    const toastId = toast.loading("Criando turma...");
     try {
       await createSubject({
         name: data.name,
       });
       toast.dismiss(toastId);
-      toast.success("Matéria criado com sucesso!");
+      toast.success("Turma criada com sucesso!");
       reset();
       await onClickSubmit();
     } catch (e) {
       toast.dismiss(toastId);
-      toast.error("Erro ao criar matéria");
+      toast.error("Erro ao criar turma");
     } finally {
       toast.dismiss(toastId);
     }
@@ -68,13 +67,13 @@ export function NewSubjectModalV2({
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Criar nova matéria</DialogTitle>
+            <DialogTitle>Criar nova turma</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Nome da Matéria*</Label>
+              <Label htmlFor="name">Nome da turma*</Label>
               <Input
-                placeholder="Digite o nome do matéria"
+                placeholder="Digite o nome da turma"
                 {...register("name")}
               />
             </div>
