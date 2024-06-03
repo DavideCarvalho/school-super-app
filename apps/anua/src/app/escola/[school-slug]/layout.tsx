@@ -245,20 +245,8 @@ interface Route {
 
 const routes: Route[] = [
   {
-    name: "Arquivos",
-    href: (params) => `/escola/${params.schoolSlug}/arquivos`,
-  },
-  {
     name: "Calendário escolar",
     href: (params) => `/escola/${params.schoolSlug}/calendario-escolar`,
-  },
-  {
-    name: "Cantinas",
-    href: (params) => `/escola/${params.schoolSlug}/cantinas`,
-  },
-  {
-    name: "Matérias",
-    href: (params) => `/escola/${params.schoolSlug}/materias`,
   },
   {
     name: "Professores",
@@ -269,11 +257,23 @@ const routes: Route[] = [
     href: (params) => `/escola/${params.schoolSlug}/turmas`,
   },
   {
-    name: "Aulas",
-    href: (params) => `/escola/${params.schoolSlug}/aulas`,
+    name: "Matérias",
+    href: (params) => `/escola/${params.schoolSlug}/materias`,
+  },
+  {
+    name: "Arquivos",
+    href: (params) => `/escola/${params.schoolSlug}/arquivos`,
+  },
+  {
+    name: "Cantinas",
+    href: (params) => `/escola/${params.schoolSlug}/cantinas`,
   },
   {
     name: "Solicitações de compra",
     href: (params) => `/escola/${params.schoolSlug}/solicitacoes-de-compra`,
+  },
+  {
+    name: "Aulas",
+    href: (params) => `/escola/${params.schoolSlug}/aulas`,
   },
 ];
