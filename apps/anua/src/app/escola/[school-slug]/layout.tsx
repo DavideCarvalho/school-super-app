@@ -191,7 +191,7 @@ export default function RootLayout({
                         href={routeHref}
                         className={cn(
                           "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
-                          matchesPathname(routeHref, pathname)
+                          matchesPathname(routeHref, pathname ?? "")
                             ? "bg-gray-200"
                             : "",
                         )}
