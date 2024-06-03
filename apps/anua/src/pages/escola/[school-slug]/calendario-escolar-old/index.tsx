@@ -31,16 +31,14 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       throw new Error(`School with slug ${schoolSlug} not found`);
     }
 
-    const page = query?.page ? Number(query.page) : 1;
-    const limit = query?.limit ? Number(query.limit) : 5;
-
     const clerkUser = getAuth(req);
 
     if (!clerkUser.userId) {
       // Redirect to sign in page
       return {
         redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/cantinas?page=${page}&limit=${limit}`,
+          destination:
+            "/sign-in?redirectTo=/escola/${schoolSlug}/calendario-escolar",
           permanent: false,
         },
       };
@@ -51,9 +49,7 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
         schoolId: school.id,
       }),
       serverSideHelpers.class.allBySchoolId.prefetch({
-        schoolId: school.id,
-        page,
-        limit,
+        page: 999,
       }),
     ]);
 

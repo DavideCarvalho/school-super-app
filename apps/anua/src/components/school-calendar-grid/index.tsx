@@ -14,13 +14,12 @@ import type {
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
-import SelectWithSearch from "../ui/select-with-search";
 import { CalendarGrid } from "./components/calendar-grid";
 import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
 import { SchoolConfigForm } from "./components/school-config-form";
 
 interface SchoolCalendarGridProps {
-  schoolId: string;
+  classId: string | undefined;
 }
 
 export type DayOfWeek =
@@ -42,6 +41,7 @@ interface SplitClassKey {
 
 interface SchoolConfigFormValues {
   selectedClass: Class | null;
+  selectedClassId: string | undefined | null;
   fixedClasses: string[];
   scheduleConfig: {
     Monday: { start: string; numClasses: number; duration: number };
@@ -52,11 +52,12 @@ interface SchoolConfigFormValues {
   };
 }
 
-export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
+export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   const [newSchedule, setNewSchedule] = useState<boolean>(false);
   const form = useForm<SchoolConfigFormValues>({
     defaultValues: {
-      selectedClass: null,
+      selectedClass: { id: classId },
+      selectedClassId: classId,
       fixedClasses: [],
       scheduleConfig: {
         Monday: { start: "07:00", numClasses: 6, duration: 50 },
@@ -70,8 +71,13 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
   const scheduleConfig = form.watch("scheduleConfig");
   const fixedClasses = form.watch("fixedClasses");
   const selectedClass = form.watch("selectedClass");
+  const selectedClassId = form.watch("selectedClassId");
   const [openGenerateNewCalendarModal, setOpenGenerateNewCalendarModal] =
     useState(false);
+
+  useEffect(() => {
+    form.setValue("selectedClassId", classId);
+  }, [classId, form.setValue]);
 
   const initializeSchedule = useCallback(() => {
     return {
@@ -119,44 +125,30 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
     scheduleConfig.Friday.duration,
   ]);
 
-  const classesQuery = api.class.allBySchoolId.useQuery({
-    limit: 999,
-  });
-
   const { data: generatedSchedule, refetch: refetchGeneratedSchedule } =
     api.school.generateSchoolCalendar.useQuery(
       {
-        schoolId,
         fixedClasses,
         scheduleConfig,
-        classId: selectedClass?.id ?? "",
+        classId: selectedClassId ?? "",
       },
       {
-        refetchOnWindowFocus: false,
-        refetchOnMount: true,
-        enabled: selectedClass?.id != null,
+        enabled: selectedClassId != null,
       },
     );
 
   const {
     data: teachersAvailabilities,
     refetch: refetchTeachersAvailabilities,
-  } = api.teacher.getTeachersAvailableDays.useQuery(
-    {
-      schoolId,
-    },
-    { refetchOnWindowFocus: false, refetchOnMount: true },
-  );
+  } = api.teacher.getTeachersAvailableDays.useQuery(undefined);
 
   const { data: classSchedule, refetch: refetchClassSchedule } =
     api.school.getClassSchedule.useQuery(
       {
-        classId: selectedClass?.id ?? "",
+        classId: selectedClassId ?? "",
       },
       {
-        refetchOnWindowFocus: false,
-        refetchOnMount: true,
-        enabled: selectedClass?.id != null,
+        enabled: selectedClassId != null,
       },
     );
 
@@ -238,7 +230,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           if (!entry.Teacher || !entry.Subject) return undefined;
           return {
             teacherId: entry.Teacher.id,
-            classId: selectedClass.id,
+            classId: selectedClassId,
             subjectId: entry.Subject.id,
             classWeekDay: day,
             classTime: "",
@@ -250,6 +242,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
       .filter((classItem) => classItem !== undefined);
     const toastId = toast.loading("Salvando horários...");
     try {
+      // @ts-expect-error a gente já ta tirando os undefined do array
       await saveSchoolCalendarMutation(classes);
       toast.success("Horários salvos com sucesso!");
     } catch (e) {
@@ -488,29 +481,7 @@ export function SchoolCalendarGrid({ schoolId }: SchoolCalendarGridProps) {
           }}
           closeModal={() => setOpenGenerateNewCalendarModal(false)}
         />
-        <div className="mb-5 flex w-full items-center justify-center">
-          <SelectWithSearch
-            label="Turmas"
-            options={
-              classesQuery?.data?.map((c) => ({
-                label: c.name,
-                value: c.id,
-              })) || []
-            }
-            selectedOption={
-              selectedClass
-                ? { label: selectedClass.name, value: selectedClass.id }
-                : undefined
-            }
-            onSelect={(option) => {
-              const selectedClass = classesQuery?.data?.find(
-                (c) => c.id === option,
-              );
-              if (!selectedClass) return;
-              form.setValue("selectedClass", selectedClass);
-            }}
-          />
-        </div>
+
         <div className="flex w-full items-center justify-center">
           <div
             className={cn(

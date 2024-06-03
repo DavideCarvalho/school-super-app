@@ -1,3 +1,4 @@
+import type { DragEndEvent } from "@dnd-kit/core";
 import { useMemo, useState } from "react";
 import {
   closestCenter,
@@ -6,7 +7,6 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
   rectSwappingStrategy,
@@ -28,6 +28,7 @@ import "~/components/ui/table";
 
 import { useFormContext } from "react-hook-form";
 
+import type { ClassKey, DayOfWeek } from "../..";
 import { CheckBox } from "~/components/checkbox";
 import {
   Table,
@@ -37,7 +38,6 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import type { ClassKey, DayOfWeek } from "../..";
 
 export interface CalendarGridScheduledClass {
   Teacher:
@@ -68,6 +68,9 @@ export interface CalendarGridProps {
   fixedClasses: string[];
 }
 
+// TODO: Renomear pra "CalendarGridHours" talvez?
+// TODO: Bem, o nome tem que ser suficientemente diferente do
+// TODO: SchoolCalendarGrid
 export function CalendarGrid({
   newSchedule = false,
   schedule,

@@ -61,9 +61,8 @@ export const teacherRouter = createTRPCRouter({
         }),
       ]);
     }),
-  getTeachersAvailableDays: isUserLoggedInAndAssignedToSchool
-    .input(z.object({ schoolId: z.string() }))
-    .query(async ({ ctx, input }) => {
+  getTeachersAvailableDays: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx }) => {
       const teachersAvailabilities =
         await ctx.prisma.teacherAvailability.findMany({
           where: {
@@ -86,7 +85,8 @@ export const teacherRouter = createTRPCRouter({
         response[teacherId] = currentTeacherAvailabilities;
       }
       return response;
-    }),
+    },
+  ),
   createTeacher: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

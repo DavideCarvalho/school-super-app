@@ -58,6 +58,7 @@ export const classRouter = createTRPCRouter({
   updateById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
+        //TODO: Tirar o schoolId do input
         schoolId: z.string(),
         classId: z.string(),
         name: z.string(),

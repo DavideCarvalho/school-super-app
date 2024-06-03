@@ -9,7 +9,11 @@ import type {
 } from "@acme/db";
 import { prisma } from "@acme/db";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  isUserLoggedInAndAssignedToSchool,
+  publicProcedure,
+} from "../trpc";
 
 const scheduleConfigSchema = z.object({
   start: z.string(),
@@ -23,10 +27,9 @@ export const schoolRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.school.findFirst({ where: { slug: input.slug } });
     }),
-  generateSchoolCalendar: publicProcedure
+  generateSchoolCalendar: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         classId: z.string(),
         fixedClasses: z.array(z.string()),
         scheduleConfig: z.object({
@@ -38,9 +41,9 @@ export const schoolRouter = createTRPCRouter({
         }),
       }),
     )
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
       const schedule = generateSchoolSchedule(
-        input.schoolId,
+        ctx.session.school.id,
         input.classId,
         input.fixedClasses,
         input.scheduleConfig,
