@@ -20,6 +20,7 @@ export type CanteenItem = {
   canteenId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  active: Generated<number>;
 };
 export type Class = {
   id: string;

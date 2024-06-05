@@ -118,6 +118,7 @@ model CanteenItem {
   canteenId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  active    Boolean  @default(true)
 
   Canteen                     Canteen                      @relation(fields: [canteenId], references: [id])
   StudentCanteenItemPurchases StudentCanteenItemPurchase[]
