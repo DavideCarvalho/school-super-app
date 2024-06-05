@@ -53,8 +53,12 @@ const routes: Route[] = [
     href: (params) => `/escola/${params.schoolSlug}/solicitacoes-de-compra`,
   },
   {
-    name: "Aulas",
-    href: (params) => `/escola/${params.schoolSlug}/aulas`,
+    name: "Funcionários",
+    href: (params) => `/escola/${params.schoolSlug}/funcionarios`,
+  },
+  {
+    name: "Itens da cantina",
+    href: (params) => `/escola/${params.schoolSlug}/itens-cantina`,
   },
 ];
 
