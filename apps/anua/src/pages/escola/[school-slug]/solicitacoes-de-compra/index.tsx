@@ -3,7 +3,6 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import { getAuth } from "@clerk/nextjs/server";
-import { withServerSideAuth } from "@clerk/nextjs/ssr";
 import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 
 import { serverSideHelpers, trpCaller } from "@acme/api";

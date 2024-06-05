@@ -219,6 +219,7 @@ export function SchoolPurchaseRequestsTable({
                 stroke="currentColor"
                 strokeWidth="2"
               >
+                <title>Icone</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -389,6 +390,7 @@ function TableRow({
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -408,45 +410,50 @@ function TableRow({
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
                 {purchaseRequest.status === "REQUESTED" && (
-                  <li
+                  <button
+                    type="button"
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                     onClick={() => onApprove(purchaseRequest)}
                   >
                     Aprovar
-                  </li>
+                  </button>
                 )}
                 {purchaseRequest.status === "REQUESTED" && (
-                  <li
+                  <button
+                    type="button"
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                     onClick={() => onDelete(purchaseRequest)}
                   >
                     Excluir
-                  </li>
+                  </button>
                 )}
                 {(purchaseRequest.status === "REQUESTED" ||
                   purchaseRequest.status === "REJECTED") && (
-                  <li
+                  <button
+                    type="button"
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                     onClick={() => onEdit(purchaseRequest)}
                   >
                     Editar
-                  </li>
+                  </button>
                 )}
                 {purchaseRequest.status === "REQUESTED" && (
-                  <li
+                  <button
+                    type="button"
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                     onClick={() => onReject(purchaseRequest)}
                   >
                     Rejeitar
-                  </li>
+                  </button>
                 )}
                 {purchaseRequest.status === "APPROVED" && (
-                  <li
+                  <button
+                    type="button"
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                     onClick={() => onBought(purchaseRequest)}
                   >
                     Comprado
-                  </li>
+                  </button>
                 )}
               </ul>
             </div>
@@ -537,6 +544,7 @@ function TableRowRejected({
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -555,18 +563,20 @@ function TableRowRejected({
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onDelete(purchaseRequest)}
                 >
                   Excluir
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onEdit(purchaseRequest)}
                 >
                   Editar
-                </li>
+                </button>
               </ul>
             </div>
           </div>
@@ -648,6 +658,7 @@ function TableRowRequested({
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -666,36 +677,41 @@ function TableRowRequested({
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onApprove(purchaseRequest)}
                 >
                   Aprovar
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onDelete(purchaseRequest)}
                 >
                   Excluir
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onEdit(purchaseRequest)}
                 >
                   Editar
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onReject(purchaseRequest)}
                 >
                   Rejeitar
-                </li>
-                <li
+                </button>
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onBought(purchaseRequest)}
                 >
                   Comprado
-                </li>
+                </button>
               </ul>
             </div>
           </div>
@@ -781,6 +797,7 @@ function TableRowBought({ purchaseRequest, onArrived }: TableRowProps) {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -799,12 +816,13 @@ function TableRowBought({ purchaseRequest, onArrived }: TableRowProps) {
           >
             <div className="w-full space-y-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow">
               <ul className="flex flex-col">
-                <li
+                <button
+                  type="button"
                   className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                   onClick={() => onArrived(purchaseRequest)}
                 >
                   Chegou
-                </li>
+                </button>
               </ul>
             </div>
           </div>
@@ -910,6 +928,7 @@ function TableRowSkeleton() {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Icone</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
