@@ -18,7 +18,7 @@ import {
 import { api } from "~/trpc/react";
 import { PaginationV2 } from "../pagination-v2";
 
-export function SubjectsTableV2() {
+export function CanteensTableV2() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -28,29 +28,29 @@ export function SubjectsTableV2() {
     : 10;
 
   const rowList = Array(limit).fill(0);
-  const [subjects] = api.subject.allBySchoolId.useSuspenseQuery({
+  const [canteens] = api.canteen.allBySchoolId.useSuspenseQuery({
     page,
     limit,
   });
 
-  const [subjectsCount] = api.subject.countAllBySchoolId.useSuspenseQuery();
+  const [canteensCount] = api.canteen.countAllBySchoolId.useSuspenseQuery();
 
   const utils = api.useUtils();
 
-  const { mutateAsync: deleteById } = api.subject.deleteById.useMutation();
+  const { mutateAsync: deleteById } = api.canteen.deleteById.useMutation();
 
-  async function deleteSubject(subjectId: string) {
-    const toastId = toast.loading("Removendo matéria...");
+  async function deleteCanteen(canteenId: string) {
+    const toastId = toast.loading("Removendo cantina...");
     try {
-      await deleteById({ subjectId });
-      toast.success("Matéria removido com sucesso!");
+      await deleteById({ id: canteenId });
+      toast.success("Cantina removida com sucesso!");
     } catch (e) {
-      toast.error("Erro ao remover matéria");
+      toast.error("Erro ao remover cantina");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
-        utils.subject.allBySchoolId.invalidate(),
-        utils.subject.countAllBySchoolId.invalidate(),
+        utils.canteen.allBySchoolId.invalidate(),
+        utils.canteen.countAllBySchoolId.invalidate(),
       ]);
     }
   }
@@ -69,43 +69,31 @@ export function SubjectsTableV2() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nome da Matéria</TableHead>
-            <TableHead>Professores</TableHead>
+            <TableHead>Nome do responsável</TableHead>
+            <TableHead>Email do responsável</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rowList.map((_row, index) => {
-            const subject = subjects ? subjects[index] : undefined;
+            const canteen = canteens ? canteens[index] : undefined;
             return (
               <TableRow
-                key={subject?.id ?? `${_row}-${index}-${page}`}
+                key={canteen?.id ?? `${_row}-${index}-${page}`}
                 style={{
                   height: "60px",
                 }}
               >
-                <TableCell>{subject?.name ?? "-"}</TableCell>
+                <TableCell>{canteen?.ResponsibleUser?.name ?? "-"}</TableCell>
+                <TableCell>{canteen?.ResponsibleUser?.email ?? "-"}</TableCell>
                 <TableCell>
-                  {subject?.TeacherHasSubject?.map(
-                    ({ Teacher }) => Teacher.User.name,
-                  )?.join(", ") ?? "-"}
-                </TableCell>
-                <TableCell>
-                  {subject ? (
+                  {canteen ? (
                     <div className="flex items-center gap-2">
-                      <Link
-                        href={`${pathname}?${searchParams?.toString()}#editar-materia?materia=${subject.slug}`}
-                      >
-                        <Button size="sm" variant="ghost">
-                          <UserIcon className="h-4 w-4" />
-                          <span className="sr-only">Editar</span>
-                        </Button>
-                      </Link>
                       <Button
                         className="text-red-600 hover:text-red-800"
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteSubject(subject.id)}
+                        onClick={() => deleteCanteen(canteen.id)}
                       >
                         <Trash2Icon className="h-4 w-4" />
                         <span className="sr-only">Remover</span>
@@ -121,7 +109,7 @@ export function SubjectsTableV2() {
       <PaginationV2
         currentPage={page}
         itemsPerPage={limit}
-        totalCount={subjectsCount}
+        totalCount={canteensCount}
       />
     </>
   );

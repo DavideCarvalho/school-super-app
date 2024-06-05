@@ -2,13 +2,12 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const canteenRouter = createTRPCRouter({
-  create: publicProcedure
+  create: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         responsibleEmail: z.string(),
         responsibleName: z.string(),
       }),
@@ -29,7 +28,7 @@ export const canteenRouter = createTRPCRouter({
       });
       const canteenResponsibleUser = await ctx.prisma.user.create({
         data: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
           name: input.responsibleName,
           slug: slugify(input.responsibleName),
           email: input.responsibleEmail,
@@ -39,15 +38,39 @@ export const canteenRouter = createTRPCRouter({
       });
       await ctx.prisma.canteen.create({
         data: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
           responsibleUserId: canteenResponsibleUser.id,
         },
       });
+      await clerkClient.users.updateUser(canteenResponsibleUser.id, {
+        publicMetadata: {
+          id: canteenResponsibleUser.id,
+          name: canteenResponsibleUser.name,
+          role: roleCanteenWorker.name,
+          School: {
+            id: ctx.session.school.id,
+            name: ctx.session.school.name,
+            slug: ctx.session.school.slug,
+          },
+        },
+      });
     }),
-  allBySchoolId: publicProcedure
+  findById: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.canteen.findFirst({
+        where: {
+          id: input.id,
+          schoolId: ctx.session.school.id,
+        },
+        include: {
+          ResponsibleUser: true,
+        },
+      });
+    }),
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(5),
       }),
@@ -55,7 +78,7 @@ export const canteenRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       return ctx.prisma.canteen.findMany({
         where: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
         },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
@@ -64,20 +87,16 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  countAllBySchoolId: publicProcedure
-    .input(
-      z.object({
-        schoolId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx, input }) => {
       return ctx.prisma.canteen.count({
         where: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
         },
       });
-    }),
-  addCanteenItem: publicProcedure
+    },
+  ),
+  addCanteenItem: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),
@@ -94,7 +113,7 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  allCanteenItems: publicProcedure
+  allCanteenItems: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),
@@ -111,7 +130,7 @@ export const canteenRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
       });
     }),
-  countAllCanteenItems: publicProcedure
+  countAllCanteenItems: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),
@@ -124,7 +143,7 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  deleteById: publicProcedure
+  deleteById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         id: z.string(),
@@ -134,10 +153,11 @@ export const canteenRouter = createTRPCRouter({
       await ctx.prisma.canteen.delete({
         where: {
           id: input.id,
+          schoolId: ctx.session.school.id,
         },
       });
     }),
-  sellItem: publicProcedure
+  sellItem: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),
@@ -170,7 +190,7 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  allCanteenSells: publicProcedure
+  allCanteenSells: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),
@@ -192,7 +212,7 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  countAllCanteenSells: publicProcedure
+  countAllCanteenSells: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),
@@ -207,7 +227,7 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  canteenSellsByMonth: publicProcedure
+  canteenSellsByMonth: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         canteenId: z.string(),

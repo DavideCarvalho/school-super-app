@@ -109,7 +109,11 @@ export function EditClassModalV2({
           </div>
           <DialogFooter>
             <div>
-              <Button variant="outline" onClick={() => onClickCancel()}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onClickCancel()}
+              >
                 Cancelar
               </Button>
             </div>

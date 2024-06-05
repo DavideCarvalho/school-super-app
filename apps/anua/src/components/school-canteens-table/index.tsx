@@ -29,7 +29,6 @@ export function SchoolCanteensTable({ schoolId }: SchoolCanteensTableProps) {
 
   const allBySchoolIdQuery = api.canteen.allBySchoolId.useQuery(
     {
-      schoolId,
       limit: router.query.limit ? Number(router.query.limit) : 5,
       page: router.query.page ? Number(router.query.page) : 1,
     },
@@ -37,7 +36,7 @@ export function SchoolCanteensTable({ schoolId }: SchoolCanteensTableProps) {
   );
 
   const countAllBySchoolIdQuery = api.canteen.countAllBySchoolId.useQuery(
-    { schoolId },
+    undefined,
     { refetchOnMount: false },
   );
 
@@ -92,6 +91,7 @@ export function SchoolCanteensTable({ schoolId }: SchoolCanteensTableProps) {
                 stroke="currentColor"
                 strokeWidth="2"
               >
+                <title>Adicionar</title>
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -181,6 +181,7 @@ function TableRow({ canteen, onDelete, onEdit }: TableRowProps) {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Menu</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -201,6 +202,7 @@ function TableRow({ canteen, onDelete, onEdit }: TableRowProps) {
               <ul className="flex flex-col">
                 <li>
                   <button
+                    type="button"
                     className="w-full cursor-pointer rounded-md p-2 hover:bg-gray-100"
                     onClick={() => onDelete(canteen)}
                   >
@@ -244,6 +246,7 @@ function TableRowSkeleton() {
             stroke="currentColor"
             strokeWidth="2"
           >
+            <title>Adicionar</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
