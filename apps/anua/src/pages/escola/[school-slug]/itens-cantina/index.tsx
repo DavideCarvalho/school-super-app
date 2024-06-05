@@ -48,43 +48,13 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       };
     }
 
-    const user = await clerkClient.users.getUser(clerkUser.userId);
-    const userEmail = user.emailAddresses[0]?.emailAddress;
-
-    if (!userEmail) {
-      // Redirect to sign in page
-      return {
-        redirect: {
-          destination: `/sign-in?redirectTo=/escola/${schoolSlug}/cantinas?page=${page}&limit=${limit}`,
-          permanent: false,
-        },
-      };
-    }
-
-    const userOnMyDb = await prisma.user.findUnique({
+    const canteen = await prisma.canteen.findFirst({
       where: {
-        email: userEmail,
-      },
-      include: {
-        Role: true,
+        schoolId: school.id,
       },
     });
 
-    // const allowedRoles = ["DIRECTOR", "CANTEEN_WORKER"];
-
-    // if (!userOnMyDb || !allowedRoles.includes(userOnMyDb.Role.name)) {
-    //   // Redirect to sign in page
-    //   return {
-    //     redirect: {
-    //       destination: `/escola/${schoolSlug}?page=1&limit=5`,
-    //       permanent: true,
-    //     },
-    //   };
-    // }
-
-    const canteenId = getUserPublicMetadata(user).canteen?.id;
-
-    if (!canteenId) {
+    if (!canteen) {
       // Redirect to sign in page
       return {
         redirect: {
@@ -96,19 +66,19 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
 
     await Promise.all([
       serverSideHelpers.canteen.allCanteenItems.prefetch({
-        canteenId,
+        canteenId: canteen.id,
         page,
         limit,
       }),
       serverSideHelpers.canteen.countAllCanteenItems.prefetch({
-        canteenId,
+        canteenId: canteen.id,
       }),
     ]);
 
     return {
       props: {
         school,
-        canteenId,
+        canteenId: canteen.id,
         trpcState: serverSideHelpers.dehydrate(),
       },
     };

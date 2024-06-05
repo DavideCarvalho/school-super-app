@@ -320,7 +320,6 @@ const routes: Route[] = [
 const canteenRoutes: Route[] = [
   {
     name: "Itens da cantina",
-    href: (params) =>
-      `/escola/${params.schoolSlug}/cantina/${params.canteenId}/itens-cantina`,
+    href: (params) => `/escola/${params.schoolSlug}/itens-cantina`,
   },
 ];

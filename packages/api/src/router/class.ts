@@ -58,17 +58,15 @@ export const classRouter = createTRPCRouter({
   updateById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        //TODO: Tirar o schoolId do input
-        schoolId: z.string(),
         classId: z.string(),
         name: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const foundClass = await ctx.prisma.class.findUnique({
-        where: { id: input.classId },
+        where: { id: input.classId, schoolId: ctx.session.school.id },
       });
-      if (!foundClass || foundClass.schoolId !== ctx.session.school.id) {
+      if (!foundClass) {
         throw new Error("Turma não encontrada");
       }
       return ctx.prisma.class.update({
