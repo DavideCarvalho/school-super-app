@@ -70,17 +70,17 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       },
     });
 
-    const allowedRoles = ["DIRECTOR", "CANTEEN_WORKER"];
+    // const allowedRoles = ["DIRECTOR", "CANTEEN_WORKER"];
 
-    if (!userOnMyDb || !allowedRoles.includes(userOnMyDb.Role.name)) {
-      // Redirect to sign in page
-      return {
-        redirect: {
-          destination: `/escola/${schoolSlug}?page=1&limit=5`,
-          permanent: true,
-        },
-      };
-    }
+    // if (!userOnMyDb || !allowedRoles.includes(userOnMyDb.Role.name)) {
+    //   // Redirect to sign in page
+    //   return {
+    //     redirect: {
+    //       destination: `/escola/${schoolSlug}?page=1&limit=5`,
+    //       permanent: true,
+    //     },
+    //   };
+    // }
 
     const canteenId = getUserPublicMetadata(user).canteen?.id;
 
