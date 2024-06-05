@@ -180,6 +180,24 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
+  findCanteenItemById: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        canteenId: z.string(),
+        itemId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.canteenItem.findFirst({
+        where: {
+          id: input.itemId,
+          Canteen: {
+            id: input.canteenId,
+            schoolId: ctx.session.school.id,
+          },
+        },
+      });
+    }),
   sellItem: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
