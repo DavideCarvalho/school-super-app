@@ -8,8 +8,10 @@ import { Button } from "@acme/ui/button";
 
 import { CanteenItemsTableV2 } from "~/components/school-canteen-items-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
+import { EditCanteenItemModalListener } from "./_components/edit-canteen-item-modal-listener";
+import { NewCanteenItemModalListener } from "./_components/new-canteen-item-modal-listener";
 
-export default async function SubjectsPage({
+export default async function CanteenItemsPage({
   params,
 }: {
   params: { "school-slug": string };
@@ -44,21 +46,20 @@ export default async function SubjectsPage({
       canteenId: canteen.id,
     }),
   ]);
-  await helper.subject.countAllBySchoolId.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Matérias</h2>
+        <h2 className="text-xl font-semibold">Itens da cantina</h2>
         <Link
-          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-materia`}
+          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-item-cantina`}
         >
           <Button>Adicionar Item</Button>
         </Link>
       </div>
 
-      {/* <NewSubjectModalListener /> */}
-      {/* <EditSubjectModalListener /> */}
+      <NewCanteenItemModalListener canteenId={canteen.id} />
+      <EditCanteenItemModalListener canteenId={canteen.id} />
       <Suspense>
         <CanteenItemsTableV2 canteenId={canteen.id} />
       </Suspense>

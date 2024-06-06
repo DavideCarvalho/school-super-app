@@ -113,6 +113,25 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
+  editCanteenItem: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        canteenItemId: z.string(),
+        name: z.string(),
+        price: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.canteenItem.update({
+        where: {
+          id: input.canteenItemId,
+        },
+        data: {
+          name: input.name,
+          price: input.price,
+        },
+      });
+    }),
   deleteCanteenItem: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

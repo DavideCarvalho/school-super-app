@@ -3,10 +3,16 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewSubjectModalV2 } from "~/components/new-subject-modal-v2";
+import { NewCanteenItemModalV2 } from "~/components/new-canteenitem-modal-v2";
 import { api } from "~/trpc/react";
 
-export function NewCanteenItemModalListener() {
+interface NewCanteenItemModalListenerProps {
+  canteenId: string;
+}
+
+export function NewCanteenItemModalListener({
+  canteenId,
+}: NewCanteenItemModalListenerProps) {
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
 
@@ -37,7 +43,8 @@ export function NewCanteenItemModalListener() {
   }
 
   return (
-    <NewSubjectModalV2
+    <NewCanteenItemModalV2
+      canteenId={canteenId}
       open={openNewTeacherModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

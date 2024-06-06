@@ -4,10 +4,16 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditSubjectModalV2 } from "~/components/edit-subject-modal-v2";
+import { EditCanteenItemModalV2 } from "~/components/edit-canteenitem-modal";
 import { api } from "~/trpc/react";
 
-export function EditCanteenItemModalListener() {
+interface EditCanteenItemModalListenerProps {
+  canteenId: string;
+}
+
+export function EditCanteenItemModalListener({
+  canteenId,
+}: EditCanteenItemModalListenerProps) {
   const [openEditCanteenItemModal, setOpenEditCanteenItemModal] =
     useState(false);
   const [hash, setHash] = useHash();
@@ -41,8 +47,9 @@ export function EditCanteenItemModalListener() {
   }
 
   return (
-    <EditSubjectModalV2
-      subjectSlug={hashValue ?? ""}
+    <EditCanteenItemModalV2
+      canteenId={canteenId}
+      canteenItemId={hashValue ?? ""}
       open={openEditCanteenItemModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -28,31 +29,49 @@ const schema = z
   })
   .required();
 
-interface NewCanteenItemModalV2Props {
+interface EditCanteenItemModalV2Props {
   canteenId: string;
+  canteenItemId: string;
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
-export function NewCanteenItemModalV2({
+export function EditCanteenItemModalV2({
   canteenId,
+  canteenItemId,
   open,
   onClickSubmit,
   onClickCancel,
-}: NewCanteenItemModalV2Props) {
-  const { register, handleSubmit, reset } = useForm<z.infer<typeof schema>>({
+}: EditCanteenItemModalV2Props) {
+  const { data: canteenItem } = api.canteen.findCanteenItemById.useQuery(
+    {
+      itemId: canteenItemId,
+      canteenId,
+    },
+    {
+      enabled: canteenItemId != null && canteenId != null,
+    },
+  );
+
+  const { register, handleSubmit, reset, setValue } = useForm<
+    z.infer<typeof schema>
+  >({
     resolver: zodResolver(schema),
+    defaultValues: {
+      name: "Carregando...",
+      price: 0,
+    },
   });
 
-  const { mutateAsync: addCanteenItem } =
-    api.canteen.addCanteenItem.useMutation();
+  const { mutateAsync: editCanteenItem } =
+    api.canteen.editCanteenItem.useMutation();
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     const toastId = toast.loading("Adicionando item da cantina...");
     try {
-      await addCanteenItem({
-        canteenId,
+      await editCanteenItem({
+        canteenItemId,
         name: data.name,
         price: data.price * 100,
       });
@@ -68,12 +87,18 @@ export function NewCanteenItemModalV2({
     }
   };
 
+  useEffect(() => {
+    if (!canteenItem) return;
+    setValue("name", canteenItem.name);
+    setValue("price", canteenItem.price / 100);
+  }, [canteenItem, setValue]);
+
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Criar nova cantina</DialogTitle>
+            <DialogTitle>Adicionar item da cantina</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
