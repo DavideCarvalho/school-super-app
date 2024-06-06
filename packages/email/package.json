@@ -19,7 +19,6 @@
     "react-email": "2.1.4"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:^0.1.0",
     "@acme/prettier-config": "workspace:^0.1.0",
     "@acme/tsconfig": "workspace:^0.1.0",
     "@radix-ui/colors": "3.0.0",

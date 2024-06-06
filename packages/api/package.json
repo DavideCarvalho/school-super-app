@@ -14,7 +14,6 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@acme/auth": "workspace:^0.1.0",
     "@acme/db": "workspace:^0.1.0",
     "@acme/email": "workspace:^0.1.0",
     "@react-email/render": "0.0.13",
@@ -28,7 +27,6 @@
     "slugify": "1.6.6"
   },
   "devDependencies": {
-    "@acme/eslint-config": "workspace:^0.1.0",
     "@acme/prettier-config": "workspace:^0.1.0",
     "@acme/tsconfig": "workspace:^0.1.0",
     "eslint": "9.3.0",
