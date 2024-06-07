@@ -2,13 +2,16 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  isUserLoggedInAndAssignedToSchool,
+  publicProcedure,
+} from "../trpc";
 
 export const userRouter = createTRPCRouter({
-  countAllBySchoolId: publicProcedure
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         role: z
           .union([
             z.literal("DIRECTOR"),
@@ -22,16 +25,15 @@ export const userRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.user.count({
         where: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
           Role: { name: input.role },
           active: true,
         },
       });
     }),
-  allBySchoolId: publicProcedure
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(5),
         role: z
@@ -47,7 +49,7 @@ export const userRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.user.findMany({
         where: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
           Role: { name: input.role },
           active: true,
         },

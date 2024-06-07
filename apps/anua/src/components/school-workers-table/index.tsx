@@ -52,7 +52,6 @@ export function SchoolWorkersTable({ schoolId }: SchoolWorkersTableProps) {
   >(undefined);
   const workersQuery = api.user.allBySchoolId.useQuery(
     {
-      schoolId,
       limit: router.query.limit ? Number(router.query.limit) : 5,
       page: router.query.page ? Number(router.query.page) : 1,
       role: isValidRole(router.query.role as string)
@@ -77,7 +76,6 @@ export function SchoolWorkersTable({ schoolId }: SchoolWorkersTableProps) {
 
   const workersCountQuery = api.user.countAllBySchoolId.useQuery(
     {
-      schoolId,
       role: isValidRole(router.query.role as string)
         ? (router.query.role as
             | "TEACHER"

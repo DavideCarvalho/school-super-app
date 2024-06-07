@@ -7,36 +7,45 @@ import {
 } from "../trpc";
 
 export const studentRouter = createTRPCRouter({
+  // TODO: Mudar isso daqui
   studentsWithCanteenLimitBySchoolId: isUserLoggedInAndAssignedToSchool.query(
     async ({ ctx }) => {
-      // ctx.prisma.$kysely
-      //   .selectFrom("StudentCanteenItemPurchase")
-      //   .innerJoin("User", "StudentCanteenItemPurchase.studentId", "User.id")
-      //   .select([
-      //     "StudentCanteenItemPurchase.id as id",
-      //     "User.name as userName",
-      //   ])
-      //   .where('User.schoolId', '=', ctx.session.school.id)
-      //   .where((eb) => eb.or([
-      //     'Student.canteenLimit', 'IS', 'NULL',
-      //     ctx.prisma.ky, '', ''
-      //   ])
-      //   )
+      // Essa query tenta achar
+      // os usuários que podem comprar na cantina
+      // a lógica é:
+      // - Se o usuário não é um estudante, então pode comprar na cantina
+      // - Se o usuário é um estudante, então pode comprar na cantina se ainda não passou
+      //   do limite de compras mensal
       return ctx.prisma.$queryRaw<
         {
           id: string;
           userName: string;
         }[]
       >`
-        SELECT Student.id as id, U.name as userName
-          INNER JOIN anua.User U on Student.id = U.id
+        SELECT U.id   as id,
+              U.name as userName
+        FROM User U
+                INNER JOIN
+            Role R
+            ON
+                U.roleId = R.id
+                LEFT JOIN
+            Student S
+            ON
+                S.id = U.id
         WHERE U.schoolId = ${ctx.session.school.id}
-        AND ((SELECT SUM(price) as month_total
-        FROM StudentCanteenItemPurchase
-        WHERE MONTH(createdAt) = MONTH(NOW())
-          AND YEAR(createdAt) = YEAR(NOW())
-        GROUP BY studentId)
-        < Student.canteenLimit OR Student.canteenLimit IS NULL)
+          AND (
+            R.name != 'STUDENT'
+                OR S.canteenLimit IS NULL
+                OR (SELECT SUM(price) as month_total
+                    FROM CanteenItemPurchased
+                            INNER JOIN CanteenPurchase
+                                        on CanteenItemPurchased.canteenPurchaseId = CanteenPurchase.id
+                    WHERE MONTH(CanteenItemPurchased.createdAt) = MONTH(NOW())
+                      AND YEAR(CanteenItemPurchased.createdAt) = YEAR(NOW())
+                    GROUP BY CanteenPurchase.userId)
+                < S.canteenLimit
+            );
       `;
     },
   ),

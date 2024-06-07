@@ -1,28 +1,48 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SearchSelect, SearchSelectItem, Switch } from "@tremor/react";
+import { SearchSelect, SearchSelectItem } from "@tremor/react";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { cn } from "@acme/ui";
+import { Button } from "@acme/ui/button";
+import { Combobox } from "@acme/ui/combobox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@acme/ui/dialog";
+import { Input } from "@acme/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@acme/ui/select";
+
 import { api } from "~/trpc/react";
-import { Modal } from "../modal";
+import { Label } from "../ui/label";
 
 const schema = z.object({
-  userId: z.string({
-    required_error: "Quem é a pessoa que está comprando?",
+  user: z.object({
+    id: z.string(),
+    name: z.string(),
   }),
-  products: z
+  payed: z.boolean().default(true),
+  items: z
     .array(
       z.object({
-        canteenItemId: z.string({
-          required_error: "Qual item está sendo vendido?",
+        item: z.object({
+          id: z.string(),
+          name: z.string(),
         }),
         quantity: z
           .number({
             required_error: "Qual a quantidade?",
           })
           .min(1),
-        payed: z.boolean().default(true),
       }),
     )
     .min(1, "Adicione pelo menos um item"),
@@ -31,23 +51,27 @@ const schema = z.object({
 interface NewCanteenSellModalV2Props {
   canteenId: string;
   open: boolean;
-  onCreated: () => void;
+  onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
 export function NewCanteenSellModalV2({
   canteenId,
   open,
-  onCreated,
   onClickCancel,
 }: NewCanteenSellModalV2Props) {
-  const allCanteenItemsQuery = api.canteen.allCanteenItems.useQuery({
+  const { data: allCanteenItems } = api.canteen.allCanteenItems.useQuery({
     canteenId,
     limit: 999,
     page: 1,
   });
 
-  const studentsWithCanteenLimitBySchoolIdQuery =
+  const { data: schoolWorkers } = api.user.allBySchoolId.useQuery({
+    page: 1,
+    limit: 999,
+  });
+
+  const { data: studentsWithCanteenLimit } =
     api.student.studentsWithCanteenLimitBySchoolId.useQuery();
   const {
     register,
@@ -56,150 +80,228 @@ export function NewCanteenSellModalV2({
     formState: { errors },
     watch,
     setValue,
+    getValues,
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      studentId: undefined,
-      products: [
+      user: {
+        id: undefined,
+        name: undefined,
+      },
+      payed: true,
+      items: [
         {
-          canteenItemId: undefined,
+          item: {
+            id: undefined,
+            name: undefined,
+          },
           quantity: 1,
-          payed: true,
         },
       ],
     },
   });
 
-  const watchProducts = watch("products");
-  const watchUserId = watch("userId");
+  const watchItems = watch("items");
+  const watchUser = watch("user");
 
   const { mutateAsync: sellItemMutation } = api.canteen.sellItem.useMutation();
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    const toastId = toast.loading("Vendendo...");
-    try {
-      await sellItemMutation({
-        canteenId,
-        itemId: data.canteenItemId,
-        quantity: data.quantity,
-        studentId: data.studentId,
-        payed: data.payed,
-      });
-      toast.success("Venda criada com sucesso!");
-    } catch (e) {
-      toast.error("Erro ao criar venda");
-    } finally {
-      toast.dismiss(toastId);
-      onCreated();
-      reset();
-    }
+    // const toastId = toast.loading("Vendendo...");
+    // try {
+    //   await sellItemMutation({
+    //     canteenId,
+    //     itemId: data.canteenItemId,
+    //     quantity: data.quantity,
+    //     studentId: data.studentId,
+    //     payed: data.payed,
+    //   });
+    //   toast.dismiss(toastId);
+    //   toast.success("Venda criada com sucesso!");
+    //   await onClickSubmit();
+    //   reset();
+    // } catch (e) {
+    //   toast.dismiss(toastId);
+    //   toast.error("Erro ao criar venda");
+    // } finally {
+    //   toast.dismiss(toastId);
+    // }
   };
 
   return (
-    <Modal
-      open={open}
-      onClose={() => {
-        reset();
-        onClickCancel();
-      }}
-      title={"Nova venda"}
+    <Dialog open={open} onOpenChange={onClickCancel}>
+      <DialogContent className="sm:max-w-[600px]">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogHeader>
+            <DialogTitle>Nova venda</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-6 py-4">
+            <div className="grid gap-2">
+              <label className="text-sm font-bold text-gray-900">
+                Pra quem?
+              </label>
+              <div className="mt-2">
+                <Combobox
+                  placeholder="Pra quem?"
+                  noValuePlaceholder="Ninguém foi encontrado"
+                  options={
+                    studentsWithCanteenLimit
+                      ? studentsWithCanteenLimit.map((student) => ({
+                          value: student.id,
+                          label: student.userName,
+                        }))
+                      : []
+                  }
+                  setValue={(option) => {
+                    if (!option) return;
+                    setValue("user", {
+                      id: option.value,
+                      name: option.label,
+                    });
+                  }}
+                  value={getValues("user.name")}
+                />
+              </div>
+            </div>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label>Itens</Label>
+                <div className="grid gap-4">
+                  {watchItems.map((item, index) => (
+                    <div
+                      key={item.item ? `${item.item.id}-${index}` : index}
+                      className={cn(
+                        "grid",
+                        index > 0
+                          ? "gap-3 sm:grid-cols-3"
+                          : "gap-2 sm:grid-cols-2",
+                      )}
+                    >
+                      <Combobox
+                        placeholder="Escolha um item"
+                        noValuePlaceholder="Nenhum item encontrado"
+                        options={
+                          allCanteenItems
+                            ? allCanteenItems?.map((item) => ({
+                                value: item.id,
+                                label: item.name,
+                              }))
+                            : []
+                        }
+                        setValue={(option) => {
+                          if (!option) return;
+                          setValue(`items.${index}.item`, {
+                            id: option.value,
+                            name: option.label,
+                          });
+                        }}
+                        value={getValues(`items.${index}.item.name`)}
+                      />
+                      <Input
+                        placeholder="Início"
+                        type="number"
+                        {...register(`items.${index}.quantity`)}
+                      />
+                      {index > 0 ? (
+                        <Button
+                          type="button"
+                          className="flex w-full items-center justify-center"
+                          size="icon"
+                          variant="destructive"
+                          onClick={() => {
+                            const items = getValues("items");
+                            items.splice(index, 1);
+                            setValue("items", items);
+                          }}
+                        >
+                          <MinusIcon className="h-4 w-4" />
+                          <span className="sr-only">Remover item</span>
+                        </Button>
+                      ) : null}
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    className="flex items-center gap-2"
+                    variant="outline"
+                    onClick={() => {
+                      setValue(`items.${watchItems.length}`, {
+                        item: {
+                          // @ts-expect-error
+                          id: undefined,
+                          // @ts-expect-error
+                          name: undefined,
+                        },
+                        quantity: 1,
+                      });
+                    }}
+                  >
+                    <PlusIcon className="h-4 w-4" />
+                    Adicionar item
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => onClickCancel()}
+              type="button"
+              className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-semibold leading-5 text-gray-600 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+            >
+              Criar
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
-      <form className="mt-6" onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-bold text-gray-900">
-              Pra qual pessoa?
-            </label>
-            <div className="mt-2">
-              <SearchSelect
-                id="distance"
-                name="distance"
-                className="mt-2"
-                value={watchUserId}
-                onValueChange={(value) => setValue("userId", value)}
-              >
-                {studentsWithCanteenLimitBySchoolIdQuery.data?.map(
-                  (student) => (
-                    <SearchSelectItem key={student.id} value={student.id}>
-                      {student.userName}
-                    </SearchSelectItem>
-                  ),
-                )}
-              </SearchSelect>
-            </div>
-          </div>
-          {/* <div>
-            <label className="text-sm font-bold text-gray-900">Item</label>
-            <div className="mt-2">
-              <SearchSelect
-                id="distance"
-                name="distance"
-                className="mt-2"
-                value={watchProductId}
-                onValueChange={(value) => setValue("canteenItemId", value)}
-              >
-                {allCanteenItemsQuery.data?.map((item) => (
-                  <SearchSelectItem key={item.id} value={item.id}>
-                    {item.name}
-                  </SearchSelectItem>
-                ))}
-              </SearchSelect>
-            </div>
-          </div> */}
-          {/* <div>
-            <label className="text-sm font-bold text-gray-900">
-              Quantidade
-            </label>
-            <div className="mt-2">
-              <input
-                {...register("quantity")}
-                type="number"
-                inputMode="numeric"
-                min={1}
-                className={`block w-full rounded-lg border  px-4 py-3 placeholder-gray-500 caret-indigo-600 focus:border-indigo-600 focus:outline-none focus:ring-indigo-600 sm:text-sm ${
-                  errors.quantity ? "border-red-400" : "border-grey-300"
-                }`}
-                placeholder="Giz de cera"
-              />
-              {errors.quantity && (
-                <p className="text-red-600">{errors.quantity.message}</p>
-              )}
-            </div>
-          </div> */}
-          {/* <div>
-            <label className="text-sm font-bold text-gray-900">Pago?</label>
-            <div className="mt-2">
-              <Switch
-                checked={watchPayed}
-                onChange={() => {
-                  setValue("payed", !watchPayed);
-                }}
-              />
-              {errors.quantity && (
-                <p className="text-red-600">{errors.quantity.message}</p>
-              )}
-            </div>
-          </div>
-        </div> */}
-        </div>
+      <title>icone</title>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </svg>
+  );
+}
 
-        <div className="mt-5 flex items-center justify-end space-x-4">
-          <button
-            onClick={() => onClickCancel()}
-            type="reset"
-            className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white px-6 py-3 text-sm font-semibold leading-5 text-gray-600 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-          >
-            Cancelar
-          </button>
-
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-          >
-            Criar
-          </button>
-        </div>
-      </form>
-    </Modal>
+function MinusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>icone</title>
+      <path d="M5 12h14" />
+    </svg>
   );
 }

@@ -54,6 +54,7 @@ model User {
   UserLikedPost    UserLikedPost[]
   Comments         Comment[]
   CommentLikes     CommentLike[]
+  CanteenPurchases CanteenPurchase[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -90,11 +91,10 @@ model Student {
   responsibleUserId String
   canteenLimit      Float?
 
-  CanteenItemPurchases StudentCanteenItemPurchase[]
-  User                 User                         @relation(name: "student_user_id", fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ResponsibleUser      User                         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
-  StudentPei           StudentPei[]
-  Class                Class                        @relation(fields: [classId], references: [id])
+  User            User         @relation(name: "student_user_id", fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  ResponsibleUser User         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
+  StudentPei      StudentPei[]
+  Class           Class        @relation(fields: [classId], references: [id])
 
   @@index([id])
 }
@@ -120,27 +120,40 @@ model CanteenItem {
   updatedAt DateTime @updatedAt
   active    Boolean  @default(true)
 
-  Canteen                     Canteen                      @relation(fields: [canteenId], references: [id])
-  StudentCanteenItemPurchases StudentCanteenItemPurchase[]
+  Canteen              Canteen                @relation(fields: [canteenId], references: [id])
+  Purchases            CanteenPurchase[]
+  CanteenItemPurchased CanteenItemPurchased[]
 
   @@index([canteenId])
 }
 
-model StudentCanteenItemPurchase {
-  id            String   @id @default(cuid())
-  studentId     String
-  canteenItemId String
-  price         Float
-  quantity      Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  payed         Boolean  @default(false)
+model CanteenItemPurchased {
+  id                String   @id @default(cuid())
+  price             Float
+  quantity          Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  canteenPurchaseId String
+  canteenItemId     String
 
-  Student     Student     @relation(fields: [studentId], references: [id])
-  CanteenItem CanteenItem @relation(fields: [canteenItemId], references: [id])
+  CanteenItem     CanteenItem     @relation(fields: [canteenItemId], references: [id])
+  CanteenPurchase CanteenPurchase @relation(fields: [canteenPurchaseId], references: [id])
+}
 
-  @@index([canteenItemId])
-  @@index([studentId])
+model CanteenPurchase {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  payed     Boolean  @default(true)
+
+  userId String
+
+  User User @relation(fields: [userId], references: [id])
+
+  itemsPurchased CanteenItemPurchased[]
+  CanteenItem    CanteenItem?           @relation(fields: [canteenItemId], references: [id])
+  canteenItemId  String?
 }
 
 model TeacherHasSubject {

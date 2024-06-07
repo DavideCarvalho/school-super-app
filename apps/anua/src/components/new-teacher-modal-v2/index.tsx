@@ -157,6 +157,7 @@ export function NewTeacherModalV2({
                       />
                       {index > 0 ? (
                         <Button
+                          type="button"
                           className="flex items-center justify-center"
                           size="icon"
                           variant="destructive"
@@ -198,11 +199,13 @@ export function NewTeacherModalV2({
             </div>
           </div>
           <DialogFooter>
-            <div>
-              <Button type="button" variant="outline" onClick={() => onClickCancel()}>
-                Cancelar
-              </Button>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onClickCancel()}
+            >
+              Cancelar
+            </Button>
             <Button type="submit">Salvar</Button>
           </DialogFooter>
         </form>

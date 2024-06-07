@@ -22,6 +22,23 @@ export type CanteenItem = {
   updatedAt: Timestamp;
   active: Generated<number>;
 };
+export type CanteenItemPurchased = {
+  id: string;
+  price: number;
+  quantity: number;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  canteenPurchaseId: string;
+  canteenItemId: string;
+};
+export type CanteenPurchase = {
+  id: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  payed: Generated<number>;
+  userId: string;
+  canteenItemId: string | null;
+};
 export type Class = {
   id: string;
   name: string;
@@ -126,16 +143,6 @@ export type Student = {
   responsibleUserId: string;
   canteenLimit: number | null;
 };
-export type StudentCanteenItemPurchase = {
-  id: string;
-  studentId: string;
-  canteenItemId: string;
-  price: number;
-  quantity: number;
-  createdAt: Generated<Timestamp>;
-  updatedAt: Timestamp;
-  payed: Generated<number>;
-};
 export type StudentPei = {
   id: string;
   studentId: string;
@@ -216,6 +223,8 @@ export type UserLikedPost = {
 export type DB = {
   Canteen: Canteen;
   CanteenItem: CanteenItem;
+  CanteenItemPurchased: CanteenItemPurchased;
+  CanteenPurchase: CanteenPurchase;
   Class: Class;
   Comment: Comment;
   CommentLike: CommentLike;
@@ -227,7 +236,6 @@ export type DB = {
   School: School;
   SchoolChain: SchoolChain;
   Student: Student;
-  StudentCanteenItemPurchase: StudentCanteenItemPurchase;
   StudentPei: StudentPei;
   Subject: Subject;
   Teacher: Teacher;
