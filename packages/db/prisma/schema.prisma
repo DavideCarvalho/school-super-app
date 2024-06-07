@@ -121,7 +121,6 @@ model CanteenItem {
   active    Boolean  @default(true)
 
   Canteen              Canteen                @relation(fields: [canteenId], references: [id])
-  Purchases            CanteenPurchase[]
   CanteenItemPurchased CanteenItemPurchased[]
 
   @@index([canteenId])
@@ -152,8 +151,6 @@ model CanteenPurchase {
   User User @relation(fields: [userId], references: [id])
 
   itemsPurchased CanteenItemPurchased[]
-  CanteenItem    CanteenItem?           @relation(fields: [canteenItemId], references: [id])
-  canteenItemId  String?
 }
 
 model TeacherHasSubject {

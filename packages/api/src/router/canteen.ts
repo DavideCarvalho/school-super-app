@@ -3,6 +3,7 @@ import slugify from "slugify";
 import { z } from "zod";
 
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
+import { CanteenItemPurchased } from "./../../../db/prisma/generated/types";
 
 export const canteenRouter = createTRPCRouter({
   create: isUserLoggedInAndAssignedToSchool
@@ -240,15 +241,15 @@ export const canteenRouter = createTRPCRouter({
         },
       });
       if (!student) throw new Error("Student not found");
-      await ctx.prisma.studentCanteenItemPurchase.create({
-        data: {
-          canteenItemId: item.id,
-          studentId: student.id,
-          quantity: input.quantity,
-          price: item.price,
-          payed: input.payed,
-        },
-      });
+      // await ctx.prisma.studentCanteenItemPurchase.create({
+      //   data: {
+      //     canteenItemId: item.id,
+      //     studentId: student.id,
+      //     quantity: input.quantity,
+      //     price: item.price,
+      //     payed: input.payed,
+      //   },
+      // });
     }),
   allCanteenSells: isUserLoggedInAndAssignedToSchool
     .input(
@@ -259,10 +260,20 @@ export const canteenRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.studentCanteenItemPurchase.findMany({
+      return ctx.prisma.canteenPurchase.findMany({
         where: {
-          CanteenItem: {
-            canteenId: input.canteenId,
+          itemsPurchased: {
+            every: {
+              CanteenItem: {
+                Canteen: {
+                  id: input.canteenId,
+                  schoolId: ctx.session.school.id,
+                },
+              },
+            },
+          },
+          User: {
+            schoolId: ctx.session.school.id,
           },
         },
         take: input.limit,
@@ -271,11 +282,7 @@ export const canteenRouter = createTRPCRouter({
           createdAt: "desc",
         },
         include: {
-          Student: {
-            include: {
-              User: true,
-            },
-          },
+          User: true,
         },
       });
     }),
@@ -286,10 +293,20 @@ export const canteenRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      return ctx.prisma.studentCanteenItemPurchase.count({
+      return ctx.prisma.canteenPurchase.count({
         where: {
-          CanteenItem: {
-            canteenId: input.canteenId,
+          itemsPurchased: {
+            every: {
+              CanteenItem: {
+                Canteen: {
+                  id: input.canteenId,
+                  schoolId: ctx.session.school.id,
+                },
+              },
+            },
+          },
+          User: {
+            schoolId: ctx.session.school.id,
           },
         },
       });

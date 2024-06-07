@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchSelect, SearchSelectItem } from "@tremor/react";
+import { usePrinter } from "hooks/use-printer";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -34,15 +35,18 @@ const schema = z.object({
   items: z
     .array(
       z.object({
-        item: z.object({
-          id: z.string(),
-          name: z.string(),
-        }),
+        id: z.string(),
+        name: z.string(),
         quantity: z
           .number({
             required_error: "Qual a quantidade?",
           })
           .min(1),
+        price: z
+          .number({
+            required_error: "Qual o preço?",
+          })
+          .min(0),
       }),
     )
     .min(1, "Adicione pelo menos um item"),
@@ -60,6 +64,12 @@ export function NewCanteenSellModalV2({
   open,
   onClickCancel,
 }: NewCanteenSellModalV2Props) {
+  const vendorId = 0x0416;
+  const productId = 0x5011;
+  const { connected, connectPrinter, printReceipt } = usePrinter(
+    vendorId,
+    productId,
+  );
   const { data: allCanteenItems } = api.canteen.allCanteenItems.useQuery({
     canteenId,
     limit: 999,
@@ -91,11 +101,10 @@ export function NewCanteenSellModalV2({
       payed: true,
       items: [
         {
-          item: {
-            id: undefined,
-            name: undefined,
-          },
+          id: undefined,
+          name: undefined,
           quantity: 1,
+          price: 0,
         },
       ],
     },
@@ -104,9 +113,26 @@ export function NewCanteenSellModalV2({
   const watchItems = watch("items");
   const watchUser = watch("user");
 
+  console.log("errors", errors);
+
   const { mutateAsync: sellItemMutation } = api.canteen.sellItem.useMutation();
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
+    if (!connected) {
+      await connectPrinter();
+    }
+    const receipt = `
+    Nota Fiscal
+    ----------------------
+    Item        Qtd  Valor
+    ----------------------
+    ${data.items.map((item) => `${item.name}   ${item.quantity}    ${(item.price * item.quantity) / 100}`).join("\n")}
+    ----------------------
+    Total                      ${data.items.reduce((acc, item) => acc + item.price * item.quantity, 0) / 100}
+    ----------------------
+    Obrigado pela compra!
+    `;
+    await printReceipt(receipt);
     // const toastId = toast.loading("Vendendo...");
     // try {
     //   await sellItemMutation({
@@ -169,7 +195,7 @@ export function NewCanteenSellModalV2({
                 <div className="grid gap-4">
                   {watchItems.map((item, index) => (
                     <div
-                      key={item.item ? `${item.item.id}-${index}` : index}
+                      key={item ? `${item.id}-${index}` : index}
                       className={cn(
                         "grid",
                         index > 0
@@ -190,17 +216,25 @@ export function NewCanteenSellModalV2({
                         }
                         setValue={(option) => {
                           if (!option) return;
-                          setValue(`items.${index}.item`, {
+                          setValue(`items.${index}`, {
                             id: option.value,
                             name: option.label,
+                            quantity: 1,
+                            price:
+                              allCanteenItems?.find(
+                                (item) => item.id === option.value,
+                              )?.price ?? 0,
                           });
                         }}
-                        value={getValues(`items.${index}.item.name`)}
+                        value={getValues(`items.${index}.name`)}
                       />
                       <Input
-                        placeholder="Início"
+                        min={1}
+                        placeholder="Quantidade"
                         type="number"
-                        {...register(`items.${index}.quantity`)}
+                        {...register(`items.${index}.quantity`, {
+                          valueAsNumber: true,
+                        })}
                       />
                       {index > 0 ? (
                         <Button
@@ -226,13 +260,12 @@ export function NewCanteenSellModalV2({
                     variant="outline"
                     onClick={() => {
                       setValue(`items.${watchItems.length}`, {
-                        item: {
-                          // @ts-expect-error
-                          id: undefined,
-                          // @ts-expect-error
-                          name: undefined,
-                        },
+                        // @ts-expect-error
+                        id: undefined,
+                        // @ts-expect-error
+                        name: undefined,
                         quantity: 1,
+                        price: 0,
                       });
                     }}
                   >

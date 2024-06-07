@@ -37,7 +37,6 @@ export type CanteenPurchase = {
   updatedAt: Timestamp;
   payed: Generated<number>;
   userId: string;
-  canteenItemId: string | null;
 };
 export type Class = {
   id: string;
