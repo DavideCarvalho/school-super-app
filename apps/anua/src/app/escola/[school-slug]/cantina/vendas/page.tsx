@@ -7,6 +7,7 @@ import { prisma } from "@acme/db";
 import { Button } from "@acme/ui/button";
 
 import { CanteenItemsTableV2 } from "~/components/school-canteen-items-table-v2";
+import { CanteenSellsTableV2 } from "~/components/school-canteen-sells-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditCanteenItemModalListener } from "./_components/edit-canteen-item-modal-listener";
 import { NewCanteenItemModalListener } from "./_components/new-canteen-item-modal-listener";
@@ -52,16 +53,16 @@ export default async function CanteenSeelsPage({
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Vendas da cantina</h2>
         <Link
-          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-item-cantina`}
+          href={`${url.pathname}?${url.searchParams.toString()}#nova-venda-cantina`}
         >
           <Button>Nova venda</Button>
         </Link>
       </div>
 
-      <NewCanteenItemModalListener canteenId={canteen.id} />
-      <EditCanteenItemModalListener canteenId={canteen.id} />
+      {/* <NewCanteenItemModalListener canteenId={canteen.id} />
+      <EditCanteenItemModalListener canteenId={canteen.id} /> */}
       <Suspense>
-        <CanteenItemsTableV2 canteenId={canteen.id} />
+        <CanteenSellsTableV2 canteenId={canteen.id} />
       </Suspense>
     </HydrationBoundary>
   );

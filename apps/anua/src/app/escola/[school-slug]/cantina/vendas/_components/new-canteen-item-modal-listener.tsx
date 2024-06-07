@@ -10,14 +10,14 @@ interface NewCanteenItemModalListenerProps {
   canteenId: string;
 }
 
-export function NewCanteenItemModalListener({
+export function NewCanteenSellModalListener({
   canteenId,
 }: NewCanteenItemModalListenerProps) {
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
 
   useEffect(() => {
-    if (hash === "adicionar-item-cantina") {
+    if (hash === "nova-venda-cantina") {
       setOpenNewTeacherModal(true);
     }
   }, [hash]);

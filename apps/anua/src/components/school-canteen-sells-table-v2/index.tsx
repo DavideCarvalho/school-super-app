@@ -105,10 +105,8 @@ export function CanteenSellsTableV2({ canteenId }: CanteenSellsTableProps) {
                   {canteenSell?.price
                     ? brazilianRealFormatter(canteenSell.price / 100)
                     : "-"}
-                  <TableCell>
-                    {canteenSell?.Student?.User?.name ?? "-"}
-                  </TableCell>
                 </TableCell>
+                <TableCell>{canteenSell?.Student?.User?.name ?? "-"}</TableCell>
                 <TableCell>
                   {canteenSell ? (
                     <div className="flex items-center gap-2">
