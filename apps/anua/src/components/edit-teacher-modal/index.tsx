@@ -222,24 +222,26 @@ export function EditTeacherModal({
                       ) : null}
                     </div>
                   ))}
-                  <Button
-                    className="flex items-center gap-2"
-                    variant="outline"
-                    onClick={() => {
-                      setValue(`availability.${availabilities.length}`, {
-                        day:
-                          daysOfWeek[availabilities.length] ??
-                          (daysOfWeek[0] as string),
-                        // @ts-expect-error
-                        startTime: undefined,
-                        // @ts-expect-error
-                        endTime: undefined,
-                      });
-                    }}
-                  >
-                    <PlusIcon className="h-4 w-4" />
-                    Adicionar disponibilidade
-                  </Button>
+                  {availabilities.length < 5 && (
+                    <Button
+                      className="flex items-center gap-2"
+                      variant="outline"
+                      onClick={() => {
+                        setValue(`availability.${availabilities.length}`, {
+                          day:
+                            daysOfWeek[availabilities.length] ??
+                            (daysOfWeek[0] as string),
+                          // @ts-expect-error
+                          startTime: undefined,
+                          // @ts-expect-error
+                          endTime: undefined,
+                        });
+                      }}
+                    >
+                      <PlusIcon className="h-4 w-4" />
+                      Adicionar disponibilidade
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>

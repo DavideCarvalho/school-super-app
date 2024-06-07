@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -51,6 +52,9 @@ export function NewTeacherModalV2({
   onClickCancel,
   onClickSubmit,
 }: NewTeacherModalV2Props) {
+  const [weekDaysLeft, setWeekDaysLeft] = useState<string[]>(
+    JSON.parse(JSON.stringify(daysOfWeek)),
+  );
   const { handleSubmit, getValues, watch, setValue, register, reset } = useForm<
     z.infer<typeof schema>
   >({
@@ -68,6 +72,23 @@ export function NewTeacherModalV2({
     },
   });
   const availabilities = watch("availability");
+
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      if (!name?.includes("availability")) return;
+      const availabilities = getValues("availability");
+      let daysOfWeekLeft: string[] = JSON.parse(JSON.stringify(daysOfWeek));
+      for (const availability of availabilities) {
+        const dayAlreadyInUse = daysOfWeekLeft.includes(availability.day);
+        if (!dayAlreadyInUse) continue;
+        daysOfWeekLeft = daysOfWeekLeft.filter(
+          (day) => day !== (availability.day as keyof typeof daysOfWeek),
+        );
+      }
+      setWeekDaysLeft(daysOfWeekLeft);
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, getValues]);
 
   const { mutateAsync: createTeacher } =
     api.teacher.createTeacher.useMutation();
@@ -136,13 +157,66 @@ export function NewTeacherModalV2({
                           <SelectValue placeholder="Dia" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Monday">Segunda-feira</SelectItem>
-                          <SelectItem value="Tuesday">Terça-feira</SelectItem>
-                          <SelectItem value="Wednesday">
+                          <SelectItem
+                            value="Monday"
+                            className={cn(
+                              ![availability.day, ...weekDaysLeft].includes(
+                                "Monday",
+                              )
+                                ? "hidden"
+                                : "",
+                            )}
+                          >
+                            Segunda-feira
+                          </SelectItem>
+                          <SelectItem
+                            value="Tuesday"
+                            className={cn(
+                              ![availability.day, ...weekDaysLeft].includes(
+                                "Tuesday",
+                              )
+                                ? "hidden"
+                                : "",
+                            )}
+                          >
+                            Terça-feira
+                          </SelectItem>
+                          <SelectItem
+                            value="Wednesday"
+                            className={cn(
+                              ![availability.day, ...weekDaysLeft].includes(
+                                "Wednesday",
+                              )
+                                ? "hidden"
+                                : "",
+                            )}
+                          >
                             Quarta-feira
                           </SelectItem>
-                          <SelectItem value="Thursday">Quinta-feira</SelectItem>
-                          <SelectItem value="Friday">Sexta-feira</SelectItem>
+                          <SelectItem
+                            value="Thursday"
+                            className={cn(
+                              ![availability.day, ...weekDaysLeft].includes(
+                                "Thursday",
+                              )
+                                ? "hidden"
+                                : "",
+                            )}
+                          >
+                            Quinta-feira
+                          </SelectItem>
+                          <SelectItem
+                            value="Friday"
+                            className={cn(
+                              ![availability.day, ...weekDaysLeft].includes(
+                                "Friday",
+                              )
+                                ? "hidden"
+                                : "",
+                            )}
+                          >
+                            Sexta-feira
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <Input
@@ -175,25 +249,26 @@ export function NewTeacherModalV2({
                       ) : null}
                     </div>
                   ))}
-                  <Button
-                    type="button"
-                    className="flex items-center gap-2"
-                    variant="outline"
-                    onClick={() => {
-                      setValue(`availability.${availabilities.length}`, {
-                        day:
-                          daysOfWeek[availabilities.length] ??
-                          (daysOfWeek[0] as string),
-                        // @ts-expect-error
-                        startTime: undefined,
-                        // @ts-expect-error
-                        endTime: undefined,
-                      });
-                    }}
-                  >
-                    <PlusIcon className="h-4 w-4" />
-                    Adicionar disponibilidade
-                  </Button>
+                  {weekDaysLeft.length ? (
+                    <Button
+                      type="button"
+                      className="flex items-center gap-2"
+                      variant="outline"
+                      onClick={() => {
+                        setValue(`availability.${availabilities.length}`, {
+                          // @ts-expect-error
+                          day: weekDaysLeft[0],
+                          // @ts-expect-error
+                          startTime: undefined,
+                          // @ts-expect-error
+                          endTime: undefined,
+                        });
+                      }}
+                    >
+                      <PlusIcon className="h-4 w-4" />
+                      Adicionar disponibilidade
+                    </Button>
+                  ) : null}
                 </div>
               </div>
             </div>
