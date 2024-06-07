@@ -270,6 +270,13 @@ export const canteenRouter = createTRPCRouter({
         orderBy: {
           createdAt: "desc",
         },
+        include: {
+          Student: {
+            include: {
+              User: true,
+            },
+          },
+        },
       });
     }),
   countAllCanteenSells: isUserLoggedInAndAssignedToSchool

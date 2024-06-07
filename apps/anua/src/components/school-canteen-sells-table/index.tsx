@@ -35,19 +35,15 @@ export function SchoolCanteenSellsTable({
   const [openEditCanteenItemModal, setOpenEditCanteenItemModal] =
     useState(false);
 
-  const allCanteenSellsQuery = api.canteen.allCanteenSells.useQuery(
-    {
-      canteenId,
-      limit: router.query.limit ? Number(router.query.limit) : 5,
-      page: router.query.page ? Number(router.query.page) : 1,
-    },
-    { refetchOnMount: false },
-  );
+  const allCanteenSellsQuery = api.canteen.allCanteenSells.useQuery({
+    canteenId,
+    limit: router.query.limit ? Number(router.query.limit) : 5,
+    page: router.query.page ? Number(router.query.page) : 1,
+  });
 
-  const countAllCanteenSellsQuery = api.canteen.countAllCanteenSells.useQuery(
-    { canteenId },
-    { refetchOnMount: false },
-  );
+  const countAllCanteenSellsQuery = api.canteen.countAllCanteenSells.useQuery({
+    canteenId,
+  });
 
   const { mutateAsync: deletePurchaseRequestMutation } =
     api.purchaseRequest.deleteById.useMutation();
