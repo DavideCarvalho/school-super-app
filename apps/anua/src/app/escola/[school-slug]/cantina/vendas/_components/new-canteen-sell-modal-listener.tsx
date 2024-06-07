@@ -13,31 +13,31 @@ interface NewCanteenItemModalListenerProps {
 export function NewCanteenSellModalListener({
   canteenId,
 }: NewCanteenItemModalListenerProps) {
-  const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
+  const [openNewCanteenSellModal, setOpenNewCanteenSellModal] = useState(false);
   const [hash, setHash] = useHash();
 
   useEffect(() => {
     if (hash === "nova-venda-cantina") {
-      setOpenNewTeacherModal(true);
+      setOpenNewCanteenSellModal(true);
     }
   }, [hash]);
 
   const utils = api.useUtils();
 
   async function handleOnClickSubmit() {
-    setOpenNewTeacherModal(false);
+    setOpenNewCanteenSellModal(false);
     await Promise.all([
-      utils.subject.allBySchoolId.invalidate(),
-      utils.subject.countAllBySchoolId.invalidate(),
+      utils.canteen.allCanteenSells.invalidate(),
+      utils.canteen.countAllCanteenSells.invalidate(),
     ]);
     setHash("");
   }
 
   async function handleOnClickCancel() {
-    setOpenNewTeacherModal(false);
+    setOpenNewCanteenSellModal(false);
     await Promise.all([
-      utils.subject.allBySchoolId.invalidate(),
-      utils.subject.countAllBySchoolId.invalidate(),
+      utils.canteen.allCanteenSells.invalidate(),
+      utils.canteen.countAllCanteenSells.invalidate(),
     ]);
     setHash("");
   }
@@ -45,7 +45,7 @@ export function NewCanteenSellModalListener({
   return (
     <NewCanteenItemModalV2
       canteenId={canteenId}
-      open={openNewTeacherModal}
+      open={openNewCanteenSellModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}
     />

@@ -10,7 +10,7 @@ import { CanteenItemsTableV2 } from "~/components/school-canteen-items-table-v2"
 import { CanteenSellsTableV2 } from "~/components/school-canteen-sells-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditCanteenItemModalListener } from "./_components/edit-canteen-item-modal-listener";
-import { NewCanteenItemModalListener } from "./_components/new-canteen-item-modal-listener";
+import { NewCanteenSellModalListener } from "./_components/new-canteen-sell-modal-listener";
 
 export default async function CanteenSeelsPage({
   params,
@@ -58,6 +58,8 @@ export default async function CanteenSeelsPage({
           <Button>Nova venda</Button>
         </Link>
       </div>
+
+      <NewCanteenSellModalListener canteenId={canteen.id} />
 
       {/* <NewCanteenItemModalListener canteenId={canteen.id} />
       <EditCanteenItemModalListener canteenId={canteen.id} /> */}
