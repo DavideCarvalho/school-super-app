@@ -43,7 +43,7 @@ export function EditClassModalListener() {
 
   return (
     <EditClassModalV2
-      teacherSlug={hashValue ?? ""}
+      classSlug={hashValue ?? ""}
       open={openEditClassModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

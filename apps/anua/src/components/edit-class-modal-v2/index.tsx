@@ -63,19 +63,19 @@ export function EditClassModalV2({
 
   async function onSubmit(data: z.infer<typeof schema>) {
     if (!clasz) return;
-    const toastId = toast.loading("Alterando matéria...");
+    const toastId = toast.loading("Alterando turma...");
     try {
       await editClass({
         classId: clasz.id,
         name: data.name,
       });
       toast.dismiss(toastId);
-      toast.success("Matéria alterado com sucesso!");
+      toast.success("Turma alterado com sucesso!");
       reset();
       await onClickSubmit();
     } catch (e) {
       toast.dismiss(toastId);
-      toast.error("Erro ao alterar matéria");
+      toast.error("Erro ao alterar turma");
     }
   }
 
@@ -84,14 +84,14 @@ export function EditClassModalV2({
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Alterando matéria</DialogTitle>
+            <DialogTitle>Alterando turma</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Nome da matéria</Label>
+              <Label htmlFor="name">Nome da turma</Label>
               <div className="grid grid-cols-12 gap-2">
                 <Input
-                  placeholder="Digite o nome da matéria"
+                  placeholder="Digite o nome da turma"
                   {...register("name")}
                   readOnly={classLoading}
                   className={cn(classLoading ? "col-span-11" : "col-span-12")}
