@@ -230,20 +230,24 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
           if (!entry.Teacher || !entry.Subject) return undefined;
           return {
             teacherId: entry.Teacher.id,
-            classId: selectedClassId,
             subjectId: entry.Subject.id,
             classWeekDay: day,
-            classTime: "",
             startTime: entry.startTime,
             endTime: entry.endTime,
           };
         });
       })
-      .filter((classItem) => classItem !== undefined);
+      .filter((classItem) => classItem !== undefined) as unknown as {
+      teacherId: string;
+      subjectId: string;
+      classWeekDay: string;
+      startTime: string;
+      endTime: string;
+    }[];
     const toastId = toast.loading("Salvando horários...");
     try {
-      // @ts-expect-error a gente já ta tirando os undefined do array
-      await saveSchoolCalendarMutation(classes);
+      if (!classId) return;
+      await saveSchoolCalendarMutation({ classId, scheduleName: "", classes });
       toast.success("Horários salvos com sucesso!");
     } catch (e) {
       toast.error("Erro ao salvar horários");

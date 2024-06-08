@@ -174,7 +174,6 @@ model TeacherHasClass {
   subjectId             String
   subjectQuantity       Int      @default(1)
   classWeekDay          String?  @db.VarChar(10)
-  classTime             String?  @db.VarChar(10)
   startTime             String?  @db.VarChar(10)
   endTime               String?  @db.VarChar(10)
   teacherAvailabilityId String?
@@ -420,7 +419,6 @@ model FixedClass {
   subjectId       String
   subjectQuantity Int      @default(1)
   classWeekDay    String   @db.VarChar(10)
-  classTime       String   @db.VarChar(10)
   startTime       String   @db.VarChar(10)
   endTime         String   @db.VarChar(10)
   createdAt       DateTime @default(now())

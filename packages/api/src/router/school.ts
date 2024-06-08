@@ -53,22 +53,43 @@ export const schoolRouter = createTRPCRouter({
     }),
   saveSchoolCalendar: publicProcedure
     .input(
-      z.array(
-        z.object({
-          teacherId: z.string(),
-          classId: z.string(),
-          subjectId: z.string(),
-          classWeekDay: z.string(),
-          classTime: z.string(),
-          startTime: z.string(),
-          endTime: z.string(),
-        }),
-      ),
+      z.object({
+        classId: z.string(),
+        scheduleName: z.string(),
+        classes: z.array(
+          z.object({
+            teacherId: z.string(),
+            subjectId: z.string(),
+            classWeekDay: z.string(),
+            startTime: z.string(),
+            endTime: z.string(),
+          }),
+        ),
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$transaction(async (tx) => {
-        const classIds = input.map(({ classId }) => classId);
-        for (const classToCreate of input) {
+        // Definir isActive como false para todos os calendários atuais da turma
+        await tx.classSchedule.updateMany({
+          where: {
+            classId: input.classId,
+            isActive: true,
+          },
+          data: {
+            isActive: false,
+          },
+        });
+
+        // Criar a entrada do ClassSchedule
+        const classSchedule = await tx.classSchedule.create({
+          data: {
+            classId: input.classId,
+            name: input.scheduleName,
+            isActive: true, // Definindo como o calendário atual
+          },
+        });
+
+        for (const classToCreate of input.classes) {
           const teacherAvailability = await tx.teacherAvailability.findFirst({
             where: {
               teacherId: classToCreate.teacherId,
@@ -76,16 +97,15 @@ export const schoolRouter = createTRPCRouter({
             },
           });
           if (!teacherAvailability) continue;
-          await tx.teacherHasClass.create({
+          await tx.fixedClass.create({
             data: {
+              classScheduleId: classSchedule.id,
               teacherId: classToCreate.teacherId,
-              classId: classToCreate.classId,
+              classId: input.classId,
               subjectId: classToCreate.subjectId,
               classWeekDay: classToCreate.classWeekDay,
-              classTime: classToCreate.classTime,
               startTime: classToCreate.startTime,
               endTime: classToCreate.endTime,
-              teacherAvailabilityId: teacherAvailability.id,
             },
           });
         }
@@ -94,9 +114,12 @@ export const schoolRouter = createTRPCRouter({
   getClassSchedule: publicProcedure
     .input(z.object({ classId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const lessons = await ctx.prisma.teacherHasClass.findMany({
+      const lessons = await ctx.prisma.fixedClass.findMany({
         where: {
           classId: input.classId,
+          ClassSchedule: {
+            isActive: true,
+          },
         },
         include: {
           Teacher: {

@@ -16,13 +16,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import type {
-  Subject,
-  Teacher,
-  TeacherAvailability,
-  TeacherHasSubject,
-  User,
-} from "@acme/db";
+import type { Subject, Teacher, TeacherAvailability, User } from "@acme/db";
 
 import "~/components/ui/table";
 
@@ -43,7 +37,6 @@ export interface CalendarGridScheduledClass {
   Teacher:
     | (Teacher & {
         TeacherAvailability: TeacherAvailability[];
-        TeacherHasSubject: TeacherHasSubject[];
         User: User;
       })
     | null;

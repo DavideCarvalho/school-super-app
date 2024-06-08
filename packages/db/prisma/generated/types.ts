@@ -93,7 +93,6 @@ export type FixedClass = {
   subjectId: string;
   subjectQuantity: Generated<number>;
   classWeekDay: string;
-  classTime: string;
   startTime: string;
   endTime: string;
   createdAt: Generated<Timestamp>;
@@ -211,7 +210,6 @@ export type TeacherHasClass = {
   subjectId: string;
   subjectQuantity: Generated<number>;
   classWeekDay: string | null;
-  classTime: string | null;
   startTime: string | null;
   endTime: string | null;
   teacherAvailabilityId: string | null;
