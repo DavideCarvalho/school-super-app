@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
 import {
   Dialog,
@@ -15,12 +16,32 @@ import {
 } from "@acme/ui/dialog";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@acme/ui/select";
 
 import { api } from "~/trpc/react";
 
 const schema = z
   .object({
     name: z.string({ required_error: "Qual o nome da turma?" }),
+    subjectsWithTeachers: z.array(
+      z.object({
+        subject: z.object({
+          id: z.string(),
+          name: z.string(),
+        }),
+        teacher: z.object({
+          id: z.string(),
+          name: z.string(),
+        }),
+        quantity: z.number().min(1),
+      }),
+    ),
   })
   .required();
 
@@ -35,11 +56,26 @@ export function NewClassModalV2({
   onClickSubmit,
   onClickCancel,
 }: NewClassModalV2Props) {
-  const { handleSubmit, register, reset } = useForm<z.infer<typeof schema>>({
+  const { handleSubmit, register, reset, watch, getValues, setValue } = useForm<
+    z.infer<typeof schema>
+  >({
     resolver: zodResolver(schema),
     defaultValues: {
       name: undefined,
+      subjectsWithTeachers: [],
     },
+  });
+
+  const subjectsWithTeachers = watch("subjectsWithTeachers");
+
+  const { data: teachers } = api.teacher.getSchoolTeachers.useQuery({
+    page: 1,
+    limit: 999,
+  });
+
+  const { data: subjects } = api.subject.allBySchoolId.useQuery({
+    page: 1,
+    limit: 999,
   });
 
   const { mutateAsync: createSubject } = api.class.create.useMutation();
@@ -49,6 +85,13 @@ export function NewClassModalV2({
     try {
       await createSubject({
         name: data.name,
+        subjectsWithTeachers: data.subjectsWithTeachers.map(
+          (subjectWithTeacher) => ({
+            subjectId: subjectWithTeacher.subject.id,
+            teacherId: subjectWithTeacher.teacher.id,
+            quantity: subjectWithTeacher.quantity,
+          }),
+        ),
       });
       toast.dismiss(toastId);
       toast.success("Turma criada com sucesso!");
@@ -77,6 +120,109 @@ export function NewClassModalV2({
                 {...register("name")}
               />
             </div>
+            {subjectsWithTeachers.map((subjectWithTeacher, index) => (
+              <div
+                key={`${subjectWithTeacher.subject.id}-${subjectWithTeacher.teacher.id}-${subjectWithTeacher.quantity}-${index}`}
+                className={cn("grid gap-4 sm:grid-cols-4")}
+              >
+                <Select
+                  value={subjectWithTeacher.subject.id}
+                  onValueChange={(e) => {
+                    if (!subjects) return;
+                    const foundSubject = subjects.find((s) => s.id === e);
+                    if (!foundSubject) return;
+                    setValue(
+                      `subjectsWithTeachers.${index}.subject`,
+                      foundSubject,
+                    );
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Dia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subjects?.map((subject) => (
+                      <SelectItem key={subject.id} value={subject.id}>
+                        {subject.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={subjectWithTeacher.teacher.id}
+                  onValueChange={(e) => {
+                    if (!teachers) return;
+                    const foundTeacher = teachers.find((s) => s.id === e);
+                    if (!foundTeacher) return;
+                    setValue(`subjectsWithTeachers.${index}.teacher`, {
+                      id: foundTeacher.id,
+                      name: foundTeacher.User.name,
+                    });
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Professor" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teachers?.map((teacher) => (
+                      <SelectItem key={teacher.id} value={teacher.id}>
+                        {teacher.User.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  type="number"
+                  {...register(`subjectsWithTeachers.${index}.quantity`, {
+                    valueAsNumber: true,
+                  })}
+                />
+                <Button
+                  type="button"
+                  className="flex w-full items-center justify-center"
+                  size="icon"
+                  variant="destructive"
+                  onClick={() => {
+                    const subjectsWithTeachers = getValues(
+                      "subjectsWithTeachers",
+                    );
+                    subjectsWithTeachers.splice(index, 1);
+                    setValue("subjectsWithTeachers", subjectsWithTeachers);
+                  }}
+                >
+                  <MinusIcon className="h-4 w-4" />
+                  <span className="sr-only">Remover matéria</span>
+                </Button>
+              </div>
+            ))}
+            <Button
+              type="button"
+              className="flex items-center gap-2"
+              variant="outline"
+              onClick={() => {
+                setValue(
+                  `subjectsWithTeachers.${subjectsWithTeachers.length}`,
+                  {
+                    teacher: {
+                      // @ts-expect-error
+                      id: undefined,
+                      // @ts-expect-error
+                      name: undefined,
+                    },
+                    subject: {
+                      // @ts-expect-error
+                      id: undefined,
+                      // @ts-expect-error
+                      name: undefined,
+                    },
+                    quantity: 1,
+                  },
+                );
+              }}
+            >
+              <PlusIcon className="h-4 w-4" />
+              Adicionar matéria
+            </Button>
           </div>
           <DialogFooter>
             <div>
@@ -93,5 +239,46 @@ export function NewClassModalV2({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>Adicionar matéria</title>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </svg>
+  );
+}
+
+function MinusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>Remover matéria</title>
+      <path d="M5 12h14" />
+    </svg>
   );
 }

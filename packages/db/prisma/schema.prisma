@@ -171,11 +171,11 @@ model TeacherHasClass {
   teacherId             String
   classId               String
   subjectId             String
-  classWeekDay          String   @db.VarChar(10)
-  classTime             String   @db.VarChar(10)
-  startTime             String   @db.VarChar(10)
-  endTime               String   @db.VarChar(10)
-  teacherAvailabilityId String
+  classWeekDay          String?  @db.VarChar(10)
+  classTime             String?  @db.VarChar(10)
+  startTime             String?  @db.VarChar(10)
+  endTime               String?  @db.VarChar(10)
+  teacherAvailabilityId String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   active                Boolean  @default(true)
@@ -184,7 +184,7 @@ model TeacherHasClass {
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
-  TeacherAvailability TeacherAvailability @relation(fields: [teacherAvailabilityId], references: [id])
+  TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
 }
 
 model Subject {
@@ -199,8 +199,19 @@ model Subject {
   File                    File[]
   TeacherHasSubject       TeacherHasSubject[]
   quantityNeededScheduled Int                 @default(0)
+  SubjectClass            SubjectClass[]
 
   @@index([schoolId])
+}
+
+model SubjectClass {
+  id        String @id @default(cuid())
+  subjectId String
+  classId   String
+  quantity  Int
+
+  Subject Subject @relation(fields: [subjectId], references: [id])
+  Class   Class   @relation(fields: [classId], references: [id])
 }
 
 model File {
@@ -246,6 +257,7 @@ model Class {
   File              File[]
   Student           Student[]
   TeacherHasSubject TeacherHasSubject[]
+  SubjectClass      SubjectClass[]
 
   @@index([schoolId])
 }

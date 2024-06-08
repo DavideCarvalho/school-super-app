@@ -164,6 +164,12 @@ export type Subject = {
   updatedAt: Timestamp;
   quantityNeededScheduled: Generated<number>;
 };
+export type SubjectClass = {
+  id: string;
+  subjectId: string;
+  classId: string;
+  quantity: number;
+};
 export type Teacher = {
   id: string;
 };
@@ -181,11 +187,11 @@ export type TeacherHasClass = {
   teacherId: string;
   classId: string;
   subjectId: string;
-  classWeekDay: string;
-  classTime: string;
-  startTime: string;
-  endTime: string;
-  teacherAvailabilityId: string;
+  classWeekDay: string | null;
+  classTime: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  teacherAvailabilityId: string | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   active: Generated<number>;
@@ -237,6 +243,7 @@ export type DB = {
   Student: Student;
   StudentPei: StudentPei;
   Subject: Subject;
+  SubjectClass: SubjectClass;
   Teacher: Teacher;
   TeacherAvailability: TeacherAvailability;
   TeacherHasClass: TeacherHasClass;

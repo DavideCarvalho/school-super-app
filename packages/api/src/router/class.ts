@@ -44,6 +44,13 @@ export const classRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
+        subjectsWithTeachers: z.array(
+          z.object({
+            subjectId: z.string(),
+            teacherId: z.string(),
+            quantity: z.number().min(1),
+          }),
+        ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -52,6 +59,22 @@ export const classRouter = createTRPCRouter({
           name: input.name,
           slug: slugify(input.name),
           schoolId: ctx.session.school.id,
+          SubjectClass: {
+            createMany: {
+              data: input.subjectsWithTeachers.map((subjectWithTeacher) => ({
+                subjectId: subjectWithTeacher.subjectId,
+                quantity: subjectWithTeacher.quantity,
+              })),
+            },
+          },
+          TeacherHasClass: {
+            createMany: {
+              data: input.subjectsWithTeachers.map((subjectWithTeacher) => ({
+                teacherId: subjectWithTeacher.teacherId,
+                subjectId: subjectWithTeacher.subjectId,
+              })),
+            },
+          },
         },
       });
     }),
