@@ -38,12 +38,12 @@ export default async function CanteenSeelsPage({
   if (!canteen) throw new Error("Canteen not found");
   const helper = await createSSRHelper();
   await Promise.all([
-    helper.canteen.allCanteenItems.prefetch({
+    helper.canteen.allCanteenSells.prefetch({
       canteenId: canteen.id,
       page: Number(url.searchParams.get("page")),
       limit: Number(url.searchParams.get("limit")),
     }),
-    helper.canteen.countAllCanteenItems.prefetch({
+    helper.canteen.countAllCanteenSells.prefetch({
       canteenId: canteen.id,
     }),
   ]);

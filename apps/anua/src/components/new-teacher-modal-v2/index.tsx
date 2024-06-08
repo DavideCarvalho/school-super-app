@@ -255,13 +255,12 @@ export function NewTeacherModalV2({
                       className="flex items-center gap-2"
                       variant="outline"
                       onClick={() => {
+                        const nextWeekDayLeft = weekDaysLeft[0];
+                        if (!nextWeekDayLeft) return;
                         setValue(`availability.${availabilities.length}`, {
-                          // @ts-expect-error
-                          day: weekDaysLeft[0],
-                          // @ts-expect-error
-                          startTime: undefined,
-                          // @ts-expect-error
-                          endTime: undefined,
+                          day: nextWeekDayLeft,
+                          startTime: "07:00",
+                          endTime: "12:00",
                         });
                       }}
                     >

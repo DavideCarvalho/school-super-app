@@ -7,6 +7,11 @@ import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@acme/ui/hover-card";
+import {
   Table,
   TableBody,
   TableCell,
@@ -82,7 +87,8 @@ export function CanteenSellsTableV2({ canteenId }: CanteenSellsTableProps) {
           <TableRow>
             <TableHead>Data</TableHead>
             <TableHead>Valor da venda</TableHead>
-            <TableHead>Estudante</TableHead>
+            <TableHead>Usuário</TableHead>
+            <TableHead>Pago</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
@@ -102,11 +108,35 @@ export function CanteenSellsTableV2({ canteenId }: CanteenSellsTableProps) {
                     : "-"}
                 </TableCell>
                 <TableCell>
-                  {canteenSell?.price
-                    ? brazilianRealFormatter(canteenSell.price / 100)
-                    : "-"}
+                  {!canteenSell ? (
+                    "-"
+                  ) : (
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <Button variant="link">
+                          {brazilianRealFormatter(
+                            canteenSell.itemsPurchased.reduce(
+                              (acc, item) => acc + item.price / 100,
+                              0,
+                            ),
+                          )}
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        {canteenSell.itemsPurchased.map((item) => (
+                          <p key={item.id}>
+                            {item.CanteenItem.name} - {item.quantity} x{" "}
+                            {brazilianRealFormatter(item.price / 100)}
+                          </p>
+                        ))}
+                      </HoverCardContent>
+                    </HoverCard>
+                  )}
                 </TableCell>
-                <TableCell>{canteenSell?.Student?.User?.name ?? "-"}</TableCell>
+                <TableCell>{canteenSell?.User?.name ?? "-"}</TableCell>
+                <TableCell>
+                  {!canteenSell ? "-" : canteenSell.payed ? "✅" : "❌"}
+                </TableCell>
                 <TableCell>
                   {canteenSell ? (
                     <div className="flex items-center gap-2">

@@ -221,26 +221,47 @@ export const canteenRouter = createTRPCRouter({
   sellItem: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        canteenId: z.string(),
-        itemId: z.string(),
-        quantity: z.number(),
-        studentId: z.string(),
-        payed: z.boolean(),
+        userId: z.string(),
+        payed: z.boolean().default(true),
+        items: z
+          .array(
+            z.object({
+              id: z.string(),
+              quantity: z.number().min(1),
+              price: z.number().min(0),
+            }),
+          )
+          .min(1, "Adicione pelo menos um item"),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const item = await ctx.prisma.canteenItem.findFirst({
-        where: {
-          id: input.itemId,
+      await ctx.prisma.canteenPurchase.create({
+        data: {
+          userId: input.userId,
+          payed: input.payed,
+          itemsPurchased: {
+            createMany: {
+              data: input.items.map((item) => ({
+                canteenItemId: item.id,
+                quantity: item.quantity,
+                price: item.price,
+              })),
+            },
+          },
         },
       });
-      if (!item) throw new Error("Item not found");
-      const student = await ctx.prisma.student.findFirst({
-        where: {
-          id: input.studentId,
-        },
-      });
-      if (!student) throw new Error("Student not found");
+      // const item = await ctx.prisma.canteenItem.findFirst({
+      //   where: {
+      //     id: input.itemId,
+      //   },
+      // });
+      // if (!item) throw new Error("Item not found");
+      // const student = await ctx.prisma.student.findFirst({
+      //   where: {
+      //     id: input.studentId,
+      //   },
+      // });
+      // if (!student) throw new Error("Student not found");
       // await ctx.prisma.studentCanteenItemPurchase.create({
       //   data: {
       //     canteenItemId: item.id,
@@ -283,6 +304,11 @@ export const canteenRouter = createTRPCRouter({
         },
         include: {
           User: true,
+          itemsPurchased: {
+            include: {
+              CanteenItem: true,
+            },
+          },
         },
       });
     }),

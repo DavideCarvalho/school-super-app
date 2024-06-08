@@ -1,7 +1,9 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SearchSelect, SearchSelectItem } from "@tremor/react";
 import { usePrinter } from "hooks/use-printer";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { cn } from "@acme/ui";
@@ -22,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@acme/ui/select";
+import { Switch } from "@acme/ui/switch";
 
 import { api } from "~/trpc/react";
 import { Label } from "../ui/label";
@@ -32,6 +35,7 @@ const schema = z.object({
     name: z.string(),
   }),
   payed: z.boolean().default(true),
+  printReceipt: z.boolean().default(false),
   items: z
     .array(
       z.object({
@@ -62,6 +66,7 @@ interface NewCanteenSellModalV2Props {
 export function NewCanteenSellModalV2({
   canteenId,
   open,
+  onClickSubmit,
   onClickCancel,
 }: NewCanteenSellModalV2Props) {
   const vendorId = 0x0416;
@@ -74,11 +79,6 @@ export function NewCanteenSellModalV2({
     canteenId,
     limit: 999,
     page: 1,
-  });
-
-  const { data: schoolWorkers } = api.user.allBySchoolId.useQuery({
-    page: 1,
-    limit: 999,
   });
 
   const { data: studentsWithCanteenLimit } =
@@ -94,6 +94,7 @@ export function NewCanteenSellModalV2({
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
+      printReceipt: false,
       user: {
         id: undefined,
         name: undefined,
@@ -111,48 +112,97 @@ export function NewCanteenSellModalV2({
   });
 
   const watchItems = watch("items");
+  const watchPayed = watch("payed");
+  const watchPrintReceipt = watch("printReceipt");
   const watchUser = watch("user");
-
-  console.log("errors", errors);
 
   const { mutateAsync: sellItemMutation } = api.canteen.sellItem.useMutation();
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    if (!connected) {
-      await connectPrinter();
+  async function handleOnChangePrintReceipt(checked: boolean) {
+    if (checked) {
+      if (!connected) {
+        await connectPrinter();
+      }
+      if (connected) {
+        setValue("printReceipt", true);
+      }
     }
-    const receipt = `
-    Nota Fiscal
-    ----------------------
-    Item        Qtd  Valor
-    ----------------------
-    ${data.items.map((item) => `${item.name}   ${item.quantity}    ${(item.price * item.quantity) / 100}`).join("\n")}
-    ----------------------
-    Total                      ${data.items.reduce((acc, item) => acc + item.price * item.quantity, 0) / 100}
-    ----------------------
-    Obrigado pela compra!
-    `;
-    await printReceipt(receipt);
-    // const toastId = toast.loading("Vendendo...");
-    // try {
-    //   await sellItemMutation({
-    //     canteenId,
-    //     itemId: data.canteenItemId,
-    //     quantity: data.quantity,
-    //     studentId: data.studentId,
-    //     payed: data.payed,
-    //   });
-    //   toast.dismiss(toastId);
-    //   toast.success("Venda criada com sucesso!");
-    //   await onClickSubmit();
-    //   reset();
-    // } catch (e) {
-    //   toast.dismiss(toastId);
-    //   toast.error("Erro ao criar venda");
-    // } finally {
-    //   toast.dismiss(toastId);
+    if (!checked) {
+      setValue("printReceipt", false);
+    }
+  }
+
+  useEffect(() => {
+    if (connected) {
+      setValue("printReceipt", true);
+    }
+  }, [connected, setValue]);
+
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    // if (!connected) {
+    //   await connectPrinter();
     // }
+    // const receipt = `
+    // Nota Fiscal
+    // ----------------------
+    // Item        Qtd  Valor
+    // ----------------------
+    // ${data.items.map((item) => `${item.name}   ${item.quantity}    ${(item.price * item.quantity) / 100}`).join("\n")}
+    // ----------------------
+    // Total                      ${data.items.reduce((acc, item) => acc + item.price * item.quantity, 0) / 100}
+    // ----------------------
+    // Obrigado pela compra!
+    // `;
+    // await printReceipt(receipt);
+    const toastId = toast.loading("Vendendo...");
+    try {
+      if (data.printReceipt) {
+        const receipt = `
+        Nota Fiscal
+        ----------------------
+        Item        Qtd  Valor
+        ----------------------
+        ${data.items.map((item) => `${item.name}   ${item.quantity}    ${(item.price * item.quantity) / 100}`).join("\n")}
+        ----------------------
+        Total                      ${data.items.reduce((acc, item) => acc + item.price * item.quantity, 0) / 100}
+        ----------------------
+        Obrigado pela compra!
+        `;
+        printReceipt(receipt).catch(() => {
+          toast.error("Erro ao imprimir nota fiscal");
+        });
+      }
+      await sellItemMutation({
+        userId: data.user.id,
+        payed: data.payed,
+        items: data.items.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          price: item.price * 100,
+        })),
+      });
+      toast.dismiss(toastId);
+      toast.success("Venda criada com sucesso!");
+      await onClickSubmit();
+      reset();
+    } catch (e) {
+      toast.dismiss(toastId);
+      toast.error("Erro ao criar venda");
+    } finally {
+      toast.dismiss(toastId);
+    }
   };
+
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      if (!name?.includes("printReceipt")) return;
+      const printReceipt = getValues("printReceipt");
+      if (!printReceipt) return;
+      if (connected) return;
+      connectPrinter();
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, connected, connectPrinter, getValues]);
 
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
@@ -162,6 +212,22 @@ export function NewCanteenSellModalV2({
             <DialogTitle>Nova venda</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
+            <div className="grid gap-2">
+              <Switch
+                id="print-receipt"
+                checked={watchPrintReceipt}
+                onCheckedChange={handleOnChangePrintReceipt}
+              />
+              <Label htmlFor="print-receipt">Nota fiscal</Label>
+            </div>
+            <div className="grid gap-2">
+              <Switch
+                id="payed"
+                checked={!watchPayed}
+                onCheckedChange={(checked) => setValue("payed", !checked)}
+              />
+              <Label htmlFor="payed">Fiado</Label>
+            </div>
             <div className="grid gap-2">
               <label className="text-sm font-bold text-gray-900">
                 Pra quem?
@@ -185,7 +251,7 @@ export function NewCanteenSellModalV2({
                       name: option.label,
                     });
                   }}
-                  value={getValues("user.name")}
+                  value={watchUser.name}
                 />
               </div>
             </div>
