@@ -138,7 +138,7 @@ export function NewClassModalV2({
                   }}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Dia" />
+                    <SelectValue placeholder="Matéria" />
                   </SelectTrigger>
                   <SelectContent>
                     {subjects?.map((subject) => (

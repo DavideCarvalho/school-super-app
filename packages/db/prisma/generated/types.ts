@@ -46,6 +46,14 @@ export type Class = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
+export type ClassSchedule = {
+  id: string;
+  classId: string;
+  name: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  isActive: Generated<number>;
+};
 export type Comment = {
   id: Generated<number>;
   uuid: string;
@@ -74,6 +82,20 @@ export type File = {
   rejectedFeedback: string | null;
   quantity: Generated<number>;
   dueDate: Timestamp;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
+export type FixedClass = {
+  id: string;
+  classScheduleId: string;
+  teacherId: string;
+  classId: string;
+  subjectId: string;
+  subjectQuantity: Generated<number>;
+  classWeekDay: string;
+  classTime: string;
+  startTime: string;
+  endTime: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
@@ -187,6 +209,7 @@ export type TeacherHasClass = {
   teacherId: string;
   classId: string;
   subjectId: string;
+  subjectQuantity: Generated<number>;
   classWeekDay: string | null;
   classTime: string | null;
   startTime: string | null;
@@ -194,7 +217,6 @@ export type TeacherHasClass = {
   teacherAvailabilityId: string | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  active: Generated<number>;
 };
 export type TeacherHasSubject = {
   id: string;
@@ -231,9 +253,11 @@ export type DB = {
   CanteenItemPurchased: CanteenItemPurchased;
   CanteenPurchase: CanteenPurchase;
   Class: Class;
+  ClassSchedule: ClassSchedule;
   Comment: Comment;
   CommentLike: CommentLike;
   File: File;
+  FixedClass: FixedClass;
   Notification: Notification;
   Post: Post;
   PurchaseRequest: PurchaseRequest;

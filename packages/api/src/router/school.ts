@@ -4,6 +4,7 @@ import type {
   Subject,
   Teacher,
   TeacherAvailability,
+  TeacherHasClass,
   TeacherHasSubject,
   User,
 } from "@acme/db";
@@ -67,16 +68,6 @@ export const schoolRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$transaction(async (tx) => {
         const classIds = input.map(({ classId }) => classId);
-        await tx.teacherHasClass.updateMany({
-          data: {
-            active: false,
-          },
-          where: {
-            classId: {
-              in: classIds,
-            },
-          },
-        });
         for (const classToCreate of input) {
           const teacherAvailability = await tx.teacherAvailability.findFirst({
             where: {
@@ -106,7 +97,6 @@ export const schoolRouter = createTRPCRouter({
       const lessons = await ctx.prisma.teacherHasClass.findMany({
         where: {
           classId: input.classId,
-          active: true,
         },
         include: {
           Teacher: {
@@ -136,7 +126,6 @@ export const schoolRouter = createTRPCRouter({
                   };
                 },
               ),
-              TeacherHasSubject: [],
               User: {
                 id: lesson.Teacher.User.id,
                 name: lesson.Teacher.User.name,
@@ -147,11 +136,14 @@ export const schoolRouter = createTRPCRouter({
                 updatedAt: lesson.Teacher.User.updatedAt,
                 slug: lesson.Teacher.User.slug,
                 teacherId: lesson.Teacher.id,
+                externalAuthId: lesson.Teacher.User.externalAuthId,
+                imageUrl: lesson.Teacher.User.imageUrl,
+                active: lesson.Teacher.User.active,
               },
             },
             Subject: lesson.Subject,
-            startTime: lesson.startTime,
-            endTime: lesson.endTime,
+            startTime: lesson.startTime as string,
+            endTime: lesson.endTime as string,
           };
           return response;
         });
@@ -199,7 +191,6 @@ interface ScheduleEntry {
   Teacher:
     | (Teacher & {
         TeacherAvailability: TeacherAvailability[];
-        TeacherHasSubject: TeacherHasSubject[];
         User: User;
       })
     | null;
@@ -238,7 +229,7 @@ async function generateSchoolSchedule(
       TeacherAvailability: {
         some: {
           Teacher: {
-            TeacherHasSubject: {
+            TeacherHasClasses: {
               some: {
                 classId,
               },
@@ -249,25 +240,30 @@ async function generateSchoolSchedule(
     },
     include: {
       TeacherAvailability: true,
-      TeacherHasSubject: true,
+      TeacherHasClasses: true,
       User: true,
     },
   });
 
   shuffleArray(teachers);
 
-  const subjects = await prisma.subject.findMany({
-    where: {
-      schoolId,
-    },
-  });
-
-  const subjectsWithLessons: SubjectWithRemainingLessons[] = subjects.map(
-    (sub) => ({
-      ...sub,
-      remainingLessons: sub.quantityNeededScheduled,
-    }),
-  );
+  const subjectsWithLessons: SubjectWithRemainingLessons[] =
+    await prisma.teacherHasClass
+      .findMany({
+        where: {
+          classId,
+        },
+        include: {
+          Subject: true,
+        },
+      })
+      .then((teacherHasClasses) =>
+        teacherHasClasses.map((thc) => ({
+          ...thc.Subject,
+          subjectQuantity: thc.subjectQuantity,
+          remainingLessons: thc.subjectQuantity,
+        })),
+      );
 
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const schedule = initializeSchedule(scheduleConfig);
@@ -410,7 +406,7 @@ function initializeSchedule(scheduleConfig: ScheduleConfig): Schedule {
 function findRandomSubjectForTeacher(
   teacher: Teacher & {
     TeacherAvailability: TeacherAvailability[];
-    TeacherHasSubject: TeacherHasSubject[];
+    TeacherHasClasses: TeacherHasClass[];
   },
   subjects: SubjectWithRemainingLessons[],
   day: DayOfWeek,
@@ -439,7 +435,7 @@ function findRandomSubjectForTeacher(
   // Filtrar as matérias restantes do professor
   const eligibleSubjects = subjects.filter(
     (sub) =>
-      teacher.TeacherHasSubject.some((ths) => ths.subjectId === sub.id) &&
+      teacher.TeacherHasClasses.some((thc) => thc.subjectId === sub.id) &&
       sub.remainingLessons > 0,
   );
 

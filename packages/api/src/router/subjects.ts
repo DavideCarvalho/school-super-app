@@ -24,6 +24,16 @@ export const subjectRouter = createTRPCRouter({
         take: input.limit,
         skip: (input.page - 1) * input.limit,
         include: {
+          TeacherHasClass: {
+            include: {
+              Teacher: {
+                include: {
+                  User: true,
+                },
+              },
+              Subject: true,
+            },
+          },
           TeacherHasSubject: {
             include: {
               Teacher: {

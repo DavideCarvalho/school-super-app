@@ -68,6 +68,7 @@ model Teacher {
   File                File[]
   TeacherAvailability TeacherAvailability[]
   TeacherHasSubject   TeacherHasSubject[]
+  FixedClass          FixedClass[]
 
   @@index([id])
 }
@@ -171,6 +172,7 @@ model TeacherHasClass {
   teacherId             String
   classId               String
   subjectId             String
+  subjectQuantity       Int      @default(1)
   classWeekDay          String?  @db.VarChar(10)
   classTime             String?  @db.VarChar(10)
   startTime             String?  @db.VarChar(10)
@@ -178,13 +180,16 @@ model TeacherHasClass {
   teacherAvailabilityId String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  active                Boolean  @default(true)
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
   TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
+
+  @@index([teacherId])
+  @@index([classId])
+  @@index([subjectId])
 }
 
 model Subject {
@@ -200,6 +205,7 @@ model Subject {
   TeacherHasSubject       TeacherHasSubject[]
   quantityNeededScheduled Int                 @default(0)
   SubjectClass            SubjectClass[]
+  FixedClass              FixedClass[]
 
   @@index([schoolId])
 }
@@ -258,6 +264,8 @@ model Class {
   Student           Student[]
   TeacherHasSubject TeacherHasSubject[]
   SubjectClass      SubjectClass[]
+  FixedClass        FixedClass[]
+  ClassSchedule     ClassSchedule[]
 
   @@index([schoolId])
 }
@@ -388,4 +396,43 @@ model CommentLike {
 
   User    User    @relation(fields: [userId], references: [id])
   Comment Comment @relation(fields: [commentId], references: [id])
+}
+
+model ClassSchedule {
+  id        String   @id @default(cuid())
+  classId   String
+  name      String // Nome do calendário, por exemplo, "Calendário 2024"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true) // Flag para indicar se o calendário é o atual
+
+  Class        Class        @relation(fields: [classId], references: [id])
+  FixedClasses FixedClass[]
+
+  @@index([classId])
+}
+
+model FixedClass {
+  id              String   @id @default(cuid())
+  classScheduleId String
+  teacherId       String
+  classId         String
+  subjectId       String
+  subjectQuantity Int      @default(1)
+  classWeekDay    String   @db.VarChar(10)
+  classTime       String   @db.VarChar(10)
+  startTime       String   @db.VarChar(10)
+  endTime         String   @db.VarChar(10)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Teacher       Teacher       @relation(fields: [teacherId], references: [id])
+  Class         Class         @relation(fields: [classId], references: [id])
+  Subject       Subject       @relation(fields: [subjectId], references: [id])
+  ClassSchedule ClassSchedule @relation(fields: [classScheduleId], references: [id])
+
+  @@index([teacherId])
+  @@index([classId])
+  @@index([subjectId])
+  @@index([classScheduleId])
 }
