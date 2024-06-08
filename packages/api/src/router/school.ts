@@ -5,7 +5,6 @@ import type {
   Teacher,
   TeacherAvailability,
   TeacherHasClass,
-  TeacherHasSubject,
   User,
 } from "@acme/db";
 import { prisma } from "@acme/db";

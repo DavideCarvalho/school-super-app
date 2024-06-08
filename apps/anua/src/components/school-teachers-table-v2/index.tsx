@@ -98,7 +98,7 @@ export function TeachersTableV2() {
               >
                 <TableCell>{teacher?.User?.name ?? "-"}</TableCell>
                 <TableCell>
-                  {teacher?.TeacherHasSubject?.map(
+                  {teacher?.TeacherHasClass?.map(
                     ({ Subject }) => Subject.name,
                   )?.join(", ") ?? "-"}
                 </TableCell>

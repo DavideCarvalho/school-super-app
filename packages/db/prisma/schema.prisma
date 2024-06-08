@@ -67,7 +67,6 @@ model Teacher {
   User                User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   File                File[]
   TeacherAvailability TeacherAvailability[]
-  TeacherHasSubject   TeacherHasSubject[]
   FixedClass          FixedClass[]
 
   @@index([id])
@@ -154,19 +153,6 @@ model CanteenPurchase {
   itemsPurchased CanteenItemPurchased[]
 }
 
-model TeacherHasSubject {
-  id        String   @id @default(cuid())
-  teacherId String
-  subjectId String
-  classId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  Teacher Teacher @relation(fields: [teacherId], references: [id])
-  Subject Subject @relation(fields: [subjectId], references: [id])
-  Class   Class   @relation(fields: [classId], references: [id])
-}
-
 model TeacherHasClass {
   id                    String   @id @default(cuid())
   teacherId             String
@@ -192,17 +178,16 @@ model TeacherHasClass {
 }
 
 model Subject {
-  id                      String              @id @default(cuid())
+  id                      String            @id @default(cuid())
   name                    String
   slug                    String
   schoolId                String
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
   TeacherHasClass         TeacherHasClass[]
-  School                  School              @relation(fields: [schoolId], references: [id])
+  School                  School            @relation(fields: [schoolId], references: [id])
   File                    File[]
-  TeacherHasSubject       TeacherHasSubject[]
-  quantityNeededScheduled Int                 @default(0)
+  quantityNeededScheduled Int               @default(0)
   SubjectClass            SubjectClass[]
   FixedClass              FixedClass[]
 
@@ -257,14 +242,13 @@ model Class {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  TeacherHasClass   TeacherHasClass[]
-  School            School              @relation(fields: [schoolId], references: [id])
-  File              File[]
-  Student           Student[]
-  TeacherHasSubject TeacherHasSubject[]
-  SubjectClass      SubjectClass[]
-  FixedClass        FixedClass[]
-  ClassSchedule     ClassSchedule[]
+  TeacherHasClass TeacherHasClass[]
+  School          School            @relation(fields: [schoolId], references: [id])
+  File            File[]
+  Student         Student[]
+  SubjectClass    SubjectClass[]
+  FixedClass      FixedClass[]
+  ClassSchedule   ClassSchedule[]
 
   @@index([schoolId])
 }

@@ -216,14 +216,6 @@ export type TeacherHasClass = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
-export type TeacherHasSubject = {
-  id: string;
-  teacherId: string;
-  subjectId: string;
-  classId: string;
-  createdAt: Generated<Timestamp>;
-  updatedAt: Timestamp;
-};
 export type User = {
   id: string;
   name: string;
@@ -269,7 +261,6 @@ export type DB = {
   Teacher: Teacher;
   TeacherAvailability: TeacherAvailability;
   TeacherHasClass: TeacherHasClass;
-  TeacherHasSubject: TeacherHasSubject;
   User: User;
   UserLikedPost: UserLikedPost;
 };
