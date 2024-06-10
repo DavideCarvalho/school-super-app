@@ -9,67 +9,30 @@ import {
 } from "../trpc";
 
 export const userRouter = createTRPCRouter({
-  countAllBySchoolId: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        role: z
-          .union([
-            z.literal("DIRECTOR"),
-            z.literal("COORDINATOR"),
-            z.literal("ADMINISTRATIVE"),
-            z.literal("CANTEEN"),
-            z.literal("TEACHER"),
-          ])
-          .optional(),
-      }),
-    )
-    .query(({ ctx, input }) => {
-      const roles = input.role
-        ? [input.role]
-        : ["DIRECTOR", "COORDINATOR", "TEACHER", "ADMINISTRATIVE", "CANTEEN"];
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(
+    ({ ctx, input }) => {
       return ctx.prisma.user.count({
         where: {
           schoolId: ctx.session.school.id,
-          Role: {
-            name: {
-              in: roles,
-            },
+          active: true,
+        },
+      });
+    },
+  ),
+  allBySchoolId: isUserLoggedInAndAssignedToSchool.query(({ ctx, input }) => {
+    return ctx.prisma.user.findMany({
+      where: {
+        schoolId: ctx.session.school.id,
+        active: true,
+        Role: {
+          name: {
+            notIn: ["STUDENT", "CONNECTAPROF_USER"],
           },
-          active: true,
         },
-      });
-    }),
-  allBySchoolId: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        page: z.number().optional().default(1),
-        limit: z.number().optional().default(5),
-        role: z
-          .union([
-            z.literal("DIRECTOR"),
-            z.literal("COORDINATOR"),
-            z.literal("ADMINISTRATIVE"),
-            z.literal("CANTEEN"),
-            z.literal("TEACHER"),
-          ])
-          .optional(),
-      }),
-    )
-    .query(({ ctx, input }) => {
-      const roles = input.role
-        ? [input.role]
-        : ["DIRECTOR", "COORDINATOR", "TEACHER", "ADMINISTRATIVE", "CANTEEN"];
-      return ctx.prisma.user.findMany({
-        where: {
-          schoolId: ctx.session.school.id,
-          Role: { name: { in: roles } },
-          active: true,
-        },
-        include: { Role: true },
-        take: input.limit,
-        skip: (input.page - 1) * input.limit,
-      });
-    }),
+      },
+      include: { Role: true, _count: true },
+    });
+  }),
   createWorker: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

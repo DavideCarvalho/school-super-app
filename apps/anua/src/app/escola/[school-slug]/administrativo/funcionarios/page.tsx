@@ -22,18 +22,19 @@ export default async function WorkersPage({
   if (!xUrl) throw new Error("unreachable");
   const url = new URL(xUrl);
   if (!url.searchParams.has("page")) {
-    url.searchParams.set("page", "1");
+    url.searchParams.set("size", "1");
   }
-  if (!url.searchParams.has("limit")) {
-    url.searchParams.set("limit", "10");
+  if (!url.searchParams.has("size")) {
+    url.searchParams.set("size", "10");
   }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
   await helper.teacher.getSchoolTeachers.prefetch({
     page: Number(url.searchParams.get("page")),
-    limit: Number(url.searchParams.get("limit")),
+    limit: Number(url.searchParams.get("size")),
   });
+  await helper.user.allBySchoolId.prefetch();
   await helper.teacher.countSchoolTeachers.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (

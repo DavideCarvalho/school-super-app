@@ -2,6 +2,7 @@ import type {
   Column,
   ColumnDef,
   ColumnFiltersState,
+  ColumnSort,
   FilterMeta,
 } from "@tanstack/react-table";
 import { useEffect } from "react";
@@ -25,6 +26,14 @@ import {
 import { MultiSelect, MultiSelectItem } from "@tremor/react";
 
 import { PaginationV2 } from "../pagination-v2";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../table";
 
 export interface CustomFilterMeta extends FilterMeta {
   filterComponent?: (props: {
@@ -43,9 +52,11 @@ interface ReactTableProps<TData> {
     name: string;
     value: "asc" | "desc" | undefined;
   }) => void;
-  initialFilters?: ColumnFiltersState;
+  columnFilters?: ColumnFiltersState;
+  sorting?: ColumnSort;
   pageSize?: number;
   pageIndex?: number;
+  totalCount: number;
   initialSort?: { id: string; desc: boolean };
   noDataMessage?: string;
 }
@@ -53,15 +64,15 @@ interface ReactTableProps<TData> {
 export function TableWithPagination<TData extends Record<string, unknown>>({
   data,
   columns,
-  onPageChange = () => {},
   onFilterChange = () => {},
   onSortingChange = () => {},
   isLoading = false,
   pageSize = 10,
   pageIndex = 0,
-  initialFilters = [],
-  initialSort,
-  noDataMessage = "No data to show!",
+  totalCount,
+  columnFilters = [],
+  sorting,
+  noDataMessage = "Nada para mostrar!",
 }: ReactTableProps<TData>) {
   const table = useReactTable({
     data,
@@ -71,8 +82,8 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
         pageSize,
         pageIndex,
       },
-      columnFilters: initialFilters,
-      sorting: initialSort ? [initialSort] : [],
+      columnFilters,
+      sorting: sorting ? [sorting] : [],
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -84,18 +95,18 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
   });
 
   useEffect(() => {
-    table.setPageIndex(pageIndex);
+    if (pageIndex !== table.getState().pagination.pageIndex) {
+      table.setPageIndex(pageIndex - 1);
+    }
   }, [table, pageIndex]);
 
   useEffect(() => {
-    table.setPageSize(pageSize);
+    if (pageSize !== table.getState().pagination.pageSize) {
+      table.setPageSize(pageSize);
+    }
   }, [table, pageSize]);
 
-  if (isLoading) {
-    return <h1>Loading data...</h1>;
-  }
-
-  if (data.length === 0) {
+  if (!isLoading && data.length === 0) {
     return <h1>{noDataMessage}</h1>;
   }
 
@@ -113,12 +124,12 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <table className="min-w-full table-fixed divide-y divide-gray-300">
-            <thead>
+          <Table className="min-w-full table-fixed divide-y divide-gray-300">
+            <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
+                <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <th
+                    <TableHead
                       key={header.id}
                       className={`px-3 py-3.5 text-left text-sm font-semibold text-gray-900 ${header.column.getCanSort() ? "cursor-pointer select-none" : ""}`}
                     >
@@ -183,19 +194,22 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                           ) : null}
                         </>
                       )}
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </thead>
-            <tbody>
+            </TableHeader>
+            <TableBody>
               {isLoading && data.length === 0 ? (
-                <TableSkeleton columnsLength={columns.length} />
+                <TableSkeleton
+                  pageSize={table.getState().pagination.pageSize}
+                  columnsLength={columns.length}
+                />
               ) : null}
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id}>
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <td
+                    <TableCell
                       key={cell.id}
                       className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                     >
@@ -203,45 +217,48 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                         cell.column.columnDef.cell,
                         cell.getContext(),
                       )}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-              {table.getRowModel().rows.length &&
-                table.getRowModel().rows.length < 5 &&
-                Array(Math.abs(5 - table.getRowModel().rows.length))
-                  .fill(0)
-                  .map((_, i) => (
-                    <tr key={`fake_${i}`}>
-                      <td
-                        key={i}
-                        className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                      >
-                        &nbsp;
-                      </td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
-          <PaginationV2
-            currentPage={table.getState().pagination.pageIndex + 1}
-            totalCount={table.getPageCount()}
-            itemsPerPage={table.getState().pagination.pageSize}
-          />
+              {table.getRowModel().rows.length < pageSize
+                ? Array(pageSize - table.getRowModel().rows.length)
+                    .fill(0)
+                    .map((_, i) => (
+                      <TableRow key={`fake_${i}`}>
+                        {table.getVisibleFlatColumns().map((column) => (
+                          <TableCell
+                            key={column.id}
+                            className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                          >
+                            &nbsp;
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                : null}
+            </TableBody>
+          </Table>
         </div>
       </div>
+      <PaginationV2
+        currentPage={pageIndex}
+        totalCount={totalCount}
+        itemsPerPage={pageSize}
+      />
     </div>
   );
 }
 
 interface TableSkeletonProps {
+  pageSize: number;
   columnsLength: number;
 }
 
-function TableSkeleton({ columnsLength }: TableSkeletonProps) {
+function TableSkeleton({ pageSize, columnsLength }: TableSkeletonProps) {
   return (
     <>
-      {Array(5)
+      {Array(pageSize)
         .fill(0)
         .map((_, i) => (
           <tr key={i}>
@@ -263,156 +280,6 @@ function TableSkeletonRow() {
     </td>
   );
 }
-
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  // onPageChange: (page: number) => void;
-}
-
-// function Pagination({
-//   currentPage,
-//   totalPages,
-//   onPageChange,
-// }: PaginationProps) {
-//   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-
-//   // biome-ignore lint/style/noNonNullAssertion: This will always be defined
-//   const firstPage = pages[0]!;
-//   // biome-ignore lint/style/noNonNullAssertion: This will always be defined
-//   const lastPage = pages[pages.length - 1]!;
-
-//   const nextPage = currentPage === totalPages ? undefined : pages[currentPage];
-//   const previousPage = currentPage === 1 ? undefined : pages[currentPage - 2];
-
-//   return (
-//     <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
-//       <div className="-mt-px flex w-0 flex-1">
-//         <button
-//           type="button"
-//           disabled={currentPage === 1}
-//           onClick={() => onPageChange(currentPage - 1)}
-//           className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-//         >
-//           <ArrowLongLeftIcon
-//             className="mr-3 h-5 w-5 text-gray-400"
-//             aria-hidden="true"
-//           />
-//           Previous
-//         </button>
-//       </div>
-//       <div className="hidden md:-mt-px md:flex">
-//         {firstPage !== currentPage && (
-//           <button
-//             type="button"
-//             onClick={() => onPageChange(firstPage)}
-//             className={`inline-flex items-center border-t-2 ${
-//               firstPage === currentPage
-//                 ? "border-indigo-500 text-indigo-600"
-//                 : "border-transparent text-gray-500"
-//             } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-//             aria-current={lastPage === currentPage ? "page" : undefined}
-//           >
-//             {firstPage}
-//           </button>
-//         )}
-//         {previousPage && previousPage !== firstPage && (
-//           <>
-//             <button
-//               type="button"
-//               className={`inline-flex items-center border-t-2 ${
-//                 previousPage === currentPage
-//                   ? "border-indigo-500 text-indigo-600"
-//                   : "border-transparent text-gray-500"
-//               } px-4 pt-4 text-sm font-medium hover:cursor-default`}
-//               aria-current={previousPage === currentPage ? "page" : undefined}
-//             >
-//               ...
-//             </button>
-//             <button
-//               type="button"
-//               onClick={() => onPageChange(previousPage)}
-//               className={`inline-flex items-center border-t-2 ${
-//                 previousPage === currentPage
-//                   ? "border-indigo-500 text-indigo-600"
-//                   : "border-transparent text-gray-500"
-//               } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-//               aria-current={previousPage === currentPage ? "page" : undefined}
-//             >
-//               {previousPage}
-//             </button>
-//           </>
-//         )}
-//         {(currentPage !== firstPage || currentPage !== lastPage) && (
-//           <button
-//             type="button"
-//             className={
-//               "border-t-2border-indigo-500 inline-flex cursor-default items-center px-4 pt-4 text-sm font-medium text-indigo-600"
-//             }
-//           >
-//             {currentPage}
-//           </button>
-//         )}
-//         {nextPage && nextPage !== lastPage && (
-//           <>
-//             <button
-//               type="button"
-//               onClick={() => onPageChange(nextPage)}
-//               className={`inline-flex items-center border-t-2 ${
-//                 nextPage === currentPage
-//                   ? "border-indigo-500 text-indigo-600"
-//                   : "border-transparent text-gray-500"
-//               } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-//               aria-current={nextPage === currentPage ? "page" : undefined}
-//             >
-//               {nextPage}
-//             </button>
-//             <button
-//               type="button"
-//               className={`inline-flex items-center border-t-2 ${
-//                 nextPage === currentPage
-//                   ? "border-indigo-500 text-indigo-600"
-//                   : "border-transparent text-gray-500"
-//               } px-4 pt-4 text-sm font-medium hover:cursor-default`}
-//               aria-current={nextPage === currentPage ? "page" : undefined}
-//             >
-//               ...
-//             </button>
-//           </>
-//         )}
-//         {lastPage !== firstPage && currentPage !== lastPage && (
-//           <button
-//             type="button"
-//             onClick={() => onPageChange(lastPage)}
-//             className={`inline-flex items-center border-t-2 ${
-//               lastPage === currentPage
-//                 ? "border-indigo-500 text-indigo-600"
-//                 : "border-transparent text-gray-500"
-//             } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-//             aria-current={lastPage === currentPage ? "page" : undefined}
-//           >
-//             {lastPage}
-//           </button>
-//         )}
-//       </div>
-
-//       <div className="-mt-px flex w-0 flex-1 justify-end">
-//         <button
-//           type="button"
-//           disabled={currentPage === totalPages}
-//           onClick={() => onPageChange(currentPage + 1)}
-//           className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-//         >
-//           Next
-//           <ArrowLongRightIcon
-//             className="ml-3 h-5 w-5 text-gray-400"
-//             aria-hidden="true"
-//           />
-//         </button>
-//       </div>
-//     </nav>
-//   );
-// }
 
 function Filter({
   column,
