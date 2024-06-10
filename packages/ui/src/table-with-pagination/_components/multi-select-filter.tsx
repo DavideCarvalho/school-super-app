@@ -1,6 +1,7 @@
-import { useMemo } from "react";
 import type { Column, FilterFn } from "@tanstack/react-table";
-import { MultiSelect, MultiSelectItem } from "@tremor/react";
+import { useMemo } from "react";
+
+import { MultiSelect } from "../../multi-select";
 
 export function MultiSelectFilter({
   column,
@@ -11,24 +12,20 @@ export function MultiSelectFilter({
 }) {
   const columnFilterValue: string[] =
     (column.getFilterValue() as string[]) ?? ([] as string[]);
+  console.log(columnFilterValue);
   const sortedUniqueValues = useMemo(
     () => Array.from(column.getFacetedUniqueValues().keys()).sort(),
     [column.getFacetedUniqueValues()],
   );
   return (
     <MultiSelect
-      value={columnFilterValue}
-      onValueChange={(value) => {
-        onFilterChange({ name: column.id, value });
-        return column.setFilterValue(value);
+      selected={columnFilterValue.map((value) => ({ value, label: value }))}
+      options={sortedUniqueValues.map((value) => ({ value, label: value }))}
+      onChange={(option) => {
+        onFilterChange({ name: column.id, value: option.map((o) => o.value) });
+        return column.setFilterValue(option.map((o) => o.value));
       }}
-    >
-      {sortedUniqueValues.map((value: string) => (
-        <MultiSelectItem key={value} value={value}>
-          {value}
-        </MultiSelectItem>
-      ))}
-    </MultiSelect>
+    />
   );
 }
 

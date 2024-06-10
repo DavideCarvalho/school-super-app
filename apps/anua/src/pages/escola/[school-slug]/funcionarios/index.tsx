@@ -36,12 +36,12 @@ export const getServerSideProps = wrapGetServerSidePropsWithSentry(
       roleQuery.toUpperCase() === "DIRECTOR" ||
       roleQuery.toUpperCase() === "TEACHER" ||
       roleQuery.toUpperCase() === "COORDINATOR" ||
-      roleQuery.toUpperCase() === "SCHOOL_WORKER"
+      roleQuery.toUpperCase() === "ADMINISTRATIVE"
         ? (roleQuery.toUpperCase() as
             | "DIRECTOR"
             | "TEACHER"
             | "COORDINATOR"
-            | "SCHOOL_WORKER")
+            | "ADMINISTRATIVE")
         : undefined;
 
     const clerkUser = getAuth(req);

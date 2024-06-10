@@ -16,17 +16,25 @@ export const userRouter = createTRPCRouter({
           .union([
             z.literal("DIRECTOR"),
             z.literal("COORDINATOR"),
+            z.literal("ADMINISTRATIVE"),
+            z.literal("CANTEEN"),
             z.literal("TEACHER"),
-            z.literal("SCHOOL_WORKER"),
           ])
           .optional(),
       }),
     )
     .query(({ ctx, input }) => {
+      const roles = input.role
+        ? [input.role]
+        : ["DIRECTOR", "COORDINATOR", "TEACHER", "ADMINISTRATIVE", "CANTEEN"];
       return ctx.prisma.user.count({
         where: {
           schoolId: ctx.session.school.id,
-          Role: { name: input.role },
+          Role: {
+            name: {
+              in: roles,
+            },
+          },
           active: true,
         },
       });
@@ -40,17 +48,21 @@ export const userRouter = createTRPCRouter({
           .union([
             z.literal("DIRECTOR"),
             z.literal("COORDINATOR"),
+            z.literal("ADMINISTRATIVE"),
+            z.literal("CANTEEN"),
             z.literal("TEACHER"),
-            z.literal("SCHOOL_WORKER"),
           ])
           .optional(),
       }),
     )
     .query(({ ctx, input }) => {
+      const roles = input.role
+        ? [input.role]
+        : ["DIRECTOR", "COORDINATOR", "TEACHER", "ADMINISTRATIVE", "CANTEEN"];
       return ctx.prisma.user.findMany({
         where: {
           schoolId: ctx.session.school.id,
-          Role: { name: input.role },
+          Role: { name: { in: roles } },
           active: true,
         },
         include: { Role: true },
@@ -58,23 +70,17 @@ export const userRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
       });
     }),
-  createWorker: publicProcedure
+  createWorker: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         name: z.string(),
         email: z.string().email(),
-        roleName: z.union([
-          z.literal("DIRECTOR"),
-          z.literal("COORDINATOR"),
-          z.literal("TEACHER"),
-          z.literal("SCHOOL_WORKER"),
-        ]),
+        roleId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const role = await ctx.prisma.role.findFirst({
-        where: { name: input.roleName },
+        where: { id: input.roleId },
       });
       if (!role) throw new Error("Role not found");
       const [firstName, ...rest] = input.name.split(" ");
@@ -88,7 +94,7 @@ export const userRouter = createTRPCRouter({
         });
         const worker = await tx.user.create({
           data: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
             name: input.name,
             slug: slugify(input.name),
             email: input.email,
@@ -96,42 +102,25 @@ export const userRouter = createTRPCRouter({
             externalAuthId: createdUserOnClerk.id,
           },
         });
-        if (role.name === "TEACHER") {
-          await tx.teacher.create({
-            data: {
-              User: {
-                connect: {
-                  id: worker.id,
-                },
-              },
-            },
-          });
-        }
         return worker;
       });
     }),
-  editWorker: publicProcedure
+  editWorker: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         userId: z.string(),
         name: z.string(),
         email: z.string().email(),
-        roleName: z.union([
-          z.literal("DIRECTOR"),
-          z.literal("COORDINATOR"),
-          z.literal("TEACHER"),
-          z.literal("SCHOOL_WORKER"),
-        ]),
+        roleId: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
       const role = await ctx.prisma.role.findFirst({
-        where: { name: input.roleName },
+        where: { id: input.roleId },
       });
       if (!role) throw new Error("Role not found");
       const user = await ctx.prisma.user.findFirst({
-        where: { id: input.userId, schoolId: input.schoolId },
+        where: { id: input.userId, schoolId: ctx.session.school.id },
       });
       if (!user) throw new Error("User not found");
       if (!user.externalAuthId) throw new Error("User not found on Clerk");
@@ -152,18 +141,25 @@ export const userRouter = createTRPCRouter({
           lastName: input.name.split(" ").slice(1).join(" "),
         });
       }
+      const countUserWithSameName = await ctx.prisma.user.count({
+        where: {
+          name: input.name,
+        },
+      });
+      const countSuffix =
+        countUserWithSameName > 0 ? `-${String(countUserWithSameName)}` : "";
       await ctx.prisma.user.update({
         where: { id: input.userId },
         data: {
           name: input.name,
-          slug: slugify(input.name),
+          slug: slugify(`${input.name}${countSuffix}`),
           email: input.email,
           roleId: role.id,
           externalAuthId: userExternalAuthId,
         },
       });
     }),
-  deleteById: publicProcedure
+  deleteById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         schoolId: z.string(),
@@ -172,7 +168,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.prisma.user.findFirst({
-        where: { id: input.userId, schoolId: input.schoolId },
+        where: { id: input.userId, schoolId: ctx.session.school.id },
       });
       if (!user) throw new Error("User not found");
       if (!user.externalAuthId) throw new Error("User not found on Clerk");
@@ -213,13 +209,13 @@ export const userRouter = createTRPCRouter({
           name: input.name,
         },
       });
-      const countPrefix =
+      const countSuffix =
         countUsersWithSameName > 0 ? `-${String(countUsersWithSameName)}` : "";
       await ctx.prisma.user.update({
         where: { id: input.userId },
         data: {
           name: input.name,
-          slug: slugify(`${input.name}${countPrefix}`),
+          slug: slugify(`${input.name}${countSuffix}`),
           imageUrl: userOnClerk.imageUrl,
         },
       });

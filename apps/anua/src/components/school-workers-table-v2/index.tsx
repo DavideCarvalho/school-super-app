@@ -3,32 +3,27 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useHash } from "hooks/use-hash";
+import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
-import { Button } from "@acme/ui/button";
+import type { RouterOutputs } from "@acme/api";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@acme/ui/table";
+  MultiSelectFilter,
+  multiSelectFilterFn,
+} from "@acme/ui/table-with-pagination/_components/multi-select-filter";
+import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import { NewTeacherModalV2 } from "../new-teacher-modal-v2";
-import { PaginationV2 } from "../pagination-v2";
 
-const daysOfWeekToPortuguese = {
-  Monday: "Segunda-feira",
-  Tuesday: "Terça-feira",
-  Wednesday: "Quarta-feira",
-  Thursday: "Quinta-feira",
-  Friday: "Sexta-feira",
+const rolesMap = {
+  DIRECTOR: "Diretor",
+  COORDINATOR: "Coordenador",
+  ADMINISTRATIVE: "Administrador",
+  CANTEEN_WORKER: "Cantina",
+  TEACHER: "Professor",
 };
 
-export function TeachersTableV2() {
+export function WorkersTableV2() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -38,24 +33,46 @@ export function TeachersTableV2() {
     : 10;
 
   const rowList = Array(limit).fill(0);
-  const [teachers] = api.teacher.getSchoolTeachers.useSuspenseQuery({
-    page,
-    limit,
-  });
+  const { data: workers, isLoading: isLoadingWorkers } =
+    api.user.allBySchoolId.useQuery({
+      page,
+      limit,
+    });
 
-  const [teachersCount] = api.teacher.countSchoolTeachers.useSuspenseQuery();
+  const { data: workersCount } = api.user.countAllBySchoolId.useQuery({});
 
   const utils = api.useUtils();
 
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
 
-  async function deleteTeacher(teacherId: string) {
-    const toastId = toast.loading("Removendo professor...");
+  const columnHelper =
+    createColumnHelper<RouterOutputs["user"]["allBySchoolId"][0]>();
+
+  const columns = [
+    columnHelper.accessor("name", {
+      header: "Nome",
+      sortingFn: "auto",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
+    columnHelper.accessor((row) => rolesMap[row.Role.name] ?? "-", {
+      id: "role",
+      header: "Função",
+      sortingFn: "auto",
+      filterFn: multiSelectFilterFn,
+      meta: {
+        filterComponent: MultiSelectFilter,
+      },
+    }),
+  ];
+
+  async function deleteWorker(workerId: string) {
+    const toastId = toast.loading("Removendo funcionário...");
     try {
-      await deleteUser({ userId: teacherId });
-      toast.success("Professor removido com sucesso!");
+      await deleteUser({ userId: workerId });
+      toast.success("Funcionário removido com sucesso!");
     } catch (e) {
-      toast.error("Erro ao remover professor");
+      toast.error("Erro ao remover funcionário");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
@@ -76,11 +93,26 @@ export function TeachersTableV2() {
 
   return (
     <>
-      <Table>
+      <TableWithPagination
+        isLoading={isLoadingWorkers}
+        data={workers ?? []}
+        columns={columns}
+        pageIndex={
+          searchParams?.has("page") ? Number(searchParams.get("page")) - 1 : 0
+        }
+        pageSize={
+          searchParams?.has("size") ? Number(searchParams.get("size")) : 10
+        }
+        onPageChange={(page) => {
+          const params = new URLSearchParams(searchParams ?? undefined);
+          params.set("page", String(page));
+          router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        }}
+      />
+      {/* <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nome do Professor</TableHead>
-            <TableHead>Matérias</TableHead>
+            <TableHead>Nome do funcionário</TableHead>
             <TableHead>Turmas</TableHead>
             <TableHead>Disponibilidade</TableHead>
             <TableHead>Ações</TableHead>
@@ -98,7 +130,7 @@ export function TeachersTableV2() {
               >
                 <TableCell>{teacher?.User?.name ?? "-"}</TableCell>
                 <TableCell>
-                  {teacher?.TeacherHasClasses?.map(
+                  {teacher?.TeacherHasClass?.map(
                     ({ Subject }) => Subject.name,
                   )?.join(", ") ?? "-"}
                 </TableCell>
@@ -145,52 +177,7 @@ export function TeachersTableV2() {
         currentPage={page}
         itemsPerPage={limit}
         totalCount={teachersCount}
-      />
+      /> */}
     </>
-  );
-}
-
-function Trash2Icon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>Remover</title>
-      <path d="M3 6h18" />
-      <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-      <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-      <line x1="10" x2="10" y1="11" y2="17" />
-      <line x1="14" x2="14" y1="11" y2="17" />
-    </svg>
-  );
-}
-
-function UserIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>Editar</title>
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
   );
 }

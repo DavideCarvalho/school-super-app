@@ -3,7 +3,6 @@ import slugify from "slugify";
 import { z } from "zod";
 
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
-import { CanteenItemPurchased } from "./../../../db/prisma/generated/types";
 
 export const canteenRouter = createTRPCRouter({
   create: isUserLoggedInAndAssignedToSchool
@@ -250,27 +249,6 @@ export const canteenRouter = createTRPCRouter({
           },
         },
       });
-      // const item = await ctx.prisma.canteenItem.findFirst({
-      //   where: {
-      //     id: input.itemId,
-      //   },
-      // });
-      // if (!item) throw new Error("Item not found");
-      // const student = await ctx.prisma.student.findFirst({
-      //   where: {
-      //     id: input.studentId,
-      //   },
-      // });
-      // if (!student) throw new Error("Student not found");
-      // await ctx.prisma.studentCanteenItemPurchase.create({
-      //   data: {
-      //     canteenItemId: item.id,
-      //     studentId: student.id,
-      //     quantity: input.quantity,
-      //     price: item.price,
-      //     payed: input.payed,
-      //   },
-      // });
     }),
   allCanteenSells: isUserLoggedInAndAssignedToSchool
     .input(

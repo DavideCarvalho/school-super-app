@@ -54,7 +54,7 @@ export function NewWorkerRequestModal({
     defaultValues: {
       name: "",
       email: "",
-      roleName: "SCHOOL_WORKER",
+      roleName: "ADMINISTRATIVE",
     },
   });
 
@@ -68,7 +68,6 @@ export function NewWorkerRequestModal({
       {
         name: data.name,
         email: data.email,
-        schoolId: schoolId,
         roleName: data.roleName,
       },
       {

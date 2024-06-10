@@ -1,15 +1,16 @@
-import {
-  ArrowDownIcon,
-  ArrowLongLeftIcon,
-  ArrowLongRightIcon,
-  ArrowUpIcon,
-} from "@heroicons/react/20/solid";
 import type {
   Column,
   ColumnDef,
   ColumnFiltersState,
   FilterMeta,
 } from "@tanstack/react-table";
+import { useEffect } from "react";
+import {
+  ArrowDownIcon,
+  ArrowLongLeftIcon,
+  ArrowLongRightIcon,
+  ArrowUpIcon,
+} from "@heroicons/react/20/solid";
 import {
   flexRender,
   getCoreRowModel,
@@ -22,6 +23,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { MultiSelect, MultiSelectItem } from "@tremor/react";
+
+import { PaginationV2 } from "../pagination-v2";
 
 export interface CustomFilterMeta extends FilterMeta {
   filterComponent?: (props: {
@@ -41,8 +44,8 @@ interface ReactTableProps<TData> {
     value: "asc" | "desc" | undefined;
   }) => void;
   initialFilters?: ColumnFiltersState;
-  initialPageSize?: number;
-  initialPageIndex?: number;
+  pageSize?: number;
+  pageIndex?: number;
   initialSort?: { id: string; desc: boolean };
   noDataMessage?: string;
 }
@@ -54,8 +57,8 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
   onFilterChange = () => {},
   onSortingChange = () => {},
   isLoading = false,
-  initialPageSize = 10,
-  initialPageIndex = 0,
+  pageSize = 10,
+  pageIndex = 0,
   initialFilters = [],
   initialSort,
   noDataMessage = "No data to show!",
@@ -65,8 +68,8 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
     columns,
     initialState: {
       pagination: {
-        pageSize: initialPageSize,
-        pageIndex: initialPageIndex,
+        pageSize,
+        pageIndex,
       },
       columnFilters: initialFilters,
       sorting: initialSort ? [initialSort] : [],
@@ -79,6 +82,14 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
     getSortedRowModel: getSortedRowModel(),
   });
+
+  useEffect(() => {
+    table.setPageIndex(pageIndex);
+  }, [table, pageIndex]);
+
+  useEffect(() => {
+    table.setPageSize(pageSize);
+  }, [table, pageSize]);
 
   if (isLoading) {
     return <h1>Loading data...</h1>;
@@ -162,14 +173,14 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                               ),
                             }[header.column.getIsSorted() as string] ?? null}
                           </button>
-                          {hasAtLeastOneFilter && (
+                          {hasAtLeastOneFilter ? (
                             <div className="my-2">
                               <Filter
                                 onFilterChange={onFilterChange}
                                 column={header.column}
                               />
                             </div>
-                          )}
+                          ) : null}
                         </>
                       )}
                     </th>
@@ -178,9 +189,9 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
               ))}
             </thead>
             <tbody>
-              {isLoading && data.length === 0 && (
+              {isLoading && data.length === 0 ? (
                 <TableSkeleton columnsLength={columns.length} />
-              )}
+              ) : null}
               {table.getRowModel().rows.map((row) => (
                 <tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
@@ -212,13 +223,10 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                   ))}
             </tbody>
           </table>
-          <Pagination
+          <PaginationV2
             currentPage={table.getState().pagination.pageIndex + 1}
-            totalPages={table.getPageCount()}
-            onPageChange={(page) => {
-              table.setPageIndex(page - 1);
-              onPageChange(page);
-            }}
+            totalCount={table.getPageCount()}
+            itemsPerPage={table.getState().pagination.pageSize}
           />
         </div>
       </div>
@@ -259,152 +267,152 @@ function TableSkeletonRow() {
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  // onPageChange: (page: number) => void;
 }
 
-function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-}: PaginationProps) {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+// function Pagination({
+//   currentPage,
+//   totalPages,
+//   onPageChange,
+// }: PaginationProps) {
+//   const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-  // biome-ignore lint/style/noNonNullAssertion: This will always be defined
-  const firstPage = pages[0]!;
-  // biome-ignore lint/style/noNonNullAssertion: This will always be defined
-  const lastPage = pages[pages.length - 1]!;
+//   // biome-ignore lint/style/noNonNullAssertion: This will always be defined
+//   const firstPage = pages[0]!;
+//   // biome-ignore lint/style/noNonNullAssertion: This will always be defined
+//   const lastPage = pages[pages.length - 1]!;
 
-  const nextPage = currentPage === totalPages ? undefined : pages[currentPage];
-  const previousPage = currentPage === 1 ? undefined : pages[currentPage - 2];
+//   const nextPage = currentPage === totalPages ? undefined : pages[currentPage];
+//   const previousPage = currentPage === 1 ? undefined : pages[currentPage - 2];
 
-  return (
-    <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
-      <div className="-mt-px flex w-0 flex-1">
-        <button
-          type="button"
-          disabled={currentPage === 1}
-          onClick={() => onPageChange(currentPage - 1)}
-          className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-        >
-          <ArrowLongLeftIcon
-            className="mr-3 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-          Previous
-        </button>
-      </div>
-      <div className="hidden md:-mt-px md:flex">
-        {firstPage !== currentPage && (
-          <button
-            type="button"
-            onClick={() => onPageChange(firstPage)}
-            className={`inline-flex items-center border-t-2 ${
-              firstPage === currentPage
-                ? "border-indigo-500 text-indigo-600"
-                : "border-transparent text-gray-500"
-            } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-            aria-current={lastPage === currentPage ? "page" : undefined}
-          >
-            {firstPage}
-          </button>
-        )}
-        {previousPage && previousPage !== firstPage && (
-          <>
-            <button
-              type="button"
-              className={`inline-flex items-center border-t-2 ${
-                previousPage === currentPage
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500"
-              } px-4 pt-4 text-sm font-medium hover:cursor-default`}
-              aria-current={previousPage === currentPage ? "page" : undefined}
-            >
-              ...
-            </button>
-            <button
-              type="button"
-              onClick={() => onPageChange(previousPage)}
-              className={`inline-flex items-center border-t-2 ${
-                previousPage === currentPage
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500"
-              } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-              aria-current={previousPage === currentPage ? "page" : undefined}
-            >
-              {previousPage}
-            </button>
-          </>
-        )}
-        {(currentPage !== firstPage || currentPage !== lastPage) && (
-          <button
-            type="button"
-            className={
-              "border-t-2border-indigo-500 inline-flex cursor-default items-center px-4 pt-4 text-sm font-medium text-indigo-600"
-            }
-          >
-            {currentPage}
-          </button>
-        )}
-        {nextPage && nextPage !== lastPage && (
-          <>
-            <button
-              type="button"
-              onClick={() => onPageChange(nextPage)}
-              className={`inline-flex items-center border-t-2 ${
-                nextPage === currentPage
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500"
-              } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-              aria-current={nextPage === currentPage ? "page" : undefined}
-            >
-              {nextPage}
-            </button>
-            <button
-              type="button"
-              className={`inline-flex items-center border-t-2 ${
-                nextPage === currentPage
-                  ? "border-indigo-500 text-indigo-600"
-                  : "border-transparent text-gray-500"
-              } px-4 pt-4 text-sm font-medium hover:cursor-default`}
-              aria-current={nextPage === currentPage ? "page" : undefined}
-            >
-              ...
-            </button>
-          </>
-        )}
-        {lastPage !== firstPage && currentPage !== lastPage && (
-          <button
-            type="button"
-            onClick={() => onPageChange(lastPage)}
-            className={`inline-flex items-center border-t-2 ${
-              lastPage === currentPage
-                ? "border-indigo-500 text-indigo-600"
-                : "border-transparent text-gray-500"
-            } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
-            aria-current={lastPage === currentPage ? "page" : undefined}
-          >
-            {lastPage}
-          </button>
-        )}
-      </div>
+//   return (
+//     <nav className="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
+//       <div className="-mt-px flex w-0 flex-1">
+//         <button
+//           type="button"
+//           disabled={currentPage === 1}
+//           onClick={() => onPageChange(currentPage - 1)}
+//           className="inline-flex items-center border-t-2 border-transparent pr-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+//         >
+//           <ArrowLongLeftIcon
+//             className="mr-3 h-5 w-5 text-gray-400"
+//             aria-hidden="true"
+//           />
+//           Previous
+//         </button>
+//       </div>
+//       <div className="hidden md:-mt-px md:flex">
+//         {firstPage !== currentPage && (
+//           <button
+//             type="button"
+//             onClick={() => onPageChange(firstPage)}
+//             className={`inline-flex items-center border-t-2 ${
+//               firstPage === currentPage
+//                 ? "border-indigo-500 text-indigo-600"
+//                 : "border-transparent text-gray-500"
+//             } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
+//             aria-current={lastPage === currentPage ? "page" : undefined}
+//           >
+//             {firstPage}
+//           </button>
+//         )}
+//         {previousPage && previousPage !== firstPage && (
+//           <>
+//             <button
+//               type="button"
+//               className={`inline-flex items-center border-t-2 ${
+//                 previousPage === currentPage
+//                   ? "border-indigo-500 text-indigo-600"
+//                   : "border-transparent text-gray-500"
+//               } px-4 pt-4 text-sm font-medium hover:cursor-default`}
+//               aria-current={previousPage === currentPage ? "page" : undefined}
+//             >
+//               ...
+//             </button>
+//             <button
+//               type="button"
+//               onClick={() => onPageChange(previousPage)}
+//               className={`inline-flex items-center border-t-2 ${
+//                 previousPage === currentPage
+//                   ? "border-indigo-500 text-indigo-600"
+//                   : "border-transparent text-gray-500"
+//               } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
+//               aria-current={previousPage === currentPage ? "page" : undefined}
+//             >
+//               {previousPage}
+//             </button>
+//           </>
+//         )}
+//         {(currentPage !== firstPage || currentPage !== lastPage) && (
+//           <button
+//             type="button"
+//             className={
+//               "border-t-2border-indigo-500 inline-flex cursor-default items-center px-4 pt-4 text-sm font-medium text-indigo-600"
+//             }
+//           >
+//             {currentPage}
+//           </button>
+//         )}
+//         {nextPage && nextPage !== lastPage && (
+//           <>
+//             <button
+//               type="button"
+//               onClick={() => onPageChange(nextPage)}
+//               className={`inline-flex items-center border-t-2 ${
+//                 nextPage === currentPage
+//                   ? "border-indigo-500 text-indigo-600"
+//                   : "border-transparent text-gray-500"
+//               } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
+//               aria-current={nextPage === currentPage ? "page" : undefined}
+//             >
+//               {nextPage}
+//             </button>
+//             <button
+//               type="button"
+//               className={`inline-flex items-center border-t-2 ${
+//                 nextPage === currentPage
+//                   ? "border-indigo-500 text-indigo-600"
+//                   : "border-transparent text-gray-500"
+//               } px-4 pt-4 text-sm font-medium hover:cursor-default`}
+//               aria-current={nextPage === currentPage ? "page" : undefined}
+//             >
+//               ...
+//             </button>
+//           </>
+//         )}
+//         {lastPage !== firstPage && currentPage !== lastPage && (
+//           <button
+//             type="button"
+//             onClick={() => onPageChange(lastPage)}
+//             className={`inline-flex items-center border-t-2 ${
+//               lastPage === currentPage
+//                 ? "border-indigo-500 text-indigo-600"
+//                 : "border-transparent text-gray-500"
+//             } px-4 pt-4 text-sm font-medium hover:border-gray-300 hover:text-gray-700`}
+//             aria-current={lastPage === currentPage ? "page" : undefined}
+//           >
+//             {lastPage}
+//           </button>
+//         )}
+//       </div>
 
-      <div className="-mt-px flex w-0 flex-1 justify-end">
-        <button
-          type="button"
-          disabled={currentPage === totalPages}
-          onClick={() => onPageChange(currentPage + 1)}
-          className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
-        >
-          Next
-          <ArrowLongRightIcon
-            className="ml-3 h-5 w-5 text-gray-400"
-            aria-hidden="true"
-          />
-        </button>
-      </div>
-    </nav>
-  );
-}
+//       <div className="-mt-px flex w-0 flex-1 justify-end">
+//         <button
+//           type="button"
+//           disabled={currentPage === totalPages}
+//           onClick={() => onPageChange(currentPage + 1)}
+//           className="inline-flex items-center border-t-2 border-transparent pl-1 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+//         >
+//           Next
+//           <ArrowLongRightIcon
+//             className="ml-3 h-5 w-5 text-gray-400"
+//             aria-hidden="true"
+//           />
+//         </button>
+//       </div>
+//     </nav>
+//   );
+// }
 
 function Filter({
   column,
