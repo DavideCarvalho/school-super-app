@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation";
 import { Column, createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
@@ -36,6 +37,8 @@ for (let i = 0; i < rolesEnum.length; i++) {
 }
 
 export function useSchoolWorkerColumns() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
   const utils = api.useUtils();
 
@@ -78,10 +81,27 @@ export function useSchoolWorkerColumns() {
           column: Column<any, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
+          const handleFilterChange = (param: {
+            name: string;
+            value: string[];
+          }) => {
+            const params = new URLSearchParams(searchParams ?? undefined);
+            params.delete(name);
+            if (Array.isArray(value)) {
+              for (const v of value) params.append(name, v);
+            }
+            if (typeof value === "string" && (value as string).trim() !== "") {
+              params.append(name, value);
+            }
+            router.replace(`${pathname}?${params.toString()}`, {
+              scroll: false,
+            });
+          };
           return (
             <MultiSelectFilter
               data={roles?.map((r) => r.label) ?? []}
-              {...props}
+              onFilterChange={handleFilterChange}
+              column={props.column}
             />
           );
         },
