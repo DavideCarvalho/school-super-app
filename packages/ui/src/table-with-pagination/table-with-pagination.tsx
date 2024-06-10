@@ -5,13 +5,8 @@ import type {
   ColumnSort,
   FilterMeta,
 } from "@tanstack/react-table";
-import { useEffect } from "react";
-import {
-  ArrowDownIcon,
-  ArrowLongLeftIcon,
-  ArrowLongRightIcon,
-  ArrowUpIcon,
-} from "@heroicons/react/20/solid";
+import { memo, useCallback, useMemo } from "react";
+import { ArrowDownIcon, ArrowUpIcon } from "@heroicons/react/20/solid";
 import {
   flexRender,
   getCoreRowModel,
@@ -53,7 +48,6 @@ interface ReactTableProps<TData> {
     value: "asc" | "desc" | undefined;
   }) => void;
   columnFilters?: ColumnFiltersState;
-  sorting?: ColumnSort;
   pageSize?: number;
   pageIndex?: number;
   totalCount: number;
@@ -71,19 +65,17 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
   pageIndex = 0,
   totalCount,
   columnFilters = [],
-  sorting,
   noDataMessage = "Nada para mostrar!",
 }: ReactTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
-    initialState: {
+    state: {
       pagination: {
         pageSize,
         pageIndex,
       },
       columnFilters,
-      sorting: sorting ? [sorting] : [],
     },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -92,32 +84,41 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
     getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
+    manualFiltering: true,
   });
 
-  useEffect(() => {
-    if (pageIndex !== table.getState().pagination.pageIndex) {
-      table.setPageIndex(pageIndex - 1);
-    }
-  }, [table, pageIndex]);
+  const hasAtLeastOneFilter = useMemo(() => {
+    return table
+      .getHeaderGroups()
+      .some((headerGroup) =>
+        headerGroup.headers.some((header) => header.column.getCanFilter()),
+      );
+  }, [table]);
 
-  useEffect(() => {
-    if (pageSize !== table.getState().pagination.pageSize) {
-      table.setPageSize(pageSize);
-    }
-  }, [table, pageSize]);
+  const handleSortingChange = useCallback(
+    (header) => (e) => {
+      const handler = header.column.getToggleSortingHandler();
+      if (!handler) return;
+      handler(e);
+      const currentSortingValue = header.column.getIsSorted();
+      let nextValue: "asc" | "desc" | undefined = "desc";
+      if (currentSortingValue === "asc") {
+        nextValue = undefined;
+      }
+      if (currentSortingValue === "desc") {
+        nextValue = "asc";
+      }
+      onSortingChange({
+        name: header.column.id,
+        value: nextValue,
+      });
+    },
+    [onSortingChange],
+  );
 
   if (!isLoading && data.length === 0) {
     return <h1>{noDataMessage}</h1>;
-  }
-
-  let hasAtLeastOneFilter = false;
-  headerGroupLoop: for (const headerGroup of table.getHeaderGroups()) {
-    for (const header of headerGroup.headers) {
-      if (header.column.getCanFilter()) {
-        hasAtLeastOneFilter = true;
-        break headerGroupLoop;
-      }
-    }
   }
 
   return (
@@ -131,7 +132,11 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className={`px-3 py-3.5 text-left text-sm font-semibold text-gray-900 ${header.column.getCanSort() ? "cursor-pointer select-none" : ""}`}
+                      className={`px-3 py-3.5 text-left text-sm font-semibold text-gray-900 ${
+                        header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : ""
+                      }`}
                     >
                       {typeof header.column.columnDef.header === "function" ? (
                         flexRender(
@@ -142,26 +147,7 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                         <>
                           <button
                             type="button"
-                            onClick={(e) => {
-                              const handler =
-                                header.column.getToggleSortingHandler();
-                              if (!handler) return;
-                              handler(e);
-                              const currentSortingValue =
-                                header.column.getIsSorted();
-                              let nextValue: "asc" | "desc" | undefined =
-                                "desc";
-                              if (currentSortingValue === "asc") {
-                                nextValue = undefined;
-                              }
-                              if (currentSortingValue === "desc") {
-                                nextValue = "asc";
-                              }
-                              onSortingChange({
-                                name: header.column.id,
-                                value: nextValue,
-                              });
-                            }}
+                            onClick={handleSortingChange(header)}
                           >
                             {flexRender(
                               header.column.columnDef.header,
@@ -184,14 +170,14 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                               ),
                             }[header.column.getIsSorted() as string] ?? null}
                           </button>
-                          {hasAtLeastOneFilter ? (
+                          {hasAtLeastOneFilter && (
                             <div className="my-2">
                               <Filter
                                 onFilterChange={onFilterChange}
                                 column={header.column}
                               />
                             </div>
-                          ) : null}
+                          )}
                         </>
                       )}
                     </TableHead>
@@ -221,28 +207,27 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                   ))}
                 </TableRow>
               ))}
-              {table.getRowModel().rows.length < pageSize
-                ? Array(pageSize - table.getRowModel().rows.length)
-                    .fill(0)
-                    .map((_, i) => (
-                      <TableRow key={`fake_${i}`}>
-                        {table.getVisibleFlatColumns().map((column) => (
-                          <TableCell
-                            key={column.id}
-                            className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
-                          >
-                            &nbsp;
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                : null}
+              {table.getRowModel().rows.length < pageSize &&
+                Array(pageSize - table.getRowModel().rows.length)
+                  .fill(0)
+                  .map((_, i) => (
+                    <TableRow key={`fake_${i}`}>
+                      {table.getVisibleFlatColumns().map((column) => (
+                        <TableCell
+                          key={column.id}
+                          className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                        >
+                          &nbsp;
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
             </TableBody>
           </Table>
         </div>
       </div>
       <PaginationV2
-        currentPage={pageIndex}
+        currentPage={pageIndex + 1}
         totalCount={totalCount}
         itemsPerPage={pageSize}
       />
@@ -255,7 +240,7 @@ interface TableSkeletonProps {
   columnsLength: number;
 }
 
-function TableSkeleton({ pageSize, columnsLength }: TableSkeletonProps) {
+const TableSkeleton = ({ pageSize, columnsLength }: TableSkeletonProps) => {
   return (
     <>
       {Array(pageSize)
@@ -264,47 +249,57 @@ function TableSkeleton({ pageSize, columnsLength }: TableSkeletonProps) {
           <tr key={i}>
             {Array(columnsLength)
               .fill(0)
-              .map((_, i) => (
-                <TableSkeletonRow key={i} />
+              .map((_, j) => (
+                <TableSkeletonRow key={j} />
               ))}
           </tr>
         ))}
     </>
   );
-}
+};
 
-function TableSkeletonRow() {
+const TableSkeletonRow = () => {
   return (
     <td className="text-center">
       <p className="mt-2 animate-pulse rounded bg-gray-500 text-sm">&nbsp;</p>
     </td>
   );
-}
+};
 
-function Filter({
-  column,
-  onFilterChange,
-}: {
-  column: Column<any, unknown>;
-  onFilterChange: (param: { name: string; value: string[] }) => void;
-}) {
-  if (!column.getCanFilter()) {
-    return (
-      <MultiSelect
-        value={undefined}
-        onValueChange={() => {}}
-        className="invisible"
-      >
-        <MultiSelectItem value={""} />
-      </MultiSelect>
-    );
-  }
+const Filter = memo(
+  ({
+    column,
+    onFilterChange,
+  }: {
+    column: Column<any, unknown>;
+    onFilterChange: (param: { name: string; value: string[] }) => void;
+  }) => {
+    if (!column.getCanFilter()) {
+      return (
+        <MultiSelect
+          value={undefined}
+          onValueChange={() => {}}
+          className="invisible"
+        >
+          <MultiSelectItem value={""} />
+        </MultiSelect>
+      );
+    }
 
-  const meta = column.columnDef.meta as CustomFilterMeta | undefined;
-  if (meta?.filterComponent) {
-    const FilterComponent = meta.filterComponent;
-    return <FilterComponent column={column} onFilterChange={onFilterChange} />;
-  }
+    const meta = column.columnDef.meta as CustomFilterMeta | undefined;
+    if (meta?.filterComponent) {
+      console.log("meta", meta.filterComponent);
+      console.log("typeof meta.filterComponent", typeof meta.filterComponent);
+      if (typeof meta.filterComponent === "function") {
+        return meta.filterComponent({ column, onFilterChange });
+      }
+      const FilterComponent = meta.filterComponent;
+      return (
+        <FilterComponent column={column} onFilterChange={onFilterChange} />
+      );
+    }
 
-  return null;
-}
+    return null;
+  },
+);
+Filter.displayName = "Filter";

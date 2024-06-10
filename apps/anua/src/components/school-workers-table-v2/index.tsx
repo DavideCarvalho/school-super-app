@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import { useSchoolWorkerColumns } from "./use-school-worker-columns";
+import {
+  rolesEnum,
+  rolesInPortuguese,
+  useSchoolWorkerColumns,
+} from "./use-school-worker-columns";
 
 export function WorkersTableV2() {
   const router = useRouter();
@@ -26,18 +29,29 @@ export function WorkersTableV2() {
     ? Number(searchParams?.get("size"))
     : 10;
 
-  const { data: workers, isLoading: isLoadingWorkers } =
-    api.user.allBySchoolId.useQuery();
+  const rolesFiltered = (filters[0]?.value ?? [])
+    .filter((v) => v !== "")
+    .map((role) => rolesEnum[rolesInPortuguese.findIndex((r) => r === role)])
+    .filter(Boolean) as unknown as string[];
 
-  console.log("workers.length", workers?.length);
+  const { data: workers, isLoading: isLoadingWorkers } =
+    api.user.allBySchoolId.useQuery({
+      page,
+      size,
+      roles: rolesFiltered.length ? rolesFiltered : undefined,
+    });
+
+  const { data: workersCount } = api.user.countAllBySchoolId.useQuery({
+    roles: rolesFiltered.length ? rolesFiltered : undefined,
+  });
 
   return (
     <TableWithPagination
       isLoading={!workers && isLoadingWorkers}
       data={workers ?? []}
       columns={columns}
-      totalCount={workers?.length ?? 0}
-      pageIndex={page}
+      totalCount={workersCount ?? 0}
+      pageIndex={page - 1}
       pageSize={size}
       columnFilters={filters}
       onFilterChange={({ name, value }) => {

@@ -2,6 +2,8 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
+import type { Prisma } from "@acme/db";
+
 import {
   createTRPCRouter,
   isUserLoggedInAndAssignedToSchool,
@@ -9,19 +11,14 @@ import {
 } from "../trpc";
 
 export const userRouter = createTRPCRouter({
-  countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(
-    ({ ctx, input }) => {
-      return ctx.prisma.user.count({
-        where: {
-          schoolId: ctx.session.school.id,
-          active: true,
-        },
-      });
-    },
-  ),
-  allBySchoolId: isUserLoggedInAndAssignedToSchool.query(({ ctx, input }) => {
-    return ctx.prisma.user.findMany({
-      where: {
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        roles: z.array(z.string()).min(1).optional(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      let where: Prisma.UserWhereInput = {
         schoolId: ctx.session.school.id,
         active: true,
         Role: {
@@ -29,10 +26,56 @@ export const userRouter = createTRPCRouter({
             notIn: ["STUDENT", "CONNECTAPROF_USER"],
           },
         },
-      },
-      include: { Role: true, _count: true },
-    });
-  }),
+      };
+      if (input.roles) {
+        where = {
+          ...where,
+          Role: {
+            name: {
+              in: input.roles,
+            },
+          },
+        };
+      }
+      return ctx.prisma.user.count({
+        where,
+      });
+    }),
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        page: z.number().optional().default(1),
+        size: z.number().optional().default(10),
+        roles: z.array(z.string()).min(1).optional(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      let where: Prisma.UserWhereInput = {
+        schoolId: ctx.session.school.id,
+        active: true,
+        Role: {
+          name: {
+            notIn: ["STUDENT", "CONNECTAPROF_USER"],
+          },
+        },
+      };
+      if (input.roles) {
+        where = {
+          ...where,
+          Role: {
+            name: {
+              in: input.roles,
+            },
+          },
+        };
+      }
+      return ctx.prisma.user.findMany({
+        where,
+        take: input.size,
+        skip: (input.page - 1) * input.size,
+        include: { Role: true },
+      });
+    }),
   createWorker: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

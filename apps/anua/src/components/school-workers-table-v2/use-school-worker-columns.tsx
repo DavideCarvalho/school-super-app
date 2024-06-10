@@ -1,4 +1,4 @@
-import { createColumnHelper } from "@tanstack/react-table";
+import { Column, createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
 import type { RouterOutputs } from "@acme/api";
@@ -9,17 +9,37 @@ import {
 
 import { api } from "~/trpc/react";
 
-const rolesMap = {
-  DIRECTOR: "Diretor",
-  COORDINATOR: "Coordenador",
-  ADMINISTRATIVE: "Administrador",
-  CANTEEN: "Cantina",
-  TEACHER: "Professor",
-};
+export const rolesInPortuguese = [
+  "Diretor",
+  "Coordenador",
+  "Administrador",
+  "Cantina",
+  "Professor",
+] as const;
+
+export const rolesEnum = [
+  "DIRECTOR",
+  "COORDINATOR",
+  "ADMINISTRATIVE",
+  "CANTEEN",
+  "TEACHER",
+] as const;
+
+const rolesMap: Record<string, string> = {};
+
+for (let i = 0; i < rolesEnum.length; i++) {
+  const role = rolesEnum[i];
+  const roleInPortuguese = rolesInPortuguese[i];
+  if (!role) continue;
+  if (!roleInPortuguese) continue;
+  rolesMap[role] = roleInPortuguese;
+}
 
 export function useSchoolWorkerColumns() {
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
   const utils = api.useUtils();
+
+  const { data: roles } = api.role.getAllWorkerRoles.useQuery();
 
   const columnHelper =
     createColumnHelper<RouterOutputs["user"]["allBySchoolId"][0]>();
@@ -44,17 +64,27 @@ export function useSchoolWorkerColumns() {
     columnHelper.accessor("name", {
       id: "nome",
       header: "Nome",
-      sortingFn: "auto",
       enableColumnFilter: false,
       enableSorting: false,
     }),
     columnHelper.accessor((row) => rolesMap[row.Role.name] ?? row.Role.name, {
       id: "funcao",
       header: "Função",
-      sortingFn: "auto",
+      enableColumnFilter: true,
+      enableSorting: false,
       filterFn: multiSelectFilterFn,
       meta: {
-        filterComponent: MultiSelectFilter,
+        // filterComponent: MultiSelectFilter,
+        //TODO: Ajustar isso aqui
+        filterComponent: (props: {
+          column: Column<any, unknown>;
+          onFilterChange: (param: { name: string; value: string[] }) => void;
+        }) => {
+          <MultiSelectFilter
+            data={roles?.map((role) => role.name) ?? []}
+            {...props}
+          />;
+        },
       },
     }),
   ];
