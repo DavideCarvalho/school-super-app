@@ -74,16 +74,16 @@ export function useSchoolWorkerColumns() {
       enableSorting: false,
       filterFn: multiSelectFilterFn,
       meta: {
-        // filterComponent: MultiSelectFilter,
-        //TODO: Ajustar isso aqui
         filterComponent: (props: {
           column: Column<any, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
-          <MultiSelectFilter
-            data={roles?.map((role) => role.name) ?? []}
-            {...props}
-          />;
+          return (
+            <MultiSelectFilter
+              data={roles?.map((r) => r.label) ?? []}
+              {...props}
+            />
+          );
         },
       },
     }),

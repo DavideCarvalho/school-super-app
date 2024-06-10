@@ -288,11 +288,6 @@ const Filter = memo(
 
     const meta = column.columnDef.meta as CustomFilterMeta | undefined;
     if (meta?.filterComponent) {
-      console.log("meta", meta.filterComponent);
-      console.log("typeof meta.filterComponent", typeof meta.filterComponent);
-      if (typeof meta.filterComponent === "function") {
-        return meta.filterComponent({ column, onFilterChange });
-      }
       const FilterComponent = meta.filterComponent;
       return (
         <FilterComponent column={column} onFilterChange={onFilterChange} />
