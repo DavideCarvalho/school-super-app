@@ -22,6 +22,7 @@ export const roleRouter = createTRPCRouter({
         "COORDINATOR",
         "ADMINISTRATIVE",
         "CANTEEN",
+        "TEACHER",
       ];
       const roles = await ctx.prisma.role.findMany({
         where: {
@@ -50,6 +51,11 @@ export const roleRouter = createTRPCRouter({
           // biome-ignore lint/style/noNonNullAssertion: Sem o ! TS acha que pode ser nulo
           ...roles.find((r) => r.name === "CANTEEN")!,
           label: "Cantina",
+        },
+        {
+          // biome-ignore lint/style/noNonNullAssertion: Sem o ! TS acha que pode ser nulo
+          ...roles.find((r) => r.name === "TEACHER")!,
+          label: "Professor",
         },
       ];
     },

@@ -29,7 +29,6 @@ export const usePrinter = (
 
         setDevice(device);
         setConnected(true);
-        console.log("Impressora conectada");
       }
     } catch (error) {
       console.error("Erro ao conectar a impressora:", error);
@@ -48,7 +47,6 @@ export const usePrinter = (
     try {
       const endpointNumber = 3; // Endpoint de saída
       await device.transferOut(endpointNumber, data);
-      console.log("Nota fiscal impressa");
     } catch (error) {
       console.error("Erro ao imprimir nota fiscal:", error);
     }

@@ -117,10 +117,6 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
     [onSortingChange],
   );
 
-  if (!isLoading && data.length === 0) {
-    return <h1>{noDataMessage}</h1>;
-  }
-
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

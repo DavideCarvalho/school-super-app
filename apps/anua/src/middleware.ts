@@ -13,14 +13,6 @@ export default clerkMiddleware((auth, req) => {
   });
 });
 
-// export default authMiddleware({
-//   afterAuth(auth, req) {
-//     console.log(`to aqui por favor funciona`);
-//     return req.headers.set("x-url", req.url);
-//   },
-//   publicRoutes: ["/"],
-// });
-
 // Stop Middleware running on static files
 export const config = {
   matcher: [

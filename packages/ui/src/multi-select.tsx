@@ -50,7 +50,6 @@ export function MultiSelect({
     },
     [onChange, selected],
   );
-  console.log("selected", selected);
 
   const selectables = options.filter(
     (option) => !selected.some((s) => s.value === option.value),

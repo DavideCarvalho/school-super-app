@@ -1,5 +1,6 @@
-import { useSearchParams } from "next/navigation";
-import { Column, createColumnHelper } from "@tanstack/react-table";
+import type { Column } from "@tanstack/react-table";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
 import type { RouterOutputs } from "@acme/api";
@@ -13,7 +14,7 @@ import { api } from "~/trpc/react";
 export const rolesInPortuguese = [
   "Diretor",
   "Coordenador",
-  "Administrador",
+  "Administrativo",
   "Cantina",
   "Professor",
 ] as const;
@@ -39,6 +40,7 @@ for (let i = 0; i < rolesEnum.length; i++) {
 export function useSchoolWorkerColumns() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathname = usePathname();
   const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
   const utils = api.useUtils();
 
@@ -81,7 +83,10 @@ export function useSchoolWorkerColumns() {
           column: Column<any, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
-          const handleFilterChange = (param: {
+          const handleFilterChange = ({
+            name,
+            value,
+          }: {
             name: string;
             value: string[];
           }) => {
