@@ -50,7 +50,8 @@ const routes: Route[] = [
   },
   {
     name: "Funcionários",
-    href: (params) => `/escola/${params.schoolSlug}/funcionarios`,
+    href: (params) =>
+      `/escola/${params.schoolSlug}/administrativo/funcionarios`,
   },
 ];
 

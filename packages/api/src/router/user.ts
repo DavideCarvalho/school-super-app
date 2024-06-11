@@ -182,7 +182,6 @@ export const userRouter = createTRPCRouter({
   deleteById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         userId: z.string(),
       }),
     )
