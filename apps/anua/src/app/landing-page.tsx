@@ -681,6 +681,43 @@ export function Features() {
           <div>
             <div className="relative mx-auto flex items-center justify-center">
               <svg
+                className="text-gray-100"
+                width="65"
+                height="70"
+                viewBox="0 0 65 70"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>Icone</title>
+                <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
+              </svg>
+              <svg
+                className="absolute h-9 w-9 text-gray-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <title>Icone</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 className="mt-8 text-lg font-semibold text-black">Cantina</h3>
+            <p className="mt-4 text-base text-gray-600">
+              De a sua cantina um sistema para que ela controle produtos, vendas
+              e esteja ciente de todos os produtos que seus alunos mais
+              consomem!
+            </p>
+          </div>
+
+          <div>
+            <div className="relative mx-auto flex items-center justify-center">
+              <svg
                 className="text-purple-100"
                 width="66"
                 height="68"
@@ -715,42 +752,6 @@ export function Features() {
             </h3>
             <p className="mt-4 text-base text-gray-600">
               Saiba exatamente o que você precisa fazer em ordem de prioridade
-            </p>
-          </div>
-
-          <div>
-            <div className="relative mx-auto flex items-center justify-center">
-              <svg
-                className="text-gray-100"
-                width="65"
-                height="70"
-                viewBox="0 0 65 70"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <title>Icone</title>
-                <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
-              </svg>
-              <svg
-                className="absolute h-9 w-9 text-gray-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <title>Icone</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-8 text-lg font-semibold text-black">Cantina</h3>
-            <p className="mt-4 text-base text-gray-600">
-              De a sua cantina um sistema para que ela controle tudo! Produtos,
-              vendas, e muito mais!
             </p>
           </div>
 
