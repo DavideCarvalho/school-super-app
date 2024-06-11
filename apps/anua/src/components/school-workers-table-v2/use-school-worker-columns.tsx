@@ -1,9 +1,12 @@
 import type { Column } from "@tanstack/react-table";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
 import type { RouterOutputs } from "@acme/api";
+import { Button } from "@acme/ui/button";
 import {
   MultiSelectFilter,
   multiSelectFilterFn,
@@ -110,6 +113,34 @@ export function useSchoolWorkerColumns() {
             />
           );
         },
+      },
+    }),
+    columnHelper.display({
+      id: "actions",
+      cell: ({ row }) => {
+        let hashRoute = `editar-funcionario?funcionario=${row.original.slug}`;
+        if (row.original.Role.name === "TEACHER") {
+          hashRoute = `editar-professor?professor=${row.original.slug}`;
+        }
+        return (
+          <div className="flex items-center gap-2">
+            <Link href={`${pathname}?${searchParams?.toString()}#${hashRoute}`}>
+              <Button size="sm" variant="ghost">
+                <PencilIcon className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
+              </Button>
+            </Link>
+            <Button
+              className="text-red-600 hover:text-red-800"
+              size="sm"
+              variant="ghost"
+              onClick={() => deleteWorker(row.original.id)}
+            >
+              <TrashIcon className="h-4 w-4 text-red-500" />
+              <span className="sr-only">Remover</span>
+            </Button>
+          </div>
+        );
       },
     }),
   ];

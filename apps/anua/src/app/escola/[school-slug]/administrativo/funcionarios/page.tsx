@@ -8,6 +8,7 @@ import { Button } from "@acme/ui/button";
 import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
 import { WorkersTableV2 } from "~/components/school-workers-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
+import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 import { EditWorkerModalListener } from "./_components/edit-worker-modal-listener";
 import { NewWorkerModalListener } from "./_components/new-worker-modal-listener";
 
@@ -49,6 +50,7 @@ export default async function WorkersPage({
       </div>
       <NewWorkerModalListener />
       <EditWorkerModalListener />
+      <EditTeacherModalListener />
       <Suspense>
         <WorkersTableV2 />
       </Suspense>

@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useHash } from "hooks/use-hash";
 import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
@@ -17,7 +16,6 @@ import {
 } from "@acme/ui/table";
 
 import { api } from "~/trpc/react";
-import { NewTeacherModalV2 } from "../new-teacher-modal-v2";
 import { PaginationV2 } from "../pagination-v2";
 
 const daysOfWeekToPortuguese = {

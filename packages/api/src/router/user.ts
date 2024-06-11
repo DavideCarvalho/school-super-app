@@ -76,6 +76,20 @@ export const userRouter = createTRPCRouter({
         include: { Role: true },
       });
     }),
+  findBySlug: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.user.findFirst({
+        where: {
+          slug: input.slug,
+          schoolId: ctx.session.school.id,
+          active: true,
+        },
+        include: {
+          Role: true,
+        },
+      });
+    }),
   createWorker: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

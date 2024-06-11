@@ -34,12 +34,14 @@ const schema = z.object({
 });
 
 interface EditWorkerModalV2Props {
+  userSlug: string;
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
 export function EditWorkerModalV2({
+  userSlug,
   open,
   onClickCancel,
   onClickSubmit,
@@ -57,23 +59,36 @@ export function EditWorkerModalV2({
 
   const roleId = watch("roleId");
 
+  const { data: user } = api.user.findBySlug.useQuery({
+    slug: userSlug,
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    setValue("name", user.name);
+    setValue("email", user.email);
+    setValue("roleId", user.Role.id);
+  }, [user, setValue]);
+
   const { data: roles } = api.role.getAllWorkerRoles.useQuery();
 
-  const { mutateAsync: createWorker } = api.user.createWorker.useMutation();
+  const { mutateAsync: editWorker } = api.user.editWorker.useMutation();
 
   async function onSubmit(data: z.infer<typeof schema>) {
-    const toastId = toast.loading("Criando funcionário...");
+    if (!user) return;
+    const toastId = toast.loading("Alterando funcionário...");
     try {
-      await createWorker({
+      await editWorker({
+        userId: user.id,
         name: data.name,
         email: data.email,
         roleId: data.roleId,
       });
-      toast.success("Funcionário criado com sucesso!");
+      toast.success("Funcionário alterado com sucesso!");
       reset();
       await onClickSubmit();
     } catch (e) {
-      toast.error("Erro ao criar funcionário");
+      toast.error("Erro ao alterar funcionário");
     } finally {
       toast.dismiss(toastId);
     }
@@ -84,7 +99,7 @@ export function EditWorkerModalV2({
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Criar novo funcionário</DialogTitle>
+            <DialogTitle>Alterar funcionário</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">

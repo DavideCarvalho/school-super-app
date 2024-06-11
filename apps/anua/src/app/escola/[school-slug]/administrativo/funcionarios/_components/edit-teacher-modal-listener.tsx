@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditWorkerModalV2 } from "~/components/edit-worker-modal-v2";
+import { EditTeacherModal } from "~/components/edit-teacher-modal";
 import { api } from "~/trpc/react";
 
-export function EditWorkerModalListener() {
+export function EditTeacherModalListener() {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
-  const [hashValue] = useHashQueryValue("funcionario");
+  const [hashValue] = useHashQueryValue("professor");
 
   useEffect(() => {
-    if (hash === "editar-funcionario" && hashValue) {
+    if (hash === "editar-professor" && hashValue) {
       setOpenEditTeacherModal(true);
     }
   }, [hash, hashValue]);
@@ -41,8 +41,8 @@ export function EditWorkerModalListener() {
   }
 
   return (
-    <EditWorkerModalV2
-      userSlug={hashValue ?? ""}
+    <EditTeacherModal
+      teacherSlug={hashValue ?? ""}
       open={openEditTeacherModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}
