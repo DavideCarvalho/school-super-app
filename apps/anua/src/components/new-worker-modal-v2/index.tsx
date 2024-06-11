@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -31,6 +30,10 @@ const schema = z.object({
   name: z.string(),
   email: z.string().email(),
   roleId: z.string(),
+  role: z.object({
+    id: z.string(),
+    name: z.string(),
+  }),
 });
 
 interface NewWorkerModalV2Props {
@@ -52,6 +55,10 @@ export function NewWorkerModalV2({
       name: undefined,
       email: undefined,
       roleId: undefined,
+      role: {
+        id: undefined,
+        name: undefined,
+      },
     },
   });
 
@@ -60,15 +67,25 @@ export function NewWorkerModalV2({
   const { data: roles } = api.role.getAllWorkerRoles.useQuery();
 
   const { mutateAsync: createWorker } = api.user.createWorker.useMutation();
+  const { mutateAsync: createTeacher } =
+    api.teacher.createTeacher.useMutation();
 
   async function onSubmit(data: z.infer<typeof schema>) {
     const toastId = toast.loading("Criando funcionário...");
     try {
-      await createWorker({
-        name: data.name,
-        email: data.email,
-        roleId: data.roleId,
-      });
+      if (data.role.name === "TEACHER") {
+        await createTeacher({
+          name: data.name,
+          email: data.email,
+          availabilities: [],
+        });
+      } else {
+        await createWorker({
+          name: data.name,
+          email: data.email,
+          roleId: data.roleId,
+        });
+      }
       toast.success("Funcionário criado com sucesso!");
       reset();
       await onClickSubmit();
@@ -108,7 +125,13 @@ export function NewWorkerModalV2({
                   <div className={cn("grid")}>
                     <Select
                       value={roleId}
-                      onValueChange={(value) => setValue("roleId", value)}
+                      onValueChange={(value) => {
+                        setValue("roleId", value);
+                        setValue("role", {
+                          id: value,
+                          name: roles?.find((r) => r.id === value)?.label,
+                        });
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Cargo" />
