@@ -642,6 +642,45 @@ export function Features() {
           <div>
             <div className="relative mx-auto flex items-center justify-center">
               <svg
+                className="text-gray-100"
+                width="65"
+                height="70"
+                viewBox="0 0 65 70"
+                fill="currentColor"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>Icone</title>
+                <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
+              </svg>
+              <svg
+                className="absolute h-9 w-9 text-gray-600"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <title>Icone</title>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 className="mt-8 text-lg font-semibold text-black">
+              Geração automática de calendário
+            </h3>
+            <p className="mt-4 text-base text-gray-600">
+              Fazer a grade de horários de cada turma manualmente é muito ruim
+              né? Com a geração automática de calendário, você pode ter horários
+              automáticos para cada turma!
+            </p>
+          </div>
+
+          <div>
+            <div className="relative mx-auto flex items-center justify-center">
+              <svg
                 className="text-purple-100"
                 width="66"
                 height="68"
@@ -744,7 +783,12 @@ export function Features() {
                 />
               </svg>
             </div>
-            <h3 className="mt-8 text-lg font-semibold text-black">Dashboard</h3>
+            <h3 className="mt-8 text-lg font-semibold text-black">
+              Dashboard
+              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
+                Em breve
+              </span>
+            </h3>
             <p className="mt-4 text-base text-gray-600">
               Tenha visão geral de notas, faltas, e muito mais!
             </p>
@@ -788,48 +832,6 @@ export function Features() {
             <p className="mt-4 text-base text-gray-600">
               Um canal de acesso facilitado entre escola e pais sobre o
               desenvolvimento do aluno.
-            </p>
-          </div>
-
-          <div>
-            <div className="relative mx-auto flex items-center justify-center">
-              <svg
-                className="text-gray-100"
-                width="65"
-                height="70"
-                viewBox="0 0 65 70"
-                fill="currentColor"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <title>Icone</title>
-                <path d="M64.5 26C64.5 46.4345 56.4345 70 36 70C15.5655 70 0 53.9345 0 33.5C0 13.0655 13.0655 0 33.5 0C53.9345 0 64.5 5.56546 64.5 26Z" />
-              </svg>
-              <svg
-                className="absolute h-9 w-9 text-gray-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <title>Icone</title>
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                />
-              </svg>
-            </div>
-            <h3 className="mt-8 text-lg font-semibold text-black">
-              Geração automática de calendário
-              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
-                Em breve
-              </span>
-            </h3>
-            <p className="mt-4 text-base text-gray-600">
-              Fazer a grade de horários de cada turma manualmente é muito ruim
-              né? Com a geração automática de calendário, você pode ter horários
-              automáticos para cada turma!
             </p>
           </div>
         </div>

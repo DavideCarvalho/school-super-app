@@ -9,7 +9,7 @@ import LandingPage, {
   Pricing,
 } from "./landing-page";
 
-const Home: NextPage = () => {
+export default function HomePage() {
   return (
     <>
       <Head>
@@ -37,6 +37,4 @@ const Home: NextPage = () => {
       </main>
     </>
   );
-};
-
-export default Home;
+}
