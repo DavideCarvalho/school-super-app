@@ -44,7 +44,6 @@ export function useSchoolWorkerColumns() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
   const utils = api.useUtils();
 
   const { data: roles } = api.role.getAllWorkerRoles.useQuery();
@@ -52,13 +51,33 @@ export function useSchoolWorkerColumns() {
   const columnHelper =
     createColumnHelper<RouterOutputs["user"]["allBySchoolId"][0]>();
 
-  async function deleteWorker(workerId: string) {
+  const { mutateAsync: deleteUser } = api.user.deleteById.useMutation();
+
+  async function handleDeleteWorker(workerId: string) {
     const toastId = toast.loading("Removendo funcionário...");
     try {
       await deleteUser({ userId: workerId });
       toast.success("Funcionário removido com sucesso!");
     } catch (e) {
       toast.error("Erro ao remover funcionário");
+    } finally {
+      toast.dismiss(toastId);
+      await Promise.all([
+        utils.teacher.getSchoolTeachers.invalidate(),
+        utils.teacher.countSchoolTeachers.invalidate(),
+      ]);
+    }
+  }
+
+  const { mutateAsync: deleteTeacher } = api.teacher.deleteById.useMutation();
+
+  async function handleDeleteTeacher(teacherId: string) {
+    const toastId = toast.loading("Removendo professor...");
+    try {
+      await deleteTeacher({ userId: teacherId });
+      toast.success("Professor removido com sucesso!");
+    } catch (e) {
+      toast.error("Erro ao remover professor");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
@@ -134,7 +153,11 @@ export function useSchoolWorkerColumns() {
               className="text-red-600 hover:text-red-800"
               size="sm"
               variant="ghost"
-              onClick={() => deleteWorker(row.original.id)}
+              onClick={() =>
+                row.original.Role.name === "TEACHER"
+                  ? handleDeleteTeacher(row.original.id)
+                  : handleDeleteWorker(row.original.id)
+              }
             >
               <TrashIcon className="h-4 w-4 text-red-500" />
               <span className="sr-only">Remover</span>
