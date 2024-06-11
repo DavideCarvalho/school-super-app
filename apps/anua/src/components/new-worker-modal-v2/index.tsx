@@ -54,7 +54,6 @@ export function NewWorkerModalV2({
     defaultValues: {
       name: undefined,
       email: undefined,
-      roleId: undefined,
       role: {
         id: undefined,
         name: undefined,
@@ -62,7 +61,7 @@ export function NewWorkerModalV2({
     },
   });
 
-  const roleId = watch("roleId");
+  const role = watch("role");
 
   const { data: roles } = api.role.getAllWorkerRoles.useQuery();
 
@@ -83,7 +82,7 @@ export function NewWorkerModalV2({
         await createWorker({
           name: data.name,
           email: data.email,
-          roleId: data.roleId,
+          roleId: data.role.id,
         });
       }
       toast.success("Funcionário criado com sucesso!");
@@ -124,12 +123,12 @@ export function NewWorkerModalV2({
                 <div className="grid gap-4">
                   <div className={cn("grid")}>
                     <Select
-                      value={roleId}
+                      value={role.id}
                       onValueChange={(value) => {
-                        setValue("roleId", value);
+                        if (!roles) return;
                         setValue("role", {
                           id: value,
-                          name: roles?.find((r) => r.id === value)?.label,
+                          name: roles.find((r) => r.id === value)?.label ?? "",
                         });
                       }}
                     >
@@ -162,46 +161,5 @@ export function NewWorkerModalV2({
         </form>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>icone</title>
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
-  );
-}
-
-function MinusIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <title>icone</title>
-      <path d="M5 12h14" />
-    </svg>
   );
 }
