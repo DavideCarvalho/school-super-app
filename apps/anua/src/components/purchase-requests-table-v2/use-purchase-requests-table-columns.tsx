@@ -66,7 +66,7 @@ export function usePurchaseRequestsTableColumns() {
     columnHelper.accessor("productName", {
       id: "produto",
       header: "Produto",
-      enableColumnFilter: false,
+      enableColumnFilter: true,
       enableSorting: false,
       filterFn: multiSelectFilterFn,
       meta: {
