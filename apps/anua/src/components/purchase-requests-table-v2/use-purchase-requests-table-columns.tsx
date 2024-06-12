@@ -1,6 +1,6 @@
 import type { Column } from "@tanstack/react-table";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
@@ -16,9 +16,34 @@ import { api } from "~/trpc/react";
 import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 
+export const statusesInPortuguese = [
+  "Pedido",
+  "Aprovado",
+  "Rejeitado",
+  "Comprado",
+  "Chegou",
+] as const;
+
+export const statusesEnum = [
+  "REQUESTED",
+  "APPROVED",
+  "REJECTED",
+  "BOUGHT",
+  "ARRIVED",
+] as const;
+
+const statusesMap: Record<string, string> = {};
+
+for (let i = 0; i < statusesEnum.length; i++) {
+  const status = statusesEnum[i];
+  const statusInPortuguese = statusesInPortuguese[i];
+  if (!status) continue;
+  if (!statusInPortuguese) continue;
+  statusesMap[status] = statusInPortuguese;
+}
+
 export function usePurchaseRequestsTableColumns() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const utils = api.useUtils();
 
@@ -141,7 +166,7 @@ export function usePurchaseRequestsTableColumns() {
         enableSorting: false,
       },
     ),
-    columnHelper.accessor("status", {
+    columnHelper.accessor((row) => statusesMap[row.status], {
       id: "status",
       header: "Status",
       enableColumnFilter: true,

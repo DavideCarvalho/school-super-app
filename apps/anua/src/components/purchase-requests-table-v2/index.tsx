@@ -5,7 +5,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import { usePurchaseRequestsTableColumns } from "./use-purchase-requests-table-columns";
+import {
+  statusesEnum,
+  statusesInPortuguese,
+  usePurchaseRequestsTableColumns,
+} from "./use-purchase-requests-table-columns";
 
 export function PurchaseRequestsTableV2() {
   const router = useRouter();
@@ -15,8 +19,12 @@ export function PurchaseRequestsTableV2() {
 
   const filters = [
     {
-      id: "funcao",
-      value: searchParams?.getAll("funcao"),
+      id: "produto",
+      value: searchParams?.getAll("produto"),
+    },
+    {
+      id: "status",
+      value: searchParams?.getAll("status"),
     },
   ];
 
@@ -25,14 +33,27 @@ export function PurchaseRequestsTableV2() {
     ? Number(searchParams?.get("size"))
     : 10;
 
+  const statusesFiltered = (filters[1]?.value ?? [])
+    .filter((v) => v !== "")
+    .map(
+      (status) =>
+        statusesEnum[statusesInPortuguese.findIndex((s) => s === status)],
+    )
+    .filter(Boolean) as unknown as (typeof statusesEnum)[];
+
   const { data: purchaseRequests, isLoading: isLoadingPurchaseRequests } =
     api.purchaseRequest.allBySchoolId.useQuery({
       size,
       page,
+      products: filters[0]?.length ? filters[0] : undefined,
+      statuses: statusesFiltered.length ? statusesFiltered : undefined,
     });
 
   const { data: purchaseRequestsCount } =
-    api.purchaseRequest.countAllBySchoolId.useQuery({});
+    api.purchaseRequest.countAllBySchoolId.useQuery({
+      products: filters[0]?.length ? filters[0] : undefined,
+      statuses: statusesFiltered.length ? statusesFiltered : undefined,
+    });
 
   return (
     <TableWithPagination

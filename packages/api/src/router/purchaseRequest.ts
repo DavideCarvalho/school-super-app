@@ -88,20 +88,27 @@ export const purchaseRequestRouter = createTRPCRouter({
       z.object({
         page: z.number().optional().default(1),
         size: z.number().optional().default(10),
-        status: z
-          .union([
-            z.literal("REQUESTED"),
-            z.literal("APPROVED"),
-            z.literal("REJECTED"),
-            z.literal("BOUGHT"),
-            z.literal("ARRIVED"),
-          ])
+        statuses: z
+          .array(
+            z.union([
+              z.literal("REQUESTED"),
+              z.literal("APPROVED"),
+              z.literal("REJECTED"),
+              z.literal("BOUGHT"),
+              z.literal("ARRIVED"),
+            ]),
+          )
           .optional(),
+        products: z.array(z.string()).optional(),
       }),
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.findMany({
-        where: { schoolId: ctx.session.school.id, status: input.status },
+        where: {
+          schoolId: ctx.session.school.id,
+          status: input.statuses ? { in: input.statuses } : undefined,
+          productName: input.products ? { in: input.products } : undefined,
+        },
         take: input.size,
         skip: (input.page - 1) * input.size,
       });
@@ -109,21 +116,27 @@ export const purchaseRequestRouter = createTRPCRouter({
   countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        status: z
-          .union([
-            z.literal("REQUESTED"),
-            z.literal("APPROVED"),
-            z.literal("REJECTED"),
-            z.literal("BOUGHT"),
-            z.literal("ARRIVED"),
-            z.literal("REJECTED"),
-          ])
+        statuses: z
+          .array(
+            z.union([
+              z.literal("REQUESTED"),
+              z.literal("APPROVED"),
+              z.literal("REJECTED"),
+              z.literal("BOUGHT"),
+              z.literal("ARRIVED"),
+            ]),
+          )
           .optional(),
+        products: z.array(z.string()).optional(),
       }),
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.count({
-        where: { schoolId: ctx.session.school.id, status: input.status },
+        where: {
+          schoolId: ctx.session.school.id,
+          status: input.statuses ? { in: input.statuses } : undefined,
+          productName: input.products ? { in: input.products } : undefined,
+        },
       });
     }),
   deleteById: publicProcedure
