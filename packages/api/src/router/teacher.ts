@@ -48,10 +48,17 @@ export const teacherRouter = createTRPCRouter({
             Teacher: { User: { schoolId: ctx.session.school.id } },
           },
         }),
-        ctx.prisma.teacher.delete({
+        ctx.prisma.teacher.update({
           where: {
             id: input.userId,
             User: { schoolId: ctx.session.school.id },
+          },
+          data: {
+            User: {
+              update: {
+                active: false,
+              },
+            },
           },
         }),
       ]);
