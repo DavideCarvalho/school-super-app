@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  isUserLoggedInAndAssignedToSchool,
+  publicProcedure,
+} from "../trpc";
 import { minioClient } from "../utils/minio";
 
 export const purchaseRequestRouter = createTRPCRouter({
@@ -68,12 +72,11 @@ export const purchaseRequestRouter = createTRPCRouter({
         },
       });
     }),
-  allBySchoolId: publicProcedure
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         page: z.number().optional().default(1),
-        limit: z.number().optional().default(5),
+        size: z.number().optional().default(10),
         status: z
           .union([
             z.literal("REQUESTED"),
@@ -88,15 +91,14 @@ export const purchaseRequestRouter = createTRPCRouter({
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.findMany({
-        where: { schoolId: input.schoolId, status: input.status },
-        take: input.limit,
-        skip: (input.page - 1) * input.limit,
+        where: { schoolId: ctx.session.school.id, status: input.status },
+        take: input.size,
+        skip: (input.page - 1) * input.size,
       });
     }),
-  countAllBySchoolId: publicProcedure
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         status: z
           .union([
             z.literal("REQUESTED"),
@@ -111,7 +113,7 @@ export const purchaseRequestRouter = createTRPCRouter({
     )
     .query(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.count({
-        where: { schoolId: input.schoolId, status: input.status },
+        where: { schoolId: ctx.session.school.id, status: input.status },
       });
     }),
   deleteById: publicProcedure

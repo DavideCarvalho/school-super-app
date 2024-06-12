@@ -38,11 +38,11 @@ export default async function TeachersPage({
   return (
     <HydrationBoundary state={dehydratedState}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Professores</h2>
+        <h2 className="text-xl font-semibold">Solicitações de compra</h2>
         <Link
-          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-professor`}
+          href={`${url.pathname}?${url.searchParams.toString()}#criar-solicitacao`}
         >
-          <Button>Adicionar Professor</Button>
+          <Button>Criar solicitação</Button>
         </Link>
       </div>
       <NewTeacherModalListener />

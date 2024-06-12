@@ -1,0 +1,59 @@
+"use client";
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
+
+import { api } from "~/trpc/react";
+import { usePurchaseRequestsTableColumns } from "./use-purchase-requests-table-columns";
+
+export function WorkersTableV2() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const columns = usePurchaseRequestsTableColumns();
+
+  const filters = [
+    {
+      id: "funcao",
+      value: searchParams?.getAll("funcao"),
+    },
+  ];
+
+  const page = searchParams?.has("page") ? Number(searchParams.get("page")) : 1;
+  const size = searchParams?.has("size")
+    ? Number(searchParams?.get("size"))
+    : 10;
+
+  const { data: purchaseRequests, isLoading: isLoadingPurchaseRequests } =
+    api.purchaseRequest.allBySchoolId.useQuery({
+      size,
+      page,
+    });
+
+  const { data: purchaseRequestsCount } =
+    api.purchaseRequest.countAllBySchoolId.useQuery({});
+
+  return (
+    <TableWithPagination
+      isLoading={!purchaseRequests && isLoadingPurchaseRequests}
+      data={purchaseRequest ?? []}
+      columns={columns}
+      totalCount={purchaseRequestsCount ?? 0}
+      pageIndex={page - 1}
+      pageSize={size}
+      columnFilters={filters}
+      onFilterChange={({ name, value }) => {
+        const params = new URLSearchParams(searchParams ?? undefined);
+        params.delete(name);
+        if (Array.isArray(value)) {
+          for (const v of value) params.append(name, v);
+        }
+        if (typeof value === "string" && (value as string).trim() !== "") {
+          params.append(name, value);
+        }
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+      }}
+    />
+  );
+}
