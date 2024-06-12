@@ -46,3 +46,26 @@ export const multiSelectFilterFn: FilterFn<any> = (
   if (!value.length) return true;
   return value.includes(row.getValue(id));
 };
+
+
+// export function defaultHandleFilterChange({
+//   searchParams,
+//   name,
+//   value,
+// }: {
+//   searchParams?: URLSearchParams;
+//   name: string;
+//   value: string[];
+// }) {
+//   const params = new URLSearchParams(searchParams ?? undefined);
+//   params.delete(name);
+//   if (Array.isArray(value)) {
+//     for (const v of value) params.append(name, v);
+//   }
+//   if (typeof value === "string" && (value as string).trim() !== "") {
+//     params.append(name, value);
+//   }
+//   router.replace(`${pathname}?${params.toString()}`, {
+//     scroll: false,
+//   });
+// };

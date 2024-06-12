@@ -38,14 +38,20 @@ export const purchaseRequestRouter = createTRPCRouter({
         },
       });
     }),
-  rejectPurchaseRequest: publicProcedure
+  rejectPurchaseRequest: isUserLoggedInAndAssignedToSchool
     .input(z.object({ id: z.string(), reason: z.string() }))
     .mutation(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.update({
-        where: { id: input.id },
+        where: { id: input.id, schoolId: ctx.session.school.id },
         data: { status: "REJECTED", rejectionReason: input.reason },
       });
     }),
+  getUniqueProductNames: isUserLoggedInAndAssignedToSchool.query(({ ctx }) => {
+    return ctx.prisma.purchaseRequest.findMany({
+      where: { schoolId: ctx.session.school.id },
+      distinct: ["productName"],
+    });
+  }),
   editRequestedPurchaseRequest: publicProcedure
     .input(
       z.object({

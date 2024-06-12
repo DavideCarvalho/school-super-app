@@ -37,7 +37,7 @@ export function WorkersTableV2() {
   return (
     <TableWithPagination
       isLoading={!purchaseRequests && isLoadingPurchaseRequests}
-      data={purchaseRequest ?? []}
+      data={purchaseRequests ?? []}
       columns={columns}
       totalCount={purchaseRequestsCount ?? 0}
       pageIndex={page - 1}

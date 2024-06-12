@@ -20,7 +20,8 @@ export function usePurchaseRequestsTableColumns() {
   const pathname = usePathname();
   const utils = api.useUtils();
 
-  const { data: roles } = api.role.getAllWorkerRoles.useQuery();
+  const { data: distinctProducts } =
+    api.purchaseRequest.getUniqueProductNames.useQuery();
 
   const columnHelper =
     createColumnHelper<RouterOutputs["purchaseRequest"]["allBySchoolId"][0]>();
@@ -28,12 +29,12 @@ export function usePurchaseRequestsTableColumns() {
   const { mutateAsync: deleteUser } = api.user.deleteById.useMutation();
 
   async function handleDeleteWorker(workerId: string) {
-    const toastId = toast.loading("Removendo funcionário...");
+    const toastId = toast.loading("Removendo solicitação de compra...");
     try {
       await deleteUser({ userId: workerId });
-      toast.success("Funcionário removido com sucesso!");
+      toast.success("Solicitação de compra removida com sucesso!");
     } catch (e) {
-      toast.error("Erro ao remover funcionário");
+      toast.error("Erro ao remover solicitação de compra");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
@@ -62,16 +63,10 @@ export function usePurchaseRequestsTableColumns() {
   }
 
   return [
-    columnHelper.accessor("name", {
-      id: "nome",
-      header: "Nome",
+    columnHelper.accessor("productName", {
+      id: "produto",
+      header: "Produto",
       enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.accessor((row) => rolesMap[row.Role.name] ?? row.Role.name, {
-      id: "funcao",
-      header: "Função",
-      enableColumnFilter: true,
       enableSorting: false,
       filterFn: multiSelectFilterFn,
       meta: {
@@ -79,6 +74,7 @@ export function usePurchaseRequestsTableColumns() {
           column: Column<any, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
+          // TODO: ter uma função default pra isso
           const handleFilterChange = ({
             name,
             value,
@@ -100,7 +96,9 @@ export function usePurchaseRequestsTableColumns() {
           };
           return (
             <MultiSelectFilter
-              data={roles?.map((r) => r.label) ?? []}
+              data={
+                distinctProducts?.map((product) => product.productName) ?? []
+              }
               onFilterChange={handleFilterChange}
               column={props.column}
             />
@@ -108,13 +106,52 @@ export function usePurchaseRequestsTableColumns() {
         },
       },
     }),
+    columnHelper.accessor("quantity", {
+      id: "quantidade",
+      header: "Quantidade",
+      enableColumnFilter: false,
+      enableSorting: true,
+    }),
+    columnHelper.accessor("value", {
+      id: "valor",
+      header: "Valor",
+      enableColumnFilter: false,
+      enableSorting: true,
+    }),
+    columnHelper.accessor("finalQuantity", {
+      id: "quantidade-comprada",
+      header: "Quantidade comprada",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
+    columnHelper.accessor("finalValue", {
+      id: "valor-total-comprado",
+      header: "Valor comprado",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
+    columnHelper.accessor("dueDate", {
+      id: "pra-quando",
+      header: "Pra quando?",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
+    columnHelper.accessor("estimatedArrivalDate", {
+      id: "data-de-chegada-estimada",
+      header: "Data de chegada estimada",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
+    columnHelper.accessor("arrivalDate", {
+      id: "data-de-chegada",
+      header: "Data de chegada",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
     columnHelper.display({
       id: "actions",
       cell: ({ row }) => {
-        let hashRoute = `editar-funcionario?funcionario=${row.original.slug}`;
-        if (row.original.Role.name === "TEACHER") {
-          hashRoute = `editar-professor?professor=${row.original.slug}`;
-        }
+        const hashRoute = "editar-funcionario?funcionario=oie";
         return (
           <div className="flex items-center gap-2">
             <Link href={`${pathname}?${searchParams?.toString()}#${hashRoute}`}>
