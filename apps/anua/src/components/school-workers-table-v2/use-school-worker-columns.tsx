@@ -104,34 +104,12 @@ export function useSchoolWorkerColumns() {
         filterComponent: (props: {
           column: Column<any, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
-        }) => {
-          const handleFilterChange = ({
-            name,
-            value,
-          }: {
-            name: string;
-            value: string[];
-          }) => {
-            const params = new URLSearchParams(searchParams ?? undefined);
-            params.delete(name);
-            if (Array.isArray(value)) {
-              for (const v of value) params.append(name, v);
-            }
-            if (typeof value === "string" && (value as string).trim() !== "") {
-              params.append(name, value);
-            }
-            router.replace(`${pathname}?${params.toString()}`, {
-              scroll: false,
-            });
-          };
-          return (
-            <MultiSelectFilter
-              data={roles?.map((r) => r.label) ?? []}
-              onFilterChange={handleFilterChange}
-              column={props.column}
-            />
-          );
-        },
+        }) => (
+          <MultiSelectFilter
+            data={roles?.map((r) => r.label) ?? []}
+            {...props}
+          />
+        ),
       },
     }),
     columnHelper.display({

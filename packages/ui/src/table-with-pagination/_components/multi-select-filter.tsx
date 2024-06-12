@@ -24,7 +24,7 @@ export function MultiSelectFilter({
     (option) => {
       const selectedValues = option.map((o) => o.value);
       onFilterChange({ name: column.id, value: selectedValues });
-      column.setFilterValue(selectedValues);
+      // column.setFilterValue(selectedValues);
     },
     [onFilterChange, column],
   );
@@ -46,7 +46,6 @@ export const multiSelectFilterFn: FilterFn<any> = (
   if (!value.length) return true;
   return value.includes(row.getValue(id));
 };
-
 
 // export function defaultHandleFilterChange({
 //   searchParams,

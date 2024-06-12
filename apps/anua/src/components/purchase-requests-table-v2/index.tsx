@@ -7,7 +7,7 @@ import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-p
 import { api } from "~/trpc/react";
 import { usePurchaseRequestsTableColumns } from "./use-purchase-requests-table-columns";
 
-export function WorkersTableV2() {
+export function PurchaseRequestsTableV2() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();

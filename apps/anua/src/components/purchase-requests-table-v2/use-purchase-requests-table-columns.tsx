@@ -73,37 +73,12 @@ export function usePurchaseRequestsTableColumns() {
         filterComponent: (props: {
           column: Column<any, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
-        }) => {
-          // TODO: ter uma função default pra isso
-          const handleFilterChange = ({
-            name,
-            value,
-          }: {
-            name: string;
-            value: string[];
-          }) => {
-            const params = new URLSearchParams(searchParams ?? undefined);
-            params.delete(name);
-            if (Array.isArray(value)) {
-              for (const v of value) params.append(name, v);
-            }
-            if (typeof value === "string" && (value as string).trim() !== "") {
-              params.append(name, value);
-            }
-            router.replace(`${pathname}?${params.toString()}`, {
-              scroll: false,
-            });
-          };
-          return (
-            <MultiSelectFilter
-              data={
-                distinctProducts?.map((product) => product.productName) ?? []
-              }
-              onFilterChange={handleFilterChange}
-              column={props.column}
-            />
-          );
-        },
+        }) => (
+          <MultiSelectFilter
+            data={distinctProducts?.map((product) => product.productName) ?? []}
+            {...props}
+          />
+        ),
       },
     }),
     columnHelper.accessor("quantity", {
@@ -147,6 +122,25 @@ export function usePurchaseRequestsTableColumns() {
       header: "Data de chegada",
       enableColumnFilter: false,
       enableSorting: false,
+    }),
+    columnHelper.accessor("status", {
+      id: "status",
+      header: "Status",
+      enableColumnFilter: true,
+      enableSorting: false,
+      meta: {
+        filterComponent: (props: {
+          column: Column<any, unknown>;
+          onFilterChange: (param: { name: string; value: string[] }) => void;
+        }) => {
+          return (
+            <MultiSelectFilter
+              data={["REQUESTED", "APPROVED", "REJECTED", "BOUGHT", "ARRIVED"]}
+              {...props}
+            />
+          );
+        },
+      },
     }),
     columnHelper.display({
       id: "actions",

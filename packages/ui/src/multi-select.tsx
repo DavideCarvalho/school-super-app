@@ -90,10 +90,7 @@ export function MultiSelect({
             onBlur={() => setOpen(false)}
             onFocus={() => setOpen(true)}
             placeholder={selected.length ? "" : placeholder}
-            className={cn(
-              "ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground",
-              selected.length ? "w-[0px]" : "",
-            )}
+            className="ml-2 w-full flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
           />
         </div>
       </div>

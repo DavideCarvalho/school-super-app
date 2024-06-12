@@ -90,7 +90,6 @@ export const purchaseRequestRouter = createTRPCRouter({
             z.literal("REJECTED"),
             z.literal("BOUGHT"),
             z.literal("ARRIVED"),
-            z.literal("REJECTED"),
           ])
           .optional(),
       }),
