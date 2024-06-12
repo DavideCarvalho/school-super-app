@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditTeacherModal } from "~/components/edit-teacher-modal";
+import { EditRequestedPurchaseRequestModalV2 } from "~/components/edit-requested-purchase-request-modal-v2";
 import { api } from "~/trpc/react";
 
-export function EditTeacherModalListener() {
+export function EditPurchaseRequestModalListener() {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
   const [hash, setHash] = useHash();
-  const [hashValue] = useHashQueryValue("professor");
+  const [hashValue] = useHashQueryValue("solicitacao");
 
   useEffect(() => {
-    if (hash === "editar-professor" && hashValue) {
+    if (hash === "editar-solicitacao" && hashValue) {
       setOpenEditTeacherModal(true);
     }
   }, [hash, hashValue]);
@@ -23,8 +23,8 @@ export function EditTeacherModalListener() {
   async function handleOnClickSubmit() {
     setOpenEditTeacherModal(false);
     await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
+      utils.purchaseRequest.allBySchoolId.invalidate(),
+      utils.purchaseRequest.countAllBySchoolId.invalidate(),
       utils.teacher.findBySlug.invalidate(),
     ]);
     setHash("");
@@ -33,16 +33,16 @@ export function EditTeacherModalListener() {
   async function handleOnClickCancel() {
     setOpenEditTeacherModal(false);
     await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
+      utils.purchaseRequest.allBySchoolId.invalidate(),
+      utils.purchaseRequest.countAllBySchoolId.invalidate(),
       utils.teacher.findBySlug.invalidate(),
     ]);
     setHash("");
   }
 
   return (
-    <EditTeacherModal
-      teacherSlug={hashValue ?? ""}
+    <EditRequestedPurchaseRequestModalV2
+      purchaseRequestId={hashValue ?? ""}
       open={openEditTeacherModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

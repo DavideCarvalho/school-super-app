@@ -6,10 +6,9 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Button } from "@acme/ui/button";
 
 import { PurchaseRequestsTableV2 } from "~/components/purchase-requests-table-v2";
-import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
-import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
-import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
+import { EditPurchaseRequestModalListener } from "./_components/edit-purchase-request-modal-listener";
+import { NewPurchaseRequestModalListener } from "./_components/new-purchase-request-modal-listener";
 
 export default async function TeachersPage({
   params,
@@ -46,8 +45,8 @@ export default async function TeachersPage({
           <Button>Criar solicitação</Button>
         </Link>
       </div>
-      <NewTeacherModalListener />
-      <EditTeacherModalListener />
+      <EditPurchaseRequestModalListener />
+      <NewPurchaseRequestModalListener />
       <Suspense>
         <PurchaseRequestsTableV2 />
       </Suspense>

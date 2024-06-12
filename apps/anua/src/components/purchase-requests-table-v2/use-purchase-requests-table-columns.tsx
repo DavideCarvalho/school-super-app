@@ -13,6 +13,8 @@ import {
 } from "@acme/ui/table-with-pagination/_components/multi-select-filter";
 
 import { api } from "~/trpc/react";
+import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
+import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 
 export function usePurchaseRequestsTableColumns() {
   const searchParams = useSearchParams();
@@ -85,44 +87,60 @@ export function usePurchaseRequestsTableColumns() {
       id: "quantidade",
       header: "Quantidade",
       enableColumnFilter: false,
-      enableSorting: true,
+      enableSorting: false,
     }),
-    columnHelper.accessor("value", {
+    columnHelper.accessor((row) => brazilianRealFormatter(row.value), {
       id: "valor",
       header: "Valor",
       enableColumnFilter: false,
-      enableSorting: true,
-    }),
-    columnHelper.accessor("finalQuantity", {
-      id: "quantidade-comprada",
-      header: "Quantidade comprada",
-      enableColumnFilter: false,
       enableSorting: false,
     }),
-    columnHelper.accessor("finalValue", {
-      id: "valor-total-comprado",
-      header: "Valor comprado",
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.accessor("dueDate", {
+    columnHelper.accessor(
+      (row) => (row.finalQuantity ? "finalQuantity" : "-"),
+      {
+        id: "quantidade-comprada",
+        header: "Quantidade comprada",
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ),
+    columnHelper.accessor(
+      (row) => (row.finalValue ? brazilianRealFormatter(row.finalValue) : "-"),
+      {
+        id: "valor-total-comprado",
+        header: "Valor comprado",
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ),
+    columnHelper.accessor((row) => brazilianDateFormatter(row.dueDate), {
       id: "pra-quando",
       header: "Pra quando?",
       enableColumnFilter: false,
       enableSorting: false,
     }),
-    columnHelper.accessor("estimatedArrivalDate", {
-      id: "data-de-chegada-estimada",
-      header: "Data de chegada estimada",
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.accessor("arrivalDate", {
-      id: "data-de-chegada",
-      header: "Data de chegada",
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
+    columnHelper.accessor(
+      (row) =>
+        row.estimatedArrivalDate
+          ? brazilianDateFormatter(row.estimatedArrivalDate)
+          : "-",
+      {
+        id: "data-de-chegada-estimada",
+        header: "Data de chegada estimada",
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ),
+    columnHelper.accessor(
+      (row) =>
+        row.arrivalDate ? brazilianDateFormatter(row.arrivalDate) : "-",
+      {
+        id: "data-de-chegada",
+        header: "Data de chegada",
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ),
     columnHelper.accessor("status", {
       id: "status",
       header: "Status",
@@ -135,7 +153,7 @@ export function usePurchaseRequestsTableColumns() {
         }) => {
           return (
             <MultiSelectFilter
-              data={["REQUESTED", "APPROVED", "REJECTED", "BOUGHT", "ARRIVED"]}
+              data={["Pedido", "Aprovado", "Rejeitado", "Comprado", "Chegou"]}
               {...props}
             />
           );
@@ -145,7 +163,7 @@ export function usePurchaseRequestsTableColumns() {
     columnHelper.display({
       id: "actions",
       cell: ({ row }) => {
-        const hashRoute = "editar-funcionario?funcionario=oie";
+        const hashRoute = `editar-solicitacao?solicitacao=${row.original.id}`;
         return (
           <div className="flex items-center gap-2">
             <Link href={`${pathname}?${searchParams?.toString()}#${hashRoute}`}>

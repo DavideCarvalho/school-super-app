@@ -8,10 +8,16 @@ import {
 import { minioClient } from "../utils/minio";
 
 export const purchaseRequestRouter = createTRPCRouter({
-  create: publicProcedure
+  findById: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.purchaseRequest.findUnique({
+        where: { id: input.id },
+      });
+    }),
+  create: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         productName: z.string(),
         quantity: z.number(),
         unitValue: z.number(),
@@ -19,18 +25,17 @@ export const purchaseRequestRouter = createTRPCRouter({
         dueDate: z.date(),
         productUrl: z.string().optional(),
         description: z.string().optional(),
-        requestingUserId: z.string(),
       }),
     )
     .mutation(({ ctx, input }) => {
       return ctx.prisma.purchaseRequest.create({
         data: {
-          schoolId: input.schoolId,
+          schoolId: ctx.session.school.id,
           productName: input.productName,
           quantity: input.quantity,
           productUrl: input.productUrl,
           dueDate: input.dueDate,
-          requestingUserId: input.requestingUserId,
+          requestingUserId: ctx.session.user.id,
           unitValue: input.unitValue,
           value: input.value,
           description: input.description,
