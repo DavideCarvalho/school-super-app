@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewTeacherModalV2 } from "~/components/new-teacher-modal-v2";
+import { NewTeacherModal } from "~/app/escola/[school-slug]/professores/containers/new-teacher-modal";
 import { api } from "~/trpc/react";
 
 export function NewTeacherModalListener() {
@@ -37,7 +37,7 @@ export function NewTeacherModalListener() {
   }
 
   return (
-    <NewTeacherModalV2
+    <NewTeacherModal
       open={openNewTeacherModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

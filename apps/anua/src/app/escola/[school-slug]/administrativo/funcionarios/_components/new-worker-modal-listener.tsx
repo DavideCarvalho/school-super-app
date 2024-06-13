@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewWorkerModalV2 } from "~/components/new-worker-modal-v2";
 import { api } from "~/trpc/react";
+import { NewWorkerModal } from "../containers/new-worker-modal";
 
 export function NewWorkerModalListener() {
   const [openNewWorkerModal, setOpenNewWorkerModal] = useState(false);
@@ -37,7 +37,7 @@ export function NewWorkerModalListener() {
   }
 
   return (
-    <NewWorkerModalV2
+    <NewWorkerModal
       open={openNewWorkerModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

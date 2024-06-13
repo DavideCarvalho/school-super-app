@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditCanteenItemModalV2 } from "~/components/edit-canteen-item-modal";
 import { api } from "~/trpc/react";
+import { EditCanteenItemModal } from "../containers/edit-canteen-item-modal";
 
 interface EditCanteenItemModalListenerProps {
   canteenId: string;
@@ -47,7 +47,7 @@ export function EditCanteenItemModalListener({
   }
 
   return (
-    <EditCanteenItemModalV2
+    <EditCanteenItemModal
       canteenId={canteenId}
       canteenItemId={hashValue ?? ""}
       open={openEditCanteenItemModal}

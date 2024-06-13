@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditTeacherModal } from "~/components/edit-teacher-modal";
 import { api } from "~/trpc/react";
+import { EditTeacherModal } from "../containers/edit-teacher-modal";
 
 export function EditTeacherModalListener() {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);

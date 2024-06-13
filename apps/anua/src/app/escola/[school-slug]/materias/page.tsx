@@ -5,10 +5,10 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { SubjectsTableV2 } from "~/components/school-subjects-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditSubjectModalListener } from "./_components/edit-subject-modal-listener";
 import { NewSubjectModalListener } from "./_components/new-subject-modal-listener";
+import { SubjectsTable } from "./containers/school-subjects-table";
 
 export default async function SubjectsPage({
   params,
@@ -49,7 +49,7 @@ export default async function SubjectsPage({
       <NewSubjectModalListener />
       <EditSubjectModalListener />
       <Suspense>
-        <SubjectsTableV2 />
+        <SubjectsTable />
       </Suspense>
     </HydrationBoundary>
   );

@@ -5,7 +5,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
+import { TeachersTable } from "~/app/escola/[school-slug]/professores/containers/school-teachers-table";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
@@ -48,7 +48,7 @@ export default async function FilesPage({
       <NewTeacherModalListener />
       <EditTeacherModalListener />
       <Suspense>
-        <TeachersTableV2 />
+        <TeachersTable />
       </Suspense>
     </HydrationBoundary>
   );

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditTeacherModal } from "~/components/edit-teacher-modal";
+import { EditTeacherModal } from "~/app/escola/[school-slug]/professores/containers/edit-teacher-modal";
 import { api } from "~/trpc/react";
 
 export function EditTeacherModalListener() {

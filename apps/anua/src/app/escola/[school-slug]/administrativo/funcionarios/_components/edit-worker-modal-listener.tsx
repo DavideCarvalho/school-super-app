@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditWorkerModalV2 } from "~/components/edit-worker-modal-v2";
 import { api } from "~/trpc/react";
+import { EditWorkerModal } from "../containers/edit-worker-modal";
 
 export function EditWorkerModalListener() {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
@@ -41,7 +41,7 @@ export function EditWorkerModalListener() {
   }
 
   return (
-    <EditWorkerModalV2
+    <EditWorkerModal
       userSlug={hashValue ?? ""}
       open={openEditTeacherModal}
       onClickSubmit={handleOnClickSubmit}

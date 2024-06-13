@@ -7,7 +7,6 @@ import { prisma } from "@acme/db";
 import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
-import { EditCanteenItemModalListener } from "./_components/edit-canteen-item-modal-listener";
 import { NewCanteenSellModalListener } from "./_components/new-canteen-sell-modal-listener";
 import { CanteenSellsTable } from "./containers/school-canteen-sells-table";
 
@@ -59,7 +58,6 @@ export default async function CanteenSeelsPage({
       </div>
 
       <NewCanteenSellModalListener canteenId={canteen.id} />
-      <EditCanteenItemModalListener canteenId={canteen.id} />
 
       <Suspense>
         <CanteenSellsTable canteenId={canteen.id} />

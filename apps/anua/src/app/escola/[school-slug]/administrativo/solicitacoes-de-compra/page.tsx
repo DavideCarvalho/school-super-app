@@ -5,10 +5,10 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { PurchaseRequestsTableV2 } from "~/components/purchase-requests-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditPurchaseRequestModalListener } from "./_components/edit-purchase-request-modal-listener";
 import { NewPurchaseRequestModalListener } from "./_components/new-purchase-request-modal-listener";
+import { PurchaseRequestsTableV2 } from "./containers/purchase-requests-table";
 
 export default async function TeachersPage({
   params,
@@ -29,6 +29,7 @@ export default async function TeachersPage({
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
+  // TODO: Dar prefetch para PurchaseRequests
   await helper.teacher.getSchoolTeachers.prefetch({
     page: Number(url.searchParams.get("page")),
     limit: Number(url.searchParams.get("limit")),

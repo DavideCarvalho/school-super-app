@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewPurchaseRequestModalV2 } from "~/components/new-purchase-request-modal-v2";
 import { api } from "~/trpc/react";
+import { NewPurchaseRequestModal } from "../containers/new-purchase-request-modal";
 
 export function NewPurchaseRequestModalListener() {
   const [openNewPurchaseRequestModal, setOpenNewPurchaseRequestModal] =
@@ -38,7 +38,7 @@ export function NewPurchaseRequestModalListener() {
   }
 
   return (
-    <NewPurchaseRequestModalV2
+    <NewPurchaseRequestModal
       open={openNewPurchaseRequestModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

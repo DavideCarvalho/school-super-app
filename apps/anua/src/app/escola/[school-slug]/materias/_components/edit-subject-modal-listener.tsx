@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditSubjectModalV2 } from "~/components/edit-subject-modal-v2";
 import { api } from "~/trpc/react";
+import { EditSubjectModal } from "../containers/edit-subject-modal";
 
 export function EditSubjectModalListener() {
   const [openEditSubjectModal, setOpenEditSubjectModal] = useState(false);
@@ -40,7 +40,7 @@ export function EditSubjectModalListener() {
   }
 
   return (
-    <EditSubjectModalV2
+    <EditSubjectModal
       subjectSlug={hashValue ?? ""}
       open={openEditSubjectModal}
       onClickSubmit={handleOnClickSubmit}

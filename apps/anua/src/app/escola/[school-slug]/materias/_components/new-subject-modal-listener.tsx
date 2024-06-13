@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewSubjectModalV2 } from "~/components/new-subject-modal-v2";
 import { api } from "~/trpc/react";
+import { NewSubjectModal } from "../containers/new-subject-modal";
 
 export function NewSubjectModalListener() {
   const [openNewTeacherModal, setOpenNewTeacherModal] = useState(false);
@@ -37,7 +37,7 @@ export function NewSubjectModalListener() {
   }
 
   return (
-    <NewSubjectModalV2
+    <NewSubjectModal
       open={openNewTeacherModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

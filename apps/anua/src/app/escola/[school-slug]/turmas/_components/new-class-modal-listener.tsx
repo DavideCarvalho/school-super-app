@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewClassModalV2 } from "~/components/new-class-modal-v2";
 import { api } from "~/trpc/react";
+import { NewClassModal } from "../containers/new-class-modal";
 
 export function NewClassModalListener() {
   const [openNewClassModal, setOpenNewClassModal] = useState(false);
@@ -37,7 +37,7 @@ export function NewClassModalListener() {
   }
 
   return (
-    <NewClassModalV2
+    <NewClassModal
       open={openNewClassModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditRequestedPurchaseRequestModalV2 } from "~/components/edit-requested-purchase-request-modal-v2";
 import { api } from "~/trpc/react";
+import { EditRequestedPurchaseRequestModal } from "../containers/edit-requested-purchase-request-modal";
 
 export function EditPurchaseRequestModalListener() {
   const [openEditTeacherModal, setOpenEditTeacherModal] = useState(false);
@@ -41,7 +41,7 @@ export function EditPurchaseRequestModalListener() {
   }
 
   return (
-    <EditRequestedPurchaseRequestModalV2
+    <EditRequestedPurchaseRequestModal
       purchaseRequestId={hashValue ?? ""}
       open={openEditTeacherModal}
       onClickSubmit={handleOnClickSubmit}

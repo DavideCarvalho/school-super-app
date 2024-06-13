@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 
-import { NewCanteenSellModalV2 } from "~/components/new-canteen-sell-modal-v2";
-import { NewCanteenItemModalV2 } from "~/components/new-canteenitem-modal-v2";
 import { api } from "~/trpc/react";
+import { NewCanteenSellModal } from "../containers/new-canteen-sell-modal";
 
 interface NewCanteenItemModalListenerProps {
   canteenId: string;
@@ -44,7 +43,7 @@ export function NewCanteenSellModalListener({
   }
 
   return (
-    <NewCanteenSellModalV2
+    <NewCanteenSellModal
       canteenId={canteenId}
       open={openNewCanteenSellModal}
       onClickSubmit={handleOnClickSubmit}
