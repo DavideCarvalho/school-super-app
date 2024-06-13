@@ -16,6 +16,7 @@ import {
 } from "@acme/ui/dialog";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
+import { MultiSelect } from "@acme/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -26,11 +27,16 @@ import {
 
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
-import { TimePickerField } from "../../../../../../components/time-picker-field";
 
 const schema = z.object({
   name: z.string(),
   email: z.string().email(),
+  subjects: z.array(
+    z.object({
+      label: z.string(),
+      value: z.string(),
+    }),
+  ),
   availability: z.array(
     z.object({
       day: z.string(),
@@ -71,6 +77,7 @@ export function EditTeacherModal({
     defaultValues: {
       name: "Carregando...",
       email: "Carregando...",
+      subjects: [],
       availability: [
         {
           day: undefined,
@@ -81,6 +88,12 @@ export function EditTeacherModal({
     },
   });
   const availabilities = watch("availability");
+  const formSubjects = watch("subjects");
+
+  const { data: subjects } = api.subject.allBySchoolId.useQuery({
+    page: 1,
+    limit: 999,
+  });
 
   const { mutateAsync: editTeacher } = api.teacher.editTeacher.useMutation();
 
@@ -88,6 +101,13 @@ export function EditTeacherModal({
     if (!teacher) return;
     setValue("name", teacher.User.name);
     setValue("email", teacher.User.email);
+    setValue(
+      "subjects",
+      teacher.Subjects.map(({ Subject }) => ({
+        label: Subject.id,
+        value: Subject.name,
+      })),
+    );
     setValue(
       "availability",
       teacher.TeacherAvailability.map((availability) => ({
@@ -164,6 +184,21 @@ export function EditTeacherModal({
                   ariaLabel="oval-loading"
                 />
               </div>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Matérias</Label>
+              <MultiSelect
+                selected={formSubjects ?? []}
+                options={
+                  subjects?.map((subject) => ({
+                    value: subject.id,
+                    label: subject.name,
+                  })) ?? []
+                }
+                onChange={(options) => {
+                  setValue("subjects", options);
+                }}
+              />
             </div>
             <div className="grid gap-4">
               <div className="grid gap-2">

@@ -17,6 +17,11 @@ export const teacherRouter = createTRPCRouter({
         include: {
           User: true,
           TeacherAvailability: true,
+          Subjects: {
+            include: {
+              Subject: true,
+            },
+          },
         },
       });
     }),
