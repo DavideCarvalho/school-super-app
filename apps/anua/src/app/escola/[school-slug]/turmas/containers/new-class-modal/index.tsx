@@ -126,29 +126,6 @@ export function NewClassModal({
                 className={cn("grid gap-4 sm:grid-cols-4")}
               >
                 <Select
-                  value={subjectWithTeacher.subject.id}
-                  onValueChange={(e) => {
-                    if (!subjects) return;
-                    const foundSubject = subjects.find((s) => s.id === e);
-                    if (!foundSubject) return;
-                    setValue(
-                      `subjectsWithTeachers.${index}.subject`,
-                      foundSubject,
-                    );
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Matéria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {subjects?.map((subject) => (
-                      <SelectItem key={subject.id} value={subject.id}>
-                        {subject.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Select
                   value={subjectWithTeacher.teacher.id}
                   onValueChange={(e) => {
                     if (!teachers) return;
@@ -169,6 +146,34 @@ export function NewClassModal({
                         {teacher.User.name}
                       </SelectItem>
                     ))}
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={subjectWithTeacher.subject.id}
+                  onValueChange={(e) => {
+                    if (!subjects) return;
+                    const foundSubject = subjects.find((s) => s.id === e);
+                    if (!foundSubject) return;
+                    setValue(
+                      `subjectsWithTeachers.${index}.subject`,
+                      foundSubject,
+                    );
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Matéria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teachers
+                      ?.find(
+                        (teacher) =>
+                          teacher.id === subjectWithTeacher.teacher.id,
+                      )
+                      ?.Subjects?.map(({ Subject }) => (
+                        <SelectItem key={Subject.id} value={Subject.id}>
+                          {Subject.name}
+                        </SelectItem>
+                      ))}
                   </SelectContent>
                 </Select>
                 <Input
