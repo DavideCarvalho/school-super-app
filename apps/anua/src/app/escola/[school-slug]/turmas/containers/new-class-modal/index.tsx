@@ -128,7 +128,7 @@ export function NewClassModal({
             </div>
             {subjectsWithTeachers.map((subjectWithTeacher, index) => (
               <div
-                key={`${subjectWithTeacher.subject.id}-${subjectWithTeacher.teacher.id}-${subjectWithTeacher.quantity}-${index}`}
+                key={`${subjectWithTeacher.subject.id}-${subjectWithTeacher.teacher.id}-${index}`}
                 className={cn("grid gap-4 sm:grid-cols-4")}
               >
                 <Select

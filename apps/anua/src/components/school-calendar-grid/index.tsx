@@ -2,10 +2,16 @@
 
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useCallback, useEffect, useState } from "react";
+import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import type { Class, TeacherAvailability } from "@acme/db";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@acme/ui/collapsible";
 
 import type {
   CalendarGridSchedule,
@@ -15,9 +21,10 @@ import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import { CalendarGrid } from "./components/calendar-grid";
+import { ClassClashForm } from "./components/class-clash-form";
 import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
-import { ScheduleRulesForm } from "./components/schedule-rules";
 import { SchoolConfigForm } from "./components/school-config-form";
+import { SubjectQuantitiesForm } from "./components/subject-quantities-form";
 
 interface SchoolCalendarGridProps {
   classId: string | undefined;
@@ -52,10 +59,14 @@ interface SchoolConfigFormValues {
     Friday: { start: string; numClasses: number; duration: number };
   };
   subjectsQuantities: Record<string, number>;
-  subjectsExclusions?: Record<string, string[]>;
+  subjectsExclusions: {
+    subjectId: string;
+    exclusions: string[];
+  }[];
 }
 
 export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
+  const [openScheduleRulesModal, setOpenScheduleRulesModal] = useState(false);
   const [newSchedule, setNewSchedule] = useState<boolean>(false);
   const form = useForm<SchoolConfigFormValues>({
     defaultValues: {
@@ -70,7 +81,7 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         Friday: { start: "07:00", numClasses: 6, duration: 50 },
       },
       subjectsQuantities: {},
-      subjectsExclusions: {},
+      subjectsExclusions: [{ subjectId: undefined, exclusions: [] }],
     },
   });
   const scheduleConfig = form.watch("scheduleConfig");
@@ -140,13 +151,30 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         classId: selectedClassId ?? "",
         generationRules: {
           subjectsQuantities,
-          subjectsExclusions: subjectsExclusions ?? {},
+          subjectsExclusions: {},
         },
       },
       {
         enabled: selectedClassId != null,
       },
     );
+
+  const { data: subjects } = api.subject.getAllSubjectsForClass.useQuery(
+    {
+      classId: selectedClassId ?? "",
+    },
+    {
+      enabled: selectedClassId != null,
+    },
+  );
+
+  useEffect(() => {
+    if (!subjects) return;
+    console.log("subjects", subjects);
+    for (const subject of subjects) {
+      form.setValue(`subjectsQuantities.${subject.id}`, 0);
+    }
+  }, [subjects, form.setValue]);
 
   const {
     data: teachersAvailabilities,
@@ -498,19 +526,30 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         />
 
         <div className="flex w-full items-center justify-center">
-          <div
-            className={cn(
-              "grid gap-4 sm:grid-cols-2 lg:grid-cols-[1fr,1fr,1fr,1fr,1fr,1fr]",
-            )}
-          >
+          <div className={cn("grid gap-4 sm:grid-cols-2 lg:grid-cols-5")}>
             <SchoolConfigForm />
           </div>
         </div>
 
-        <div className="flex w-full items-center justify-center">
-          <div>
-            <ScheduleRulesForm />
-          </div>
+        <div>
+          <Collapsible>
+            <CollapsibleTrigger
+              onClick={() => setOpenScheduleRulesModal(!openScheduleRulesModal)}
+            >
+              <div className="mt-5 flex w-full items-start justify-start text-left font-semibold">
+                Ver configuração avançada{" "}
+                {openScheduleRulesModal ? (
+                  <ArrowDownIcon className="h-6" />
+                ) : (
+                  <ArrowRightIcon className="h-6" />
+                )}
+              </div>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SubjectQuantitiesForm />
+              <ClassClashForm />
+            </CollapsibleContent>
+          </Collapsible>
         </div>
 
         <div className="flex justify-end gap-2">

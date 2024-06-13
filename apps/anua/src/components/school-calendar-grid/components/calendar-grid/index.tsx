@@ -1,5 +1,5 @@
 import type { DragEndEvent } from "@dnd-kit/core";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import {
   closestCenter,
   DndContext,
