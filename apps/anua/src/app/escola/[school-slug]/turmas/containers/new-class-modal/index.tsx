@@ -16,6 +16,7 @@ import {
 } from "@acme/ui/dialog";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
+import { MultiSelect } from "@acme/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -35,11 +36,16 @@ const schema = z
           id: z.string(),
           name: z.string(),
         }),
+        subjects: z.array(
+          z.object({
+            id: z.string(),
+            name: z.string(),
+          }),
+        ),
         teacher: z.object({
           id: z.string(),
           name: z.string(),
         }),
-        quantity: z.number().min(1),
       }),
     ),
   })
@@ -87,9 +93,9 @@ export function NewClassModal({
         name: data.name,
         subjectsWithTeachers: data.subjectsWithTeachers.map(
           (subjectWithTeacher) => ({
-            subjectId: subjectWithTeacher.subject.id,
+            subjectIds: subjectWithTeacher.subjects.map((s) => s.id),
             teacherId: subjectWithTeacher.teacher.id,
-            quantity: subjectWithTeacher.quantity,
+            quantity: 0,
           }),
         ),
       });
@@ -148,39 +154,30 @@ export function NewClassModal({
                     ))}
                   </SelectContent>
                 </Select>
-                <Select
-                  value={subjectWithTeacher.subject.id}
-                  onValueChange={(e) => {
-                    if (!subjects) return;
-                    const foundSubject = subjects.find((s) => s.id === e);
-                    if (!foundSubject) return;
+                <MultiSelect
+                  selected={
+                    subjectWithTeacher?.subjects?.map((subject) => {
+                      return {
+                        label: subject.name,
+                        value: subject.id,
+                      };
+                    }) ?? []
+                  }
+                  options={
+                    subjects?.map((subject) => ({
+                      value: subject.id,
+                      label: subject.name,
+                    })) ?? []
+                  }
+                  onChange={(options) => {
                     setValue(
-                      `subjectsWithTeachers.${index}.subject`,
-                      foundSubject,
+                      `subjectsWithTeachers.${index}.subjects`,
+                      options.map((option) => ({
+                        id: option.value,
+                        name: option.label,
+                      })),
                     );
                   }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Matéria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {teachers
-                      ?.find(
-                        (teacher) =>
-                          teacher.id === subjectWithTeacher.teacher.id,
-                      )
-                      ?.Subjects?.map(({ Subject }) => (
-                        <SelectItem key={Subject.id} value={Subject.id}>
-                          {Subject.name}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  type="number"
-                  {...register(`subjectsWithTeachers.${index}.quantity`, {
-                    valueAsNumber: true,
-                  })}
                 />
                 <Button
                   type="button"

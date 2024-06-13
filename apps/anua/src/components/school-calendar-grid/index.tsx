@@ -16,6 +16,7 @@ import { api } from "~/trpc/react";
 import { Button } from "../ui/button";
 import { CalendarGrid } from "./components/calendar-grid";
 import { GenerateNewCalendarApproveModal } from "./components/generate-new-calendar-approve-modal";
+import { ScheduleRulesForm } from "./components/schedule-rules";
 import { SchoolConfigForm } from "./components/school-config-form";
 
 interface SchoolCalendarGridProps {
@@ -50,6 +51,8 @@ interface SchoolConfigFormValues {
     Thursday: { start: string; numClasses: number; duration: number };
     Friday: { start: string; numClasses: number; duration: number };
   };
+  subjectsQuantities: Record<string, number>;
+  subjectsExclusions?: Record<string, string[]>;
 }
 
 export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
@@ -66,12 +69,16 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         Thursday: { start: "07:00", numClasses: 6, duration: 50 },
         Friday: { start: "07:00", numClasses: 6, duration: 50 },
       },
+      subjectsQuantities: {},
+      subjectsExclusions: {},
     },
   });
   const scheduleConfig = form.watch("scheduleConfig");
   const fixedClasses = form.watch("fixedClasses");
   const selectedClass = form.watch("selectedClass");
   const selectedClassId = form.watch("selectedClassId");
+  const subjectsQuantities = form.watch("subjectsQuantities");
+  const subjectsExclusions = form.watch("subjectsExclusions");
   const [openGenerateNewCalendarModal, setOpenGenerateNewCalendarModal] =
     useState(false);
 
@@ -131,6 +138,10 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         fixedClasses,
         scheduleConfig,
         classId: selectedClassId ?? "",
+        generationRules: {
+          subjectsQuantities,
+          subjectsExclusions: subjectsExclusions ?? {},
+        },
       },
       {
         enabled: selectedClassId != null,
@@ -493,6 +504,12 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
             )}
           >
             <SchoolConfigForm />
+          </div>
+        </div>
+
+        <div className="flex w-full items-center justify-center">
+          <div>
+            <ScheduleRulesForm />
           </div>
         </div>
 

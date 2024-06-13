@@ -54,7 +54,7 @@ export const classRouter = createTRPCRouter({
         name: z.string(),
         subjectsWithTeachers: z.array(
           z.object({
-            subjectId: z.string(),
+            subjectIds: z.array(z.string()),
             teacherId: z.string(),
             quantity: z.number().min(1),
           }),
@@ -67,20 +67,14 @@ export const classRouter = createTRPCRouter({
           name: input.name,
           slug: slugify(input.name),
           schoolId: ctx.session.school.id,
-          SubjectClass: {
-            createMany: {
-              data: input.subjectsWithTeachers.map((subjectWithTeacher) => ({
-                subjectId: subjectWithTeacher.subjectId,
-                quantity: subjectWithTeacher.quantity,
-              })),
-            },
-          },
           TeacherHasClass: {
             createMany: {
-              data: input.subjectsWithTeachers.map((subjectWithTeacher) => ({
-                teacherId: subjectWithTeacher.teacherId,
-                subjectId: subjectWithTeacher.subjectId,
-              })),
+              data: input.subjectsWithTeachers.flatMap((subjectWithTeacher) =>
+                subjectWithTeacher.subjectIds.map((subjectId) => ({
+                  teacherId: subjectWithTeacher.teacherId,
+                  subjectId,
+                })),
+              ),
             },
           },
         },

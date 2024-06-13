@@ -73,6 +73,19 @@ export const subjectRouter = createTRPCRouter({
         where: { id: input.subjectId },
       });
     }),
+  getAllSubjectsForClass: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ classId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.subject.findMany({
+        where: {
+          TeacherHasClass: {
+            some: {
+              classId: input.classId,
+            },
+          },
+        },
+      });
+    }),
   updateById: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

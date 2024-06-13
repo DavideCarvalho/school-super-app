@@ -39,6 +39,10 @@ export const schoolRouter = createTRPCRouter({
           Thursday: scheduleConfigSchema,
           Friday: scheduleConfigSchema,
         }),
+        generationRules: z.object({
+          subjectsQuantities: z.record(z.number()),
+          subjectsExclusions: z.record(z.array(z.string())),
+        }),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -47,6 +51,7 @@ export const schoolRouter = createTRPCRouter({
         input.classId,
         input.fixedClasses,
         input.scheduleConfig,
+        input.generationRules,
       );
       return schedule;
     }),
@@ -203,6 +208,11 @@ export const schoolRouter = createTRPCRouter({
 
 type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
 
+type GenerationRules = {
+  subjectsQuantities: Record<string, number>; // Quantidade de aulas por matéria
+  subjectsExclusions?: Record<string, string[]>; // Matérias que não podem estar no mesmo dia
+};
+
 // Definição dos tipos
 interface TimeSlot {
   startTime: string;
@@ -242,21 +252,16 @@ async function generateSchoolSchedule(
   classId: string,
   fixedClasses: string[],
   scheduleConfig: ScheduleConfig,
+  generationRules: GenerationRules,
 ): Promise<Schedule> {
   const teachers = await prisma.teacher.findMany({
     where: {
       User: {
-        schoolId,
+        schoolId: schoolId,
       },
-      TeacherAvailability: {
+      Classes: {
         some: {
-          Teacher: {
-            Classes: {
-              some: {
-                classId,
-              },
-            },
-          },
+          classId: classId,
         },
       },
     },
@@ -273,7 +278,7 @@ async function generateSchoolSchedule(
     await prisma.teacherHasClass
       .findMany({
         where: {
-          classId,
+          classId: classId,
         },
         include: {
           Subject: true,
@@ -282,8 +287,10 @@ async function generateSchoolSchedule(
       .then((teacherHasClasses) =>
         teacherHasClasses.map((thc) => ({
           ...thc.Subject,
-          subjectQuantity: thc.subjectQuantity,
-          remainingLessons: thc.subjectQuantity,
+          subjectQuantity:
+            generationRules.subjectsQuantities[thc.subjectId] ?? 0,
+          remainingLessons:
+            generationRules.subjectsQuantities[thc.subjectId] ?? 0,
         })),
       );
 
@@ -327,7 +334,7 @@ async function generateSchoolSchedule(
     subject.remainingLessons--;
   }
 
-  // Continuar a geração do calendário respeitando a configuração do horário
+  // Continuar a geração do calendário respeitando a configuração do horário e regras de geração
   for (const day of daysOfWeek) {
     const dayConfig = scheduleConfig[day as DayOfWeek];
     if (!dayConfig) continue; // Ignorar dias sem configuração
@@ -352,6 +359,7 @@ async function generateSchoolSchedule(
           day as DayOfWeek,
           timeSlot,
           schedule,
+          generationRules.subjectsExclusions,
         );
         if (!subject) continue;
 
@@ -434,6 +442,7 @@ function findRandomSubjectForTeacher(
   day: DayOfWeek,
   timeSlot: TimeSlot,
   schedule: Schedule,
+  subjectExclusions?: Record<string, string[]>,
 ): SubjectWithRemainingLessons | null | undefined {
   // Verificar se o professor está disponível no dia e horário
   const availabilityForDay = teacher.TeacherAvailability.some(
@@ -455,11 +464,22 @@ function findRandomSubjectForTeacher(
     : null;
 
   // Filtrar as matérias restantes do professor
-  const eligibleSubjects = subjects.filter(
+  let eligibleSubjects = subjects.filter(
     (sub) =>
-      teacher.TeacherHasClasses.some((thc) => thc.subjectId === sub.id) &&
+      teacher.Classes.some((thc) => thc.subjectId === sub.id) &&
       sub.remainingLessons > 0,
   );
+
+  // Verificar as exclusões de matérias
+  const existingSubjects = schedule[day]?.map((entry) => entry.Subject?.id);
+  if (subjectExclusions && existingSubjects) {
+    eligibleSubjects = eligibleSubjects.filter(
+      (sub) =>
+        !subjectExclusions[sub.id]?.some((excluded) =>
+          existingSubjects.includes(excluded),
+        ),
+    );
+  }
 
   // Priorizar a mesma matéria se houver espaço
   if (lastSubject) {

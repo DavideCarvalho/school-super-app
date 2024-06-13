@@ -154,6 +154,30 @@ model CanteenPurchase {
   itemsPurchased CanteenItemPurchased[]
 }
 
+enum CalendarSlotDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model CalendarSlot {
+  id                String          @id @default(cuid())
+  teacherHasClassId String
+  classWeekDay      CalendarSlotDay
+  startTime         DateTime        @db.Time(6)
+  minutes           Int?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  TeacherHasClass TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
+
+  @@unique([teacherHasClassId, classWeekDay, startTime])
+}
+
 model TeacherHasClass {
   id                    String   @id @default(cuid())
   teacherId             String
@@ -172,6 +196,7 @@ model TeacherHasClass {
   Subject Subject @relation(fields: [subjectId], references: [id])
 
   TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
+  CalendarSlot        CalendarSlot[]
 
   @@index([teacherId])
   @@index([classId])
@@ -200,21 +225,10 @@ model Subject {
   School                  School              @relation(fields: [schoolId], references: [id])
   File                    File[]
   quantityNeededScheduled Int                 @default(0)
-  SubjectClass            SubjectClass[]
   FixedClass              FixedClass[]
   TeacherHasSubject       TeacherHasSubject[]
 
   @@index([schoolId])
-}
-
-model SubjectClass {
-  id        String @id @default(cuid())
-  subjectId String
-  classId   String
-  quantity  Int
-
-  Subject Subject @relation(fields: [subjectId], references: [id])
-  Class   Class   @relation(fields: [classId], references: [id])
 }
 
 model File {
@@ -259,7 +273,6 @@ model Class {
   School          School            @relation(fields: [schoolId], references: [id])
   File            File[]
   Student         Student[]
-  SubjectClass    SubjectClass[]
   FixedClass      FixedClass[]
   ClassSchedule   ClassSchedule[]
 
