@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
-import { EditCanteenItemModalV2 } from "~/components/edit-canteenitem-modal";
+import { EditCanteenItemModalV2 } from "~/components/edit-canteen-item-modal";
 import { api } from "~/trpc/react";
 
 interface EditCanteenItemModalListenerProps {
