@@ -94,6 +94,7 @@ export const teacherRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         email: z.string().email(),
+        subjectIds: z.array(z.string()),
         availabilities: z.array(
           z.object({
             day: z.string(),
@@ -116,7 +117,7 @@ export const teacherRouter = createTRPCRouter({
           lastName: rest.join(" "),
           emailAddress: [input.email],
         });
-        const teacher = await ctx.prisma.teacher.create({
+        await ctx.prisma.teacher.create({
           data: {
             User: {
               create: {
@@ -128,15 +129,23 @@ export const teacherRouter = createTRPCRouter({
                 externalAuthId: createdUserOnClerk.id,
               },
             },
+            TeacherAvailability: {
+              createMany: {
+                data: input.availabilities.map((availability) => ({
+                  day: availability.day,
+                  startTime: availability.startTime,
+                  endTime: availability.endTime,
+                })),
+              },
+            },
+            Subjects: {
+              createMany: {
+                data: input.subjectIds.map((subjectId) => ({
+                  subjectId,
+                })),
+              },
+            },
           },
-        });
-        await ctx.prisma.teacherAvailability.createMany({
-          data: input.availabilities.map((availability) => ({
-            teacherId: teacher.id,
-            day: availability.day,
-            startTime: availability.startTime,
-            endTime: availability.endTime,
-          })),
         });
       } catch (error) {
         console.log(error);
@@ -253,11 +262,14 @@ export const teacherRouter = createTRPCRouter({
         include: {
           User: true,
           TeacherAvailability: true,
-          TeacherHasClasses: {
+          Classes: {
             include: {
               Class: true,
               Subject: true,
             },
+          },
+          Subjects: {
+            Subject: true,
           },
         },
       });

@@ -251,7 +251,7 @@ async function generateSchoolSchedule(
       TeacherAvailability: {
         some: {
           Teacher: {
-            TeacherHasClasses: {
+            Classes: {
               some: {
                 classId,
               },
@@ -262,7 +262,7 @@ async function generateSchoolSchedule(
     },
     include: {
       TeacherAvailability: true,
-      TeacherHasClasses: true,
+      Classes: true,
       User: true,
     },
   });
@@ -428,7 +428,7 @@ function initializeSchedule(scheduleConfig: ScheduleConfig): Schedule {
 function findRandomSubjectForTeacher(
   teacher: Teacher & {
     TeacherAvailability: TeacherAvailability[];
-    TeacherHasClasses: TeacherHasClass[];
+    Classes: TeacherHasClass[];
   },
   subjects: SubjectWithRemainingLessons[],
   day: DayOfWeek,

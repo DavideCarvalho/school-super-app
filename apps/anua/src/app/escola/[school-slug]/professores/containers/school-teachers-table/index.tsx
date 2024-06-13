@@ -96,14 +96,14 @@ export function TeachersTable() {
               >
                 <TableCell>{teacher?.User?.name ?? "-"}</TableCell>
                 <TableCell>
-                  {teacher?.TeacherHasClasses?.map(
-                    ({ Subject }) => Subject.name,
-                  )?.join(", ") ?? "-"}
+                  {teacher?.Classes?.map(({ Subject }) => Subject.name)?.join(
+                    ", ",
+                  ) ?? "-"}
                 </TableCell>
                 <TableCell>
-                  {teacher?.TeacherHasClasses?.map(
-                    ({ Class }) => Class.name,
-                  )?.join(", ") ?? "-"}
+                  {teacher?.Classes?.map(({ Class }) => Class.name)?.join(
+                    ", ",
+                  ) ?? "-"}
                 </TableCell>
                 <TableCell>
                   {teacher?.TeacherAvailability?.map(

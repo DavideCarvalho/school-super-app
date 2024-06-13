@@ -63,11 +63,12 @@ model User {
 
 model Teacher {
   id                  String                @id
-  TeacherHasClasses   TeacherHasClass[]
+  Classes             TeacherHasClass[]
   User                User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   File                File[]
   TeacherAvailability TeacherAvailability[]
   FixedClass          FixedClass[]
+  Subjects            TeacherHasSubject[]
 
   @@index([id])
 }
@@ -177,19 +178,31 @@ model TeacherHasClass {
   @@index([subjectId])
 }
 
+model TeacherHasSubject {
+  id        String @id @default(cuid())
+  teacherId String
+  subjectId String
+
+  Teacher Teacher @relation(fields: [teacherId], references: [id])
+  Subject Subject @relation(fields: [subjectId], references: [id])
+
+  @@index([teacherId, subjectId])
+}
+
 model Subject {
-  id                      String            @id @default(cuid())
+  id                      String              @id @default(cuid())
   name                    String
   slug                    String
   schoolId                String
-  createdAt               DateTime          @default(now())
-  updatedAt               DateTime          @updatedAt
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
   TeacherHasClass         TeacherHasClass[]
-  School                  School            @relation(fields: [schoolId], references: [id])
+  School                  School              @relation(fields: [schoolId], references: [id])
   File                    File[]
-  quantityNeededScheduled Int               @default(0)
+  quantityNeededScheduled Int                 @default(0)
   SubjectClass            SubjectClass[]
   FixedClass              FixedClass[]
+  TeacherHasSubject       TeacherHasSubject[]
 
   @@index([schoolId])
 }

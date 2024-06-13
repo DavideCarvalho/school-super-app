@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
+import { Combobox } from "@acme/ui/combobox";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +17,7 @@ import {
 } from "@acme/ui/dialog";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
+import { MultiSelect } from "@acme/ui/multi-select";
 import {
   Select,
   SelectContent,
@@ -30,6 +32,12 @@ import { api } from "~/trpc/react";
 const schema = z.object({
   name: z.string(),
   email: z.string().email(),
+  subjects: z.array(
+    z.object({
+      label: z.string(),
+      value: z.string(),
+    }),
+  ),
   availability: z.array(
     z.object({
       day: z.string(),
@@ -62,6 +70,7 @@ export function NewTeacherModal({
     defaultValues: {
       name: undefined,
       email: undefined,
+      subjects: undefined,
       availability: [
         {
           day: undefined,
@@ -72,6 +81,12 @@ export function NewTeacherModal({
     },
   });
   const availabilities = watch("availability");
+  const formSubjects = watch("subjects");
+
+  const { data: subjects } = api.subject.allBySchoolId.useQuery({
+    page: 1,
+    limit: 999,
+  });
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
@@ -99,6 +114,7 @@ export function NewTeacherModal({
       await createTeacher({
         name: data.name,
         email: data.email,
+        subjectIds: data.subjects.map((subject) => subject.value),
         availabilities: data.availability,
       });
       toast.success("Professor criado com sucesso!");
@@ -131,6 +147,21 @@ export function NewTeacherModal({
               <Input
                 placeholder="Digite o email do professor"
                 {...register("email")}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email">Matérias</Label>
+              <MultiSelect
+                selected={formSubjects ?? []}
+                options={
+                  subjects?.map((subject) => ({
+                    value: subject.id,
+                    label: subject.name,
+                  })) ?? []
+                }
+                onChange={(options) => {
+                  setValue("subjects", options);
+                }}
               />
             </div>
             <div className="grid gap-4">
