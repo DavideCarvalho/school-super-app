@@ -5,12 +5,12 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { TeachersTableV2 } from "~/components/school-teachers-table-v2";
-import { WorkersTableV2 } from "~/components/school-workers-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 import { EditWorkerModalListener } from "./_components/edit-worker-modal-listener";
 import { NewWorkerModalListener } from "./_components/new-worker-modal-listener";
+import { WorkersTable } from "./containers/school-workers-table";
+import { mapRolesInPortugueseToEnum } from "./containers/school-workers-table/utils";
 
 export default async function WorkersPage({
   params,
@@ -30,13 +30,20 @@ export default async function WorkersPage({
   }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
+  const page = Number(url.searchParams.get("page"));
+  const size = Number(url.searchParams.get("size"));
+  const roles = mapRolesInPortugueseToEnum(
+    (url.searchParams.getAll("funcao") ?? []).filter((v) => v !== ""),
+  );
   const helper = await createSSRHelper();
-  await helper.teacher.getSchoolTeachers.prefetch({
-    page: Number(url.searchParams.get("page")),
-    limit: Number(url.searchParams.get("size")),
+  await helper.user.allBySchoolId.prefetch({
+    page,
+    size,
+    roles,
   });
-  await helper.user.allBySchoolId.prefetch();
-  await helper.teacher.countSchoolTeachers.prefetch();
+  await helper.user.countAllBySchoolId.prefetch({
+    roles,
+  });
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>
@@ -52,7 +59,7 @@ export default async function WorkersPage({
       <EditWorkerModalListener />
       <EditTeacherModalListener />
       <Suspense>
-        <WorkersTableV2 />
+        <WorkersTable />
       </Suspense>
     </HydrationBoundary>
   );

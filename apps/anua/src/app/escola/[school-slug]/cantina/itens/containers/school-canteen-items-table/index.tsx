@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
+import { PaginationV2 } from "@acme/ui/pagination-v2";
 import {
   Table,
   TableBody,
@@ -17,15 +18,12 @@ import {
 
 import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
-import { PaginationV2 } from "../pagination-v2";
 
-interface SchoolCanteenItemsTableProps {
+interface CanteenItemsTableProps {
   canteenId: string;
 }
 
-export function CanteenItemsTableV2({
-  canteenId,
-}: SchoolCanteenItemsTableProps) {
+export function CanteenItemsTable({ canteenId }: CanteenItemsTableProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();

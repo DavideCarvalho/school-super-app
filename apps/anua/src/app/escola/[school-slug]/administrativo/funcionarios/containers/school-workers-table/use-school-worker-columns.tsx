@@ -1,6 +1,8 @@
+"use client";
+
 import type { Column } from "@tanstack/react-table";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
@@ -13,36 +15,10 @@ import {
 } from "@acme/ui/table-with-pagination/_components/multi-select-filter";
 
 import { api } from "~/trpc/react";
-
-export const rolesInPortuguese = [
-  "Diretor",
-  "Coordenador",
-  "Administrativo",
-  "Cantina",
-  "Professor",
-] as const;
-
-export const rolesEnum = [
-  "DIRECTOR",
-  "COORDINATOR",
-  "ADMINISTRATIVE",
-  "CANTEEN",
-  "TEACHER",
-] as const;
-
-const rolesMap: Record<string, string> = {};
-
-for (let i = 0; i < rolesEnum.length; i++) {
-  const role = rolesEnum[i];
-  const roleInPortuguese = rolesInPortuguese[i];
-  if (!role) continue;
-  if (!roleInPortuguese) continue;
-  rolesMap[role] = roleInPortuguese;
-}
+import { rolesMap } from "./utils";
 
 export function useSchoolWorkerColumns() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const pathname = usePathname();
   const utils = api.useUtils();
 

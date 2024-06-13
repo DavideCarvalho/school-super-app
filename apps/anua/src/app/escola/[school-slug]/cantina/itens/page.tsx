@@ -6,10 +6,10 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { prisma } from "@acme/db";
 import { Button } from "@acme/ui/button";
 
-import { CanteenItemsTableV2 } from "~/components/school-canteen-items-table-v2";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditCanteenItemModalListener } from "./_components/edit-canteen-item-modal-listener";
 import { NewCanteenItemModalListener } from "./_components/new-canteen-item-modal-listener";
+import { CanteenItemsTable } from "./containers/school-canteen-items-table";
 
 export default async function CanteenItemsPage({
   params,
@@ -61,7 +61,7 @@ export default async function CanteenItemsPage({
       <NewCanteenItemModalListener canteenId={canteen.id} />
       <EditCanteenItemModalListener canteenId={canteen.id} />
       <Suspense>
-        <CanteenItemsTableV2 canteenId={canteen.id} />
+        <CanteenItemsTable canteenId={canteen.id} />
       </Suspense>
     </HydrationBoundary>
   );

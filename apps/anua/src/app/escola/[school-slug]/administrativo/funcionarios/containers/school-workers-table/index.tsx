@@ -5,13 +5,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import {
-  rolesEnum,
-  rolesInPortuguese,
-  useSchoolWorkerColumns,
-} from "./use-school-worker-columns";
+import { useSchoolWorkerColumns } from "./use-school-worker-columns";
+import { mapRolesInPortugueseToEnum, rolesMap } from "./utils";
 
-export function WorkersTableV2() {
+export function WorkersTable() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -29,10 +26,9 @@ export function WorkersTableV2() {
     ? Number(searchParams?.get("size"))
     : 10;
 
-  const rolesFiltered = (filters[0]?.value ?? [])
-    .filter((v) => v !== "")
-    .map((role) => rolesEnum[rolesInPortuguese.findIndex((r) => r === role)])
-    .filter(Boolean) as unknown as string[];
+  const rolesFiltered = mapRolesInPortugueseToEnum(
+    (filters[0]?.value ?? []).filter((v) => v !== ""),
+  );
 
   const { data: workers, isLoading: isLoadingWorkers } =
     api.user.allBySchoolId.useQuery({

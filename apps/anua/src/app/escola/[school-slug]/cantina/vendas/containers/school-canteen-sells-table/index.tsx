@@ -11,6 +11,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@acme/ui/hover-card";
+import { PaginationV2 } from "@acme/ui/pagination-v2";
 import {
   Table,
   TableBody,
@@ -23,13 +24,12 @@ import {
 import { api } from "~/trpc/react";
 import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
-import { PaginationV2 } from "../pagination-v2";
 
 interface CanteenSellsTableProps {
   canteenId: string;
 }
 
-export function CanteenSellsTableV2({ canteenId }: CanteenSellsTableProps) {
+export function CanteenSellsTable({ canteenId }: CanteenSellsTableProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
