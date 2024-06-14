@@ -210,7 +210,7 @@ type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
 
 type GenerationRules = {
   subjectsQuantities: Record<string, number>; // Quantidade de aulas por matéria
-  subjectsExclusions?: Record<string, string[]>; // Matérias que não podem estar no mesmo dia
+  subjectsExclusions: Record<string, string[]>; // Matérias que não podem estar no mesmo dia
 };
 
 // Definição dos tipos
@@ -442,7 +442,7 @@ function findRandomSubjectForTeacher(
   day: DayOfWeek,
   timeSlot: TimeSlot,
   schedule: Schedule,
-  subjectExclusions?: Record<string, string[]>,
+  subjectExclusions: Record<string, string[]>,
 ): SubjectWithRemainingLessons | null | undefined {
   // Verificar se o professor está disponível no dia e horário
   const availabilityForDay = teacher.TeacherAvailability.some(
@@ -471,14 +471,20 @@ function findRandomSubjectForTeacher(
   );
 
   // Verificar as exclusões de matérias
-  const existingSubjects = schedule[day]?.map((entry) => entry.Subject?.id);
+  const existingSubjects = schedule[day]?.map(
+    (entry) => entry.Subject?.id,
+  ) as unknown as string[];
   if (subjectExclusions && existingSubjects) {
-    eligibleSubjects = eligibleSubjects.filter(
-      (sub) =>
-        !subjectExclusions[sub.id]?.some((excluded) =>
-          existingSubjects.includes(excluded),
-        ),
-    );
+    eligibleSubjects = eligibleSubjects.filter((sub) => {
+      const exclusions = subjectExclusions[sub.id] || [];
+      const isExcludedByExisting = existingSubjects.some((existingSubId) =>
+        (subjectExclusions[existingSubId] || []).includes(sub.id),
+      );
+      return (
+        !exclusions.some((excluded) => existingSubjects.includes(excluded)) &&
+        !isExcludedByExisting
+      );
+    });
   }
 
   // Priorizar a mesma matéria se houver espaço

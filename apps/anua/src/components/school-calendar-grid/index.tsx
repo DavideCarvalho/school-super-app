@@ -60,7 +60,10 @@ interface SchoolConfigFormValues {
   };
   subjectsQuantities: Record<string, number>;
   subjectsExclusions: {
-    subjectId: string;
+    subject: {
+      id: string;
+      name: string;
+    };
     exclusions: string[];
   }[];
 }
@@ -81,7 +84,9 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         Friday: { start: "07:00", numClasses: 6, duration: 50 },
       },
       subjectsQuantities: {},
-      subjectsExclusions: [{ subjectId: undefined, exclusions: [] }],
+      subjectsExclusions: [
+        { subject: { id: undefined, name: undefined }, exclusions: [] },
+      ],
     },
   });
   const scheduleConfig = form.watch("scheduleConfig");
@@ -151,7 +156,13 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         classId: selectedClassId ?? "",
         generationRules: {
           subjectsQuantities,
-          subjectsExclusions: {},
+          subjectsExclusions: subjectsExclusions.reduce(
+            (acc, exclusion) => {
+              acc[exclusion.subject.id] = exclusion.exclusions;
+              return acc;
+            },
+            {} as Record<string, string[]>,
+          ),
         },
       },
       {

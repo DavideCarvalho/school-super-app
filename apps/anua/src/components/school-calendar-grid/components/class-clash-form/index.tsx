@@ -24,16 +24,18 @@ export function ClassClashForm() {
   });
 
   return (
-    <div className="flex w-full flex-col items-center justify-center">
-      <Label>Confitos de aulas</Label>
-      <div className={cn("grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3")}>
-        {subjectsExclusions.map(({ subjectId, exclusions }, index) => (
+    <div className="my-5 flex w-full flex-col items-center justify-center">
+      <Label>Confito de aulas</Label>
+      <div
+        className={cn("my-5 grid w-full gap-4 sm:grid-cols-2 lg:grid-cols-3")}
+      >
+        {subjectsExclusions.map(({ subject, exclusions }, index) => (
           <div
-            key={subjectId}
+            key={subject.id}
             className="flex w-full flex-col items-center justify-center"
           >
             <Combobox
-              key={subjectId}
+              key={subject.id}
               placeholder="Matéria?"
               noValuePlaceholder="Ninguém foi encontrado"
               options={
@@ -52,9 +54,12 @@ export function ClassClashForm() {
               }
               setValue={(option) => {
                 if (!option) return;
-                setValue(`subjectsExclusions.${index}.subjectId`, option.value);
+                setValue(`subjectsExclusions.${index}.subject`, {
+                  id: option.value,
+                  name: option.label,
+                });
               }}
-              value={subjectId}
+              value={subject.name}
             />
             <MultiSelect
               selected={
@@ -65,7 +70,7 @@ export function ClassClashForm() {
               }
               options={
                 subjects
-                  ?.filter((subject) => subject.id !== subjectId)
+                  ?.filter((s) => s.id !== subject.id)
                   ?.map((subject) => ({
                     value: subject.id,
                     label: subject.name,
