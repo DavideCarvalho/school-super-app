@@ -350,6 +350,13 @@ async function generateSchoolSchedule(
         };
 
         subject.remainingLessons--;
+
+        if (
+          schedule[day as DayOfWeek].length ===
+          scheduleConfig[day as DayOfWeek].numClasses
+        ) {
+          break;
+        }
       }
     }
   }

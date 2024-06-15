@@ -3,7 +3,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
-import { format } from "date-fns";
+import { format, subHours } from "date-fns";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -287,15 +287,12 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       const daySchedule = schedule[day as keyof typeof schedule];
       if (!Array.isArray(daySchedule)) return [];
       return daySchedule
-        .map((entry) => {
-          console.log("entry", entry);
-          return {
-            teacherHasClassId: entry?.TeacherHasClass?.id,
-            classWeekDay: days.findIndex((d) => day.toLowerCase() === d),
-            startTime: entry.startTime,
-            endTime: entry.endTime,
-          };
-        })
+        .map((entry) => ({
+          teacherHasClassId: entry?.TeacherHasClass?.id,
+          classWeekDay: days.findIndex((d) => day.toLowerCase() === d),
+          startTime: entry.startTime,
+          endTime: entry.endTime,
+        }))
         .filter(({ classWeekDay }) => classWeekDay > 0);
     });
     const toastId = toast.loading("Salvando horários...");
@@ -313,11 +310,11 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       toast.dismiss(toastId);
       setOpenGenerateNewCalendarModal(false);
       setNewSchedule(false);
-      // await Promise.all([
-      //   refetchClassSchedule(),
-      //   refetchTeachersAvailabilities(),
-      //   refetchGeneratedSchedule(),
-      // ]);
+      await Promise.all([
+        refetchClassSchedule(),
+        refetchTeachersAvailabilities(),
+        refetchGeneratedSchedule(),
+      ]);
     }
   }
 
@@ -634,7 +631,7 @@ function generateBlankSchedule(
   classesDuration: number,
 ): CalendarScheduledSlot[] {
   const classes: CalendarScheduledSlot[] = [];
-  let _startTime = new Date(`1970-01-01T${startTime}:00`);
+  let _startTime = subHours(hoursToDate(startTime), 3);
   for (let i = 0; i < numClasses; i++) {
     // calculate the end time of the class
     // the endtime is the start time + the duration of the class
