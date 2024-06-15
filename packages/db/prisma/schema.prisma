@@ -79,8 +79,8 @@ model TeacherAvailability {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   day       String
-  startTime String
-  endTime   String
+  startTime DateTime @db.Time(6)
+  endTime   DateTime @db.Time(6)
 
   Teacher         Teacher           @relation(fields: [teacherId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   TeacherHasClass TeacherHasClass[]
@@ -154,26 +154,19 @@ model CanteenPurchase {
   itemsPurchased CanteenItemPurchased[]
 }
 
-enum CalendarSlotDay {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
-}
-
 model CalendarSlot {
-  id                String          @id @default(cuid())
-  teacherHasClassId String
-  classWeekDay      CalendarSlotDay
-  startTime         DateTime        @db.Time(6)
-  minutes           Int?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  id                String   @id @default(cuid())
+  teacherHasClassId String?
+  classWeekDay      Int
+  startTime         DateTime @db.Time(6)
+  endTime           DateTime @db.Time(6)
+  minutes           Int
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  calendarId        String
 
-  TeacherHasClass TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
+  TeacherHasClass TeacherHasClass? @relation(fields: [teacherHasClassId], references: [id])
+  Calendar        Calendar         @relation(fields: [calendarId], references: [id])
 
   @@unique([teacherHasClassId, classWeekDay, startTime])
 }
@@ -275,6 +268,7 @@ model Class {
   Student         Student[]
   FixedClass      FixedClass[]
   ClassSchedule   ClassSchedule[]
+  Calendar        Calendar[]
 
   @@index([schoolId])
 }
@@ -405,6 +399,20 @@ model CommentLike {
 
   User    User    @relation(fields: [userId], references: [id])
   Comment Comment @relation(fields: [commentId], references: [id])
+}
+
+model Calendar {
+  id        String   @id @default(cuid())
+  classId   String
+  name      String // Nome do calendário, por exemplo, "Calendário 2024"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isActive  Boolean  @default(true) // Flag para indicar se o calendário é o atual
+
+  Class        Class          @relation(fields: [classId], references: [id])
+  CalendarSlot CalendarSlot[]
+
+  @@index([classId])
 }
 
 model ClassSchedule {

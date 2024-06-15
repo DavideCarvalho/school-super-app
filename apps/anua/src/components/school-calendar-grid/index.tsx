@@ -3,6 +3,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
+import { format } from "date-fns";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -14,11 +15,12 @@ import {
 } from "@acme/ui/collapsible";
 
 import type {
-  CalendarGridSchedule,
-  CalendarGridScheduledClass,
+  CalendarSchedule,
+  CalendarScheduledSlot,
 } from "./components/calendar-grid";
 import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
+import { hoursToDate } from "~/utils/hours-to-date";
 import { Button } from "../ui/button";
 import { CalendarGrid } from "./components/calendar-grid";
 import { ClassClashForm } from "./components/class-clash-form";
@@ -206,7 +208,7 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
     api.school.saveSchoolCalendar.useMutation();
 
   const [tableSchedule, setTableSchedule] =
-    useState<CalendarGridSchedule>(initializeSchedule());
+    useState<CalendarSchedule>(initializeSchedule());
 
   useEffect(() => {
     // Esse useEffect só pode rodar quando
@@ -222,7 +224,7 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         acc +
         classSchedule[key as keyof typeof classSchedule].reduce(
           (acc, clasz) => {
-            if (!clasz.Teacher || !clasz.Subject) return acc;
+            if (!clasz.TeacherHasClass) return acc;
             return acc + 1;
           },
           0,
@@ -244,6 +246,7 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       setTableSchedule(initializeSchedule());
       return;
     }
+    console.log("generatedSchedule", generatedSchedule);
     setTableSchedule(generatedSchedule);
   }, [newSchedule, generatedSchedule, initializeSchedule]);
 
@@ -277,10 +280,10 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         const daySchedule = schedule[day as keyof typeof schedule];
         if (!Array.isArray(daySchedule)) return [];
         return daySchedule.map((entry) => {
-          if (!entry.Teacher || !entry.Subject) return undefined;
+          if (!entry.TeacherHasClass) return undefined;
           return {
-            teacherId: entry.Teacher.id,
-            subjectId: entry.Subject.id,
+            teacherId: entry.TeacherHasClass.Teacher.id,
+            subjectId: entry.TeacherHasClass.Subject.id,
             classWeekDay: day,
             startTime: entry.startTime,
             endTime: entry.endTime,
@@ -336,12 +339,14 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   }
 
   function findClassIndex(
-    schedule: CalendarGridScheduledClass[],
+    schedule: CalendarScheduledSlot[],
     startTime: string,
     endTime: string,
   ) {
     return schedule.findIndex(
-      (entry) => entry.startTime === startTime && entry.endTime === endTime,
+      (entry) =>
+        format(entry.startTime, "HH:mm") === startTime &&
+        format(entry.endTime, "HH:mm") === endTime,
     );
   }
 
@@ -351,18 +356,21 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
     startTime: string,
     endTime: string,
   ) {
-    return availability.some(
-      (slot) =>
+    return availability.some((slot) => {
+      const formattedSlotStartTime = format(slot.startTime, "HH:mm");
+      const formattedSlotEndTime = format(slot.endTime, "HH:mm");
+      return (
         slot.day === day &&
-        slot.startTime <= startTime &&
-        slot.endTime >= endTime,
-    );
+        formattedSlotStartTime <= startTime &&
+        formattedSlotEndTime >= endTime
+      );
+    });
   }
 
   function swapClassTimes(
-    classData: CalendarGridScheduledClass,
-    newStartTime: string,
-    newEndTime: string,
+    classData: CalendarScheduledSlot,
+    newStartTime: Date,
+    newEndTime: Date,
   ) {
     return {
       ...classData,
@@ -372,18 +380,13 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   }
 
   function updateFixedClasses(
-    activeDataWithSwappedTimes: CalendarGridScheduledClass,
-    overDataWithSwappedTimes: CalendarGridScheduledClass,
+    activeDataWithSwappedTimes: CalendarScheduledSlot,
+    overDataWithSwappedTimes: CalendarScheduledSlot,
     activeDetails: SplitClassKey,
     overDetails: SplitClassKey,
   ) {
-    if (
-      !activeDataWithSwappedTimes.Teacher ||
-      !activeDataWithSwappedTimes.Subject
-    )
-      return;
-    if (!overDataWithSwappedTimes.Teacher || !overDataWithSwappedTimes.Subject)
-      return;
+    if (!activeDataWithSwappedTimes.TeacherHasClass) return;
+    if (!overDataWithSwappedTimes.TeacherHasClass) return;
     const activeDataClassKey = generateClassKey(
       activeDetails.day as keyof typeof tableSchedule,
       activeDetails.startTime as string,
@@ -405,10 +408,10 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
     if (activeDataOnFixedClassesIndex !== -1) {
       currentFixedClasses[activeDataOnFixedClassesIndex] = generateClassKey(
         overDetails.day as keyof typeof tableSchedule,
-        activeDataWithSwappedTimes.startTime as string,
-        activeDataWithSwappedTimes.endTime as string,
-        activeDataWithSwappedTimes.Teacher.id as string,
-        activeDataWithSwappedTimes.Subject.id as string,
+        format(activeDataWithSwappedTimes.startTime, "HH:mm"),
+        format(activeDataWithSwappedTimes.endTime, "HH:mm"),
+        activeDataWithSwappedTimes.TeacherHasClass.Teacher.id,
+        activeDataWithSwappedTimes.TeacherHasClass.Subject.id,
       );
     }
     const overDataOnFixedClassesIndex =
@@ -416,10 +419,10 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
     if (overDataOnFixedClassesIndex !== -1) {
       currentFixedClasses[overDataOnFixedClassesIndex] = generateClassKey(
         activeDetails.day as keyof typeof tableSchedule,
-        overDataWithSwappedTimes.startTime as string,
-        overDataWithSwappedTimes.endTime as string,
-        overDataWithSwappedTimes.Teacher.id as string,
-        overDataWithSwappedTimes.Subject.id as string,
+        format(overDataWithSwappedTimes.startTime, "HH:mm"),
+        format(overDataWithSwappedTimes.endTime, "HH:mm"),
+        overDataWithSwappedTimes.TeacherHasClass.Teacher.id,
+        overDataWithSwappedTimes.TeacherHasClass.Subject.id,
       );
     }
 
@@ -468,21 +471,21 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       teachersAvailabilities[overDetails.teacherId as string] ?? [];
 
     if (
-      activeData.Teacher &&
+      activeData.TeacherHasClass &&
       !checkTeacherAvailability(
         activeTeacherAvailability,
         overDetails.day as string,
-        overDetails.startTime as string,
-        overDetails.endTime as string,
+        overDetails.startTime,
+        overDetails.endTime,
       )
     ) {
       return toast.error(
-        `Professor ${activeData.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
+        `Professor ${activeData.TeacherHasClass.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
       );
     }
 
     if (
-      overData.Teacher &&
+      overData.TeacherHasClass &&
       !checkTeacherAvailability(
         overTeacherAvailability,
         activeDetails.day as string,
@@ -491,19 +494,19 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       )
     ) {
       return toast.error(
-        `Professor ${overData.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
+        `Professor ${overData.TeacherHasClass.Teacher?.User.name} não tem disponibilidade nesse dia e horário`,
       );
     }
 
     const activeDataWithSwappedTimes = swapClassTimes(
       activeData,
-      overDetails.startTime as string,
-      overDetails.endTime as string,
+      hoursToDate(overDetails.startTime),
+      hoursToDate(overDetails.endTime),
     );
     const overDataWithSwappedTimes = swapClassTimes(
       overData,
-      activeDetails.startTime as string,
-      activeDetails.endTime as string,
+      hoursToDate(activeDetails.startTime),
+      hoursToDate(activeDetails.endTime),
     );
 
     updateFixedClasses(
@@ -624,8 +627,8 @@ function generateBlankSchedule(
   startTime: string,
   numClasses: number,
   classesDuration: number,
-): CalendarGridScheduledClass[] {
-  const classes: CalendarGridScheduledClass[] = [];
+): CalendarScheduledSlot[] {
+  const classes: CalendarScheduledSlot[] = [];
   let _startTime = new Date(`1970-01-01T${startTime}:00`);
   for (let i = 0; i < numClasses; i++) {
     // calculate the end time of the class
@@ -634,10 +637,8 @@ function generateBlankSchedule(
       _startTime.getTime() + classesDuration * 60 * 1000,
     );
     classes.push({
-      startTime: _startTime.toTimeString().substring(0, 5),
-      endTime: endTime.toTimeString().substring(0, 5),
-      Teacher: null,
-      Subject: null,
+      startTime: _startTime,
+      endTime: endTime,
     });
     _startTime = endTime;
   }

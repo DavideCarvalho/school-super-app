@@ -15,6 +15,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { addHours, format } from "date-fns";
 
 import type { Subject, Teacher, TeacherAvailability, User } from "@acme/db";
 
@@ -32,30 +33,31 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import { hoursToDate } from "~/utils/hours-to-date";
 
-export interface CalendarGridScheduledClass {
-  Teacher:
-    | (Teacher & {
-        TeacherAvailability: TeacherAvailability[];
-        User: User;
-      })
-    | null;
-  Subject: Subject | null;
-  startTime: string;
-  endTime: string;
+export interface CalendarScheduledSlot {
+  TeacherHasClass?: {
+    Teacher: Teacher & {
+      TeacherAvailability: TeacherAvailability[];
+      User: User;
+    };
+    Subject: Subject;
+  } | null;
+  startTime: Date;
+  endTime: Date;
 }
 
-export interface CalendarGridSchedule {
-  Monday: CalendarGridScheduledClass[];
-  Tuesday: CalendarGridScheduledClass[];
-  Wednesday: CalendarGridScheduledClass[];
-  Thursday: CalendarGridScheduledClass[];
-  Friday: CalendarGridScheduledClass[];
+export interface CalendarSchedule {
+  Monday: CalendarScheduledSlot[];
+  Tuesday: CalendarScheduledSlot[];
+  Wednesday: CalendarScheduledSlot[];
+  Thursday: CalendarScheduledSlot[];
+  Friday: CalendarScheduledSlot[];
 }
 
 export interface CalendarGridProps {
   newSchedule: boolean;
-  schedule: CalendarGridSchedule;
+  schedule: CalendarSchedule;
   handleDragEnd: (event: DragEndEvent) => void;
   handleClickOnClass: (classKey: ClassKey) => void;
   fixedClasses: string[];
@@ -81,9 +83,11 @@ export function CalendarGrid({
           Object.keys(schedule).flatMap((day) => {
             const daySchedule = schedule[day as keyof typeof schedule];
             if (!Array.isArray(daySchedule)) return [];
-            return daySchedule.map(
-              (entry) => `${entry?.startTime}-${entry?.endTime}`,
-            );
+            return daySchedule.map((entry) => {
+              const startTime = format(entry.startTime, "HH:mm");
+              const endTime = format(entry.endTime, "HH:mm");
+              return `${startTime}-${endTime}`;
+            });
           }),
         ),
       ).sort(),
@@ -95,18 +99,18 @@ export function CalendarGrid({
         const daySchedule = schedule[day as keyof typeof schedule];
         if (!Array.isArray(daySchedule)) return [];
         return daySchedule.map((entry) => {
-          if (!entry.Teacher || !entry.Subject)
+          if (!entry.TeacherHasClass)
             return generateBlankCellKey(
               day as keyof typeof schedule,
-              entry.startTime,
-              entry.endTime,
+              format(entry.startTime, "HH:mm"),
+              format(entry.endTime, "HH:mm"),
             );
           return generateClassKey(
             day as keyof typeof schedule,
-            entry.startTime,
-            entry.endTime,
-            entry.Teacher.id,
-            entry.Subject.id,
+            format(entry.startTime, "HH:mm"),
+            format(entry.endTime, "HH:mm"),
+            entry.TeacherHasClass.Teacher.id,
+            entry.TeacherHasClass.Subject.id,
           );
         });
       }),
@@ -141,15 +145,20 @@ export function CalendarGrid({
         <TableBody>
           <SortableContext items={allClassKeys} strategy={rectSwappingStrategy}>
             {allTimeSlots.map((timeSlot) => {
-              const [startTime, endTime] = timeSlot.split("-");
+              const [startTime, endTime] = timeSlot.split("-") as [
+                string,
+                string,
+              ];
               return (
                 <TableRow key={timeSlot} className="hover:bg-gray-100">
-                  <TableCell className="border-b border-gray-300 px-4 py-2">{`${startTime} - ${endTime}`}</TableCell>
+                  <TableCell className="border-b border-gray-300 px-4 py-2">{`${format(addHours(hoursToDate(startTime), 3), "HH:mm")} - ${format(addHours(hoursToDate(endTime), 3), "HH:mm")}`}</TableCell>
                   {daysOfWeek.map((day: DayOfWeek) => {
                     const entry = schedule[day as keyof typeof schedule].find(
-                      (e) => e.startTime === startTime && e.endTime === endTime,
+                      (e) =>
+                        format(e.startTime, "HH:mm") === startTime &&
+                        format(e.endTime, "HH:mm") === endTime,
                     );
-                    if (!entry || !entry.Teacher || !entry.Subject) {
+                    if (!entry || !entry.TeacherHasClass) {
                       const blankCellKey = generateBlankCellKey(
                         day as keyof typeof schedule,
                         startTime as string,
@@ -163,8 +172,8 @@ export function CalendarGrid({
                       day,
                       startTime as string,
                       endTime as string,
-                      entry.Teacher.id,
-                      entry.Subject.id,
+                      entry.TeacherHasClass.Teacher.id,
+                      entry.TeacherHasClass.Subject.id,
                     );
                     return (
                       <ScheduledClass
@@ -173,9 +182,8 @@ export function CalendarGrid({
                         classKey={classKey}
                         isSelected={fixedClasses.includes(classKey)}
                         toggleFixedClass={handleClickOnClass}
-                        daySchedule={
-                          entry as ScheduledClassProps["daySchedule"]
-                        }
+                        Teacher={entry.TeacherHasClass.Teacher}
+                        Subject={entry.TeacherHasClass.Subject}
                         draggable={newSchedule}
                       />
                     );
@@ -213,12 +221,8 @@ interface ScheduledClassProps {
   isSelected: boolean;
   toggleFixedClass: (classKey: ClassKey) => void;
   day: DayOfWeek;
-  daySchedule: {
-    startTime: string;
-    endTime: string;
-    Teacher: Teacher & { User: User };
-    Subject: Subject;
-  };
+  Teacher: Teacher & { User: User };
+  Subject: Subject;
   draggable: boolean;
 }
 
@@ -265,7 +269,8 @@ function ScheduledClass(props: ScheduledClassProps) {
 
 function NonDraggableSchedule({
   day,
-  daySchedule,
+  Teacher,
+  Subject,
 }: Omit<ScheduledClassProps, "draggable">) {
   return (
     <TableCell key={day}>
@@ -273,11 +278,11 @@ function NonDraggableSchedule({
         <div className="flex flex-col items-start">
           <p>
             <span className="font-bold text-indigo-600">Professor:</span>{" "}
-            {daySchedule.Teacher.User.name}
+            {Teacher.User.name}
           </p>
           <div>
             <span className="font-bold text-indigo-600">Matéria:</span>{" "}
-            {daySchedule.Subject.name}
+            {Subject.name}
           </div>
         </div>
       </label>
@@ -290,7 +295,8 @@ function DraggableSchedule({
   classKey,
   isSelected,
   toggleFixedClass,
-  daySchedule,
+  Teacher,
+  Subject,
 }: Omit<ScheduledClassProps, "draggable">) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: classKey });
@@ -315,11 +321,11 @@ function DraggableSchedule({
           <div className="flex flex-col items-start">
             <p>
               <span className="font-bold text-indigo-600">Professor:</span>{" "}
-              {daySchedule.Teacher.User.name}
+              {Teacher.User.name}
             </p>
             <div>
               <span className="font-bold text-indigo-600">Matéria:</span>{" "}
-              {daySchedule.Subject.name}
+              {Subject.name}
             </div>
           </div>
         </CheckBox>

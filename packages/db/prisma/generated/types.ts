@@ -6,25 +6,24 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export const CalendarSlotDay = {
-  MONDAY: "MONDAY",
-  TUESDAY: "TUESDAY",
-  WEDNESDAY: "WEDNESDAY",
-  THURSDAY: "THURSDAY",
-  FRIDAY: "FRIDAY",
-  SATURDAY: "SATURDAY",
-  SUNDAY: "SUNDAY",
-} as const;
-export type CalendarSlotDay =
-  (typeof CalendarSlotDay)[keyof typeof CalendarSlotDay];
-export type CalendarSlot = {
+export type Calendar = {
   id: string;
-  teacherHasClassId: string;
-  classWeekDay: CalendarSlotDay;
-  startTime: Timestamp;
-  minutes: number | null;
+  classId: string;
+  name: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  isActive: Generated<number>;
+};
+export type CalendarSlot = {
+  id: string;
+  teacherHasClassId: string | null;
+  classWeekDay: number;
+  startTime: Timestamp;
+  endTime: Timestamp;
+  minutes: number;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  calendarId: string;
 };
 export type Canteen = {
   id: string;
@@ -214,8 +213,8 @@ export type TeacherAvailability = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   day: string;
-  startTime: string;
-  endTime: string;
+  startTime: Timestamp;
+  endTime: Timestamp;
 };
 export type TeacherHasClass = {
   id: string;
@@ -257,6 +256,7 @@ export type UserLikedPost = {
   userId: string;
 };
 export type DB = {
+  Calendar: Calendar;
   CalendarSlot: CalendarSlot;
   Canteen: Canteen;
   CanteenItem: CanteenItem;

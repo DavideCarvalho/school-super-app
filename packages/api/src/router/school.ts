@@ -1,6 +1,15 @@
+import {
+  addMinutes,
+  format,
+  getHours,
+  getMinutes,
+  setHours,
+  setMinutes,
+} from "date-fns";
 import { z } from "zod";
 
 import type {
+  CalendarSlot,
   Subject,
   Teacher,
   TeacherAvailability,
@@ -14,6 +23,8 @@ import {
   isUserLoggedInAndAssignedToSchool,
   publicProcedure,
 } from "../trpc";
+import { hoursToDate } from "../utils/hours-to-date";
+import { TeacherHasSubject } from "./../../../db/prisma/generated/types";
 
 const scheduleConfigSchema = z.object({
   start: z.string(),
@@ -64,7 +75,7 @@ export const schoolRouter = createTRPCRouter({
           z.object({
             teacherId: z.string(),
             subjectId: z.string(),
-            classWeekDay: z.string(),
+            classWeekDay: z.number().positive().min(0).max(6),
             startTime: z.string(),
             endTime: z.string(),
           }),
@@ -74,7 +85,7 @@ export const schoolRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$transaction(async (tx) => {
         // Definir isActive como false para todos os calendários atuais da turma
-        await tx.classSchedule.updateMany({
+        await tx.calendar.updateMany({
           where: {
             classId: input.classId,
             isActive: true,
@@ -84,125 +95,89 @@ export const schoolRouter = createTRPCRouter({
           },
         });
 
-        // Criar a entrada do ClassSchedule
-        const classSchedule = await tx.classSchedule.create({
+        await tx.calendar.create({
           data: {
             classId: input.classId,
-            name: input.scheduleName,
-            isActive: true, // Definindo como o calendário atual
+            name: `Calendário ${input.classId} - ${format(new Date(), "dd-MM-yyyy")}`,
+            isActive: true,
+            CalendarSlot: {
+              createMany: {
+                data: input.classes.map((classToCreate) => {
+                  const splitStartTime = classToCreate.startTime.split(":") as [
+                    string,
+                    string,
+                  ];
+                  const startTimeAsDate = new Date(
+                    setHours(
+                      setMinutes(new Date(), Number(splitStartTime[1])),
+                      Number(splitStartTime[0]) - 3,
+                    ),
+                  );
+                  const splitEndTime = classToCreate.endTime.split(":") as [
+                    string,
+                    string,
+                  ];
+                  const endTimeAsDate = new Date(
+                    setHours(
+                      setMinutes(new Date(), Number(splitEndTime[1])),
+                      Number(splitEndTime[0]) - 3,
+                    ),
+                  );
+                  return {
+                    startTime: classToCreate.startTime,
+                    endTime: classToCreate.endTime,
+                    classId: input.classId,
+                    teacherHasClassId: classToCreate.teacherId,
+                    classWeekDay: classToCreate.classWeekDay,
+                    minutes: Math.ceil(
+                      (endTimeAsDate.getTime() - startTimeAsDate.getTime()) /
+                        (1000 * 60),
+                    ),
+                  };
+                }),
+              },
+            },
           },
         });
-
-        for (const classToCreate of input.classes) {
-          const teacherAvailability = await tx.teacherAvailability.findFirst({
-            where: {
-              teacherId: classToCreate.teacherId,
-              day: classToCreate.classWeekDay,
-            },
-          });
-          if (!teacherAvailability) continue;
-          await tx.fixedClass.create({
-            data: {
-              classScheduleId: classSchedule.id,
-              teacherId: classToCreate.teacherId,
-              classId: input.classId,
-              subjectId: classToCreate.subjectId,
-              classWeekDay: classToCreate.classWeekDay,
-              startTime: classToCreate.startTime,
-              endTime: classToCreate.endTime,
-            },
-          });
-        }
       });
     }),
   getClassSchedule: publicProcedure
     .input(z.object({ classId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const lessons = await ctx.prisma.fixedClass.findMany({
+      const calendarSlots = await ctx.prisma.calendarSlot.findMany({
         where: {
-          classId: input.classId,
-          ClassSchedule: {
+          Calendar: {
+            classId: input.classId,
             isActive: true,
           },
         },
         include: {
-          Teacher: {
+          Calendar: {
             include: {
-              TeacherAvailability: true,
-              User: true,
+              Class: true,
             },
           },
-          Subject: true,
+          TeacherHasClass: {
+            include: {
+              Teacher: {
+                include: {
+                  TeacherAvailability: true,
+                  User: true,
+                },
+              },
+              Subject: true,
+              Class: true,
+            },
+          },
         },
       });
-      function getScheduleData(dayLessons: typeof lessons): ScheduleEntry[] {
-        return dayLessons.map((lesson) => {
-          const response: ScheduleEntry = {
-            Teacher: {
-              id: lesson.Teacher.id,
-              TeacherAvailability: lesson.Teacher.TeacherAvailability.map(
-                (availability) => {
-                  return {
-                    id: availability.id,
-                    startTime: availability.startTime,
-                    endTime: availability.endTime,
-                    day: availability.day,
-                    teacherId: availability.teacherId,
-                    createdAt: availability.createdAt,
-                    updatedAt: availability.updatedAt,
-                  };
-                },
-              ),
-              User: {
-                id: lesson.Teacher.User.id,
-                name: lesson.Teacher.User.name,
-                email: lesson.Teacher.User.email,
-                schoolId: lesson.Teacher.User.schoolId,
-                roleId: lesson.Teacher.User.roleId,
-                createdAt: lesson.Teacher.User.createdAt,
-                updatedAt: lesson.Teacher.User.updatedAt,
-                slug: lesson.Teacher.User.slug,
-                teacherId: lesson.Teacher.id,
-                externalAuthId: lesson.Teacher.User.externalAuthId,
-                imageUrl: lesson.Teacher.User.imageUrl,
-                active: lesson.Teacher.User.active,
-              },
-            },
-            Subject: lesson.Subject,
-            startTime: lesson.startTime as string,
-            endTime: lesson.endTime as string,
-          };
-          return response;
-        });
-      }
-      const response: Schedule = {
-        Monday: getScheduleData(
-          lessons.filter(
-            (lesson) => lesson.classWeekDay.toUpperCase() === "MONDAY",
-          ),
-        ),
-        Tuesday: getScheduleData(
-          lessons.filter(
-            (lesson) => lesson.classWeekDay.toUpperCase() === "TUESDAY",
-          ),
-        ),
-        Wednesday: getScheduleData(
-          lessons.filter(
-            (lesson) => lesson.classWeekDay.toUpperCase() === "WEDNESDAY",
-          ),
-        ),
-        Thursday: getScheduleData(
-          lessons.filter(
-            (lesson) => lesson.classWeekDay.toUpperCase() === "THURSDAY",
-          ),
-        ),
-        Friday: getScheduleData(
-          lessons.filter(
-            (lesson) => lesson.classWeekDay.toUpperCase() === "FRIDAY",
-          ),
-        ),
+      return {
+        Monday: calendarSlots.filter((slot) => slot.classWeekDay === 1),
+        Tuesday: calendarSlots.filter((slot) => slot.classWeekDay === 2),
+        Wednesday: calendarSlots.filter((slot) => slot.classWeekDay === 3),
+        Thursday: calendarSlots.filter((slot) => slot.classWeekDay === 4),
+        Friday: calendarSlots.filter((slot) => slot.classWeekDay === 5),
       };
-      return response;
     }),
 });
 
@@ -215,20 +190,20 @@ type GenerationRules = {
 
 // Definição dos tipos
 interface TimeSlot {
-  startTime: string;
-  endTime: string;
+  startTime: Date;
+  endTime: Date;
 }
 
 interface ScheduleEntry {
-  Teacher:
-    | (Teacher & {
-        TeacherAvailability: TeacherAvailability[];
-        User: User;
-      })
-    | null;
-  Subject: Subject | null;
-  startTime: string;
-  endTime: string;
+  TeacherHasClass?: {
+    Teacher: Teacher & {
+      TeacherAvailability: TeacherAvailability[];
+      User: User;
+    };
+    Subject: Subject;
+  };
+  startTime: Date;
+  endTime: Date;
 }
 
 type Schedule = {
@@ -294,7 +269,6 @@ async function generateSchoolSchedule(
         })),
       );
 
-  const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
   const schedule = initializeSchedule(scheduleConfig);
 
   // Respeitar as aulas fixas
@@ -312,22 +286,28 @@ async function generateSchoolSchedule(
     if (!teacher || !subject) continue;
 
     const existingEntryIndex = schedule[day as DayOfWeek].findIndex(
-      (entry) => entry.startTime === startTime && entry.endTime === endTime,
+      (entry) =>
+        format(entry.startTime, "HH:mm") === startTime &&
+        format(entry.endTime, "HH:mm") === endTime,
     );
 
     if (existingEntryIndex !== -1) {
       schedule[day as DayOfWeek][existingEntryIndex] = {
-        Teacher: teacher,
-        Subject: subject,
-        startTime: startTime,
-        endTime: endTime,
+        TeacherHasClass: {
+          Teacher: teacher,
+          Subject: subject,
+        },
+        startTime: hoursToDate(startTime),
+        endTime: hoursToDate(endTime),
       };
     } else {
       schedule[day as DayOfWeek].push({
-        Teacher: teacher,
-        Subject: subject,
-        startTime: startTime,
-        endTime: endTime,
+        TeacherHasClass: {
+          Teacher: teacher,
+          Subject: subject,
+        },
+        startTime: hoursToDate(startTime),
+        endTime: hoursToDate(endTime),
       });
     }
 
@@ -335,24 +315,14 @@ async function generateSchoolSchedule(
   }
 
   // Continuar a geração do calendário respeitando a configuração do horário e regras de geração
-  for (const day of daysOfWeek) {
-    const dayConfig = scheduleConfig[day as DayOfWeek];
-    if (!dayConfig) continue; // Ignorar dias sem configuração
-
-    const timeSlots = generateTimeSlots(
-      dayConfig.start,
-      dayConfig.numClasses,
-      dayConfig.duration,
+  for (const day of Object.keys(schedule)) {
+    console.log(`schedule[${day}]`, schedule[day as DayOfWeek]);
+    const dayAvailableTimeSlots = schedule[day as DayOfWeek].filter(
+      (entry) => entry.TeacherHasClass == null,
     );
-
-    for (const timeSlot of timeSlots) {
+    console.log("dayAvailableTimeSlots", dayAvailableTimeSlots);
+    for (const [index, timeSlot] of dayAvailableTimeSlots.entries()) {
       for (const teacher of teachers) {
-        const existingEntryIndex = schedule[day as DayOfWeek].findIndex(
-          (entry) =>
-            entry.startTime === timeSlot.startTime &&
-            entry.endTime === timeSlot.endTime,
-        );
-
         const subject = findRandomSubjectForTeacher(
           teacher,
           subjectsWithLessons,
@@ -363,30 +333,19 @@ async function generateSchoolSchedule(
         );
         if (!subject) continue;
 
-        if (existingEntryIndex !== -1) {
-          if (schedule[day as DayOfWeek][existingEntryIndex]?.Teacher) {
-            continue;
-          }
-          schedule[day as DayOfWeek][existingEntryIndex] = {
+        schedule[day as DayOfWeek][index] = {
+          TeacherHasClass: {
             Teacher: teacher,
             Subject: subject,
-            startTime: timeSlot.startTime,
-            endTime: timeSlot.endTime,
-          };
-        } else {
-          schedule[day as DayOfWeek].push({
-            Teacher: teacher,
-            Subject: subject,
-            startTime: timeSlot.startTime,
-            endTime: timeSlot.endTime,
-          });
-        }
+          },
+          startTime: timeSlot.startTime,
+          endTime: timeSlot.endTime,
+        };
 
         subject.remainingLessons--;
       }
     }
   }
-
   return schedule;
 }
 
@@ -396,23 +355,34 @@ function generateTimeSlots(
   duration: number,
 ): TimeSlot[] {
   const timeSlots: TimeSlot[] = [];
-  let startTime = new Date(`1970-01-01T${start}:00`);
+  let startTime = setMinutes(
+    setHours(new Date(), Number(start.split(":")[0]) - 3),
+    Number(start.split(":")[1]),
+  );
 
   for (let i = 0; i < numClasses; i++) {
-    const endTime = new Date(startTime.getTime() + duration * 60 * 1000);
+    const endTime = addMinutes(startTime, duration);
     timeSlots.push({
-      startTime: startTime.toTimeString().substring(0, 5),
-      endTime: endTime.toTimeString().substring(0, 5),
+      startTime: startTime,
+      endTime: endTime,
     });
-    startTime = endTime;
+    startTime = setMinutes(
+      setHours(startTime, getHours(endTime)),
+      getMinutes(endTime),
+    );
   }
 
   return timeSlots;
 }
 
 function initializeSchedule(scheduleConfig: ScheduleConfig): Schedule {
-  // @ts-expect-error
-  const schedule: Schedule = {};
+  const schedule: Schedule = {
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+  };
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
   for (const day of daysOfWeek) {
@@ -425,11 +395,8 @@ function initializeSchedule(scheduleConfig: ScheduleConfig): Schedule {
     schedule[day as DayOfWeek] = timeSlots.map((slot) => ({
       startTime: slot.startTime,
       endTime: slot.endTime,
-      Teacher: null,
-      Subject: null,
     }));
   }
-
   return schedule;
 }
 
@@ -444,23 +411,32 @@ function findRandomSubjectForTeacher(
   schedule: Schedule,
   subjectExclusions: Record<string, string[]>,
 ): SubjectWithRemainingLessons | null | undefined {
+  const timeSlotStartTimeFormatted = format(timeSlot.startTime, "HH:mm");
+  const timeSlotEndTimeFormatted = format(timeSlot.endTime, "HH:mm");
   // Verificar se o professor está disponível no dia e horário
-  const availabilityForDay = teacher.TeacherAvailability.some(
-    (avail) =>
+  const availabilityForDay = teacher.TeacherAvailability.some((avail) => {
+    const availabilityStartTimeFormatted = format(avail.startTime, "HH:mm");
+    const availabilityEndTimeFormatted = format(avail.endTime, "HH:mm");
+    return (
       avail.day === day &&
-      avail.startTime <= timeSlot.startTime &&
-      avail.endTime >= timeSlot.endTime,
-  );
+      availabilityStartTimeFormatted <= timeSlotStartTimeFormatted &&
+      availabilityEndTimeFormatted >= timeSlotEndTimeFormatted
+    );
+  });
 
   if (!availabilityForDay) return null;
 
+  //TODO: problema depois daqui
+
   // Obter a programação do professor para o dia atual
   const teacherSchedule =
-    schedule[day]?.filter((entry) => entry?.Teacher?.id === teacher.id) || [];
+    schedule[day]?.filter(
+      (entry) => entry?.TeacherHasClass?.Teacher?.id === teacher.id,
+    ) || [];
 
   // Obter a última matéria agendada no dia
   const lastSubject = teacherSchedule.length
-    ? teacherSchedule[teacherSchedule.length - 1]?.Subject
+    ? teacherSchedule[teacherSchedule.length - 1]?.TeacherHasClass?.Subject
     : null;
 
   // Filtrar as matérias restantes do professor
@@ -472,7 +448,7 @@ function findRandomSubjectForTeacher(
 
   // Verificar as exclusões de matérias
   const existingSubjects = schedule[day]?.map(
-    (entry) => entry.Subject?.id,
+    (entry) => entry.TeacherHasClass?.Subject?.id,
   ) as unknown as string[];
   if (subjectExclusions && existingSubjects) {
     eligibleSubjects = eligibleSubjects.filter((sub) => {
