@@ -183,7 +183,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
 
   useEffect(() => {
     if (!subjects) return;
-    console.log("subjects", subjects);
     for (const subject of subjects) {
       form.setValue(`subjectsQuantities.${subject.id}`, 0);
     }
@@ -246,7 +245,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       setTableSchedule(initializeSchedule());
       return;
     }
-    console.log("generatedSchedule", generatedSchedule);
     setTableSchedule(generatedSchedule);
   }, [newSchedule, generatedSchedule, initializeSchedule]);
 
@@ -273,34 +271,41 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   }
 
   async function saveSchedule(schedule: NonNullable<typeof tableSchedule>) {
+    //TODO: continuar daqui
+    const days = [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+    ];
     if (!schedule) return;
     if (!selectedClass) return;
-    const classes = Object.keys(schedule)
-      .flatMap((day) => {
-        const daySchedule = schedule[day as keyof typeof schedule];
-        if (!Array.isArray(daySchedule)) return [];
-        return daySchedule.map((entry) => {
-          if (!entry.TeacherHasClass) return undefined;
+    const classes = Object.keys(schedule).flatMap((day) => {
+      const daySchedule = schedule[day as keyof typeof schedule];
+      if (!Array.isArray(daySchedule)) return [];
+      return daySchedule
+        .map((entry) => {
+          console.log("entry", entry);
           return {
-            teacherId: entry.TeacherHasClass.Teacher.id,
-            subjectId: entry.TeacherHasClass.Subject.id,
-            classWeekDay: day,
+            teacherHasClassId: entry?.TeacherHasClass?.id,
+            classWeekDay: days.findIndex((d) => day.toLowerCase() === d),
             startTime: entry.startTime,
             endTime: entry.endTime,
           };
-        });
-      })
-      .filter((classItem) => classItem !== undefined) as unknown as {
-      teacherId: string;
-      subjectId: string;
-      classWeekDay: string;
-      startTime: string;
-      endTime: string;
-    }[];
+        })
+        .filter(({ classWeekDay }) => classWeekDay > 0);
+    });
     const toastId = toast.loading("Salvando horários...");
     try {
       if (!classId) return;
-      await saveSchoolCalendarMutation({ classId, scheduleName: "", classes });
+      await saveSchoolCalendarMutation({
+        classId,
+        scheduleName: "",
+        classes,
+      });
       toast.success("Horários salvos com sucesso!");
     } catch (e) {
       toast.error("Erro ao salvar horários");
@@ -308,11 +313,11 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       toast.dismiss(toastId);
       setOpenGenerateNewCalendarModal(false);
       setNewSchedule(false);
-      await Promise.all([
-        refetchClassSchedule(),
-        refetchTeachersAvailabilities(),
-        refetchGeneratedSchedule(),
-      ]);
+      // await Promise.all([
+      //   refetchClassSchedule(),
+      //   refetchTeachersAvailabilities(),
+      //   refetchGeneratedSchedule(),
+      // ]);
     }
   }
 

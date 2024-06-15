@@ -37,8 +37,9 @@ import { hoursToDate } from "~/utils/hours-to-date";
 
 export interface CalendarScheduledSlot {
   TeacherHasClass?: {
+    id: string;
     Teacher: Teacher & {
-      TeacherAvailability: TeacherAvailability[];
+      Availabilities: TeacherAvailability[];
       User: User;
     };
     Subject: Subject;

@@ -62,13 +62,13 @@ model User {
 }
 
 model Teacher {
-  id                  String                @id
-  Classes             TeacherHasClass[]
-  User                User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  File                File[]
-  TeacherAvailability TeacherAvailability[]
-  FixedClass          FixedClass[]
-  Subjects            TeacherHasSubject[]
+  id             String                @id
+  Classes        TeacherHasClass[]
+  User           User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  File           File[]
+  Availabilities TeacherAvailability[]
+  FixedClass     FixedClass[]
+  Subjects       TeacherHasSubject[]
 
   @@index([id])
 }
@@ -183,6 +183,7 @@ model TeacherHasClass {
   teacherAvailabilityId String?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+  isActive              Boolean  @default(true)
 
   Teacher Teacher @relation(fields: [teacherId], references: [id])
   Class   Class   @relation(fields: [classId], references: [id])

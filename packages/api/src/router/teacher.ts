@@ -15,6 +15,15 @@ export const teacherRouter = createTRPCRouter({
       return ctx.prisma.teacher.findFirst({
         where: { User: { slug: input.slug, schoolId: ctx.session.school.id } },
         include: {
+          Classes: {
+            include: {
+              Subject: true,
+              Class: true,
+            },
+            where: {
+              isActive: true,
+            },
+          },
           User: true,
           TeacherAvailability: true,
           Subjects: {
@@ -214,6 +223,7 @@ export const teacherRouter = createTRPCRouter({
         },
       });
 
+      const availabilitiesIdsFound: string[] = [];
       for (const availability of input.availabilities) {
         const teacherAvailability =
           await ctx.prisma.teacherAvailability.findFirst({
@@ -223,24 +233,28 @@ export const teacherRouter = createTRPCRouter({
             },
           });
         if (!teacherAvailability) {
-          await ctx.prisma.teacherAvailability.create({
-            data: {
-              teacherId: teacher.id,
-              day: availability.day,
-              startTime: availability.startTime,
-              endTime: availability.endTime,
-            },
-          });
+          const createdTeacherAvailability =
+            await ctx.prisma.teacherAvailability.create({
+              data: {
+                teacherId: teacher.id,
+                day: availability.day,
+                startTime: availability.startTime,
+                endTime: availability.endTime,
+              },
+            });
+          availabilitiesIdsFound.push(createdTeacherAvailability.id);
         } else {
-          await ctx.prisma.teacherAvailability.update({
-            where: {
-              id: teacherAvailability.id,
-            },
-            data: {
-              startTime: availability.startTime,
-              endTime: availability.endTime,
-            },
-          });
+          const updatedTeacherAvailability =
+            await ctx.prisma.teacherAvailability.update({
+              where: {
+                id: teacherAvailability.id,
+              },
+              data: {
+                startTime: availability.startTime,
+                endTime: availability.endTime,
+              },
+            });
+          availabilitiesIdsFound.push(updatedTeacherAvailability.id);
         }
       }
     }),

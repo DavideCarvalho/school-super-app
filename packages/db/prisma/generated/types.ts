@@ -228,6 +228,7 @@ export type TeacherHasClass = {
   teacherAvailabilityId: string | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  isActive: Generated<number>;
 };
 export type TeacherHasSubject = {
   id: string;

@@ -66,23 +66,23 @@ export const schoolRouter = createTRPCRouter({
       );
       return schedule;
     }),
-  saveSchoolCalendar: publicProcedure
+  saveSchoolCalendar: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         classId: z.string(),
         scheduleName: z.string(),
         classes: z.array(
           z.object({
-            teacherId: z.string(),
-            subjectId: z.string(),
+            teacherHasClassId: z.string().optional(),
             classWeekDay: z.number().positive().min(0).max(6),
-            startTime: z.string(),
-            endTime: z.string(),
+            startTime: z.date(),
+            endTime: z.date(),
           }),
         ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      // console.log("input.classes", input.classes);
       await ctx.prisma.$transaction(async (tx) => {
         // Definir isActive como false para todos os calendários atuais da turma
         await tx.calendar.updateMany({
@@ -98,43 +98,22 @@ export const schoolRouter = createTRPCRouter({
         await tx.calendar.create({
           data: {
             classId: input.classId,
-            name: `Calendário ${input.classId} - ${format(new Date(), "dd-MM-yyyy")}`,
+            name: `Calendário ${format(new Date(), "dd-MM-yyyy")}`,
             isActive: true,
             CalendarSlot: {
               createMany: {
-                data: input.classes.map((classToCreate) => {
-                  const splitStartTime = classToCreate.startTime.split(":") as [
-                    string,
-                    string,
-                  ];
-                  const startTimeAsDate = new Date(
-                    setHours(
-                      setMinutes(new Date(), Number(splitStartTime[1])),
-                      Number(splitStartTime[0]) - 3,
-                    ),
-                  );
-                  const splitEndTime = classToCreate.endTime.split(":") as [
-                    string,
-                    string,
-                  ];
-                  const endTimeAsDate = new Date(
-                    setHours(
-                      setMinutes(new Date(), Number(splitEndTime[1])),
-                      Number(splitEndTime[0]) - 3,
-                    ),
-                  );
-                  return {
-                    startTime: classToCreate.startTime,
-                    endTime: classToCreate.endTime,
-                    classId: input.classId,
-                    teacherHasClassId: classToCreate.teacherId,
-                    classWeekDay: classToCreate.classWeekDay,
-                    minutes: Math.ceil(
-                      (endTimeAsDate.getTime() - startTimeAsDate.getTime()) /
+                data: input.classes.map((classToCreate) => ({
+                  startTime: classToCreate.startTime,
+                  endTime: classToCreate.endTime,
+                  teacherHasClassId: classToCreate.teacherHasClassId,
+                  classWeekDay: classToCreate.classWeekDay,
+                  minutes:
+                    Math.ceil(
+                      (classToCreate.startTime.getTime() -
+                        classToCreate.endTime.getTime()) /
                         (1000 * 60),
-                    ),
-                  };
-                }),
+                    ) * -1,
+                })),
               },
             },
           },
@@ -161,7 +140,7 @@ export const schoolRouter = createTRPCRouter({
             include: {
               Teacher: {
                 include: {
-                  TeacherAvailability: true,
+                  Availabilities: true,
                   User: true,
                 },
               },
@@ -196,12 +175,13 @@ interface TimeSlot {
 
 interface ScheduleEntry {
   TeacherHasClass?: {
+    id: string;
     Teacher: Teacher & {
-      TeacherAvailability: TeacherAvailability[];
+      Availabilities: TeacherAvailability[];
       User: User;
     };
     Subject: Subject;
-  };
+  } | null;
   startTime: Date;
   endTime: Date;
 }
@@ -241,7 +221,7 @@ async function generateSchoolSchedule(
       },
     },
     include: {
-      TeacherAvailability: true,
+      Availabilities: true,
       Classes: true,
       User: true,
     },
@@ -291,21 +271,34 @@ async function generateSchoolSchedule(
         format(entry.endTime, "HH:mm") === endTime,
     );
 
+    const teacherHasClass = await prisma.teacherHasClass.findFirst({
+      where: {
+        teacherId: teacher.id,
+        classId: classId,
+        subjectId: subject.id,
+        isActive: true,
+      },
+      include: {
+        Teacher: {
+          include: {
+            Availabilities: true,
+            User: true,
+          },
+        },
+        TeacherAvailability: true,
+        Subject: true,
+      },
+    });
+
     if (existingEntryIndex !== -1) {
       schedule[day as DayOfWeek][existingEntryIndex] = {
-        TeacherHasClass: {
-          Teacher: teacher,
-          Subject: subject,
-        },
+        TeacherHasClass: teacherHasClass,
         startTime: hoursToDate(startTime),
         endTime: hoursToDate(endTime),
       };
     } else {
       schedule[day as DayOfWeek].push({
-        TeacherHasClass: {
-          Teacher: teacher,
-          Subject: subject,
-        },
+        TeacherHasClass: teacherHasClass,
         startTime: hoursToDate(startTime),
         endTime: hoursToDate(endTime),
       });
@@ -316,11 +309,9 @@ async function generateSchoolSchedule(
 
   // Continuar a geração do calendário respeitando a configuração do horário e regras de geração
   for (const day of Object.keys(schedule)) {
-    console.log(`schedule[${day}]`, schedule[day as DayOfWeek]);
     const dayAvailableTimeSlots = schedule[day as DayOfWeek].filter(
       (entry) => entry.TeacherHasClass == null,
     );
-    console.log("dayAvailableTimeSlots", dayAvailableTimeSlots);
     for (const [index, timeSlot] of dayAvailableTimeSlots.entries()) {
       for (const teacher of teachers) {
         const subject = findRandomSubjectForTeacher(
@@ -333,11 +324,27 @@ async function generateSchoolSchedule(
         );
         if (!subject) continue;
 
-        schedule[day as DayOfWeek][index] = {
-          TeacherHasClass: {
-            Teacher: teacher,
-            Subject: subject,
+        const teacherHasClass = await prisma.teacherHasClass.findFirst({
+          where: {
+            teacherId: teacher.id,
+            classId: classId,
+            subjectId: subject.id,
+            isActive: true,
           },
+          include: {
+            Teacher: {
+              include: {
+                Availabilities: true,
+                User: true,
+              },
+            },
+            TeacherAvailability: true,
+            Subject: true,
+          },
+        });
+
+        schedule[day as DayOfWeek][index] = {
+          TeacherHasClass: teacherHasClass,
           startTime: timeSlot.startTime,
           endTime: timeSlot.endTime,
         };
@@ -402,7 +409,7 @@ function initializeSchedule(scheduleConfig: ScheduleConfig): Schedule {
 
 function findRandomSubjectForTeacher(
   teacher: Teacher & {
-    TeacherAvailability: TeacherAvailability[];
+    Availabilities: TeacherAvailability[];
     Classes: TeacherHasClass[];
   },
   subjects: SubjectWithRemainingLessons[],
@@ -414,7 +421,7 @@ function findRandomSubjectForTeacher(
   const timeSlotStartTimeFormatted = format(timeSlot.startTime, "HH:mm");
   const timeSlotEndTimeFormatted = format(timeSlot.endTime, "HH:mm");
   // Verificar se o professor está disponível no dia e horário
-  const availabilityForDay = teacher.TeacherAvailability.some((avail) => {
+  const availabilityForDay = teacher.Availabilities.some((avail) => {
     const availabilityStartTimeFormatted = format(avail.startTime, "HH:mm");
     const availabilityEndTimeFormatted = format(avail.endTime, "HH:mm");
     return (

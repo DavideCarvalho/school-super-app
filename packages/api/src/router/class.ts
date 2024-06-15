@@ -19,6 +19,9 @@ export const classRouter = createTRPCRouter({
               },
               Subject: true,
             },
+            where: {
+              isActive: true,
+            },
           },
         },
       });
@@ -131,9 +134,12 @@ export const classRouter = createTRPCRouter({
       // Iniciar a transação
       await ctx.prisma.$transaction(async (tx) => {
         // Remover aulas que não estão no input
-        await tx.teacherHasClass.deleteMany({
+        await tx.teacherHasClass.updateMany({
           where: {
             id: { in: subjectsToDelete.map((subject) => subject.id) },
+          },
+          data: {
+            isActive: false,
           },
         });
 
