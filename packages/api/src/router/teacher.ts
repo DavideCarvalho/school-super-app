@@ -25,7 +25,7 @@ export const teacherRouter = createTRPCRouter({
             },
           },
           User: true,
-          TeacherAvailability: true,
+          Availabilities: true,
           Subjects: {
             include: {
               Subject: true,
@@ -143,7 +143,7 @@ export const teacherRouter = createTRPCRouter({
                 externalAuthId: createdUserOnClerk.id,
               },
             },
-            TeacherAvailability: {
+            Availabilities: {
               createMany: {
                 data: input.availabilities.map((availability) => ({
                   day: availability.day,
@@ -280,7 +280,7 @@ export const teacherRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
         include: {
           User: true,
-          TeacherAvailability: true,
+          Availabilities: true,
           Classes: {
             include: {
               Class: true,

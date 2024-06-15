@@ -106,7 +106,7 @@ export function TeachersTable() {
                   ) ?? "-"}
                 </TableCell>
                 <TableCell>
-                  {teacher?.TeacherAvailability?.map(
+                  {teacher?.Availabilities?.map(
                     (availability) =>
                       `${daysOfWeekToPortuguese[availability.day as keyof typeof daysOfWeekToPortuguese]} - ${availability.startTime} - ${availability.endTime}`,
                   )?.join(", ") ?? "-"}

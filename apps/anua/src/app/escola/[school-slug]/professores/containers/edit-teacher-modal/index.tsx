@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -110,10 +111,10 @@ export function EditTeacherModal({
     );
     setValue(
       "availability",
-      teacher.TeacherAvailability.map((availability) => ({
+      teacher.Availabilities.map((availability) => ({
         day: availability.day,
-        startTime: availability.startTime,
-        endTime: availability.endTime,
+        startTime: format(availability.startTime, "HH:mm"),
+        endTime: format(availability.endTime, "HH:mm"),
       })),
     );
   }, [teacher, setValue]);
