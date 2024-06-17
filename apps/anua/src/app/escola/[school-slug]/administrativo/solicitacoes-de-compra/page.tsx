@@ -6,6 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
+import { ApprovePurchaseRequestModalListener } from "./_components/approve-purchase-request-modal-listener";
 import { EditPurchaseRequestModalListener } from "./_components/edit-purchase-request-modal-listener";
 import { NewPurchaseRequestModalListener } from "./_components/new-purchase-request-modal-listener";
 import { PurchaseRequestsTableV2 } from "./containers/purchase-requests-table";
@@ -48,6 +49,7 @@ export default async function TeachersPage({
       </div>
       <EditPurchaseRequestModalListener />
       <NewPurchaseRequestModalListener />
+      <ApprovePurchaseRequestModalListener />
       <Suspense>
         <PurchaseRequestsTableV2 />
       </Suspense>

@@ -2,7 +2,6 @@ import type {
   Column,
   ColumnDef,
   ColumnFiltersState,
-  ColumnSort,
   FilterMeta,
 } from "@tanstack/react-table";
 import { memo, useCallback, useMemo } from "react";
@@ -21,6 +20,7 @@ import {
 import { MultiSelect, MultiSelectItem } from "@tremor/react";
 
 import { PaginationV2 } from "../pagination-v2";
+import { ScrollArea, ScrollBar } from "../scroll-area";
 import {
   Table,
   TableBody,
@@ -118,10 +118,10 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
   );
 
   return (
-    <div className="mt-8 flow-root">
-      <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-          <Table className="min-w-full table-fixed divide-y divide-gray-300">
+    <>
+      <div className="-mx-4 -my-2 mb-4 inline-block min-w-full overflow-x-auto py-2 align-middle sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <ScrollArea className="w-full">
+          <Table className="min-w-full table-fixed divide-y divide-gray-300 overflow-x-auto">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -220,14 +220,15 @@ export function TableWithPagination<TData extends Record<string, unknown>>({
                   ))}
             </TableBody>
           </Table>
-        </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
       <PaginationV2
         currentPage={pageIndex + 1}
         totalCount={totalCount}
         itemsPerPage={pageSize}
       />
-    </div>
+    </>
   );
 }
 

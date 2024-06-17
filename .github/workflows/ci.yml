@@ -12,6 +12,7 @@ jobs:
       DATABASE_URL: file:./db.sqlite
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      NEXT_PUBLIC_CONECTAPROF_URL: ${{ vars.NEXT_PUBLIC_CONECTAPROF_URL }}
 
     runs-on: ubuntu-latest
 
@@ -43,8 +44,6 @@ jobs:
       - name: Install deps (with cache)
         run: pnpm install
 
-      # Normally, this would be done as part of the turbo pipeline - however since the Expo app doesn't depend on `@acme/db` it doesn't care.
-      # TODO: Free for all to find a better solution here.
       - name: Generate Prisma Client
         run: pnpm turbo db:generate
 
@@ -52,8 +51,5 @@ jobs:
         run: pnpm turbo build
         env:
           SKIP_ENV_VALIDATION: true
-          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          MINIO_ACCESS_KEY: ${{ secrets.MINIO_ACCESS_KEY }}
-          MINIO_SECRET_KEY: ${{ secrets.MINIO_SECRET_KEY }}
-          MINIO_ENDPOINT: ${{ secrets.MINIO_ENDPOINT }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+          NEXT_PUBLIC_CONECTAPROF_URL: ${{ env.NEXT_PUBLIC_CONECTAPROF_URL }}

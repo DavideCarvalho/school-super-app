@@ -11,10 +11,11 @@
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "db:generate": "prisma generate",
-    "db:format": "prisma format",
-    "db:push": "prisma db push --skip-generate --accept-data-loss",
-    "dev": "prisma studio --port 5556"
+    "generate": "pnpm with-env prisma generate",
+    "format": "pnpm with-env prisma format",
+    "push": "pnpm with-env prisma db push --skip-generate --accept-data-loss",
+    "dev": "prisma studio --port 5556",
+    "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "@prisma/client": "5.14.0",

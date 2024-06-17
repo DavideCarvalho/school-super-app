@@ -26,7 +26,7 @@ export function PurchaseRequestsTableV2() {
       id: "status",
       value: searchParams?.getAll("status"),
     },
-  ];
+  ] as const;
 
   const page = searchParams?.has("page") ? Number(searchParams.get("page")) : 1;
   const size = searchParams?.has("size")

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import type { Column } from "@tanstack/react-table";
+import { useEffect, useState } from "react";
 
 function NumberRangeFilter({
   column,

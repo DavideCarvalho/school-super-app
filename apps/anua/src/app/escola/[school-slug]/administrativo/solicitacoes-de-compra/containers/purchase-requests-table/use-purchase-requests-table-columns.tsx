@@ -1,7 +1,12 @@
 import type { Column } from "@tanstack/react-table";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
+import {
+  CheckIcon,
+  PencilIcon,
+  TrashIcon,
+  XMarkIcon,
+} from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
@@ -188,15 +193,44 @@ export function usePurchaseRequestsTableColumns() {
     columnHelper.display({
       id: "actions",
       cell: ({ row }) => {
-        const hashRoute = `editar-solicitacao?solicitacao=${row.original.id}`;
         return (
           <div className="flex items-center gap-2">
-            <Link href={`${pathname}?${searchParams?.toString()}#${hashRoute}`}>
+            <Link
+              href={`${pathname}?${searchParams?.toString()}#editar-solicitacao?solicitacao=${row.original.id}`}
+            >
               <Button size="sm" variant="ghost">
                 <PencilIcon className="h-4 w-4" />
                 <span className="sr-only">Editar</span>
               </Button>
             </Link>
+            {row.original.status === "REQUESTED" ? (
+              <>
+                <Link
+                  href={`${pathname}?${searchParams?.toString()}#cancelar-solicitacao?solicitacao=${row.original.id}`}
+                >
+                  <Button
+                    className="text-red-600 hover:text-red-800"
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <XMarkIcon className="h-4 w-4" />
+                    <span className="sr-only">Cancelar</span>
+                  </Button>
+                </Link>
+                <Link
+                  href={`${pathname}?${searchParams?.toString()}#aprovar-solicitacao?solicitacao=${row.original.id}`}
+                >
+                  <Button
+                    className="text-green-600 hover:text-green-800"
+                    size="sm"
+                    variant="ghost"
+                  >
+                    <CheckIcon className="h-4 w-4" />
+                    <span className="sr-only">Aprovar</span>
+                  </Button>
+                </Link>
+              </>
+            ) : null}
             <Button
               className="text-red-600 hover:text-red-800"
               size="sm"

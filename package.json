@@ -4,29 +4,34 @@
   "engines": {
     "node": ">=20.12.0"
   },
-  "packageManager": "pnpm@9.1.4",
+  "packageManager": "pnpm@9.4.0",
   "scripts": {
-    "build": "pnpm with-env turbo build",
+    "build": "turbo run build",
     "clean": "git clean -xdf node_modules",
-    "start": "pnpm with-env turbo start",
-    "clean:workspaces": "turbo clean",
-    "db:generate": "pnpm with-env turbo db:generate",
-    "db:push": "pnpm with-env turbo db:push db:generate",
-    "dev": "pnpm with-env turbo dev --parallel",
-    "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
-    "lint": "turbo lint",
-    "lint:fix": "turbo lint:fix",
-    "type-check": "turbo type-check",
-    "with-env": "dotenv -e .env --"
+    "clean:workspaces": "turbo run clean",
+    "db:push": "turbo -F @acme/db push",
+    "db:studio": "turbo -F @acme/db studio",
+    "db:generate": "turbo -F @acme/db generate",
+    "dev": "turbo watch dev",
+    "dev:anua": "turbo watch dev -F @anua/anua",
+    "dev:conectaprof": "turbo watch dev -F @anua/conectaprof",
+    "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
+    "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
+    "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:fix": "turbo run lint --continue -- --fix --cache --cache-location node_modules/.cache/.eslintcache",
+    "lint:ws": "pnpm dlx sherif@latest",
+    "postinstall": "pnpm lint:ws",
+    "typecheck": "turbo run typecheck",
+    "ui-add": "turbo run ui-add"
   },
   "devDependencies": {
     "@acme/prettier-config": "workspace:^0.1.0",
-    "@turbo/gen": "1.13.3",
+    "@biomejs/biome": "1.8.1",
+    "@turbo/gen": "2.0.4",
     "dotenv-cli": "7.4.2",
     "prettier": "3.2.5",
-    "turbo": "1.13.3",
-    "typescript": "5.4.5",
-    "@biomejs/biome": "1.7.3"
+    "turbo": "2.0.4",
+    "typescript": "5.4.5"
   },
   "prettier": "@acme/prettier-config"
 }

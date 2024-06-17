@@ -49,14 +49,6 @@
     "ui-add": {
       "cache": false,
       "interactive": true
-    },
-    "db:generate": {
-      "cache": false,
-      "interactive": true
-    },
-    "db:push": {
-      "cache": false,
-      "interactive": true
     }
   },
   "globalEnv": [

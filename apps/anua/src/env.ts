@@ -22,6 +22,7 @@ export const env = createEnv({
     MINIO_ACCESS_KEY: z.string(),
     MINIO_SECRET_KEY: z.string(),
     GLITCHTIP_DNS: z.string().optional(),
+    // OPENAI_API_KEY: z.string(),
   },
 
   /**

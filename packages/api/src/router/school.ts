@@ -1,3 +1,5 @@
+import { createOpenAI, openai } from "@ai-sdk/openai";
+import { generateObject, generateText } from "ai";
 import {
   addMinutes,
   format,
@@ -9,7 +11,6 @@ import {
 import { z } from "zod";
 
 import type {
-  CalendarSlot,
   Subject,
   Teacher,
   TeacherAvailability,
@@ -25,6 +26,11 @@ import {
 } from "../trpc";
 import { hoursToDate } from "../utils/hours-to-date";
 import { TeacherHasSubject } from "./../../../db/prisma/generated/types";
+
+const groq = createOpenAI({
+  baseURL: "https://api.groq.com/openai/v1",
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 const scheduleConfigSchema = z.object({
   start: z.string(),

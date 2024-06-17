@@ -14,6 +14,13 @@ export type Calendar = {
   updatedAt: Timestamp;
   isActive: Generated<number>;
 };
+export type CalendarConfig = {
+  id: string;
+  classesConfig: unknown | null;
+  classesClashConfig: unknown | null;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
 export type CalendarSlot = {
   id: string;
   teacherHasClassId: string | null;
@@ -258,6 +265,7 @@ export type UserLikedPost = {
 };
 export type DB = {
   Calendar: Calendar;
+  CalendarConfig: CalendarConfig;
   CalendarSlot: CalendarSlot;
   Canteen: Canteen;
   CanteenItem: CanteenItem;
