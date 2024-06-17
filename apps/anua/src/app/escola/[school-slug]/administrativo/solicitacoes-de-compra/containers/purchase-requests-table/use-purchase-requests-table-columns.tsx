@@ -362,7 +362,7 @@ export function usePurchaseRequestsTableColumns() {
             ) : null}
             {row.original.status === "BOUGHT" ? (
               <Link
-                href={`${pathname}?${searchParams?.toString()}#solicitacao-comprada?solicitacao=${row.original.id}`}
+                href={`${pathname}?${searchParams?.toString()}#solicitacao-chegou?solicitacao=${row.original.id}`}
               >
                 <Button
                   className="text-green-600 hover:text-green-800"

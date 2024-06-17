@@ -9,6 +9,7 @@ import { api, createSSRHelper } from "~/trpc/server";
 import { ApprovePurchaseRequestModalListener } from "./_components/approve-purchase-request-modal-listener";
 import { EditPurchaseRequestModalListener } from "./_components/edit-purchase-request-modal-listener";
 import { NewPurchaseRequestModalListener } from "./_components/new-purchase-request-modal-listener";
+import { RejectPurchaseRequestModalListener } from "./_components/reject-purchase-request-modal-listener";
 import { PurchaseRequestsTableV2 } from "./containers/purchase-requests-table";
 
 export default async function TeachersPage({
@@ -50,6 +51,7 @@ export default async function TeachersPage({
       <EditPurchaseRequestModalListener />
       <NewPurchaseRequestModalListener />
       <ApprovePurchaseRequestModalListener />
+      <RejectPurchaseRequestModalListener />
       <Suspense>
         <PurchaseRequestsTableV2 />
       </Suspense>

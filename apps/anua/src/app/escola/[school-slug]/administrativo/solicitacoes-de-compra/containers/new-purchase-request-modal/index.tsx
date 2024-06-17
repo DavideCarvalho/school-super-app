@@ -60,7 +60,7 @@ export function NewPurchaseRequestModal({
   const { mutateAsync: createPurchaseRequestMutation } =
     api.purchaseRequest.create.useMutation();
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
+  async function onSubmit(data: z.infer<typeof schema>) {
     const toastId = toast.loading("Criando solicitação de compra...");
     try {
       await createPurchaseRequestMutation({
@@ -82,7 +82,7 @@ export function NewPurchaseRequestModal({
     } finally {
       toast.dismiss(toastId);
     }
-  };
+  }
 
   const now = dayjs();
   const watchDueDate = watch("dueDate");
