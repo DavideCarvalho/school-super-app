@@ -2,6 +2,8 @@ import type { Column } from "@tanstack/react-table";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
+  ArrowDownIcon,
+  ArrowUpIcon,
   CheckIcon,
   MapPinIcon,
   PencilIcon,
@@ -13,11 +15,23 @@ import { createColumnHelper } from "@tanstack/react-table";
 import toast from "react-hot-toast";
 
 import type { RouterOutputs } from "@acme/api";
+import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@acme/ui/hover-card";
 import {
   MultiSelectFilter,
   multiSelectFilterFn,
 } from "@acme/ui/table-with-pagination/_components/multi-select-filter";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@acme/ui/tooltip";
 
 import { api } from "~/trpc/react";
 import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
@@ -60,24 +74,6 @@ export function usePurchaseRequestsTableColumns() {
   const columnHelper =
     createColumnHelper<RouterOutputs["purchaseRequest"]["allBySchoolId"][0]>();
 
-  const { mutateAsync: deleteUser } = api.user.deleteById.useMutation();
-
-  async function handleDeleteWorker(workerId: string) {
-    const toastId = toast.loading("Removendo solicitação de compra...");
-    try {
-      await deleteUser({ userId: workerId });
-      toast.success("Solicitação de compra removida com sucesso!");
-    } catch (e) {
-      toast.error("Erro ao remover solicitação de compra");
-    } finally {
-      toast.dismiss(toastId);
-      await Promise.all([
-        utils.purchaseRequest.allBySchoolId.invalidate(),
-        utils.purchaseRequest.countAllBySchoolId.invalidate(),
-      ]);
-    }
-  }
-
   const { mutateAsync: deletePurchaseRequest } =
     api.purchaseRequest.deleteById.useMutation();
 
@@ -116,36 +112,98 @@ export function usePurchaseRequestsTableColumns() {
         ),
       },
     }),
-    columnHelper.accessor("quantity", {
-      id: "quantidade",
-      header: "Quantidade",
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
-    columnHelper.accessor((row) => brazilianRealFormatter(row.value), {
+    columnHelper.accessor(
+      (row) => (row.finalQuantity ? row.finalQuantity : row.quantity),
+      {
+        id: "quantidade",
+        header: "Quantidade",
+        enableColumnFilter: false,
+        enableSorting: false,
+        cell: ({ row }) => {
+          if (row.original.finalQuantity) {
+            return (
+              <div>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <p
+                      className={cn(
+                        row.original.finalQuantity > row.original.quantity
+                          ? "text-red-500"
+                          : "text-green-500",
+                      )}
+                    >
+                      {row.original.finalQuantity > row.original.quantity ? (
+                        <ArrowUpIcon />
+                      ) : (
+                        <ArrowDownIcon />
+                      )}
+                      {row.original.finalQuantity}*
+                    </p>
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <p>Quantidade pedida: {row.original.value}</p>
+                    <p>Quantidade comprada: {row.original.finalQuantity}</p>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+            );
+          }
+          return <p>{row.original.quantity}</p>;
+        },
+      },
+    ),
+    columnHelper.accessor((row) => row.finalValue ?? row.value, {
       id: "valor",
       header: "Valor",
       enableColumnFilter: false,
       enableSorting: false,
+      cell: ({ row }) => {
+        if (row.original.status === "BOUGHT") {
+          if (row.original.finalValue) {
+            return (
+              <div>
+                <HoverCard>
+                  <HoverCardTrigger>
+                    <p>
+                      {row.original.value > row.original.finalValue ? (
+                        <ArrowUpIcon />
+                      ) : (
+                        <ArrowDownIcon />
+                      )}
+                      {row.original.finalValue}*
+                    </p>
+                  </HoverCardTrigger>
+                  <HoverCardContent>
+                    <p>
+                      Valor informado:{" "}
+                      {brazilianRealFormatter(row.original.value)}
+                    </p>
+                    <p>
+                      Valor comprado:{" "}
+                      {brazilianRealFormatter(row.original.finalValue)}
+                    </p>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+            );
+          }
+          return <p>{row.original.quantity}</p>;
+        }
+        return <p>{row.original.quantity}</p>;
+      },
     }),
-    columnHelper.accessor(
-      (row) => (row.finalQuantity ? "finalQuantity" : "-"),
-      {
-        id: "quantidade-comprada",
-        header: "Quantidade comprada",
-        enableColumnFilter: false,
-        enableSorting: false,
-      },
-    ),
-    columnHelper.accessor(
-      (row) => (row.finalValue ? brazilianRealFormatter(row.finalValue) : "-"),
-      {
-        id: "valor-total-comprado",
-        header: "Valor comprado",
-        enableColumnFilter: false,
-        enableSorting: false,
-      },
-    ),
+    // columnHelper.accessor(
+    //   (row) =>
+    //     row.finalValue
+    //       ? brazilianRealFormatter(row.finalValue)
+    //       : brazilianRealFormatter(row.value),
+    //   {
+    //     id: "valor",
+    //     header: "Valor",
+    //     enableColumnFilter: false,
+    //     enableSorting: false,
+    //   },
+    // ),
     columnHelper.accessor((row) => brazilianDateFormatter(row.dueDate), {
       id: "pra-quando",
       header: "Pra quando?",
@@ -154,19 +212,11 @@ export function usePurchaseRequestsTableColumns() {
     }),
     columnHelper.accessor(
       (row) =>
-        row.estimatedArrivalDate
-          ? brazilianDateFormatter(row.estimatedArrivalDate)
-          : "-",
-      {
-        id: "data-de-chegada-estimada",
-        header: "Data de chegada estimada",
-        enableColumnFilter: false,
-        enableSorting: false,
-      },
-    ),
-    columnHelper.accessor(
-      (row) =>
-        row.arrivalDate ? brazilianDateFormatter(row.arrivalDate) : "-",
+        row.arrivalDate
+          ? brazilianDateFormatter(row.arrivalDate)
+          : row.estimatedArrivalDate
+            ? brazilianDateFormatter(row.estimatedArrivalDate)
+            : "-",
       {
         id: "data-de-chegada",
         header: "Data de chegada",
@@ -200,65 +250,115 @@ export function usePurchaseRequestsTableColumns() {
           <div className="flex items-center gap-2">
             {row.original.status === "REQUESTED" ||
             row.original.status === "REJECTED" ? (
-              <Link
-                href={`${pathname}?${searchParams?.toString()}#editar-solicitacao?solicitacao=${row.original.id}`}
-              >
-                <Button size="sm" variant="ghost">
-                  <PencilIcon className="h-4 w-4" />
-                  <span className="sr-only">Editar</span>
-                </Button>
-                <Button
-                  className="text-red-600 hover:text-red-800"
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDeletePurchaseRequest(row.original.id)}
-                >
-                  <TrashIcon className="h-4 w-4 text-red-500" />
-                  <span className="sr-only">Remover</span>
-                </Button>
-              </Link>
+              <>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`${pathname}?${searchParams?.toString()}#editar-solicitacao?solicitacao=${row.original.id}`}
+                      >
+                        <Button size="sm" variant="ghost">
+                          <PencilIcon className="h-4 w-4" />
+                          <span className="sr-only">Editar</span>
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Editar solicitação</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="text-red-600 hover:text-red-800"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() =>
+                          handleDeletePurchaseRequest(row.original.id)
+                        }
+                      >
+                        <TrashIcon className="h-4 w-4 text-red-500" />
+                        <span className="sr-only">Remover</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Remover solicitação</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </>
             ) : null}
             {row.original.status === "REQUESTED" ? (
               <>
-                <Link
-                  href={`${pathname}?${searchParams?.toString()}#rejeitar-solicitacao?solicitacao=${row.original.id}`}
-                >
-                  <Button
-                    className="text-red-600 hover:text-red-800"
-                    size="sm"
-                    variant="ghost"
-                  >
-                    <XMarkIcon className="h-4 w-4" />
-                    <span className="sr-only">Rejeitar</span>
-                  </Button>
-                </Link>
-                <Link
-                  href={`${pathname}?${searchParams?.toString()}#aprovar-solicitacao?solicitacao=${row.original.id}`}
-                >
-                  <Button
-                    className="text-green-600 hover:text-green-800"
-                    size="sm"
-                    variant="ghost"
-                  >
-                    <CheckIcon className="h-4 w-4" />
-                    <span className="sr-only">Aprovar</span>
-                  </Button>
-                </Link>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`${pathname}?${searchParams?.toString()}#rejeitar-solicitacao?solicitacao=${row.original.id}`}
+                      >
+                        <Button
+                          className="text-red-600 hover:text-red-800"
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <XMarkIcon className="h-4 w-4" />
+                          <span className="sr-only">Rejeitar</span>
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Rejeitar solicitação</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={`${pathname}?${searchParams?.toString()}#aprovar-solicitacao?solicitacao=${row.original.id}`}
+                      >
+                        <Button
+                          className="text-green-600 hover:text-green-800"
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <CheckIcon className="h-4 w-4" />
+                          <span className="sr-only">Aprovar</span>
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Aprovar solicitação</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </>
             ) : null}
             {row.original.status === "APPROVED" ? (
-              <Link
-                href={`${pathname}?${searchParams?.toString()}#solicitacao-comprada?solicitacao=${row.original.id}`}
-              >
-                <Button
-                  className="text-green-600 hover:text-green-800"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <ShoppingCartIcon className="h-4 w-4" />
-                  <span className="sr-only">Comprado</span>
-                </Button>
-              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={`${pathname}?${searchParams?.toString()}#solicitacao-comprada?solicitacao=${row.original.id}`}
+                    >
+                      <Button
+                        className="text-green-600 hover:text-green-800"
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <ShoppingCartIcon className="h-4 w-4" />
+                        <span className="sr-only">Comprado</span>
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Aprovar solicitação</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ) : null}
             {row.original.status === "BOUGHT" ? (
               <Link

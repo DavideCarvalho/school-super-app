@@ -1,11 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
-import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
 import {
@@ -15,25 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@acme/ui/dialog";
-import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
-import { Textarea } from "@acme/ui/textarea";
 
 import { api } from "~/trpc/react";
+import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
-
-const schema = z
-  .object({
-    productName: z.string({ required_error: "Qual nome do produto?" }),
-    quantity: z.coerce.number({ required_error: "Qual a quantidade?" }).min(1),
-    unitValue: z.coerce
-      .number({ required_error: "Quanto custa cada um?" })
-      .min(0),
-    dueDate: z.date(),
-    productUrl: z.string().optional(),
-    description: z.string().optional(),
-  })
-  .required();
 
 interface ApprovePurchaseRequestModalProps {
   purchaseRequestId: string;
@@ -48,17 +29,6 @@ export function ApprovePurchaseRequestModal({
   onClickCancel,
   onClickSubmit,
 }: ApprovePurchaseRequestModalProps) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    watch,
-    setValue,
-  } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-  });
-
   const { mutateAsync: approvePurchaseRequest } =
     api.purchaseRequest.approvePurchaseRequest.useMutation();
 
@@ -71,19 +41,7 @@ export function ApprovePurchaseRequestModal({
     },
   );
 
-  useEffect(() => {
-    if (!purchaseRequest) return;
-    setValue("productName", purchaseRequest.productName);
-    setValue("quantity", purchaseRequest.quantity);
-    setValue("unitValue", purchaseRequest.unitValue);
-    setValue("dueDate", purchaseRequest.dueDate);
-    if (purchaseRequest.productUrl)
-      setValue("productUrl", purchaseRequest.productUrl);
-    if (purchaseRequest.description)
-      setValue("description", purchaseRequest.description);
-  }, [purchaseRequest, setValue]);
-
-  async function onSubmit() {
+  async function onApprovePurchaseRequest() {
     const toastId = toast.loading("Aprovando solicitação de compra...");
     try {
       await approvePurchaseRequest({
@@ -91,7 +49,6 @@ export function ApprovePurchaseRequestModal({
       });
       toast.dismiss(toastId);
       toast.success("Solicitação de compra aprovada com sucesso!");
-      reset();
       await onClickSubmit();
     } catch (e) {
       toast.dismiss(toastId);
@@ -101,103 +58,61 @@ export function ApprovePurchaseRequestModal({
     }
   }
 
-  const now = dayjs();
-  const watchDueDate = watch("dueDate");
-  const watchUnitValue = watch("unitValue", 0);
-  const watchQuantity = watch("quantity", 0);
-  if (!watchDueDate) {
-    setValue("dueDate", now.add(2, "day").toDate());
-  }
-
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
       <DialogContent className="sm:max-w-[600px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Nova solicitação de compra</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-6 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="productName">Qual é o produto?*</Label>
-              <Input
-                placeholder="Giz de cera"
-                {...register("productName")}
-                readOnly={true}
-              />
-              {errors.productName && (
-                <p className="text-red-600">{errors.productName.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="quantity">Quantos você precisa?*</Label>
-              <Input
-                type="number"
-                min={1}
-                placeholder="2"
-                {...register("quantity")}
-                readOnly={true}
-              />
-              {errors.quantity && (
-                <p className="text-red-600">{errors.quantity.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="unitValue">Quanto custa cada um?*</Label>
-              <Input
-                type="number"
-                step="any"
-                min={1}
-                placeholder="10.00"
-                {...register("unitValue")}
-                readOnly={true}
-              />
-              {errors.unitValue && (
-                <p className="text-red-600">{errors.unitValue.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label>Quanto custa no total?</Label>
-              <p>{brazilianRealFormatter(watchUnitValue * watchQuantity)}</p>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="dueDate">Pra quando?*</Label>
-              <Input type="date" {...register("dueDate")} readOnly={true} />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="productUrl">Link do produto</Label>
-              <Input
-                placeholder="Link do produto"
-                {...register("productUrl")}
-                readOnly={true}
-              />
-              {errors.productUrl && (
-                <p className="text-red-600">{errors.productUrl.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">Alguma observação?</Label>
-              <Textarea
-                rows={4}
-                placeholder="Observações"
-                {...register("description")}
-                readOnly={true}
-              />
-              {errors.description && (
-                <p className="text-red-600">{errors.description?.message}</p>
-              )}
-            </div>
+        <DialogHeader>
+          <DialogTitle>Aprovar solicitação de compra</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-6 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="productName">Qual é o produto?*</Label>
+            <p>{purchaseRequest?.productName}</p>
           </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onClickCancel()}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit">Criar</Button>
-          </DialogFooter>
-        </form>
+          <div className="grid gap-2">
+            <Label htmlFor="quantity">Quantos você precisa?*</Label>
+            <p>{purchaseRequest?.quantity ?? 0}</p>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="unitValue">Quanto custa cada um?*</Label>
+            <p>{brazilianRealFormatter(purchaseRequest?.unitValue ?? 0)}</p>
+          </div>
+          <div className="grid gap-2">
+            <Label>Quanto custa no total?</Label>
+            <p>
+              {brazilianRealFormatter(
+                (purchaseRequest?.unitValue ?? 0) *
+                  (purchaseRequest?.quantity ?? 0),
+              )}
+            </p>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="dueDate">Pra quando?*</Label>
+            <p>
+              {brazilianDateFormatter(purchaseRequest?.dueDate ?? new Date())}
+            </p>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="productUrl">Link do produto</Label>
+            <p>{purchaseRequest?.productUrl ?? ""}</p>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="description">Alguma observação?</Label>
+            <p>{purchaseRequest?.description ?? ""}</p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onClickCancel()}
+          >
+            Cancelar
+          </Button>
+          <Button type="button" onClick={onApprovePurchaseRequest}>
+            Aprovar
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
