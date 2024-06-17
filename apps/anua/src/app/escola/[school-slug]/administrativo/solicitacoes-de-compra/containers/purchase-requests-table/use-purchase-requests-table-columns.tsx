@@ -3,7 +3,9 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   CheckIcon,
+  MapPinIcon,
   PencilIcon,
+  ShoppingCartIcon,
   TrashIcon,
   XMarkIcon,
 } from "@heroicons/react/20/solid";
@@ -70,18 +72,19 @@ export function usePurchaseRequestsTableColumns() {
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
-        utils.teacher.getSchoolTeachers.invalidate(),
-        utils.teacher.countSchoolTeachers.invalidate(),
+        utils.purchaseRequest.allBySchoolId.invalidate(),
+        utils.purchaseRequest.countAllBySchoolId.invalidate(),
       ]);
     }
   }
 
-  const { mutateAsync: deleteTeacher } = api.teacher.deleteById.useMutation();
+  const { mutateAsync: deletePurchaseRequest } =
+    api.purchaseRequest.deleteById.useMutation();
 
   async function handleDeletePurchaseRequest(purchaseRequestId: string) {
     const toastId = toast.loading("Removendo professor...");
     try {
-      // await deleteTeacher({ userId: teacherId });
+      await deletePurchaseRequest({ id: purchaseRequestId });
       toast.success("Professor removido com sucesso!");
     } catch (e) {
       toast.error("Erro ao remover professor");
@@ -195,18 +198,30 @@ export function usePurchaseRequestsTableColumns() {
       cell: ({ row }) => {
         return (
           <div className="flex items-center gap-2">
-            <Link
-              href={`${pathname}?${searchParams?.toString()}#editar-solicitacao?solicitacao=${row.original.id}`}
-            >
-              <Button size="sm" variant="ghost">
-                <PencilIcon className="h-4 w-4" />
-                <span className="sr-only">Editar</span>
-              </Button>
-            </Link>
+            {row.original.status === "REQUESTED" ||
+            row.original.status === "REJECTED" ? (
+              <Link
+                href={`${pathname}?${searchParams?.toString()}#editar-solicitacao?solicitacao=${row.original.id}`}
+              >
+                <Button size="sm" variant="ghost">
+                  <PencilIcon className="h-4 w-4" />
+                  <span className="sr-only">Editar</span>
+                </Button>
+                <Button
+                  className="text-red-600 hover:text-red-800"
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => handleDeletePurchaseRequest(row.original.id)}
+                >
+                  <TrashIcon className="h-4 w-4 text-red-500" />
+                  <span className="sr-only">Remover</span>
+                </Button>
+              </Link>
+            ) : null}
             {row.original.status === "REQUESTED" ? (
               <>
                 <Link
-                  href={`${pathname}?${searchParams?.toString()}#cancelar-solicitacao?solicitacao=${row.original.id}`}
+                  href={`${pathname}?${searchParams?.toString()}#rejeitar-solicitacao?solicitacao=${row.original.id}`}
                 >
                   <Button
                     className="text-red-600 hover:text-red-800"
@@ -214,7 +229,7 @@ export function usePurchaseRequestsTableColumns() {
                     variant="ghost"
                   >
                     <XMarkIcon className="h-4 w-4" />
-                    <span className="sr-only">Cancelar</span>
+                    <span className="sr-only">Rejeitar</span>
                   </Button>
                 </Link>
                 <Link
@@ -231,15 +246,34 @@ export function usePurchaseRequestsTableColumns() {
                 </Link>
               </>
             ) : null}
-            <Button
-              className="text-red-600 hover:text-red-800"
-              size="sm"
-              variant="ghost"
-              onClick={() => handleDeletePurchaseRequest(row.original.id)}
-            >
-              <TrashIcon className="h-4 w-4 text-red-500" />
-              <span className="sr-only">Remover</span>
-            </Button>
+            {row.original.status === "APPROVED" ? (
+              <Link
+                href={`${pathname}?${searchParams?.toString()}#solicitacao-comprada?solicitacao=${row.original.id}`}
+              >
+                <Button
+                  className="text-green-600 hover:text-green-800"
+                  size="sm"
+                  variant="ghost"
+                >
+                  <ShoppingCartIcon className="h-4 w-4" />
+                  <span className="sr-only">Comprado</span>
+                </Button>
+              </Link>
+            ) : null}
+            {row.original.status === "BOUGHT" ? (
+              <Link
+                href={`${pathname}?${searchParams?.toString()}#solicitacao-comprada?solicitacao=${row.original.id}`}
+              >
+                <Button
+                  className="text-green-600 hover:text-green-800"
+                  size="sm"
+                  variant="ghost"
+                >
+                  <MapPinIcon className="h-4 w-4" />
+                  <span className="sr-only">Chegou</span>
+                </Button>
+              </Link>
+            ) : null}
           </div>
         );
       },

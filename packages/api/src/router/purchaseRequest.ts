@@ -139,11 +139,11 @@ export const purchaseRequestRouter = createTRPCRouter({
         },
       });
     }),
-  deleteById: publicProcedure
+  deleteById: isUserLoggedInAndAssignedToSchool
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const purchaseRequest = await ctx.prisma.purchaseRequest.findUnique({
-        where: { id: input.id },
+        where: { id: input.id, schoolId: ctx.session.school.id },
       });
       if (!purchaseRequest) {
         throw new Error("Purchase request not found");
