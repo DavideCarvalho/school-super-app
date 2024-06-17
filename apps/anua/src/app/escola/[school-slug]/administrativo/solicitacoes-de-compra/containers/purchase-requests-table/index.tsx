@@ -26,7 +26,7 @@ export function PurchaseRequestsTableV2() {
       id: "status",
       value: searchParams?.getAll("status"),
     },
-  ] as const;
+  ];
 
   const page = searchParams?.has("page") ? Number(searchParams.get("page")) : 1;
   const size = searchParams?.has("size")
@@ -45,13 +45,13 @@ export function PurchaseRequestsTableV2() {
     api.purchaseRequest.allBySchoolId.useQuery({
       size,
       page,
-      products: filters[0]?.length ? filters[0] : undefined,
+      products: filters[0]?.value?.length ? filters[0].value : undefined,
       statuses: statusesFiltered.length ? statusesFiltered : undefined,
     });
 
   const { data: purchaseRequestsCount } =
     api.purchaseRequest.countAllBySchoolId.useQuery({
-      products: filters[0]?.length ? filters[0] : undefined,
+      products: filters[0]?.value?.length ? filters[0].value : undefined,
       statuses: statusesFiltered.length ? statusesFiltered : undefined,
     });
 
