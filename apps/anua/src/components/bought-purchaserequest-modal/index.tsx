@@ -70,7 +70,6 @@ export function BoughtPurchaseRequestModal({
     try {
       const receiptFile = data.receiptFile as File;
       const { signedUrl } = await createBoughtPurchaseRequestFileSignedUrl({
-        schoolId,
         purchaseRequestId: purchaseRequest.id,
         fileName: receiptFile.name,
       });
@@ -85,7 +84,6 @@ export function BoughtPurchaseRequestModal({
         finalValue: data.finalQuantity * data.finalUnitValue,
         receiptFileName: receiptFile.name,
         id: purchaseRequest.id,
-        schoolId,
       });
       toast.success("Solicitação de compra alterada com sucesso!");
       onCreated();

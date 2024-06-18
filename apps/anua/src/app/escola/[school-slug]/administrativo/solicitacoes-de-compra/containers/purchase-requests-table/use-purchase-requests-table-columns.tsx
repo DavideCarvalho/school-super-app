@@ -355,7 +355,7 @@ export function usePurchaseRequestsTableColumns() {
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Aprovar solicitação</p>
+                    <p>Solicitação comprada</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>

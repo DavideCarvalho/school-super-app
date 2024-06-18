@@ -7,6 +7,7 @@ import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
 import { ApprovePurchaseRequestModalListener } from "./_components/approve-purchase-request-modal-listener";
+import { BoughtPurchaseRequestModalListener } from "./_components/bought-purchase-request-modal-listener";
 import { EditPurchaseRequestModalListener } from "./_components/edit-purchase-request-modal-listener";
 import { NewPurchaseRequestModalListener } from "./_components/new-purchase-request-modal-listener";
 import { RejectPurchaseRequestModalListener } from "./_components/reject-purchase-request-modal-listener";
@@ -52,6 +53,7 @@ export default async function TeachersPage({
       <NewPurchaseRequestModalListener />
       <ApprovePurchaseRequestModalListener />
       <RejectPurchaseRequestModalListener />
+      <BoughtPurchaseRequestModalListener />
       <Suspense>
         <PurchaseRequestsTableV2 />
       </Suspense>

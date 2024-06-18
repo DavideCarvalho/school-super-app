@@ -155,42 +155,41 @@ export const purchaseRequestRouter = createTRPCRouter({
       }
       return ctx.prisma.purchaseRequest.delete({ where: { id: input.id } });
     }),
-  approvePurchaseRequest: publicProcedure
+  approvePurchaseRequest: isUserLoggedInAndAssignedToSchool
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.purchaseRequest.update({
-        where: { id: input.id },
+        where: { id: input.id, schoolId: ctx.session.school.id },
         data: { status: "APPROVED" },
       });
     }),
-  arrivedPurchaseRequest: publicProcedure
+  arrivedPurchaseRequest: isUserLoggedInAndAssignedToSchool
     .input(z.object({ id: z.string(), arrivalDate: z.date() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.purchaseRequest.update({
-        where: { id: input.id },
+        where: { id: input.id, schoolId: ctx.session.school.id },
         data: { status: "ARRIVED", arrivalDate: input.arrivalDate },
       });
     }),
-  createBoughtPurchaseRequestFileSignedUrl: publicProcedure
+  createBoughtPurchaseRequestFileSignedUrl: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
+        schoolId: z.string().optional(),
         purchaseRequestId: z.string(),
         fileName: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const signedUrl = await minioClient.presignedPutObject(
         "anua",
-        `/school/${input.schoolId}/purchase-request/${input.fileName}`,
+        `/school/${ctx.session.school.id}/purchase-request/${input.fileName}`,
         60 * 60,
       );
       return { signedUrl };
     }),
-  boughtPurchaseRequest: publicProcedure
+  boughtPurchaseRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         id: z.string(),
         finalQuantity: z.number(),
         finalUnitValue: z.number(),
@@ -201,7 +200,7 @@ export const purchaseRequestRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.purchaseRequest.update({
-        where: { id: input.id },
+        where: { id: input.id, schoolId: ctx.session.school.id },
         data: {
           status: "BOUGHT",
           finalQuantity: input.finalQuantity,

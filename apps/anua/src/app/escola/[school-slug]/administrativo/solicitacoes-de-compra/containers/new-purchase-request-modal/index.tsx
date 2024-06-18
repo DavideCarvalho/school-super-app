@@ -57,13 +57,13 @@ export function NewPurchaseRequestModal({
     resolver: zodResolver(schema),
   });
 
-  const { mutateAsync: createPurchaseRequestMutation } =
+  const { mutateAsync: createPurchaseRequest } =
     api.purchaseRequest.create.useMutation();
 
   async function onSubmit(data: z.infer<typeof schema>) {
     const toastId = toast.loading("Criando solicitação de compra...");
     try {
-      await createPurchaseRequestMutation({
+      await createPurchaseRequest({
         quantity: data.quantity,
         productUrl: data.productUrl,
         productName: data.productName,
