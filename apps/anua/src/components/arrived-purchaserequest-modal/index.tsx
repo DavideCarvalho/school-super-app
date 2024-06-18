@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { useForm } from "react-hook-form";
@@ -35,11 +34,6 @@ export function ArrivedPurchaseRequestModal({
   >({
     resolver: zodResolver(schema),
   });
-
-  useEffect(() => {
-    if (!purchaseRequest) return;
-    setValue("arrivalDate", purchaseRequest.estimatedArrivalDate!);
-  }, [open, purchaseRequest, setValue]);
 
   const { mutateAsync: arrivedPurchaseRequest } =
     api.purchaseRequest.arrivedPurchaseRequest.useMutation();
