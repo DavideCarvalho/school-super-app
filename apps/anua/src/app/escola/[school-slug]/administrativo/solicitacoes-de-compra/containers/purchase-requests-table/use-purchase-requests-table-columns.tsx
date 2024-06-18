@@ -163,7 +163,10 @@ export function usePurchaseRequestsTableColumns() {
         const value = row.original.finalValue ?? row.original.value;
         const quantity = row.original.finalQuantity ?? row.original.quantity;
         let textColor = "text-green-500";
-        if (row.original.finalValue > row.original.value) {
+        if (
+          row.original.finalValue != null &&
+          row.original?.finalValue > row.original.value
+        ) {
           textColor = "text-red-500";
         }
         if (row.original.finalValue) {
