@@ -125,20 +125,22 @@ export function usePurchaseRequestsTableColumns() {
               <div>
                 <HoverCard>
                   <HoverCardTrigger>
-                    <p
-                      className={cn(
-                        row.original.quantity > row.original.finalQuantity
-                          ? "text-red-500"
-                          : "text-green-500",
-                      )}
-                    >
+                    <div className="flex">
                       {row.original.finalQuantity > row.original.quantity ? (
-                        <ArrowUpIcon className="h-4 w-4" />
+                        <ArrowUpIcon className="h-5 w-5" />
                       ) : (
-                        <ArrowDownIcon className="h-4 w-4" />
+                        <ArrowDownIcon className="h-5 w-5 text-red-500" />
                       )}
-                      {row.original.finalQuantity}*
-                    </p>
+                      <p
+                        className={cn(
+                          row.original.quantity > row.original.finalQuantity
+                            ? "text-red-500"
+                            : "text-green-500",
+                        )}
+                      >
+                        {row.original.finalQuantity}*
+                      </p>
+                    </div>
                   </HoverCardTrigger>
                   <HoverCardContent>
                     <p>Quantidade pedida: {row.original.value}</p>
@@ -158,36 +160,46 @@ export function usePurchaseRequestsTableColumns() {
       enableColumnFilter: false,
       enableSorting: false,
       cell: ({ row }) => {
-        if (row.original.status === "BOUGHT") {
-          if (row.original.finalValue) {
-            return (
-              <div>
-                <HoverCard>
-                  <HoverCardTrigger>
-                    <p>
-                      {row.original.finalValue > row.original.value ? (
-                        <ArrowUpIcon className="h-4 w-4" />
-                      ) : (
-                        <ArrowDownIcon className="h-4 w-4" />
-                      )}
-                      {row.original.finalValue}*
+        const value = row.original.finalValue ?? row.original.value;
+        const quantity = row.original.finalQuantity ?? row.original.quantity;
+        let textColor = "text-green-500";
+        if (row.original.finalValue > row.original.value) {
+          textColor = "text-red-500";
+        }
+        if (row.original.finalValue) {
+          return (
+            <div>
+              <HoverCard>
+                <HoverCardTrigger>
+                  <div className="flex">
+                    {row.original.finalValue > row.original.value ? (
+                      <ArrowUpIcon className={`h-5 w-5 ${textColor}`} />
+                    ) : null}
+                    {row.original.finalValue < row.original.value ? (
+                      <ArrowDownIcon className={`h-5 w-5 ${textColor}`} />
+                    ) : null}
+                    <p className={textColor}>
+                      {brazilianRealFormatter(value * quantity)}*
                     </p>
-                  </HoverCardTrigger>
-                  <HoverCardContent>
-                    <p>
-                      Valor informado:{" "}
-                      {brazilianRealFormatter(row.original.value)}
-                    </p>
-                    <p>
-                      Valor comprado:{" "}
-                      {brazilianRealFormatter(row.original.finalValue)}
-                    </p>
-                  </HoverCardContent>
-                </HoverCard>
-              </div>
-            );
-          }
-          return <p>{row.original.quantity}</p>;
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent>
+                  <p>
+                    Valor unitário informado:{" "}
+                    {brazilianRealFormatter(row.original.value)}
+                  </p>
+                  <p>
+                    Valor unitário comprado:{" "}
+                    {brazilianRealFormatter(row.original.finalValue)}
+                  </p>
+                  <p>
+                    Valor total comprado:{" "}
+                    {brazilianRealFormatter(value * quantity)}
+                  </p>
+                </HoverCardContent>
+              </HoverCard>
+            </div>
+          );
         }
         return <p>{row.original.quantity}</p>;
       },
