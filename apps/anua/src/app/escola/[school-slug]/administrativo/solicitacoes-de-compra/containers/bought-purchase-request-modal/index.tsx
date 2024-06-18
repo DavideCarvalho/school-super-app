@@ -31,10 +31,10 @@ const schema = z
   .object({
     finalQuantity: z.coerce
       .number({ required_error: "Quantos foram comprados?" })
-      .min(1),
+      .positive("Quantidade deve ser maior que zero"),
     finalUnitValue: z.coerce
       .number({ required_error: "Qual o valor unitário?" })
-      .min(0),
+      .positive("Valor unitário deve ser maior que 0"),
     estimatedArrivalDate: z.date({ required_error: "Previsão de chegada" }),
     purchaseDate: z.date({ required_error: "Data da compra" }),
     receiptFile: z.any({ required_error: "Coloque a nota fiscal" }),
@@ -56,6 +56,12 @@ export function BoughtPurchaseRequestModal({
 }: BoughtPurchaseRequestModalProps) {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      finalQuantity: 0,
+      finalUnitValue: 0,
+      estimatedArrivalDate: new Date(),
+      purchaseDate: new Date(),
+    },
   });
 
   const { data: purchaseRequest } = api.purchaseRequest.findById.useQuery(
