@@ -12,6 +12,7 @@ import { EditPurchaseRequestModalListener } from "./_components/edit-purchase-re
 import { NewPurchaseRequestModalListener } from "./_components/new-purchase-request-modal-listener";
 import { RejectPurchaseRequestModalListener } from "./_components/reject-purchase-request-modal-listener";
 import { PurchaseRequestsTableV2 } from "./containers/purchase-requests-table";
+import { mapStatusesInPortugueseToEnum } from "./containers/purchase-requests-table/utils";
 
 export default async function TeachersPage({
   params,
@@ -33,11 +34,25 @@ export default async function TeachersPage({
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
   // TODO: Dar prefetch para PurchaseRequests
-  await helper.teacher.getSchoolTeachers.prefetch({
-    page: Number(url.searchParams.get("page")),
-    limit: Number(url.searchParams.get("limit")),
+  const page = url.searchParams?.has("page")
+    ? Number(url.searchParams.get("page"))
+    : 1;
+  const size = url.searchParams?.has("size")
+    ? Number(url.searchParams?.get("size"))
+    : 10;
+  const products = url.searchParams.getAll("produto");
+  const status = url.searchParams.getAll("status");
+  const statusesMapped = mapStatusesInPortugueseToEnum(status);
+  await helper.purchaseRequest.allBySchoolId.prefetch({
+    page,
+    size,
+    products: products.length ? products : undefined,
+    statuses: statusesMapped.length ? statusesMapped : undefined,
   });
-  await helper.teacher.countSchoolTeachers.prefetch();
+  await helper.purchaseRequest.countAllBySchoolId.prefetch({
+    products: products.length ? products : undefined,
+    statuses: statusesMapped.length ? statusesMapped : undefined,
+  });
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>

@@ -127,15 +127,15 @@ export function usePurchaseRequestsTableColumns() {
                   <HoverCardTrigger>
                     <p
                       className={cn(
-                        row.original.finalQuantity > row.original.quantity
+                        row.original.quantity > row.original.finalQuantity
                           ? "text-red-500"
                           : "text-green-500",
                       )}
                     >
                       {row.original.finalQuantity > row.original.quantity ? (
-                        <ArrowUpIcon />
+                        <ArrowUpIcon className="h-4 w-4" />
                       ) : (
-                        <ArrowDownIcon />
+                        <ArrowDownIcon className="h-4 w-4" />
                       )}
                       {row.original.finalQuantity}*
                     </p>
@@ -165,10 +165,10 @@ export function usePurchaseRequestsTableColumns() {
                 <HoverCard>
                   <HoverCardTrigger>
                     <p>
-                      {row.original.value > row.original.finalValue ? (
-                        <ArrowUpIcon />
+                      {row.original.finalValue > row.original.value ? (
+                        <ArrowUpIcon className="h-4 w-4" />
                       ) : (
-                        <ArrowDownIcon />
+                        <ArrowDownIcon className="h-4 w-4" />
                       )}
                       {row.original.finalValue}*
                     </p>
@@ -192,18 +192,6 @@ export function usePurchaseRequestsTableColumns() {
         return <p>{row.original.quantity}</p>;
       },
     }),
-    // columnHelper.accessor(
-    //   (row) =>
-    //     row.finalValue
-    //       ? brazilianRealFormatter(row.finalValue)
-    //       : brazilianRealFormatter(row.value),
-    //   {
-    //     id: "valor",
-    //     header: "Valor",
-    //     enableColumnFilter: false,
-    //     enableSorting: false,
-    //   },
-    // ),
     columnHelper.accessor((row) => brazilianDateFormatter(row.dueDate), {
       id: "pra-quando",
       header: "Pra quando?",
@@ -361,18 +349,27 @@ export function usePurchaseRequestsTableColumns() {
               </TooltipProvider>
             ) : null}
             {row.original.status === "BOUGHT" ? (
-              <Link
-                href={`${pathname}?${searchParams?.toString()}#solicitacao-chegou?solicitacao=${row.original.id}`}
-              >
-                <Button
-                  className="text-green-600 hover:text-green-800"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <MapPinIcon className="h-4 w-4" />
-                  <span className="sr-only">Chegou</span>
-                </Button>
-              </Link>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href={`${pathname}?${searchParams?.toString()}#solicitacao-chegou?solicitacao=${row.original.id}`}
+                    >
+                      <Button
+                        className="text-green-600 hover:text-green-800"
+                        size="sm"
+                        variant="ghost"
+                      >
+                        <MapPinIcon className="h-4 w-4" />
+                        <span className="sr-only">Chegou</span>
+                      </Button>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Solicitação chegou</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ) : null}
           </div>
         );

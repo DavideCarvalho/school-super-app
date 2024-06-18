@@ -5,11 +5,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import {
-  statusesEnum,
-  statusesInPortuguese,
-  usePurchaseRequestsTableColumns,
-} from "./use-purchase-requests-table-columns";
+import { usePurchaseRequestsTableColumns } from "./use-purchase-requests-table-columns";
+import { mapStatusesInPortugueseToEnum } from "./utils";
 
 export function PurchaseRequestsTableV2() {
   const router = useRouter();
@@ -33,18 +30,14 @@ export function PurchaseRequestsTableV2() {
     ? Number(searchParams?.get("size"))
     : 10;
 
-  const statusesFiltered = (filters[1]?.value ?? [])
-    .filter((v) => v !== "")
-    .map(
-      (status) =>
-        statusesEnum[statusesInPortuguese.findIndex((s) => s === status)],
-    )
-    .filter(Boolean) as unknown as (typeof statusesEnum)[];
+  const statusesFiltered = mapStatusesInPortugueseToEnum(
+    filters[1]?.value ?? [],
+  );
 
   const { data: purchaseRequests, isLoading: isLoadingPurchaseRequests } =
     api.purchaseRequest.allBySchoolId.useQuery({
-      size,
       page,
+      size,
       products: filters[0]?.value?.length ? filters[0].value : undefined,
       statuses: statusesFiltered.length ? statusesFiltered : undefined,
     });

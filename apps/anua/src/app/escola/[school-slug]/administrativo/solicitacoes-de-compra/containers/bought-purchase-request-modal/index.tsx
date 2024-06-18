@@ -195,7 +195,7 @@ export function BoughtPurchaseRequestModal({
             />
             <FormField
               control={form.control}
-              name="estimatedArrivalDate"
+              name="receiptFile"
               render={({ field: { value, onChange, ...fieldProps } }) => (
                 <FormItem>
                   <FormLabel>Selecione a nota fiscal</FormLabel>
