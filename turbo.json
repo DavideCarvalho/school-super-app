@@ -14,7 +14,13 @@
         ".expo/**",
         ".output/**",
         ".vercel/output/**"
-      ]
+      ],
+      "cache": false,
+      "interactive": false
+    },
+    "start": {
+      "interactive": false,
+      "cache": false
     },
     "dev": {
       "persistent": true,
@@ -52,11 +58,11 @@
     },
     "prisma:generate": {
       "cache": false,
-      "interactive": true
+      "interactive": false
     },
     "db:push": {
       "cache": false,
-      "interactive": true
+      "interactive": false
     }
   },
   "globalEnv": [
