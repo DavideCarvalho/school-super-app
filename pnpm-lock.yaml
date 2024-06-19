@@ -611,8 +611,8 @@ importers:
         specifier: 10.4.19
         version: 10.4.19(postcss@8.4.38)
       jiti:
-        specifier: 1.21.0
-        version: 1.21.0
+        specifier: 1.21.6
+        version: 1.21.6
       postcss:
         specifier: 8.4.38
         version: 8.4.38
@@ -5331,6 +5331,10 @@ packages:
 
   jiti@1.21.0:
     resolution: {integrity: sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==}
+    hasBin: true
+
+  jiti@1.21.6:
+    resolution: {integrity: sha512-2yTgeWTWzMWkHu6Jp9NKgePDaYHbntiwvYuuJLbbN9vl7DC9DvXKOB2BC3ZZ92D3cvV/aflH0osDfwpHepQ53w==}
     hasBin: true
 
   jose@4.15.5:
@@ -12071,6 +12075,8 @@ snapshots:
 
   jiti@1.21.0: {}
 
+  jiti@1.21.6: {}
+
   jose@4.15.5: {}
 
   js-beautify@1.15.1:
@@ -13869,7 +13875,7 @@ snapshots:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
       is-glob: 4.0.3
-      jiti: 1.21.0
+      jiti: 1.21.6
       lilconfig: 2.1.0
       micromatch: 4.0.7
       normalize-path: 3.0.0
