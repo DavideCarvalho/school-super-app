@@ -29,7 +29,7 @@
     "@types/nodemailer": "6.4.15",
     "classnames": "2.5.1",
     "eslint": "9.3.0",
-    "framer-motion": "11.2.9",
+    "framer-motion": "11.2.11",
     "prism-react-renderer": "2.3.1",
     "typescript": "5.4.5"
   }
