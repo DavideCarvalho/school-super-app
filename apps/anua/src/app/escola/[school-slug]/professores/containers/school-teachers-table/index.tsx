@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { format } from "date-fns";
 import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
@@ -108,7 +109,7 @@ export function TeachersTable() {
                 <TableCell>
                   {teacher?.Availabilities?.map(
                     (availability) =>
-                      `${daysOfWeekToPortuguese[availability.day as keyof typeof daysOfWeekToPortuguese]} - ${availability.startTime} - ${availability.endTime}`,
+                      `${daysOfWeekToPortuguese[availability.day as keyof typeof daysOfWeekToPortuguese]} - ${format(availability.startTime, "HH:mm")} - ${format(availability.endTime, "HH:mm")}`,
                   )?.join(", ") ?? "-"}
                 </TableCell>
                 <TableCell>
