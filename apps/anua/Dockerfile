@@ -10,6 +10,7 @@ WORKDIR /home/node/app
 # RUN env
 # RUN printenv
 
+RUN npm i -g turbo
 
 RUN npm i -g pnpm
 
