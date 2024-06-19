@@ -22,7 +22,7 @@
     "@clerk/clerk-sdk-node": "5.0.11",
     "@clerk/elements": "^0.4.5",
     "@clerk/localizations": "2.4.4",
-    "@clerk/nextjs": "5.1.3",
+    "@clerk/nextjs": "5.1.5",
     "@clerk/themes": "2.1.9",
     "@date-fns/utc": "^1.2.0",
     "@dnd-kit/core": "6.1.0",
