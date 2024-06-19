@@ -1,12 +1,15 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import {
+  createTRPCRouter,
+  isUserLoggedInAndAssignedToSchool,
+  publicProcedure,
+} from "../trpc";
 
-export const fileRouter = createTRPCRouter({
-  countAllBySchoolId: publicProcedure
+export const printRequestRouter = createTRPCRouter({
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         orderBy: z
           .object({
             dueDate: z.union([z.literal("asc"), z.literal("desc")]),
@@ -23,28 +26,27 @@ export const fileRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx, input }) => {
-      return ctx.prisma.file.count({
+      return ctx.prisma.printRequest.count({
         where: {
           Teacher: {
             User: {
-              schoolId: input.schoolId,
+              schoolId: ctx.session.school.id,
             },
           },
           Subject: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
           },
           Class: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
           },
           status: input.status,
         },
         orderBy: { dueDate: input.orderBy?.dueDate },
       });
     }),
-  allBySchoolId: publicProcedure
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         orderBy: z
           .object({
             dueDate: z.union([z.literal("asc"), z.literal("desc")]),
@@ -63,18 +65,18 @@ export const fileRouter = createTRPCRouter({
       }),
     )
     .query(({ ctx, input }) => {
-      return ctx.prisma.file.findMany({
+      return ctx.prisma.printRequest.findMany({
         where: {
           Teacher: {
             User: {
-              schoolId: input.schoolId,
+              schoolId: ctx.session.school.id,
             },
           },
           Subject: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
           },
           Class: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
           },
           status: input.status,
         },
@@ -92,7 +94,7 @@ export const fileRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
       });
     }),
-  createRequest: publicProcedure
+  createRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         name: z.string(),
@@ -120,7 +122,7 @@ export const fileRouter = createTRPCRouter({
           `Teacher with id ${input.teacherId} does not teach in the class with id ${input.classId} for the subject with id ${input.subjectId}`,
         );
       }
-      await ctx.prisma.file.create({
+      await ctx.prisma.printRequest.create({
         data: {
           name: input.name,
           teacherId: input.teacherId,
@@ -134,14 +136,14 @@ export const fileRouter = createTRPCRouter({
         },
       });
     }),
-  reviewed: publicProcedure
+  reviewed: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         id: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.file.update({
+      await ctx.prisma.printRequest.update({
         where: {
           id: input.id,
         },
@@ -150,14 +152,14 @@ export const fileRouter = createTRPCRouter({
         },
       });
     }),
-  approveRequest: publicProcedure
+  approveRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         id: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.file.update({
+      await ctx.prisma.printRequest.update({
         where: {
           id: input.id,
         },
@@ -166,14 +168,14 @@ export const fileRouter = createTRPCRouter({
         },
       });
     }),
-  reviewRequest: publicProcedure
+  reviewRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         id: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.file.update({
+      await ctx.prisma.printRequest.update({
         where: {
           id: input.id,
         },
@@ -182,14 +184,14 @@ export const fileRouter = createTRPCRouter({
         },
       });
     }),
-  printRequest: publicProcedure
+  printRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         id: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.file.update({
+      await ctx.prisma.printRequest.update({
         where: {
           id: input.id,
         },

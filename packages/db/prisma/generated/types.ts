@@ -96,21 +96,6 @@ export type CommentLike = {
   updatedAt: Timestamp;
   userId: string;
 };
-export type File = {
-  id: string;
-  teacherId: string;
-  classId: string;
-  subjectId: string;
-  name: string;
-  path: string;
-  status: string;
-  frontAndBack: Generated<number>;
-  rejectedFeedback: string | null;
-  quantity: Generated<number>;
-  dueDate: Timestamp;
-  createdAt: Generated<Timestamp>;
-  updatedAt: Timestamp;
-};
 export type FixedClass = {
   id: string;
   classScheduleId: string;
@@ -141,6 +126,21 @@ export type Post = {
   updatedAt: Timestamp;
   userId: string;
   schoolId: string | null;
+};
+export type PrintRequest = {
+  id: string;
+  teacherId: string;
+  classId: string;
+  subjectId: string;
+  name: string;
+  path: string;
+  status: string;
+  frontAndBack: Generated<number>;
+  rejectedFeedback: string | null;
+  quantity: Generated<number>;
+  dueDate: Timestamp;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
 };
 export type PurchaseRequest = {
   id: string;
@@ -275,10 +275,10 @@ export type DB = {
   ClassSchedule: ClassSchedule;
   Comment: Comment;
   CommentLike: CommentLike;
-  File: File;
   FixedClass: FixedClass;
   Notification: Notification;
   Post: Post;
+  PrintRequest: PrintRequest;
   PurchaseRequest: PurchaseRequest;
   Role: Role;
   School: School;

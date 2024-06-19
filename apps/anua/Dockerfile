@@ -19,7 +19,7 @@ RUN npm i -g prisma
 
 RUN pnpm install --frozen-lockfile
 
-RUN pnpm with-env turbo build --filter=anua
+RUN turbo build --filter=anua
 
 RUN pnpm db:generate
 

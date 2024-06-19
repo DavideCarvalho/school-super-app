@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 
@@ -8,9 +7,9 @@ import { authRouter } from "./router/auth";
 import { canteenRouter } from "./router/canteen";
 import { classRouter } from "./router/class";
 import { emailRouter } from "./router/email";
-import { fileRouter } from "./router/file";
 import { peiRouter } from "./router/pei";
 import { postRouter } from "./router/post";
+import { printRequestRouter } from "./router/printRequest";
 import { purchaseRequestRouter } from "./router/purchaseRequest";
 import { roleRouter } from "./router/role";
 import { schoolRouter } from "./router/school";
@@ -24,7 +23,7 @@ import { createTRPCRouter } from "./trpc";
 export const appRouter = createTRPCRouter({
   auth: authRouter,
   school: schoolRouter,
-  file: fileRouter,
+  printRequest: printRequestRouter,
   teacher: teacherRouter,
   email: emailRouter,
   user: userRouter,

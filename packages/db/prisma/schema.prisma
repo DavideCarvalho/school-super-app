@@ -65,7 +65,7 @@ model Teacher {
   id             String                @id
   Classes        TeacherHasClass[]
   User           User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  File           File[]
+  PrintRequests  PrintRequest[]
   Availabilities TeacherAvailability[]
   FixedClass     FixedClass[]
   Subjects       TeacherHasSubject[]
@@ -217,7 +217,7 @@ model Subject {
   updatedAt               DateTime            @updatedAt
   TeacherHasClass         TeacherHasClass[]
   School                  School              @relation(fields: [schoolId], references: [id])
-  File                    File[]
+  PrintRequests           PrintRequest[]
   quantityNeededScheduled Int                 @default(0)
   FixedClass              FixedClass[]
   TeacherHasSubject       TeacherHasSubject[]
@@ -225,7 +225,7 @@ model Subject {
   @@index([schoolId])
 }
 
-model File {
+model PrintRequest {
   id               String   @id @default(cuid())
   teacherId        String
   classId          String
@@ -265,7 +265,7 @@ model Class {
 
   TeacherHasClass TeacherHasClass[]
   School          School            @relation(fields: [schoolId], references: [id])
-  File            File[]
+  PrintRequests   PrintRequest[]
   Student         Student[]
   FixedClass      FixedClass[]
   ClassSchedule   ClassSchedule[]
