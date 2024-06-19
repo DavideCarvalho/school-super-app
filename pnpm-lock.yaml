@@ -172,7 +172,7 @@ importers:
         version: 1.3.1(next@14.2.3(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^3.1.36
-        version: 3.1.37(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.29(typescript@5.4.5))(zod@3.23.8)
+        version: 3.2.0(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.29(typescript@5.4.5))(zod@3.23.8)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -3837,8 +3837,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@3.1.37:
-    resolution: {integrity: sha512-dh9M9oBuPxnxoanWTy8RJ4BDjwg/8/LjFqUpLZpYzw14B5gKb80+ct2a+1cSqhNVAgzUN5OWGkAaVkfpE49BtA==}
+  ai@3.2.0:
+    resolution: {integrity: sha512-1CLnzTNdBoPJs8GDgKa4qEUw9UcYS6tzAL4DtWO1Twt0/DOhtfck9i4JZPuE0mg1e01WeOHG/U4QTDFTdgeuuw==}
     engines: {node: '>=18'}
     peerDependencies:
       openai: ^4.42.0
@@ -10376,7 +10376,7 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@3.1.37(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.29(typescript@5.4.5))(zod@3.23.8):
+  ai@3.2.0(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.29(typescript@5.4.5))(zod@3.23.8):
     dependencies:
       '@ai-sdk/provider': 0.0.10
       '@ai-sdk/provider-utils': 0.0.15(zod@3.23.8)
