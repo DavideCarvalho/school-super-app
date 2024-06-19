@@ -17,6 +17,8 @@
     "build:anua": "turbo build -F @anua/anua",
     "start:anua": "turbo start -F @anua/anua",
     "dev:conectaprof": "turbo watch dev -F @anua/conectaprof",
+    "build:conectaprof": "turbo build -F @anua/conectaprof",
+    "start:conectaprof": "turbo start -F @anua/conectaprof",
     "format": "turbo run format --continue -- --cache --cache-location node_modules/.cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location node_modules/.cache/.prettiercache",
     "lint": "turbo run lint --continue -- --cache --cache-location node_modules/.cache/.eslintcache",

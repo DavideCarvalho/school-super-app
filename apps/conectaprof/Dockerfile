@@ -10,21 +10,18 @@ WORKDIR /home/node/app
 # RUN env
 # RUN printenv
 
-
 RUN npm i -g turbo
 
 RUN npm i -g pnpm
 
-RUN npm i -g prisma
+RUN pnpm i --frozen-lockfile
 
-RUN pnpm install --frozen-lockfile
+RUN turbo -F @acme/db prisma:generate
 
-RUN pnpm with-env turbo build --filter=conectaprof
-
-RUN pnpm db:generate
+RUN turbo build -F @anua/conectaprof
 
 EXPOSE 3000
 
 ENV NODE_ENV production
 
-CMD ["pnpm", "with-env", "turbo", "start", "--filter=conectaprof"]
+CMD ["turbo", "start", "-F", "@anua/conectaprof"]
