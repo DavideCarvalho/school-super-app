@@ -19,9 +19,9 @@ RUN npm i -g prisma
 
 RUN pnpm install --frozen-lockfile
 
-RUN turbo build -F @anua/anua
-
 RUN pnpm db:generate
+
+RUN turbo build -F @anua/anua
 
 EXPOSE 3000
 
