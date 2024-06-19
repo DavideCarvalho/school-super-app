@@ -8,7 +8,7 @@
   "dependencies": {
     "@react-email/button": "0.0.15",
     "@react-email/container": "0.0.12",
-    "@react-email/head": "0.0.8",
+    "@react-email/head": "0.0.9",
     "@react-email/html": "0.0.8",
     "@react-email/preview": "0.0.9",
     "@react-email/section": "0.0.12",
