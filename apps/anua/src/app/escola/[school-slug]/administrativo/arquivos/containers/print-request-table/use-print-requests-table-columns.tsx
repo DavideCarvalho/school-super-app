@@ -95,21 +95,24 @@ export function usePurchaseRequestsTableColumns() {
     columnHelper.accessor("Teacher.User.name", {
       id: "professor",
       header: "Professor",
-      enableColumnFilter: true,
+      enableColumnFilter: false,
       enableSorting: false,
-      filterFn: multiSelectFilterFn,
-      meta: {
-        filterComponent: (props: {
-          column: Column<any, unknown>;
-          onFilterChange: (param: { name: string; value: string[] }) => void;
-        }) => (
-          <MultiSelectFilter
-            data={distinctProducts?.map((product) => product.productName) ?? []}
-            {...props}
-          />
-        ),
-      },
     }),
+    columnHelper.accessor("Subject.name", {
+      id: "materia",
+      header: "Matéria",
+      enableColumnFilter: false,
+      enableSorting: false,
+    }),
+    columnHelper.accessor(
+      (row) => (row.frontAndBack ? "Frente e trás" : "Apenas frente"),
+      {
+        id: "materia",
+        header: "Matéria",
+        enableColumnFilter: false,
+        enableSorting: false,
+      },
+    ),
     columnHelper.accessor((row) => statusesMap[row.status], {
       id: "status",
       header: "Status",

@@ -102,6 +102,8 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
 
   useEffect(() => {
     form.setValue("selectedClassId", classId);
+    form.setValue("subjectsQuantities", {});
+    form.setValue("subjectsExclusions", []);
   }, [classId, form.setValue]);
 
   const initializeSchedule = useCallback(() => {

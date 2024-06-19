@@ -51,20 +51,7 @@ export default function RootLayout({
 
             <div className="ml-6 mr-auto flex lg:ml-0">
               <div className="flex flex-shrink-0 items-center">
-                <Image
-                  className="block h-8 w-auto lg:hidden"
-                  src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo-symbol.svg"
-                  alt=""
-                  width={500}
-                  height={500}
-                />
-                <Image
-                  className="hidden h-8 w-auto lg:block"
-                  src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/logo.svg"
-                  alt=""
-                  width={500}
-                  height={500}
-                />
+                <h1 className="text-2xl font-bold">Anuá</h1>
               </div>
             </div>
 
@@ -280,8 +267,8 @@ interface Route {
 
 const routes: Route[] = [
   {
-    name: "Calendário escolar",
-    href: (params) => `/escola/${params.schoolSlug}/calendario-escolar`,
+    name: "Grade",
+    href: (params) => `/escola/${params.schoolSlug}/grade`,
   },
   {
     name: "Professores",
@@ -296,8 +283,8 @@ const routes: Route[] = [
     href: (params) => `/escola/${params.schoolSlug}/materias`,
   },
   {
-    name: "Arquivos",
-    href: (params) => `/escola/${params.schoolSlug}/arquivos`,
+    name: "Impressão",
+    href: (params) => `/escola/${params.schoolSlug}/impressao`,
   },
   {
     name: "Solicitações de compra",
