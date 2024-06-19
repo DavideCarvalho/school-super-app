@@ -11,7 +11,7 @@
     "clean:workspaces": "turbo run clean",
     "db:push": "turbo -F @acme/db push",
     "db:studio": "turbo -F @acme/db studio",
-    "db:generate": "turbo -F @acme/db generate",
+    "db:generate": "turbo -F @acme/db prisma:generate",
     "dev": "turbo watch dev",
     "dev:anua": "turbo watch dev -F @anua/anua",
     "dev:conectaprof": "turbo watch dev -F @anua/conectaprof",

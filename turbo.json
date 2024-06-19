@@ -50,7 +50,7 @@
       "cache": false,
       "interactive": true
     },
-    "db:generate": {
+    "prisma:generate": {
       "cache": false,
       "interactive": true
     },

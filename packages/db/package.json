@@ -11,7 +11,7 @@
   },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "generate": "pnpm with-env prisma generate",
+    "prisma:generate": "pnpm with-env prisma generate",
     "format": "pnpm with-env prisma format",
     "push": "pnpm with-env prisma db push --skip-generate --accept-data-loss",
     "dev": "prisma studio --port 5556",
