@@ -16,9 +16,9 @@ RUN npm i -g pnpm
 
 RUN pnpm i --frozen-lockfile
 
-RUN pnpm db:generate
+RUN turbo -F @acme/db prisma:generate
 
-RUN pnpm build:anua
+RUN turbo build -F @anua/anua
 
 EXPOSE 3000
 
