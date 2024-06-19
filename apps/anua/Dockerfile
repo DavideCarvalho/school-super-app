@@ -24,4 +24,4 @@ EXPOSE 3000
 
 ENV NODE_ENV production
 
-CMD ["pnpm", "with-env", "turbo", "start", "--filter=anua"]
+CMD ["turbo", "start", "-F", "@anua/anua"]
