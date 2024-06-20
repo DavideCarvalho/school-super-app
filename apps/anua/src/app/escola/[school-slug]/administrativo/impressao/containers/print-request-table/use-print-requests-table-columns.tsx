@@ -196,13 +196,13 @@ export function usePurchaseRequestsTableColumns() {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link
-                      href={`${pathname}?${searchParams?.toString()}#rejeitar-impressao?impressao=${row.original.id}`}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleDeletePrintRequest(row.original.id)}
                     >
-                      <Button size="sm" variant="ghost">
-                        <TrashIcon className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </Link>
+                      <TrashIcon className="h-4 w-4 text-red-500" />
+                    </Button>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>Remover impressão</p>
