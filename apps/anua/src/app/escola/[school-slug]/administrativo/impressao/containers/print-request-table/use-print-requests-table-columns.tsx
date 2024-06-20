@@ -29,12 +29,14 @@ export const statusesInPortuguese = [
   "Pedido",
   "Aprovado",
   "Rejeitado",
+  "Impresso",
   "Revisão",
 ] as const;
 
 export const statusesEnum = [
   "REQUESTED",
   "APPROVED",
+  "REJECTED",
   "PRINTED",
   "REVIEW",
 ] as const;
@@ -215,13 +217,19 @@ export function usePurchaseRequestsTableColumns() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href={row.original.path}>
+                  <Link
+                    href={row.original.path}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     <Button
+                      size="sm"
+                      variant="ghost"
                       onClick={() =>
                         handleChangePrintRequestStatusToPrinted(row.original.id)
                       }
                     >
-                      <ArrowTopRightOnSquareIcon />
+                      <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                     </Button>
                   </Link>
                 </TooltipTrigger>
@@ -237,9 +245,13 @@ export function usePurchaseRequestsTableColumns() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Link href={row.original.path}>
-                    <Button>
-                      <ArrowTopRightOnSquareIcon />
+                  <Link
+                    href={row.original.path}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <Button size="sm" variant="ghost">
+                      <ArrowTopRightOnSquareIcon className="h-4 w-4" />
                     </Button>
                   </Link>
                 </TooltipTrigger>

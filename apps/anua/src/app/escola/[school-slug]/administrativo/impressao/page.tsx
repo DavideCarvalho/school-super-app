@@ -6,7 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
-import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
+import { ApprovePrintRequestModalListener } from "./_components/approve-print-request-modal-listener";
 import { NewPrintRequestModalListener } from "./_components/new-print-request-modal-listener";
 import { PrintRequestTableV2 } from "./containers/print-request-table";
 
@@ -46,6 +46,7 @@ export default async function FilesPage({
         </Link>
       </div>
       <NewPrintRequestModalListener />
+      <ApprovePrintRequestModalListener />
       <Suspense>
         <PrintRequestTableV2 />
       </Suspense>

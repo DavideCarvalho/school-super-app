@@ -1,6 +1,6 @@
+import Link from "next/link";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
 import {
@@ -14,19 +14,19 @@ import { Label } from "@acme/ui/label";
 
 import { api } from "~/trpc/react";
 
-interface NewPrintRequestModalProps {
+interface ApprovePrintRequestModalProps {
   printRequestId: string;
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
-export function NewPrintRequestModal({
+export function ApprovePrintRequestModal({
   printRequestId,
   open,
   onClickSubmit,
   onClickCancel,
-}: NewPrintRequestModalProps) {
+}: ApprovePrintRequestModalProps) {
   const { mutateAsync: approveRequest } =
     api.printRequest.approveRequest.useMutation();
 
@@ -66,16 +66,24 @@ export function NewPrintRequestModal({
             <p>{printRequest?.name}</p>
           </div>
 
-          <div>
+          <div className="flex flex-col">
             <Label>Link do arquivo</Label>
-            <p>{printRequest?.path}</p>
+            <Link
+              href={printRequest?.path ?? "#"}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Button variant="link" className="-m-4">
+                {printRequest?.path}
+              </Button>
+            </Link>
           </div>
 
           <div>
             <Label>Pra quando?</Label>
             <p>
               {printRequest?.dueDate
-                ? format(printRequest.dueDate, "DD/MM/YYYY")
+                ? format(printRequest.dueDate, "dd/MM/yyyy")
                 : "Não informado"}
             </p>
           </div>
