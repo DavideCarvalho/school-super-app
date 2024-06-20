@@ -42,8 +42,8 @@ importers:
         specifier: workspace:^0.1.0
         version: link:../../tooling/tailwind
       '@ai-sdk/openai':
-        specifier: ^0.0.31
-        version: 0.0.31(zod@3.23.8)
+        specifier: ^0.0.32
+        version: 0.0.32(zod@3.23.8)
       '@ams-js/headless':
         specifier: 0.0.5
         version: 0.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -947,8 +947,8 @@ importers:
 
 packages:
 
-  '@ai-sdk/openai@0.0.31':
-    resolution: {integrity: sha512-7ehX2N0NzCdxUOYXutwYgu6gdWO+zS/v8pWEd7VW8QpNq3equ0VZ0j+pDUNv4f3GJ449QwySb6+V+DHM9W/pLg==}
+  '@ai-sdk/openai@0.0.32':
+    resolution: {integrity: sha512-ySwtOoGTwmK+CiXreJO9iJkV7SBhetdgrmoP0gOKbz1uWQ9B1FMQ6Zdq6V5koWFXeN91Sz9n4jRIZ09GjxjY2g==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -7908,7 +7908,7 @@ packages:
 
 snapshots:
 
-  '@ai-sdk/openai@0.0.31(zod@3.23.8)':
+  '@ai-sdk/openai@0.0.32(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider': 0.0.10
       '@ai-sdk/provider-utils': 0.0.15(zod@3.23.8)
