@@ -96,7 +96,7 @@
     "@acme/tailwind-config": "workspace:^0.1.0",
     "@acme/tsconfig": "workspace:^0.1.0",
     "@acme/ui": "workspace:^0.1.0",
-    "@biomejs/biome": "1.8.1",
+    "@biomejs/biome": "1.8.2",
     "@types/node": "20.14.6",
     "@types/nodemailer": "6.4.15",
     "@types/react": "18.3.3",
