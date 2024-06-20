@@ -26,15 +26,7 @@ export const printRequestRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.printRequest.count({
         where: {
-          Teacher: {
-            User: {
-              schoolId: ctx.session.school.id,
-            },
-          },
-          Subject: {
-            schoolId: ctx.session.school.id,
-          },
-          Class: {
+          User: {
             schoolId: ctx.session.school.id,
           },
           status: {
@@ -63,15 +55,7 @@ export const printRequestRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.prisma.printRequest.findMany({
         where: {
-          Teacher: {
-            User: {
-              schoolId: ctx.session.school.id,
-            },
-          },
-          Subject: {
-            schoolId: ctx.session.school.id,
-          },
-          Class: {
+          User: {
             schoolId: ctx.session.school.id,
           },
           status: {
@@ -79,13 +63,7 @@ export const printRequestRouter = createTRPCRouter({
           },
         },
         include: {
-          Class: true,
-          Teacher: {
-            include: {
-              User: true,
-            },
-          },
-          Subject: true,
+          User: true,
         },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
@@ -95,9 +73,6 @@ export const printRequestRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string(),
-        teacherId: z.string(),
-        classId: z.string(),
-        subjectId: z.string(),
         fileUrl: z.string().url(),
         quantity: z.number().min(1),
         dueDate: z.date(),
@@ -105,31 +80,15 @@ export const printRequestRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const teacherHasClass = await ctx.prisma.teacherHasClass.findUnique({
-        where: {
-          teacherId_classId_subjectId: {
-            teacherId: input.teacherId,
-            classId: input.classId,
-            subjectId: input.subjectId,
-          },
-        },
-      });
-      if (!teacherHasClass) {
-        throw new Error(
-          `Teacher with id ${input.teacherId} does not teach in the class with id ${input.classId} for the subject with id ${input.subjectId}`,
-        );
-      }
       await ctx.prisma.printRequest.create({
         data: {
           name: input.name,
-          teacherId: input.teacherId,
-          classId: input.classId,
-          subjectId: input.subjectId,
           quantity: input.quantity,
           path: input.fileUrl,
           dueDate: input.dueDate,
           frontAndBack: input.frontAndBack,
           status: "REQUESTED",
+          userId: ctx.session.user.id,
         },
       });
     }),

@@ -55,6 +55,7 @@ model User {
   Comments         Comment[]
   CommentLikes     CommentLike[]
   CanteenPurchases CanteenPurchase[]
+  PrintRequest     PrintRequest[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -65,7 +66,6 @@ model Teacher {
   id             String                @id
   Classes        TeacherHasClass[]
   User           User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  PrintRequests  PrintRequest[]
   Availabilities TeacherAvailability[]
   FixedClass     FixedClass[]
   Subjects       TeacherHasSubject[]
@@ -217,7 +217,6 @@ model Subject {
   updatedAt               DateTime            @updatedAt
   TeacherHasClass         TeacherHasClass[]
   School                  School              @relation(fields: [schoolId], references: [id])
-  PrintRequests           PrintRequest[]
   quantityNeededScheduled Int                 @default(0)
   FixedClass              FixedClass[]
   TeacherHasSubject       TeacherHasSubject[]
@@ -227,9 +226,7 @@ model Subject {
 
 model PrintRequest {
   id               String   @id @default(cuid())
-  teacherId        String
-  classId          String
-  subjectId        String
+  userId           String
   name             String
   path             String
   status           String
@@ -240,13 +237,7 @@ model PrintRequest {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  Teacher Teacher @relation(fields: [teacherId], references: [id])
-  Class   Class   @relation(fields: [classId], references: [id])
-  Subject Subject @relation(fields: [subjectId], references: [id])
-
-  @@index([teacherId])
-  @@index([classId])
-  @@index([subjectId])
+  User User @relation(fields: [userId], references: [id])
 }
 
 model Role {
@@ -265,7 +256,6 @@ model Class {
 
   TeacherHasClass TeacherHasClass[]
   School          School            @relation(fields: [schoolId], references: [id])
-  PrintRequests   PrintRequest[]
   Student         Student[]
   FixedClass      FixedClass[]
   ClassSchedule   ClassSchedule[]

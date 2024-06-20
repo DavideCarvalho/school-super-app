@@ -5,10 +5,9 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { TeachersTable } from "~/app/escola/[school-slug]/professores/containers/school-teachers-table";
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
-import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
+import { NewPrintRequestModalListener } from "./_components/new-print-request-modal-listener";
 import { PrintRequestTableV2 } from "./containers/print-request-table";
 
 export default async function FilesPage({
@@ -46,8 +45,7 @@ export default async function FilesPage({
           <Button>Nova Impressão</Button>
         </Link>
       </div>
-      <NewTeacherModalListener />
-      <EditTeacherModalListener />
+      <NewPrintRequestModalListener />
       <Suspense>
         <PrintRequestTableV2 />
       </Suspense>

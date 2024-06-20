@@ -129,9 +129,7 @@ export type Post = {
 };
 export type PrintRequest = {
   id: string;
-  teacherId: string;
-  classId: string;
-  subjectId: string;
+  userId: string;
   name: string;
   path: string;
   status: string;
