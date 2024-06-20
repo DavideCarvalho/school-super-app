@@ -94,7 +94,6 @@ export function NewPrintRequestModal({
   }
 
   const watchFrontAndBack = form.watch("frontAndBack");
-  const watchDueDate = form.watch("dueDate");
 
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
@@ -129,8 +128,8 @@ export function NewPrintRequestModal({
                       <Input value={field.value} onChange={field.onChange} />
                     </FormControl>
                     <FormDescription>
-                      Pegue o link do arquivo no Google Drive ou OneDrive e
-                      coloque aqui
+                      Pegue o link do arquivo de compartilhamento no Google
+                      Drive ou OneDrive e coloque aqui
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -139,7 +138,7 @@ export function NewPrintRequestModal({
 
               <FormField
                 control={form.control}
-                name="fileUrl"
+                name="quantity"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Quantidade?</FormLabel>

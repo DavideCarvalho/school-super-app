@@ -7,6 +7,8 @@ import { MultiSelectFilter } from "@acme/ui/table-with-pagination/_components/mu
 
 import { api } from "~/trpc/react";
 
+type Row = RouterOutputs["printRequest"]["allBySchoolId"][0];
+
 export const statusesInPortuguese = [
   "Pedido",
   "Aprovado",
@@ -38,18 +40,17 @@ export function usePurchaseRequestsTableColumns() {
 
   const { data: distinctTeachers } = api.teacher.getUniqueTeachers.useQuery();
 
-  const columnHelper =
-    createColumnHelper<RouterOutputs["printRequest"]["allBySchoolId"][0]>();
+  const columnHelper = createColumnHelper<Row>();
 
   return [
-    columnHelper.accessor("Teacher.User.name", {
-      id: "professor",
-      header: "Professor",
+    columnHelper.accessor("User.name", {
+      id: "usuario",
+      header: "Usuário",
       enableColumnFilter: false,
       enableSorting: false,
       meta: {
         filterComponent: (props: {
-          column: Column<any, unknown>;
+          column: Column<Row, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
           return (
@@ -61,17 +62,11 @@ export function usePurchaseRequestsTableColumns() {
         },
       },
     }),
-    columnHelper.accessor("Subject.name", {
-      id: "materia",
-      header: "Matéria",
-      enableColumnFilter: false,
-      enableSorting: false,
-    }),
     columnHelper.accessor(
       (row) => (row.frontAndBack ? "Frente e trás" : "Apenas frente"),
       {
-        id: "materia",
-        header: "Matéria",
+        id: "impressao",
+        header: "Impressão",
         enableColumnFilter: false,
         enableSorting: false,
       },
@@ -83,7 +78,7 @@ export function usePurchaseRequestsTableColumns() {
       enableSorting: false,
       meta: {
         filterComponent: (props: {
-          column: Column<any, unknown>;
+          column: Column<Row, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
           return (
