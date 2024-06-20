@@ -20,7 +20,7 @@
     "@acme/ui": "workspace:^0.1.0",
     "@ams-js/headless": "0.0.5",
     "@clerk/clerk-sdk-node": "5.0.12",
-    "@clerk/localizations": "2.4.4",
+    "@clerk/localizations": "2.4.5",
     "@clerk/nextjs": "5.1.5",
     "@clerk/themes": "2.1.9",
     "@dnd-kit/core": "6.1.0",

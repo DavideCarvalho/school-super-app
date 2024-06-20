@@ -54,8 +54,8 @@ importers:
         specifier: ^0.7.0
         version: 0.7.0(@clerk/clerk-react@5.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.4(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
-        specifier: 2.4.4
-        version: 2.4.4
+        specifier: 2.4.5
+        version: 2.4.5
       '@clerk/nextjs':
         specifier: 5.1.5
         version: 5.1.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -328,8 +328,8 @@ importers:
         specifier: 5.0.12
         version: 5.0.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
-        specifier: 2.4.4
-        version: 2.4.4
+        specifier: 2.4.5
+        version: 2.4.5
       '@clerk/nextjs':
         specifier: 5.1.5
         version: 5.1.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1246,8 +1246,8 @@ packages:
       next:
         optional: true
 
-  '@clerk/localizations@2.4.4':
-    resolution: {integrity: sha512-Cy0m4Pt9C02Jx3iK76t5cquDJsM5PCc4fiViapGKAp5+gNs0ySG2BFqegVlVk/c6Qa9HzX3tNOiYMVabEHtAyw==}
+  '@clerk/localizations@2.4.5':
+    resolution: {integrity: sha512-bwhbok+r4NfUC4fYQTFyCQyt3s5SfbiV3WrdymC3CkCqLWCtL3Lju8D0pG714+Q9VbLCNSGhG0KF5MsRLq/NLg==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/nextjs@5.1.5':
@@ -8274,9 +8274,9 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@clerk/localizations@2.4.4':
+  '@clerk/localizations@2.4.5':
     dependencies:
-      '@clerk/types': 4.6.0
+      '@clerk/types': 4.6.1
 
   '@clerk/nextjs@5.1.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
