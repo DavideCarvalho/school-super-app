@@ -79,6 +79,32 @@ export const printRequestRouter = createTRPCRouter({
         skip: (input.page - 1) * input.limit,
       });
     }),
+  reviewRequest: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        fileUrl: z.string().url(),
+        quantity: z.number().min(1),
+        dueDate: z.date(),
+        frontAndBack: z.boolean().default(true),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.printRequest.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          path: input.fileUrl,
+          quantity: input.quantity,
+          dueDate: input.dueDate,
+          frontAndBack: input.frontAndBack,
+          status: "REQUESTED",
+        },
+      });
+    }),
   createRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
@@ -152,22 +178,6 @@ export const printRequestRouter = createTRPCRouter({
         },
         data: {
           status: "APPROVED",
-        },
-      });
-    }),
-  reviewRequest: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        id: z.string(),
-      }),
-    )
-    .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.printRequest.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          status: "REVIEW",
         },
       });
     }),

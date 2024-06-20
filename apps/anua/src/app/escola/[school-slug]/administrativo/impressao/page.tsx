@@ -9,6 +9,7 @@ import { api, createSSRHelper } from "~/trpc/server";
 import { ApprovePrintRequestModalListener } from "./_components/approve-print-request-modal-listener";
 import { NewPrintRequestModalListener } from "./_components/new-print-request-modal-listener";
 import { RejectPrintRequestModalListener } from "./_components/reject-print-request-modal-listener";
+import { ReviewPrintRequestModalListener } from "./_components/review-print-request-modal-listener";
 import { PrintRequestTableV2 } from "./containers/print-request-table";
 
 export default async function FilesPage({
@@ -49,6 +50,7 @@ export default async function FilesPage({
       <NewPrintRequestModalListener />
       <ApprovePrintRequestModalListener />
       <RejectPrintRequestModalListener />
+      <ReviewPrintRequestModalListener />
       <Suspense>
         <PrintRequestTableV2 />
       </Suspense>
