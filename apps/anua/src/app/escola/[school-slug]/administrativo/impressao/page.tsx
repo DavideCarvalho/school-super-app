@@ -8,6 +8,7 @@ import { Button } from "@acme/ui/button";
 import { api, createSSRHelper } from "~/trpc/server";
 import { ApprovePrintRequestModalListener } from "./_components/approve-print-request-modal-listener";
 import { NewPrintRequestModalListener } from "./_components/new-print-request-modal-listener";
+import { RejectPrintRequestModalListener } from "./_components/reject-print-request-modal-listener";
 import { PrintRequestTableV2 } from "./containers/print-request-table";
 
 export default async function FilesPage({
@@ -47,6 +48,7 @@ export default async function FilesPage({
       </div>
       <NewPrintRequestModalListener />
       <ApprovePrintRequestModalListener />
+      <RejectPrintRequestModalListener />
       <Suspense>
         <PrintRequestTableV2 />
       </Suspense>

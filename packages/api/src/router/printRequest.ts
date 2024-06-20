@@ -118,6 +118,27 @@ export const printRequestRouter = createTRPCRouter({
         },
       });
     }),
+  rejectRequest: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        id: z.string(),
+        reason: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.printRequest.update({
+        where: {
+          id: input.id,
+          User: {
+            schoolId: ctx.session.school.id,
+          },
+        },
+        data: {
+          status: "REJECTED",
+          rejectedFeedback: input.reason,
+        },
+      });
+    }),
   approveRequest: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
