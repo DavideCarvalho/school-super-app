@@ -1,37 +1,9 @@
 import type { Column } from "@tanstack/react-table";
-import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import {
-  ArrowDownIcon,
-  ArrowUpIcon,
-  CheckIcon,
-  MapPinIcon,
-  PencilIcon,
-  ShoppingCartIcon,
-  TrashIcon,
-  XMarkIcon,
-} from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
-import toast from "react-hot-toast";
 
 import type { RouterOutputs } from "@acme/api";
-import { cn } from "@acme/ui";
-import { Button } from "@acme/ui/button";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@acme/ui/hover-card";
-import {
-  MultiSelectFilter,
-  multiSelectFilterFn,
-} from "@acme/ui/table-with-pagination/_components/multi-select-filter";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@acme/ui/tooltip";
+import { MultiSelectFilter } from "@acme/ui/table-with-pagination/_components/multi-select-filter";
 
 import { api } from "~/trpc/react";
 
@@ -39,16 +11,14 @@ export const statusesInPortuguese = [
   "Pedido",
   "Aprovado",
   "Rejeitado",
-  "Comprado",
-  "Chegou",
+  "Revisão",
 ] as const;
 
 export const statusesEnum = [
   "REQUESTED",
   "APPROVED",
-  "REJECTED",
-  "BOUGHT",
-  "ARRIVED",
+  "PRINTED",
+  "REVIEW",
 ] as const;
 
 const statusesMap: Record<string, string> = {};
@@ -66,30 +36,10 @@ export function usePurchaseRequestsTableColumns() {
   const pathname = usePathname();
   const utils = api.useUtils();
 
-  const { data: distinctProducts } =
-    api.purchaseRequest.getUniqueProductNames.useQuery();
+  const { data: distinctTeachers } = api.teacher.getUniqueTeachers.useQuery();
 
   const columnHelper =
     createColumnHelper<RouterOutputs["printRequest"]["allBySchoolId"][0]>();
-
-  const { mutateAsync: deletePurchaseRequest } =
-    api.purchaseRequest.deleteById.useMutation();
-
-  async function handleDeletePurchaseRequest(purchaseRequestId: string) {
-    const toastId = toast.loading("Removendo professor...");
-    try {
-      await deletePurchaseRequest({ id: purchaseRequestId });
-      toast.success("Professor removido com sucesso!");
-    } catch (e) {
-      toast.error("Erro ao remover professor");
-    } finally {
-      toast.dismiss(toastId);
-      await Promise.all([
-        utils.teacher.getSchoolTeachers.invalidate(),
-        utils.teacher.countSchoolTeachers.invalidate(),
-      ]);
-    }
-  }
 
   return [
     columnHelper.accessor("Teacher.User.name", {
@@ -97,6 +47,19 @@ export function usePurchaseRequestsTableColumns() {
       header: "Professor",
       enableColumnFilter: false,
       enableSorting: false,
+      meta: {
+        filterComponent: (props: {
+          column: Column<any, unknown>;
+          onFilterChange: (param: { name: string; value: string[] }) => void;
+        }) => {
+          return (
+            <MultiSelectFilter
+              data={distinctTeachers?.map(({ name }) => name) ?? []}
+              {...props}
+            />
+          );
+        },
+      },
     }),
     columnHelper.accessor("Subject.name", {
       id: "materia",
@@ -116,7 +79,7 @@ export function usePurchaseRequestsTableColumns() {
     columnHelper.accessor((row) => statusesMap[row.status], {
       id: "status",
       header: "Status",
-      enableColumnFilter: true,
+      enableColumnFilter: false,
       enableSorting: false,
       meta: {
         filterComponent: (props: {
@@ -125,7 +88,7 @@ export function usePurchaseRequestsTableColumns() {
         }) => {
           return (
             <MultiSelectFilter
-              data={["Pedido", "Aprovado", "Rejeitado", "Comprado", "Chegou"]}
+              data={["Pedido", "Aprovado", "Rejeitado", "Revisão"]}
               {...props}
             />
           );

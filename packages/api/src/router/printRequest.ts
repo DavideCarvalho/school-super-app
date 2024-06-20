@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  isUserLoggedInAndAssignedToSchool,
-  publicProcedure,
-} from "../trpc";
+import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const printRequestRouter = createTRPCRouter({
   countAllBySchoolId: isUserLoggedInAndAssignedToSchool
@@ -15,13 +11,15 @@ export const printRequestRouter = createTRPCRouter({
             dueDate: z.union([z.literal("asc"), z.literal("desc")]),
           })
           .optional(),
-        status: z
-          .union([
-            z.literal("REQUESTED"),
-            z.literal("APPROVED"),
-            z.literal("PRINTED"),
-            z.literal("REVIEW"),
-          ])
+        statuses: z
+          .array(
+            z.union([
+              z.literal("REQUESTED"),
+              z.literal("APPROVED"),
+              z.literal("PRINTED"),
+              z.literal("REVIEW"),
+            ]),
+          )
           .optional(),
       }),
     )
@@ -39,28 +37,26 @@ export const printRequestRouter = createTRPCRouter({
           Class: {
             schoolId: ctx.session.school.id,
           },
-          status: input.status,
+          status: {
+            in: input.statuses,
+          },
         },
-        orderBy: { dueDate: input.orderBy?.dueDate },
       });
     }),
   allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        orderBy: z
-          .object({
-            dueDate: z.union([z.literal("asc"), z.literal("desc")]),
-          })
-          .optional(),
         page: z.number().optional().default(1),
         limit: z.number().optional().default(5),
-        status: z
-          .union([
-            z.literal("REQUESTED"),
-            z.literal("APPROVED"),
-            z.literal("PRINTED"),
-            z.literal("REVIEW"),
-          ])
+        statuses: z
+          .array(
+            z.union([
+              z.literal("REQUESTED"),
+              z.literal("APPROVED"),
+              z.literal("PRINTED"),
+              z.literal("REVIEW"),
+            ]),
+          )
           .optional(),
       }),
     )
@@ -78,7 +74,9 @@ export const printRequestRouter = createTRPCRouter({
           Class: {
             schoolId: ctx.session.school.id,
           },
-          status: input.status,
+          status: {
+            in: input.statuses,
+          },
         },
         include: {
           Class: true,
@@ -89,7 +87,6 @@ export const printRequestRouter = createTRPCRouter({
           },
           Subject: true,
         },
-        orderBy: { dueDate: input.orderBy?.dueDate },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
       });

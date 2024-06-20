@@ -9,6 +9,18 @@ import {
 } from "../trpc";
 
 export const teacherRouter = createTRPCRouter({
+  getUniqueTeachers: isUserLoggedInAndAssignedToSchool.query(({ ctx }) => {
+    return ctx.prisma.user.findMany({
+      where: {
+        active: true,
+        schoolId: ctx.session.school.id,
+        Role: {
+          name: "TEACHER",
+        },
+      },
+      distinct: ["name"],
+    });
+  }),
   findBySlug: isUserLoggedInAndAssignedToSchool
     .input(z.object({ slug: z.string() }))
     .query(({ ctx, input }) => {

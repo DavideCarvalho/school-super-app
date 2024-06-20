@@ -8,7 +8,7 @@ import { api } from "~/trpc/react";
 import { usePurchaseRequestsTableColumns } from "./use-print-requests-table-columns";
 import { mapStatusesInPortugueseToEnum } from "./utils";
 
-export function PurchaseRequestsTableV2() {
+export function PrintRequestTableV2() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -31,15 +31,16 @@ export function PurchaseRequestsTableV2() {
   );
 
   const { data: printRequests, isLoading: isLoadingPrintRequest } =
-    api.file.allBySchoolId.useQuery({
+    api.printRequest.allBySchoolId.useQuery({
       page,
-      size,
+      limit: size,
       statuses: statusesFiltered.length ? statusesFiltered : undefined,
     });
 
-  const { data: printRequestsCount } = api.file.countAllBySchoolId.useQuery({
-    statuses: statusesFiltered.length ? statusesFiltered : undefined,
-  });
+  const { data: printRequestsCount } =
+    api.printRequest.countAllBySchoolId.useQuery({
+      statuses: statusesFiltered.length ? statusesFiltered : undefined,
+    });
 
   return (
     <TableWithPagination

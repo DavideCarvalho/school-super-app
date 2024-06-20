@@ -9,6 +9,7 @@ import { TeachersTable } from "~/app/escola/[school-slug]/professores/containers
 import { api, createSSRHelper } from "~/trpc/server";
 import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
+import { PrintRequestTableV2 } from "./containers/print-request-table";
 
 export default async function FilesPage({
   params,
@@ -38,17 +39,17 @@ export default async function FilesPage({
   return (
     <HydrationBoundary state={dehydratedState}>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Professores</h2>
+        <h2 className="text-xl font-semibold">Impressões</h2>
         <Link
-          href={`${url.pathname}?${url.searchParams.toString()}#adicionar-professor`}
+          href={`${url.pathname}?${url.searchParams.toString()}#nova-impressao`}
         >
-          <Button>Adicionar Professor</Button>
+          <Button>Nova Impressão</Button>
         </Link>
       </div>
       <NewTeacherModalListener />
       <EditTeacherModalListener />
       <Suspense>
-        <TeachersTable />
+        <PrintRequestTableV2 />
       </Suspense>
     </HydrationBoundary>
   );

@@ -284,7 +284,7 @@ const routes: Route[] = [
   },
   {
     name: "Impressão",
-    href: (params) => `/escola/${params.schoolSlug}/impressao`,
+    href: (params) => `/escola/${params.schoolSlug}/administrativo/impressao`,
   },
   {
     name: "Solicitações de compra",
