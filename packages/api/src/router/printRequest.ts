@@ -3,6 +3,16 @@ import { z } from "zod";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const printRequestRouter = createTRPCRouter({
+  findById: isUserLoggedInAndAssignedToSchool
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.printRequest.findUnique({
+        where: { id: input.id, User: { schoolId: ctx.session.school.id } },
+        include: {
+          User: true,
+        },
+      });
+    }),
   countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
@@ -153,6 +163,22 @@ export const printRequestRouter = createTRPCRouter({
         },
         data: {
           status: "PRINTED",
+        },
+      });
+    }),
+  deleteById: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.printRequest.delete({
+        where: {
+          id: input.id,
+          User: {
+            schoolId: ctx.session.school.id,
+          },
         },
       });
     }),
