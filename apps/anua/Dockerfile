@@ -33,7 +33,7 @@ RUN pnpm i
 RUN pnpm db:generate
 
 # Constrói a aplicação
-RUN turbo build --filter=@anua/anua
+RUN pnpm build:anua
 
 # Remove arquivos de código-fonte após a construção
 RUN rm -rf ./**/*/src
