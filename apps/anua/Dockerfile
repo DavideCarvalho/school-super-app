@@ -1,52 +1,27 @@
-# Alpine image
 FROM node:20-alpine
 
-# Atualiza e instala dependências
-RUN apk update && apk add --no-cache libc6-compat
+COPY . home/node/app
 
-# Instala pnpm e turbo globalmente
-RUN npm install -g pnpm turbo
-RUN pnpm config set store-dir ~/.pnpm-store
+WORKDIR /home/node/app
 
-WORKDIR /app
+# RUN cat .env
 
-# Copia todos os arquivos para o diretório de trabalho
-COPY . .
+# RUN set -o allexport source .env set +o allexport
+# RUN env
+# RUN printenv
 
-RUN ls -la
+RUN npm i -g turbo
 
-# Prune dependências não necessárias para o escopo @anua/anua
-RUN pnpm turbo prune --scope=@anua/anua --docker && \
-    cp .env out/.env && \
-    mv out/full /home/node/temp_out && \
-    mv out/pnpm-lock.yaml /home/node/temp_out && \
-    rm -rf /app/* && \
-    mv /home/node/temp_out/* /app/ && \
-    rm -rf /home/node/temp_out
+RUN npm i -g pnpm
 
-RUN ls -la
+RUN pnpm i --frozen-lockfile
 
-# Instala as dependências de produção com --frozen-lockfile para garantir que o lockfile seja respeitado
-RUN pnpm i
+RUN turbo -F @acme/db prisma:generate
 
-# Gera os artefatos do prisma
-RUN pnpm db:generate
+RUN turbo build -F @anua/anua
 
-# Constrói a aplicação
-RUN pnpm build:anua
+EXPOSE 3000
 
-# Remove arquivos de código-fonte após a construção
-RUN rm -rf ./**/*/src
+ENV NODE_ENV production
 
-# Cria usuário nodejs e muda para ele
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
-USER nodejs
-
-WORKDIR /app/apps/anua
-
-# Define a variável de ambiente NODE_ENV como produção
-ENV NODE_ENV=production
-
-# Comando para iniciar a aplicação
-CMD ["npm", "run", "start"]
+CMD ["turbo", "start", "-F", "@anua/anua"]
