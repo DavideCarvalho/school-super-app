@@ -19,6 +19,7 @@ RUN ls -la
 RUN pnpm turbo prune --scope=@anua/anua --docker && \
     cp .env out/.env && \
     mv out/full /home/node/temp_out && \
+    mv out/pnpm-lock.yaml /home/node/temp_out && \
     rm -rf /app/* && \
     mv /home/node/temp_out/* /app/ && \
     rm -rf /home/node/temp_out
