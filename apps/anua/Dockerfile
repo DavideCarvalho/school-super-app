@@ -27,7 +27,7 @@ RUN pnpm turbo prune --scope=@anua/anua --docker && \
 RUN ls -la
 
 # Instala as dependências de produção com --frozen-lockfile para garantir que o lockfile seja respeitado
-RUN pnpm install --prod --no-optional
+RUN pnpm i
 
 # Gera os artefatos do prisma
 RUN pnpm db:generate
