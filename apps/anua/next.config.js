@@ -71,4 +71,4 @@ const config = {
 // 	},
 // );
 
-export default withSuperjson()(config);
+export default config;

@@ -18,8 +18,8 @@ export default async function DashboardPage({
       <PurchaseRequestsValueMonthlyChartServer />
       <PurchaseRequestsAverageTimeToFinishChartServer />
       <PurchaseRequestsByMonthChartServer />
-      <CanteenSellsValueByMonthChartServer />
-      <CanteenSellsQuantityByMonthChartServer />
+      {/* <CanteenSellsValueByMonthChartServer />
+      <CanteenSellsQuantityByMonthChartServer /> */}
     </>
   );
 }
