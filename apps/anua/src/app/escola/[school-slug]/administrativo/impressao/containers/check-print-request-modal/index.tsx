@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 
@@ -14,19 +15,21 @@ import { Label } from "@acme/ui/label";
 
 import { api } from "~/trpc/react";
 
-interface ApprovePrintRequestModalProps {
+interface CheckPrintRequestModalProps {
   printRequestId: string;
   open: boolean;
   onClickSubmit: () => void;
   onClickCancel: () => void;
 }
 
-export function ApprovePrintRequestModal({
+export function CheckPrintRequestModal({
   printRequestId,
   open,
   onClickSubmit,
   onClickCancel,
-}: ApprovePrintRequestModalProps) {
+}: CheckPrintRequestModalProps) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const { mutateAsync: approveRequest } =
     api.printRequest.approveRequest.useMutation();
 
@@ -105,6 +108,13 @@ export function ApprovePrintRequestModal({
           <Button type="button" variant="outline" onClick={onClickCancel}>
             Fechar
           </Button>
+          <Link
+            href={`${pathname}?${searchParams?.toString()}#rejeitar-impressao?impressao=${printRequestId}`}
+          >
+            <Button type="button" variant="destructive">
+              Rejeitar
+            </Button>
+          </Link>
           <Button type="button" onClick={handleOnClickSubmit}>
             Aprovar
           </Button>

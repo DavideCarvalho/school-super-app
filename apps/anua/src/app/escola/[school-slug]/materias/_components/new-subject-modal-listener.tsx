@@ -13,6 +13,8 @@ export function NewSubjectModalListener() {
   useEffect(() => {
     if (hash === "adicionar-materia") {
       setOpenNewTeacherModal(true);
+    } else {
+      setOpenNewTeacherModal(false);
     }
   }, [hash]);
 

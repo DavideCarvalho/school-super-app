@@ -1,6 +1,5 @@
 import { cache } from "react";
 import { headers } from "next/headers";
-import { auth } from "@clerk/nextjs/server";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import SuperJSON from "superjson";
 

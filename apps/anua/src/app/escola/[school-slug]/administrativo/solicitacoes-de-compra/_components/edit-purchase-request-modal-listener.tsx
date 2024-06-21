@@ -15,6 +15,8 @@ export function EditPurchaseRequestModalListener() {
   useEffect(() => {
     if (hash === "editar-solicitacao" && hashValue) {
       setOpenEditTeacherModal(true);
+    } else {
+      setOpenEditTeacherModal(false);
     }
   }, [hash, hashValue]);
 

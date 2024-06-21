@@ -5,7 +5,6 @@ import {
   ArrowTopRightOnSquareIcon,
   DocumentMagnifyingGlassIcon,
   HandThumbDownIcon,
-  HandThumbUpIcon,
   TrashIcon,
 } from "@heroicons/react/20/solid";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -163,20 +162,20 @@ export function usePurchaseRequestsTableColumns() {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
-                      href={`${pathname}?${searchParams?.toString()}#aprovar-impressao?impressao=${row.original.id}`}
+                      href={`${pathname}?${searchParams?.toString()}#checar-impressao?impressao=${row.original.id}`}
                     >
                       <Button size="sm" variant="ghost">
-                        <HandThumbUpIcon className="h-4 w-4 text-green-500" />
+                        <DocumentMagnifyingGlassIcon className="h-4 w-4 text-green-500" />
                       </Button>
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Aprovar impressão</p>
+                    <p>Checar impressão</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
 
-              <TooltipProvider>
+              {/* <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
@@ -191,7 +190,7 @@ export function usePurchaseRequestsTableColumns() {
                     <p>Reprovar impressão</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
+              </TooltipProvider> */}
 
               <TooltipProvider>
                 <Tooltip>

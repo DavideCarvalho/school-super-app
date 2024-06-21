@@ -15,6 +15,8 @@ export function EditWorkerModalListener() {
   useEffect(() => {
     if (hash === "editar-funcionario" && hashValue) {
       setOpenEditTeacherModal(true);
+    } else {
+      setOpenEditTeacherModal(false);
     }
   }, [hash, hashValue]);
 

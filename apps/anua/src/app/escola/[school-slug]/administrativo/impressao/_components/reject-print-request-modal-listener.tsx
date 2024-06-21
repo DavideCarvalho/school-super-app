@@ -16,6 +16,8 @@ export function RejectPrintRequestModalListener() {
   useEffect(() => {
     if (hash === "rejeitar-impressao" && hashValue) {
       setOpenRejectPrintRequestModal(true);
+    } else {
+      setOpenRejectPrintRequestModal(false);
     }
   }, [hash, hashValue]);
 

@@ -19,6 +19,8 @@ export function NewCanteenSellModalListener({
   useEffect(() => {
     if (hash === "nova-venda-cantina") {
       setOpenNewCanteenSellModal(true);
+    } else {
+      setOpenNewCanteenSellModal(false);
     }
   }, [hash]);
 

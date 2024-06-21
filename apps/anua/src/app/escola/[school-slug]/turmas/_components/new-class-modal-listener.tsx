@@ -13,6 +13,8 @@ export function NewClassModalListener() {
   useEffect(() => {
     if (hash === "adicionar-turma") {
       setOpenNewClassModal(true);
+    } else {
+      setOpenNewClassModal(false);
     }
   }, [hash]);
 

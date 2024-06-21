@@ -14,6 +14,8 @@ export function NewPurchaseRequestModalListener() {
   useEffect(() => {
     if (hash === "criar-solicitacao") {
       setOpenNewPurchaseRequestModal(true);
+    } else {
+      setOpenNewPurchaseRequestModal(false);
     }
   }, [hash]);
 

@@ -13,6 +13,8 @@ export function NewWorkerModalListener() {
   useEffect(() => {
     if (hash === "adicionar-funcionario") {
       setOpenNewWorkerModal(true);
+    } else {
+      setOpenNewWorkerModal(false);
     }
   }, [hash]);
 

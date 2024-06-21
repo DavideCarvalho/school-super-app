@@ -16,6 +16,8 @@ export function ApprovePurchaseRequestModalListener() {
   useEffect(() => {
     if (hash === "aprovar-solicitacao") {
       setOpenApprovePurchaseRequestModal(true);
+    } else {
+      setOpenApprovePurchaseRequestModal(false);
     }
   }, [hash]);
 

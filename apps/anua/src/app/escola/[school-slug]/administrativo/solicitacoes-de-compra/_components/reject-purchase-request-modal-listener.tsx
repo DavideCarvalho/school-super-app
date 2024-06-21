@@ -16,6 +16,8 @@ export function RejectPurchaseRequestModalListener() {
   useEffect(() => {
     if (hash === "rejeitar-solicitacao") {
       setOpenRejectPurchaseRequestModal(true);
+    } else {
+      setOpenRejectPurchaseRequestModal(false);
     }
   }, [hash]);
 

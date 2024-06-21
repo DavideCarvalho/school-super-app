@@ -5,24 +5,26 @@ import { useHash } from "hooks/use-hash";
 import { useHashQueryValue } from "hooks/use-hash-value";
 
 import { api } from "~/trpc/react";
-import { ApprovePrintRequestModal } from "../containers/approve-print-request-modal";
+import { CheckPrintRequestModal } from "../containers/check-print-request-modal";
 
-export function ApprovePrintRequestModalListener() {
-  const [openApprovePrintRequestModal, setOpenApprovePrintRequestModal] =
+export function CheckPrintRequestModalListener() {
+  const [openCheckPrintRequestModal, setOpenCheckPrintRequestModal] =
     useState(false);
   const [hash, setHash] = useHash();
   const [hashValue] = useHashQueryValue("impressao");
 
   useEffect(() => {
-    if (hash === "aprovar-impressao" && hashValue) {
-      setOpenApprovePrintRequestModal(true);
+    if (hash === "checar-impressao" && hashValue) {
+      setOpenCheckPrintRequestModal(true);
+    } else {
+      setOpenCheckPrintRequestModal(false);
     }
   }, [hash, hashValue]);
 
   const utils = api.useUtils();
 
   async function handleOnClickSubmit() {
-    setOpenApprovePrintRequestModal(false);
+    setOpenCheckPrintRequestModal(false);
     await Promise.all([
       utils.printRequest.allBySchoolId.invalidate(),
       utils.printRequest.countAllBySchoolId.invalidate(),
@@ -31,7 +33,7 @@ export function ApprovePrintRequestModalListener() {
   }
 
   async function handleOnClickCancel() {
-    setOpenApprovePrintRequestModal(false);
+    setOpenCheckPrintRequestModal(false);
     await Promise.all([
       utils.printRequest.allBySchoolId.invalidate(),
       utils.printRequest.countAllBySchoolId.invalidate(),
@@ -40,9 +42,9 @@ export function ApprovePrintRequestModalListener() {
   }
 
   return (
-    <ApprovePrintRequestModal
+    <CheckPrintRequestModal
       printRequestId={hashValue ?? ""}
-      open={openApprovePrintRequestModal}
+      open={openCheckPrintRequestModal}
       onClickSubmit={handleOnClickSubmit}
       onClickCancel={handleOnClickCancel}
     />

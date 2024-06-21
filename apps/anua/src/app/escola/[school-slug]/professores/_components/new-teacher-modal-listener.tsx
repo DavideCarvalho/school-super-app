@@ -13,6 +13,8 @@ export function NewTeacherModalListener() {
   useEffect(() => {
     if (hash === "adicionar-professor") {
       setOpenNewTeacherModal(true);
+    } else {
+      setOpenNewTeacherModal(false);
     }
   }, [hash]);
 

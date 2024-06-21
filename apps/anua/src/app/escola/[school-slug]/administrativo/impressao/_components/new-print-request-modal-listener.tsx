@@ -14,6 +14,8 @@ export function NewPrintRequestModalListener() {
   useEffect(() => {
     if (hash === "nova-impressao") {
       setOpenNewPrintRequestModal(true);
+    } else {
+      setOpenNewPrintRequestModal(false);
     }
   }, [hash]);
 

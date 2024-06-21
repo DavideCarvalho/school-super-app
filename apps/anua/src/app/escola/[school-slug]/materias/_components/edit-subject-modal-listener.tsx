@@ -15,6 +15,8 @@ export function EditSubjectModalListener() {
   useEffect(() => {
     if (hash === "editar-materia" && hashValue) {
       setOpenEditSubjectModal(true);
+    } else {
+      setOpenEditSubjectModal(false);
     }
   }, [hash, hashValue]);
 

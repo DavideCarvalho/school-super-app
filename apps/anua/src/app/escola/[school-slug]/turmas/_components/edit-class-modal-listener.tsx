@@ -15,6 +15,8 @@ export function EditClassModalListener() {
   useEffect(() => {
     if (hash === "editar-turma" && hashValue) {
       setOpenEditClassModal(true);
+    } else {
+      setOpenEditClassModal(false);
     }
   }, [hash, hashValue]);
 

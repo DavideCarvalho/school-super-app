@@ -19,6 +19,8 @@ export function NewCanteenItemModalListener({
   useEffect(() => {
     if (hash === "adicionar-item-cantina") {
       setOpenNewTeacherModal(true);
+    } else {
+      setOpenNewTeacherModal(false);
     }
   }, [hash]);
 

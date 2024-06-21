@@ -15,6 +15,8 @@ export function EditTeacherModalListener() {
   useEffect(() => {
     if (hash === "editar-professor" && hashValue) {
       setOpenEditTeacherModal(true);
+    } else {
+      setOpenEditTeacherModal(false);
     }
   }, [hash, hashValue]);
 

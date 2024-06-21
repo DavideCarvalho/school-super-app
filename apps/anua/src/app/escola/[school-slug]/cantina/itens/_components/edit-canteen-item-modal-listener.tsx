@@ -22,6 +22,8 @@ export function EditCanteenItemModalListener({
   useEffect(() => {
     if (hash === "editar-item-cantina" && hashValue) {
       setOpenEditCanteenItemModal(true);
+    } else {
+      setOpenEditCanteenItemModal(false);
     }
   }, [hash, hashValue]);
 

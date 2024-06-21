@@ -16,6 +16,8 @@ export function ArrivedPurchaseRequestModalListener() {
   useEffect(() => {
     if (hash === "solicitacao-chegou") {
       setOpenArrivedPurchaseRequestModal(true);
+    } else {
+      setOpenArrivedPurchaseRequestModal(false);
     }
   }, [hash]);
 

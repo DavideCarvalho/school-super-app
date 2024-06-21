@@ -16,6 +16,8 @@ export function BoughtPurchaseRequestModalListener() {
   useEffect(() => {
     if (hash === "solicitacao-comprada") {
       setOpenBoughtPurchaseRequestModal(true);
+    } else {
+      setOpenBoughtPurchaseRequestModal(false);
     }
   }, [hash]);
 

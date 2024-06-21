@@ -19,6 +19,8 @@ export function ReviewPrintRequestModalListener() {
       hashValue
     ) {
       setOpenReviewPrintRequestModal(true);
+    } else {
+      setOpenReviewPrintRequestModal(false);
     }
   }, [hash, hashValue]);
 
