@@ -150,7 +150,7 @@ export function EditRequestedPurchaseRequestModal({
               )}
             </div>
             <div className="grid gap-2">
-              <Label>Pra quando?*</Label>
+              <Label>Para quando?*</Label>
               <Calendar
                 value={watchDueDate}
                 minDate={now.subtract(1, "hour").toDate()}

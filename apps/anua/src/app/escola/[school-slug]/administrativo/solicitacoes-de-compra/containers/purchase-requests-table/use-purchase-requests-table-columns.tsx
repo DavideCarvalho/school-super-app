@@ -63,6 +63,8 @@ for (let i = 0; i < statusesEnum.length; i++) {
   statusesMap[status] = statusInPortuguese;
 }
 
+type Row = RouterOutputs["purchaseRequest"]["allBySchoolId"][0];
+
 export function usePurchaseRequestsTableColumns() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -71,24 +73,23 @@ export function usePurchaseRequestsTableColumns() {
   const { data: distinctProducts } =
     api.purchaseRequest.getUniqueProductNames.useQuery();
 
-  const columnHelper =
-    createColumnHelper<RouterOutputs["purchaseRequest"]["allBySchoolId"][0]>();
+  const columnHelper = createColumnHelper<Row>();
 
   const { mutateAsync: deletePurchaseRequest } =
     api.purchaseRequest.deleteById.useMutation();
 
   async function handleDeletePurchaseRequest(purchaseRequestId: string) {
-    const toastId = toast.loading("Removendo professor...");
+    const toastId = toast.loading("Removendo solicitação de compra...");
     try {
       await deletePurchaseRequest({ id: purchaseRequestId });
-      toast.success("Professor removido com sucesso!");
+      toast.success("Solicitação de compra removida com sucesso!");
     } catch (e) {
       toast.error("Erro ao remover professor");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
-        utils.teacher.getSchoolTeachers.invalidate(),
-        utils.teacher.countSchoolTeachers.invalidate(),
+        utils.purchaseRequest.allBySchoolId.invalidate(),
+        utils.purchaseRequest.countAllBySchoolId.invalidate(),
       ]);
     }
   }
@@ -102,7 +103,7 @@ export function usePurchaseRequestsTableColumns() {
       filterFn: multiSelectFilterFn,
       meta: {
         filterComponent: (props: {
-          column: Column<any, unknown>;
+          column: Column<Row, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => (
           <MultiSelectFilter
@@ -204,8 +205,8 @@ export function usePurchaseRequestsTableColumns() {
       },
     }),
     columnHelper.accessor((row) => brazilianDateFormatter(row.dueDate), {
-      id: "pra-quando",
-      header: "Pra quando?",
+      id: "para-quando",
+      header: "Para quando?",
       enableColumnFilter: false,
       enableSorting: false,
     }),
@@ -230,7 +231,7 @@ export function usePurchaseRequestsTableColumns() {
       enableSorting: false,
       meta: {
         filterComponent: (props: {
-          column: Column<any, unknown>;
+          column: Column<Row, unknown>;
           onFilterChange: (param: { name: string; value: string[] }) => void;
         }) => {
           return (

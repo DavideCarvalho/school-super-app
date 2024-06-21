@@ -193,7 +193,7 @@ export function ReviewPrintRequestModal({
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Pra quando?</FormLabel>
+                    <FormLabel>Para quando?</FormLabel>
                     <FormControl>
                       <DatePicker
                         date={field.value}

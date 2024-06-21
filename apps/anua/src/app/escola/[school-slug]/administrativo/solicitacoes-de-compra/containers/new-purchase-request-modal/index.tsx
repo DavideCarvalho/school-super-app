@@ -30,18 +30,16 @@ import { Textarea } from "@acme/ui/textarea";
 import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 
-const schema = z
-  .object({
-    productName: z.string({ required_error: "Qual nome do produto?" }),
-    quantity: z.coerce.number({ required_error: "Qual a quantidade?" }).min(1),
-    unitValue: z.coerce
-      .number({ required_error: "Quanto custa cada um?" })
-      .min(0),
-    dueDate: z.date(),
-    productUrl: z.string().optional(),
-    description: z.string().optional(),
-  })
-  .required();
+const schema = z.object({
+  productName: z.string({ required_error: "Qual nome do produto?" }),
+  quantity: z.coerce.number({ required_error: "Qual a quantidade?" }).min(1),
+  unitValue: z.coerce
+    .number({ required_error: "Quanto custa cada um?" })
+    .min(0),
+  dueDate: z.date(),
+  productUrl: z.string().optional(),
+  description: z.string().optional(),
+});
 
 interface NewPurchaseRequestModalProps {
   open: boolean;
@@ -107,7 +105,7 @@ export function NewPurchaseRequestModal({
                 name="productName"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Pra quando?</FormLabel>
+                    <FormLabel>Qual o produto?*</FormLabel>
                     <FormControl>
                       <Input
                         value={field.value}
@@ -170,7 +168,7 @@ export function NewPurchaseRequestModal({
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Pra quando?</FormLabel>
+                    <FormLabel>Para quando?</FormLabel>
                     <FormControl>
                       <DatePicker
                         date={field.value}
@@ -193,7 +191,7 @@ export function NewPurchaseRequestModal({
                 name="productUrl"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Pra quando?</FormLabel>
+                    <FormLabel>Link do produto</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Link do produto"
@@ -211,7 +209,7 @@ export function NewPurchaseRequestModal({
                 name="description"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Pra quando?</FormLabel>
+                    <FormLabel>Alguma observação?</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Observações"

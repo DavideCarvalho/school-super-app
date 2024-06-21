@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -207,13 +208,12 @@ export const purchaseRequestRouter = createTRPCRouter({
           finalUnitValue: input.finalUnitValue,
           finalValue: input.finalValue,
           estimatedArrivalDate: input.estimatedArrivalDate,
-          receiptPath: `/school/${input.schoolId}/purchase-request/${input.receiptFileName}`,
+          receiptPath: `/school/${ctx.session.school.id}/purchase-request/${input.receiptFileName}`,
         },
       });
     }),
-  purchaseRequestsLast360DaysByMonth: publicProcedure
-    .input(z.object({ schoolId: z.string() }))
-    .query(async ({ ctx, input }) => {
+  purchaseRequestsLast360DaysByMonth: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx, input }) => {
       const data = await ctx.prisma.$queryRaw<
         { month: string; count: bigint }[]
       >`
@@ -221,7 +221,7 @@ export const purchaseRequestRouter = createTRPCRouter({
           EXTRACT(MONTH FROM createdAt) as month,
           COUNT(*)                      as count
         FROM PurchaseRequest
-        WHERE schoolId = ${input.schoolId}
+        WHERE schoolId = ${ctx.session.school.id}
           AND createdAt > NOW() - INTERVAL 1 YEAR
         GROUP BY YEAR(updatedAt), month
         ORDER BY YEAR(updatedAt), month;
@@ -230,10 +230,10 @@ export const purchaseRequestRouter = createTRPCRouter({
         month: d.month,
         count: Number.parseInt(d.count.toString()),
       }));
-    }),
-  purchaseRequestsTimeToFinalStatusInLast360Days: publicProcedure
-    .input(z.object({ schoolId: z.string() }))
-    .query(async ({ ctx, input }) => {
+    },
+  ),
+  purchaseRequestsTimeToFinalStatusInLast360Days:
+    isUserLoggedInAndAssignedToSchool.query(async ({ ctx }) => {
       const data = await ctx.prisma.$queryRaw<
         {
           month: string;
@@ -243,7 +243,7 @@ export const purchaseRequestRouter = createTRPCRouter({
         SELECT EXTRACT(MONTH FROM createdAt)                  as month,
         AVG(DATEDIFF(updatedAt, createdAt)) as averageDaysToFinish
         FROM PurchaseRequest
-        WHERE schoolId = ${input.schoolId}
+        WHERE schoolId = ${ctx.session.school.id}
           AND updatedAt > NOW() - INTERVAL 1 YEAR
           AND status = 'ARRIVED'
         GROUP BY YEAR(updatedAt), month
@@ -254,16 +254,15 @@ export const purchaseRequestRouter = createTRPCRouter({
         averageDaysToFinish: Number.parseFloat(d.averageDaysToFinish),
       }));
     }),
-  purchaseRequestsMonthlyValueInLast360Days: publicProcedure
-    .input(z.object({ schoolId: z.string() }))
-    .query(async ({ ctx, input }) => {
+  purchaseRequestsMonthlyValueInLast360Days:
+    isUserLoggedInAndAssignedToSchool.query(async ({ ctx }) => {
       return ctx.prisma.$queryRaw<{ month: string; value: number }[]>`
         SELECT
           EXTRACT(MONTH FROM createdAt) as month,
           SUM(finalValue)               as value
         FROM PurchaseRequest
         WHERE
-          schoolId = ${input.schoolId}
+          schoolId = ${ctx.session.school.id}
           AND createdAt > NOW() - INTERVAL 1 YEAR
         GROUP BY month
         ORDER BY month

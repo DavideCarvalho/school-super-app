@@ -80,7 +80,7 @@ export function ApprovePrintRequestModal({
           </div>
 
           <div>
-            <Label>Pra quando?</Label>
+            <Label>Para quando?</Label>
             <p>
               {printRequest?.dueDate
                 ? format(printRequest.dueDate, "dd/MM/yyyy")

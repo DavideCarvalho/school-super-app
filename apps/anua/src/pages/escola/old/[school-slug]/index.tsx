@@ -1,7 +1,6 @@
 import type { GetServerSidePropsContext } from "next";
 import { clerkClient } from "@clerk/clerk-sdk-node";
 import { getAuth } from "@clerk/nextjs/server";
-import { wrapGetServerSidePropsWithSentry } from "@sentry/nextjs";
 import { LineChart } from "@tremor/react";
 
 import type { Canteen, Role, User } from "@acme/db";
@@ -24,16 +23,10 @@ interface SchoolPageProps {
 
 export default function SchoolPage({ schoolId, canteen }: SchoolPageProps) {
   const { data: purchaseRequestsMonthlyValueInLast360DaysData } =
-    api.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.useQuery({
-      schoolId,
-    });
+    api.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.useQuery();
 
   const { data: purchaseRequestsTimeToFinalStatusInLast360DaysData } =
-    api.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.useQuery(
-      {
-        schoolId,
-      },
-    );
+    api.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.useQuery();
 
   return (
     <SchoolLayout>

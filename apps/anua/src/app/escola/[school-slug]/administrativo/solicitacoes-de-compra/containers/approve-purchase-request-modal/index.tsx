@@ -87,7 +87,7 @@ export function ApprovePurchaseRequestModal({
             </p>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="dueDate">Pra quando?*</Label>
+            <Label htmlFor="dueDate">Para quando?*</Label>
             <p>
               {brazilianDateFormatter(purchaseRequest?.dueDate ?? new Date())}
             </p>
