@@ -18,7 +18,7 @@ RUN ls -la
 # Prune dependências não necessárias para o escopo @anua/anua
 RUN pnpm turbo prune --scope=@anua/anua --docker && \
     cp .env out/.env && \
-    mv out /home/node/temp_out && \
+    mv out/full /home/node/temp_out && \
     rm -rf /app/* && \
     mv /home/node/temp_out/* /app/ && \
     rm -rf /home/node/temp_out
