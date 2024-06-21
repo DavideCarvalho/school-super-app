@@ -39,6 +39,7 @@
     "@opentelemetry/sdk-node": "0.52.1",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@opentelemetry/sdk-trace-node": "1.25.1",
+    "react-error-boundary": "4.0.13",
     "@opentelemetry/semantic-conventions": "1.25.1",
     "@radix-ui/react-alert-dialog": "1.1.1",
     "@radix-ui/react-dialog": "1.1.1",
