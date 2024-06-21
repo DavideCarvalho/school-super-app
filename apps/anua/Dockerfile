@@ -13,6 +13,8 @@ WORKDIR /app
 # Copia todos os arquivos para o diretório de trabalho
 COPY . .
 
+RUN ls -la
+
 # Prune dependências não necessárias para o escopo @anua/anua
 RUN pnpm turbo prune --scope=@anua/anua --docker && \
     cp .env out/.env && \
@@ -20,6 +22,8 @@ RUN pnpm turbo prune --scope=@anua/anua --docker && \
     rm -rf /app/* && \
     mv /home/node/temp_out/* /app/ && \
     rm -rf /home/node/temp_out
+
+RUN ls -la
 
 # Instala as dependências de produção com --frozen-lockfile para garantir que o lockfile seja respeitado
 RUN pnpm install --frozen-lockfile --prod --no-optional
