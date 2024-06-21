@@ -16,11 +16,6 @@ export const printRequestRouter = createTRPCRouter({
   countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        orderBy: z
-          .object({
-            dueDate: z.union([z.literal("asc"), z.literal("desc")]),
-          })
-          .optional(),
         statuses: z
           .array(
             z.union([

@@ -22,20 +22,22 @@ export default async function FilesPage({
   const xUrl = requestHeaders.get("x-url");
   if (!xUrl) throw new Error("unreachable");
   const url = new URL(xUrl);
-  if (!url.searchParams.has("page")) {
-    url.searchParams.set("page", "1");
-  }
-  if (!url.searchParams.has("limit")) {
-    url.searchParams.set("limit", "10");
-  }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
-  await helper.teacher.getSchoolTeachers.prefetch({
-    page: Number(url.searchParams.get("page")),
-    limit: Number(url.searchParams.get("limit")),
+  const page = url.searchParams?.has("page")
+    ? Number(url.searchParams.get("page"))
+    : 1;
+  const size = url.searchParams?.has("size")
+    ? Number(url.searchParams?.get("size"))
+    : 10;
+  await helper.printRequest.allBySchoolId.prefetch({
+    page,
+    limit: size,
   });
-  await helper.teacher.countSchoolTeachers.prefetch();
+  await helper.printRequest.countAllBySchoolId.prefetch({
+    statuses: undefined,
+  });
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>

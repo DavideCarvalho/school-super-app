@@ -22,27 +22,25 @@ export default async function WorkersPage({
   const xUrl = requestHeaders.get("x-url");
   if (!xUrl) throw new Error("unreachable");
   const url = new URL(xUrl);
-  if (!url.searchParams.has("page")) {
-    url.searchParams.set("size", "1");
-  }
-  if (!url.searchParams.has("size")) {
-    url.searchParams.set("size", "10");
-  }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
-  const page = Number(url.searchParams.get("page"));
-  const size = Number(url.searchParams.get("size"));
+  const page = url.searchParams?.has("page")
+    ? Number(url.searchParams.get("page"))
+    : 1;
+  const size = url.searchParams?.has("size")
+    ? Number(url.searchParams?.get("size"))
+    : 10;
   const roles = mapRolesInPortugueseToEnum(
-    (url.searchParams.getAll("funcao") ?? []).filter((v) => v !== ""),
+    url.searchParams.getAll("funcao") ?? [],
   );
   const helper = await createSSRHelper();
   await helper.user.allBySchoolId.prefetch({
     page,
     size,
-    roles,
+    roles: roles.length ? roles : undefined,
   });
   await helper.user.countAllBySchoolId.prefetch({
-    roles,
+    roles: roles.length ? roles : undefined,
   });
   const dehydratedState = dehydrate(helper.queryClient);
   return (

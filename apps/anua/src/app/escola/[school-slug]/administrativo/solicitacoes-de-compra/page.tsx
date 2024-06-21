@@ -25,16 +25,9 @@ export default async function TeachersPage({
   const xUrl = requestHeaders.get("x-url");
   if (!xUrl) throw new Error("unreachable");
   const url = new URL(xUrl);
-  if (!url.searchParams.has("page")) {
-    url.searchParams.set("page", "1");
-  }
-  if (!url.searchParams.has("limit")) {
-    url.searchParams.set("limit", "10");
-  }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   const helper = await createSSRHelper();
-  // TODO: Dar prefetch para PurchaseRequests
   const page = url.searchParams?.has("page")
     ? Number(url.searchParams.get("page"))
     : 1;
