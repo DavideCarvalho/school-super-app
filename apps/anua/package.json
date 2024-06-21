@@ -39,7 +39,7 @@
     "@opentelemetry/sdk-node": "0.52.0",
     "@opentelemetry/sdk-trace-node": "1.25.0",
     "@opentelemetry/semantic-conventions": "1.25.0",
-    "@radix-ui/react-alert-dialog": "1.1.0",
+    "@radix-ui/react-alert-dialog": "1.1.1",
     "@radix-ui/react-dialog": "1.1.0",
     "@radix-ui/react-label": "2.1.0",
     "@radix-ui/react-popover": "1.1.0",
