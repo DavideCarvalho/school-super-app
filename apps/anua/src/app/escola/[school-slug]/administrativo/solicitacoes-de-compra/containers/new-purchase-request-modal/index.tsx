@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
+import { DatePicker } from "@acme/ui/datepicker";
 import {
   Dialog,
   DialogContent,
@@ -14,11 +15,18 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@acme/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@acme/ui/form";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
 import { Textarea } from "@acme/ui/textarea";
 
-import Calendar from "~/components/calendar";
 import { api } from "~/trpc/react";
 import { brazilianRealFormatter } from "~/utils/brazilian-real-formatter";
 
@@ -46,14 +54,7 @@ export function NewPurchaseRequestModal({
   onClickCancel,
   onClickSubmit,
 }: NewPurchaseRequestModalProps) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    watch,
-    setValue,
-  } = useForm<z.infer<typeof schema>>({
+  const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
   });
 
@@ -74,7 +75,7 @@ export function NewPurchaseRequestModal({
       });
       toast.dismiss(toastId);
       toast.success("Solicitação de compra criada com sucesso!");
-      reset();
+      form.reset();
       await onClickSubmit();
     } catch (e) {
       toast.dismiss(toastId);
@@ -85,98 +86,157 @@ export function NewPurchaseRequestModal({
   }
 
   const now = dayjs();
-  const watchDueDate = watch("dueDate");
-  const watchUnitValue = watch("unitValue", 0);
-  const watchQuantity = watch("quantity", 0);
+  const watchDueDate = form.watch("dueDate");
+  const watchUnitValue = form.watch("unitValue", 0);
+  const watchQuantity = form.watch("quantity", 0);
   if (!watchDueDate) {
-    setValue("dueDate", now.add(2, "day").toDate());
+    form.setValue("dueDate", now.add(2, "day").toDate());
   }
 
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
       <DialogContent className="sm:max-w-[600px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Nova solicitação de compra</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-6 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="productName">Qual é o produto?*</Label>
-              <Input placeholder="Giz de cera" {...register("productName")} />
-              {errors.productName && (
-                <p className="text-red-600">{errors.productName.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="quantity">Quantos você precisa?*</Label>
-              <Input
-                type="number"
-                min={1}
-                placeholder="2"
-                {...register("quantity")}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <DialogHeader>
+              <DialogTitle>Nova solicitação de compra</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-6 py-4">
+              <FormField
+                control={form.control}
+                name="productName"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Pra quando?</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value}
+                        onChange={field.onChange}
+                        placeholder="Giz de cera"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.quantity && (
-                <p className="text-red-600">{errors.quantity.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="unitValue">Quanto custa cada um?*</Label>
-              <Input
-                type="number"
-                step="any"
-                min={1}
-                placeholder="10.00"
-                {...register("unitValue")}
+
+              <FormField
+                control={form.control}
+                name="quantity"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Quantidade*</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value}
+                        onChange={field.onChange}
+                        type="number"
+                        min={1}
+                        placeholder="2"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.unitValue && (
-                <p className="text-red-600">{errors.unitValue.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label>Quanto custa no total?</Label>
-              <p>{brazilianRealFormatter(watchUnitValue * watchQuantity)}</p>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="dueDate">Pra quando?*</Label>
-              <Calendar
-                value={watchDueDate}
-                minDate={now.add(1, "day").toDate()}
-                onChange={(date) => setValue("dueDate", date)}
+
+              <FormField
+                control={form.control}
+                name="unitValue"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Quanto custa cada um?*</FormLabel>
+                    <FormControl>
+                      <Input
+                        value={field.value}
+                        onChange={field.onChange}
+                        type="number"
+                        min={1}
+                        placeholder="2"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid gap-2">
+                <Label>Quanto custa no total?</Label>
+                <p>{brazilianRealFormatter(watchUnitValue * watchQuantity)}</p>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="dueDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Pra quando?</FormLabel>
+                    <FormControl>
+                      <DatePicker
+                        date={field.value}
+                        onChange={(date) => {
+                          if (!date) return;
+                          form.setValue("dueDate", date);
+                        }}
+                        calendarProps={{
+                          fromDate: new Date(),
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="productUrl"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Pra quando?</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Link do produto"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Pra quando?</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Observações"
+                        value={field.value}
+                        onChange={field.onChange}
+                        rows={4}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="productUrl">Link do produto</Label>
-              <Input
-                placeholder="Link do produto"
-                {...register("productUrl")}
-              />
-              {errors.productUrl && (
-                <p className="text-red-600">{errors.productUrl.message}</p>
-              )}
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">Alguma observação?</Label>
-              <Textarea
-                rows={4}
-                placeholder="Observações"
-                {...register("description")}
-              />
-              {errors.description && (
-                <p className="text-red-600">{errors.description?.message}</p>
-              )}
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onClickCancel()}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit">Criar</Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onClickCancel()}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit">Criar</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

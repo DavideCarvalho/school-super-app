@@ -161,7 +161,6 @@ export function usePurchaseRequestsTableColumns() {
       enableSorting: false,
       cell: ({ row }) => {
         const value = row.original.finalValue ?? row.original.value;
-        const quantity = row.original.finalQuantity ?? row.original.quantity;
         let textColor = "text-green-500";
         if (
           row.original.finalValue != null &&
@@ -169,7 +168,7 @@ export function usePurchaseRequestsTableColumns() {
         ) {
           textColor = "text-red-500";
         }
-        if (row.original.finalValue) {
+        if (row.original.finalUnitValue && row.original.finalValue) {
           return (
             <div>
               <HoverCard>
@@ -182,29 +181,26 @@ export function usePurchaseRequestsTableColumns() {
                       <ArrowDownIcon className={`h-5 w-5 ${textColor}`} />
                     ) : null}
                     <p className={textColor}>
-                      {brazilianRealFormatter(value * quantity)}*
+                      {brazilianRealFormatter(value)}*
                     </p>
                   </div>
                 </HoverCardTrigger>
                 <HoverCardContent>
                   <p>
                     Valor unitário informado:{" "}
-                    {brazilianRealFormatter(row.original.value)}
+                    {brazilianRealFormatter(row.original.unitValue)}
                   </p>
                   <p>
                     Valor unitário comprado:{" "}
-                    {brazilianRealFormatter(row.original.finalValue)}
+                    {brazilianRealFormatter(row.original.finalUnitValue)}
                   </p>
-                  <p>
-                    Valor total comprado:{" "}
-                    {brazilianRealFormatter(value * quantity)}
-                  </p>
+                  <p>Valor total comprado: {brazilianRealFormatter(value)}</p>
                 </HoverCardContent>
               </HoverCard>
             </div>
           );
         }
-        return <p>{row.original.quantity}</p>;
+        return <p>{brazilianRealFormatter(row.original.value)}</p>;
       },
     }),
     columnHelper.accessor((row) => brazilianDateFormatter(row.dueDate), {
