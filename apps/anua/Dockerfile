@@ -49,4 +49,4 @@ WORKDIR /app/apps/anua
 ENV NODE_ENV=production
 
 # Comando para iniciar a aplicação
-CMD ["node", "dist/main"]
+CMD ["pnpm", "start:anua"]
