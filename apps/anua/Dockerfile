@@ -11,12 +11,15 @@ RUN npm install -g turbo pnpm
 # Prune dependências não necessárias para o escopo @anua/anua e mova o resultado para o diretório de trabalho
 RUN pnpm turbo prune --scope @anua/anua
 
+
 # Copie o arquivo .env para a pasta out e mova o resultado para o diretório de trabalho
 RUN cp .env out/.env && \
     mv out /home/node/temp_out && \
     rm -rf /home/node/app/* && \
     mv /home/node/temp_out/* /home/node/app/ && \
     rm -rf /home/node/temp_out
+
+RUN ls -la
 
 # Instale as dependências de produção com --frozen-lockfile para garantir que o lockfile seja respeitado
 RUN pnpm install --frozen-lockfile --no-cache
