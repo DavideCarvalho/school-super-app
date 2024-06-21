@@ -315,13 +315,14 @@ export const canteenRouter = createTRPCRouter({
         },
       });
     }),
-  canteenSellsByMonth: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        canteenId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
+  canteenSellsByMonth: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx }) => {
+      const canteen = await ctx.prisma.canteen.findFirst({
+        where: {
+          schoolId: ctx.session.school.id,
+        },
+      });
+      if (!canteen) throw new Error("Canteen not found");
       const data = await ctx.prisma.$queryRaw<
         {
           totalPrice: number;
@@ -339,7 +340,7 @@ export const canteenRouter = createTRPCRouter({
         FROM StudentCanteenItemPurchase
         WHERE canteenItemId IN (SELECT id
                                 FROM CanteenItem
-                                WHERE canteenId = ${input.canteenId})
+                                WHERE canteenId = ${canteen.id})
           AND createdAt > NOW() - INTERVAL 1 YEAR
         GROUP BY YEAR(createdAt), MONTH(createdAt), month;
       `;
@@ -349,5 +350,6 @@ export const canteenRouter = createTRPCRouter({
         count: Number(d.count),
         payed: d.payed === 1,
       }));
-    }),
+    },
+  ),
 });
