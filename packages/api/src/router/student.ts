@@ -130,26 +130,24 @@ export const studentRouter = createTRPCRouter({
         },
       });
       if (!studentRole) return;
-      const user = await ctx.prisma.user.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          schoolId: ctx.session.school.id,
-          roleId: studentRole.id,
-        },
-      });
+      // const user = await ctx.prisma.user.create({
+      //   data: {
+      //     name: input.name,
+      //     email: input.email,
+      //     schoolId: ctx.session.school.id,
+      //     roleId: studentRole.id,
+      //   },
+      // });
 
-      await ctx.prisma.student.create({
-        data: {
-          id: user.id,
-          User: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      });
-
-      return user;
+      // await ctx.prisma.student.create({
+      //   data: {
+      //     id: user.id,
+      //     User: {
+      //       connect: {
+      //         id: user.id,
+      //       },
+      //     },
+      //   },
+      // });
     }),
 });
