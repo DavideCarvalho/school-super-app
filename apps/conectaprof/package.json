@@ -57,7 +57,7 @@
     "@tiptap/extension-mention": "^2.4.0",
     "@tiptap/react": "^2.4.0",
     "@tiptap/starter-kit": "^2.4.0",
-    "@tremor/react": "3.17.3",
+    "@tremor/react": "3.17.4",
     "@trpc/client": "11.0.0-rc.421",
     "@trpc/next": "11.0.0-rc.421",
     "@trpc/react-query": "11.0.0-rc.421",
