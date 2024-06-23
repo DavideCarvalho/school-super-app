@@ -187,18 +187,12 @@ export type Student = {
   responsibleUserId: string;
   canteenLimit: number | null;
 };
-export type StudentPei = {
+export type StudentHasResponsible = {
   id: string;
   studentId: string;
+  responsibleId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  report: string | null;
-  needs: string | null;
-  interests: string | null;
-  skillsToWork: string | null;
-  learningObjectives: string | null;
-  resourcesAndTools: string | null;
-  evaluation: string | null;
 };
 export type Subject = {
   id: string;
@@ -282,7 +276,7 @@ export type DB = {
   School: School;
   SchoolChain: SchoolChain;
   Student: Student;
-  StudentPei: StudentPei;
+  StudentHasResponsible: StudentHasResponsible;
   Subject: Subject;
   Teacher: Teacher;
   TeacherAvailability: TeacherAvailability;

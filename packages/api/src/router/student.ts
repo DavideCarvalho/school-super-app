@@ -71,4 +71,85 @@ export const studentRouter = createTRPCRouter({
         },
       });
     }),
+  allBySchoolId: isUserLoggedInAndAssignedToSchool.query(async ({ ctx }) => {
+    return ctx.prisma.student.findMany({
+      where: {
+        User: {
+          schoolId: ctx.session.school.id,
+        },
+      },
+      include: {
+        User: true,
+      },
+    });
+  }),
+  countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx }) => {
+      return ctx.prisma.student.count({
+        where: {
+          User: {
+            schoolId: ctx.session.school.id,
+          },
+        },
+      });
+    },
+  ),
+  studentById: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.student.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          User: true,
+        },
+      });
+    }),
+  createStudent: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        name: z.string(),
+        email: z.string(),
+        responsibles: z.array(
+          z.object({
+            name: z.string(),
+            email: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const studentRole = await ctx.prisma.role.findFirst({
+        where: {
+          name: "STUDENT",
+        },
+      });
+      if (!studentRole) return;
+      const user = await ctx.prisma.user.create({
+        data: {
+          name: input.name,
+          email: input.email,
+          schoolId: ctx.session.school.id,
+          roleId: studentRole.id,
+        },
+      });
+
+      await ctx.prisma.student.create({
+        data: {
+          id: user.id,
+          User: {
+            connect: {
+              id: user.id,
+            },
+          },
+        },
+      });
+
+      return user;
+    }),
 });

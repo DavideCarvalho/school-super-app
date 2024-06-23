@@ -42,20 +42,20 @@ model User {
   imageUrl       String?
   active         Boolean  @default(true)
 
-  School           School?           @relation(fields: [schoolId], references: [id])
-  Role             Role              @relation(fields: [roleId], references: [id])
-  Teachers         Teacher[]
-  Students         Student[]         @relation(name: "student_user_id")
-  ResponsibleUsers Student[]         @relation(name: "student_responsible_user_id")
-  Notifications    Notification[]
-  PurchaseRequests PurchaseRequest[]
-  Canteens         Canteen[]
-  Post             Post[]
-  UserLikedPost    UserLikedPost[]
-  Comments         Comment[]
-  CommentLikes     CommentLike[]
-  CanteenPurchases CanteenPurchase[]
-  PrintRequest     PrintRequest[]
+  School                School?                 @relation(fields: [schoolId], references: [id])
+  Role                  Role                    @relation(fields: [roleId], references: [id])
+  Teachers              Teacher[]
+  Students              Student[]               @relation(name: "student_user_id")
+  Notifications         Notification[]
+  PurchaseRequests      PurchaseRequest[]
+  Canteens              Canteen[]
+  Post                  Post[]
+  UserLikedPost         UserLikedPost[]
+  Comments              Comment[]
+  CommentLikes          CommentLike[]
+  CanteenPurchases      CanteenPurchase[]
+  PrintRequest          PrintRequest[]
+  StudentHasResponsible StudentHasResponsible[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -92,12 +92,22 @@ model Student {
   responsibleUserId String
   canteenLimit      Float?
 
-  User            User         @relation(name: "student_user_id", fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ResponsibleUser User         @relation(name: "student_responsible_user_id", fields: [responsibleUserId], references: [id])
-  StudentPei      StudentPei[]
-  Class           Class        @relation(fields: [classId], references: [id])
+  User                  User                    @relation(name: "student_user_id", fields: [id], references: [id])
+  Class                 Class                   @relation(fields: [classId], references: [id])
+  StudentHasResponsible StudentHasResponsible[]
 
   @@index([id])
+}
+
+model StudentHasResponsible {
+  id            String   @id @default(cuid())
+  studentId     String
+  responsibleId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  Student         Student @relation(fields: [studentId], references: [id])
+  ResponsibleUser User    @relation(fields: [responsibleId], references: [id])
 }
 
 model Canteen {
@@ -307,24 +317,6 @@ model Notification {
   User User @relation(fields: [userId], references: [id])
 
   @@index([userId])
-}
-
-model StudentPei {
-  id                 String   @id @default(cuid())
-  studentId          String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  report             String?  @db.Text
-  needs              String?  @db.Text
-  interests          String?  @db.Text
-  skillsToWork       String?  @db.Text
-  learningObjectives String?  @db.Text
-  resourcesAndTools  String?  @db.Text
-  evaluation         String?  @db.Text
-
-  Student Student @relation(fields: [studentId], references: [id])
-
-  @@index([studentId])
 }
 
 model SchoolChain {

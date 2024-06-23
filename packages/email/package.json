@@ -2,6 +2,7 @@
   "name": "@acme/email",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "preview-email": "email dev --dir=./src/templates --port=3001"
   },

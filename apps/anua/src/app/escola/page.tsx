@@ -30,6 +30,7 @@ export default async function SchoolPage() {
   if (!dbUser || !dbUser.School) {
     return redirect("/");
   }
+  console.log("to aqui");
 
   return redirect(`/escola/${dbUser.School.slug}`);
 }
