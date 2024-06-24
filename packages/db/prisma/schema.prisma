@@ -87,13 +87,12 @@ model TeacherAvailability {
 }
 
 model Student {
-  id                String @id
-  classId           String
-  responsibleUserId String
-  canteenLimit      Float?
+  id           String  @id
+  classId      String?
+  canteenLimit Float?
 
   User                  User                    @relation(name: "student_user_id", fields: [id], references: [id])
-  Class                 Class                   @relation(fields: [classId], references: [id])
+  Class                 Class?                  @relation(fields: [classId], references: [id])
   StudentHasResponsible StudentHasResponsible[]
 
   @@index([id])

@@ -183,8 +183,7 @@ export type SchoolChain = {
 };
 export type Student = {
   id: string;
-  classId: string;
-  responsibleUserId: string;
+  classId: string | null;
   canteenLimit: number | null;
 };
 export type StudentHasResponsible = {

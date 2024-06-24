@@ -1,8 +1,11 @@
 import { ptBR } from "@clerk/localizations";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Toaster } from "react-hot-toast";
+
+import { ToasterPortal } from "./toaster-portal";
 
 import "../styles/globals.css";
+
+import { createPortal } from "react-dom";
 
 import { TRPCReactProvider } from "~/trpc/react";
 
@@ -19,8 +22,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <ToasterPortal />
         <ClerkProvider localization={ptBR}>
-          <Toaster position="top-center" />
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ClerkProvider>
       </body>

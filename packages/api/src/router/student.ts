@@ -1,3 +1,5 @@
+import { clerkClient } from "@clerk/clerk-sdk-node";
+import slugify from "slugify";
 import { z } from "zod";
 
 import {
@@ -107,6 +109,7 @@ export const studentRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         email: z.string(),
+        classId: z.string().optional(),
         responsibles: z.array(
           z.object({
             name: z.string(),
@@ -121,25 +124,80 @@ export const studentRouter = createTRPCRouter({
           name: "STUDENT",
         },
       });
-      if (!studentRole) return;
-      // const user = await ctx.prisma.user.create({
-      //   data: {
-      //     name: input.name,
-      //     email: input.email,
-      //     schoolId: ctx.session.school.id,
-      //     roleId: studentRole.id,
-      //   },
-      // });
-
-      // await ctx.prisma.student.create({
-      //   data: {
-      //     id: user.id,
-      //     User: {
-      //       connect: {
-      //         id: user.id,
-      //       },
-      //     },
-      //   },
-      // });
+      if (!studentRole) {
+        throw new Error("Role not found");
+      }
+      const responsibleRole = await ctx.prisma.role.findFirst({
+        where: {
+          name: "STUDENT_RESPONSIBLE",
+        },
+      });
+      if (!responsibleRole) {
+        throw new Error("Role not found");
+      }
+      const [firstName, ...rest] = input.name.split(" ");
+      await clerkClient.users.createUser({
+        firstName: firstName,
+        lastName: rest.join(" "),
+        emailAddress: [input.email],
+      });
+      const countUserWithSameName = await ctx.prisma.user.count({
+        where: {
+          name: input.name,
+        },
+      });
+      const countSuffix =
+        countUserWithSameName > 0 ? `-${String(countUserWithSameName)}` : "";
+      const responsiblesToSave = [];
+      for (const responsible of input.responsibles) {
+        const [firstName, ...rest] = responsible.name.split(" ");
+        await clerkClient.users.createUser({
+          firstName: firstName,
+          lastName: rest.join(" "),
+          emailAddress: [responsible.email],
+        });
+        const countUserWithSameName = await ctx.prisma.user.count({
+          where: {
+            name: responsible.name,
+          },
+        });
+        const countSuffix =
+          countUserWithSameName > 0 ? `-${String(countUserWithSameName)}` : "";
+        responsiblesToSave.push({
+          name: responsible.name,
+          email: responsible.email,
+          schoolId: ctx.session.school.id,
+          roleId: responsibleRole.id,
+          slug: slugify(`${responsible.name}${countSuffix}`),
+        });
+      }
+      const responsiblesSaved = await Promise.all(
+        responsiblesToSave.map((responsible) =>
+          ctx.prisma.user.create({ data: responsible }),
+        ),
+      );
+      const student = await ctx.prisma.student.create({
+        data: {
+          User: {
+            create: {
+              name: input.name,
+              email: input.email,
+              schoolId: ctx.session.school.id,
+              roleId: studentRole.id,
+              slug: slugify(`${input.name}${countSuffix}`),
+            },
+          },
+          StudentHasResponsible: {
+            createMany: {
+              data: responsiblesSaved.map((responsibleSaved) => {
+                return {
+                  responsibleId: responsibleSaved.id,
+                };
+              }),
+            },
+          },
+        },
+      });
+      return student;
     }),
 });

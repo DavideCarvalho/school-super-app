@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { cn } from "@acme/ui";
 import { Button } from "@acme/ui/button";
 import {
   Dialog,
@@ -13,27 +14,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@acme/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@acme/ui/form";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@acme/ui/select";
 
-import { cn } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 const schema = z.object({
-  name: z.string(),
-  email: z.string().email(),
-  roleId: z.string(),
-  role: z.object({
-    id: z.string(),
-    name: z.string(),
-  }),
+  name: z.string({ required_error: "Nome é obrigatório" }),
+  email: z
+    .string({ required_error: "Email é obrigatório" })
+    .email("Precisa ser um email válido"),
+  responsibles: z
+    .array(
+      z.object({
+        name: z.string({ required_error: "Nome é obrigatório" }),
+        email: z
+          .string({ required_error: "Email é obrigatório" })
+          .email("Precisa ser um email válido"),
+      }),
+    )
+    .min(1),
 });
 
 interface NewStudentModalProps {
@@ -47,49 +55,39 @@ export function NewStudentModal({
   onClickCancel,
   onClickSubmit,
 }: NewStudentModalProps) {
-  const { handleSubmit, watch, setValue, register, reset } = useForm<
-    z.infer<typeof schema>
-  >({
+  const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: undefined,
       email: undefined,
-      role: {
-        id: undefined,
-        name: undefined,
-      },
+      responsibles: [
+        {
+          name: undefined,
+          email: undefined,
+        },
+      ],
     },
   });
 
-  const role = watch("role");
+  const { mutateAsync: createStudent, reset: resetCreateStudent } =
+    api.student.createStudent.useMutation();
 
-  const { data: roles } = api.role.getAllWorkerRoles.useQuery();
-
-  const { mutateAsync: createWorker } = api.user.createWorker.useMutation();
-  const { mutateAsync: createTeacher } =
-    api.teacher.createTeacher.useMutation();
+  const responsibles = form.watch("responsibles");
 
   async function onSubmit(data: z.infer<typeof schema>) {
-    const toastId = toast.loading("Criando funcionário...");
+    const toastId = toast.loading("Criando aluno...");
     try {
-      if (data.role.name === "TEACHER") {
-        await createTeacher({
-          name: data.name,
-          email: data.email,
-          availabilities: [],
-        });
-      } else {
-        await createWorker({
-          name: data.name,
-          email: data.email,
-          roleId: data.role.id,
-        });
-      }
-      toast.success("Funcionário criado com sucesso!");
-      reset();
+      await createStudent({
+        name: data.name,
+        email: data.email,
+        responsibles: data.responsibles,
+      });
+      toast.success("Aluno criado com sucesso!");
+      form.reset();
+      resetCreateStudent();
       await onClickSubmit();
     } catch (e) {
-      toast.error("Erro ao criar funcionário");
+      toast.error("Erro ao criar aluno");
     } finally {
       toast.dismiss(toastId);
     }
@@ -98,68 +96,177 @@ export function NewStudentModal({
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
       <DialogContent className="sm:max-w-[600px]">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader>
-            <DialogTitle>Criar novo funcionário</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-6 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="name">Nome do funcionário</Label>
-              <Input
-                placeholder="Digite o nome do funcionário"
-                {...register("name")}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <DialogHeader>
+              <DialogTitle>Criar novo aluno</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-6 py-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Nome do aluno</FormLabel>
+                    <FormControl>
+                      <Input value={field.value} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email do funcionário</Label>
-              <Input
-                placeholder="Digite o email do professor"
-                {...register("email")}
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Email do aluno</FormLabel>
+                    <FormControl>
+                      <Input value={field.value} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label>Cargos</Label>
-                <div className="grid gap-4">
-                  <div className={cn("grid")}>
-                    <Select
-                      value={role.id}
-                      onValueChange={(value) => {
-                        if (!roles) return;
-                        setValue("role", {
-                          id: value,
-                          name: roles.find((r) => r.id === value)?.label ?? "",
-                        });
-                      }}
+              <div>
+                <Label>Responsáveis</Label>
+                <div>
+                  {responsibles.map((responsible, index) => (
+                    <div
+                      key={index}
+                      className={cn(
+                        "grid",
+                        index > 0
+                          ? "gap-3 sm:grid-cols-3"
+                          : "gap-2 sm:grid-cols-2",
+                      )}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Cargo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {roles?.map((role) => (
-                          <SelectItem key={role.id} value={role.id}>
-                            {role.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      <FormField
+                        control={form.control}
+                        name={`responsibles.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Nome</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...form.register(`responsibles.${index}.name`)}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`responsibles.${index}.email`}
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...form.register(
+                                  `responsibles.${index}.email`,
+                                )}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div>
+                        {index > 0 ? (
+                          <Button
+                            type="button"
+                            className="mt-6 flex w-full items-center justify-center"
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => {
+                              const availabilities =
+                                form.getValues("responsibles");
+                              availabilities.splice(index, 1);
+                              form.setValue("responsibles", availabilities);
+                            }}
+                          >
+                            <MinusIcon className="h-4 w-4" />
+                            <span className="sr-only">Remover responsável</span>
+                          </Button>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+              <Button
+                type="button"
+                className="flex items-center gap-2"
+                variant="outline"
+                onClick={() => {
+                  form.setValue(`responsibles.${responsibles.length}`, {
+                    //@ts-expect-error
+                    name: undefined,
+                    //@ts-expect-error
+                    email: undefined,
+                  });
+                }}
+              >
+                <PlusIcon className="h-4 w-4" />
+                Adicionar responsável
+              </Button>
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onClickCancel()}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit">Salvar</Button>
-          </DialogFooter>
-        </form>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onClickCancel()}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit">Salvar</Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function PlusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>icone</title>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </svg>
+  );
+}
+
+function MinusIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>icone</title>
+      <path d="M5 12h14" />
+    </svg>
   );
 }

@@ -104,19 +104,24 @@ export const userRouter = createTRPCRouter({
       });
       if (!role) throw new Error("Role not found");
       const [firstName, ...rest] = input.name.split(" ");
-      try {
-      } catch (e) {}
       return await ctx.prisma.$transaction(async (tx) => {
         const createdUserOnClerk = await clerkClient.users.createUser({
           firstName: firstName,
           lastName: rest.join(" "),
           emailAddress: [input.email],
         });
+        const countUserWithSameName = await ctx.prisma.user.count({
+          where: {
+            name: input.name,
+          },
+        });
+        const countSuffix =
+          countUserWithSameName > 0 ? `-${String(countUserWithSameName)}` : "";
         const worker = await tx.user.create({
           data: {
             schoolId: ctx.session.school.id,
             name: input.name,
-            slug: slugify(input.name),
+            slug: slugify(`${input.name}${countSuffix}`),
             email: input.email,
             roleId: role.id,
             externalAuthId: createdUserOnClerk.id,

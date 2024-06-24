@@ -6,6 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
+import { NewStudentModalListener } from "./components/new-student-modal-listener";
 import { StudentsTable } from "./containers/students-table";
 
 export default async function StudentsPage({
@@ -42,6 +43,7 @@ export default async function StudentsPage({
           <Button>Adicionar aluno</Button>
         </Link>
       </div>
+      <NewStudentModalListener />
       <Suspense>
         <StudentsTable />
       </Suspense>
