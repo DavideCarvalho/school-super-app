@@ -6,6 +6,24 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export type Assignment = {
+  id: string;
+  name: string;
+  slug: string;
+  teacherHasClassId: string;
+  value: number;
+  description: string | null;
+  dueDate: Timestamp;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
+export type Attendance = {
+  id: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  classDayId: string;
+  note: string;
+};
 export type Calendar = {
   id: string;
   classId: string;
@@ -72,6 +90,14 @@ export type Class = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
+export type ClassDay = {
+  id: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  name: string;
+  weekday: number;
+  teacherHasClassId: string;
+};
 export type ClassSchedule = {
   id: string;
   classId: string;
@@ -117,6 +143,14 @@ export type Notification = {
   userId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+};
+export type Occurence = {
+  id: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  studentId: string;
+  text: string;
+  classDayId: string | null;
 };
 export type Post = {
   id: Generated<number>;
@@ -164,6 +198,14 @@ export type PurchaseRequest = {
   requestingUserId: string;
   receiptPath: string | null;
 };
+export type ResponsibleUserAcceptedOccurence = {
+  id: string;
+  responsibleUserId: string;
+  occurenceId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  studentAttendingClassId: string | null;
+};
 export type Role = {
   id: string;
   name: string;
@@ -183,8 +225,28 @@ export type SchoolChain = {
 };
 export type Student = {
   id: string;
-  classId: string | null;
   canteenLimit: number | null;
+};
+export type StudentAttendingClass = {
+  id: string;
+  studentId: string;
+  classId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
+export type StudentHasAssignment = {
+  id: string;
+  studentId: string;
+  assignmentId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
+export type StudentHasClassAttendance = {
+  id: string;
+  studentId: string;
+  attendanceId: string;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
 };
 export type StudentHasResponsible = {
   id: string;
@@ -255,6 +317,8 @@ export type UserLikedPost = {
   userId: string;
 };
 export type DB = {
+  Assignment: Assignment;
+  Attendance: Attendance;
   Calendar: Calendar;
   CalendarConfig: CalendarConfig;
   CalendarSlot: CalendarSlot;
@@ -263,18 +327,24 @@ export type DB = {
   CanteenItemPurchased: CanteenItemPurchased;
   CanteenPurchase: CanteenPurchase;
   Class: Class;
+  ClassDay: ClassDay;
   ClassSchedule: ClassSchedule;
   Comment: Comment;
   CommentLike: CommentLike;
   FixedClass: FixedClass;
   Notification: Notification;
+  Occurence: Occurence;
   Post: Post;
   PrintRequest: PrintRequest;
   PurchaseRequest: PurchaseRequest;
+  ResponsibleUserAcceptedOccurence: ResponsibleUserAcceptedOccurence;
   Role: Role;
   School: School;
   SchoolChain: SchoolChain;
   Student: Student;
+  StudentAttendingClass: StudentAttendingClass;
+  StudentHasAssignment: StudentHasAssignment;
+  StudentHasClassAttendance: StudentHasClassAttendance;
   StudentHasResponsible: StudentHasResponsible;
   Subject: Subject;
   Teacher: Teacher;

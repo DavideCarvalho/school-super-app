@@ -17,7 +17,7 @@ export async function PurchaseRequestsAverageTimeToFinishChartServer() {
 
 async function PurchaseRequestsAverageTimeToFinishChartDataLoader() {
   const helper = await createSSRHelper();
-  helper.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.prefetch();
+  await helper.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>

@@ -109,7 +109,6 @@ export const studentRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         email: z.string(),
-        classId: z.string().optional(),
         responsibles: z.array(
           z.object({
             name: z.string(),

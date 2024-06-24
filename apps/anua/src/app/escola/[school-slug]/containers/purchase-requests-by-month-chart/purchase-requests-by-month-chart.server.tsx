@@ -17,7 +17,7 @@ export async function PurchaseRequestsByMonthChartServer() {
 
 async function PurchaseRequestsByMonthChartDataLoader() {
   const helper = await createSSRHelper();
-  helper.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.prefetch();
+  await helper.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>

@@ -48,13 +48,13 @@ export function useStudentsColumns() {
 
   const { mutateAsync: deleteTeacher } = api.teacher.deleteById.useMutation();
 
-  async function handleDeleteTeacher(teacherId: string) {
-    const toastId = toast.loading("Removendo professor...");
+  async function handleDeleteStudent(studentId: string) {
+    const toastId = toast.loading("Removendo aluno...");
     try {
-      await deleteTeacher({ userId: teacherId });
-      toast.success("Professor removido com sucesso!");
+      // await deleteTeacher({ userId: teacherId });
+      toast.success("Aluno removido com sucesso!");
     } catch (e) {
-      toast.error("Erro ao remover professor");
+      toast.error("Erro ao remover aluno");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([

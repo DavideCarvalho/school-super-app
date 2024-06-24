@@ -236,6 +236,41 @@ export default function RootLayout({
                       </Link>
                     );
                   })}
+                  <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                    Pedagógico
+                  </p>
+                  {pedagogicRoutes.map((route) => {
+                    const routeHref = route.href({ schoolSlug, canteenId });
+                    return (
+                      <Link
+                        key={route.name}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname ?? "")
+                            ? "bg-gray-200"
+                            : "",
+                        )}
+                      >
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>{route.name}</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        {route.name}
+                      </Link>
+                    );
+                  })}
                 </nav>
               </div>
             </div>
@@ -309,5 +344,12 @@ const canteenRoutes: Route[] = [
   {
     name: "Vendas",
     href: (params) => `/escola/${params.schoolSlug}/cantina/vendas`,
+  },
+];
+
+const pedagogicRoutes: Route[] = [
+  {
+    name: "Ocorrências",
+    href: (params) => `/escola/${params.schoolSlug}/pedagogico/ocorrencias`,
   },
 ];

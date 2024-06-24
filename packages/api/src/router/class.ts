@@ -1,6 +1,8 @@
 import slugify from "slugify";
 import { z } from "zod";
 
+import type { TeacherHasClass } from "@acme/db";
+
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
@@ -65,22 +67,58 @@ export const classRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.prisma.class.create({
-        data: {
-          name: input.name,
-          slug: slugify(input.name),
-          schoolId: ctx.session.school.id,
-          TeacherHasClass: {
-            createMany: {
-              data: input.subjectsWithTeachers.flatMap((subjectWithTeacher) =>
-                subjectWithTeacher.subjectIds.map((subjectId) => ({
-                  teacherId: subjectWithTeacher.teacherId,
-                  subjectId,
-                })),
-              ),
+      const existingClasses: TeacherHasClass[] = [];
+      return ctx.prisma.$transaction(async (tx) => {
+        for (const subjectWithTeacher of input.subjectsWithTeachers) {
+          for (const subjectId of subjectWithTeacher.subjectIds) {
+            const existingClass = await tx.teacherHasClass.findFirst({
+              where: {
+                teacherId: subjectWithTeacher.teacherId,
+                subjectId,
+              },
+            });
+            if (existingClass) {
+              existingClasses.push(existingClass);
+            }
+          }
+        }
+        await tx.teacherHasClass.updateMany({
+          where: {
+            id: { in: existingClasses.map((c) => c.id) },
+          },
+          data: {
+            isActive: true,
+          },
+        });
+        const newClasses = input.subjectsWithTeachers.flatMap(
+          (subjectWithTeacher) =>
+            subjectWithTeacher.subjectIds
+              .filter(
+                (subjectId) =>
+                  !existingClasses.some(
+                    (existingClass) =>
+                      existingClass.teacherId ===
+                        subjectWithTeacher.teacherId &&
+                      existingClass.subjectId === subjectId,
+                  ),
+              )
+              .map((subjectId) => ({
+                teacherId: subjectWithTeacher.teacherId,
+                subjectId,
+              })),
+        );
+        return tx.class.create({
+          data: {
+            name: input.name,
+            slug: slugify(input.name),
+            schoolId: ctx.session.school.id,
+            TeacherHasClass: {
+              createMany: {
+                data: newClasses,
+              },
             },
           },
-        },
+        });
       });
     }),
   updateById: isUserLoggedInAndAssignedToSchool
@@ -108,7 +146,7 @@ export const classRouter = createTRPCRouter({
 
       const currentTeacherHasClasses =
         await ctx.prisma.teacherHasClass.findMany({
-          where: { classId: input.classId },
+          where: { classId: input.classId, isActive: true },
         });
 
       // Identificar as aulas que precisam ser removidas

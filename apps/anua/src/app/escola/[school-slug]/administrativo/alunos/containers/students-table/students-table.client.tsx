@@ -7,10 +7,8 @@ import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-p
 import { api } from "~/trpc/react";
 import { useStudentsColumns } from "./use-students-columns";
 
-export function StudentsTable() {
-  const router = useRouter();
+export function StudentsTableClient() {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const columns = useStudentsColumns();
 
   const page = searchParams?.has("page") ? Number(searchParams.get("page")) : 1;
@@ -23,6 +21,7 @@ export function StudentsTable() {
       page,
       size,
     });
+  console.log("students", students);
 
   const { data: studentsCount } = api.student.countAllBySchoolId.useQuery();
 

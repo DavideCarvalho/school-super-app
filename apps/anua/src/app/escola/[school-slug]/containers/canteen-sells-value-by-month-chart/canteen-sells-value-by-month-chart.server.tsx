@@ -17,7 +17,7 @@ export async function CanteenSellsValueByMonthChartServer() {
 
 async function CanteenSellsValueByMonthChartDataLoader() {
   const helper = await createSSRHelper();
-  helper.canteen.canteenSellsByMonth.prefetch();
+  await helper.canteen.canteenSellsByMonth.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>

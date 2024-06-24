@@ -42,20 +42,21 @@ model User {
   imageUrl       String?
   active         Boolean  @default(true)
 
-  School                School?                 @relation(fields: [schoolId], references: [id])
-  Role                  Role                    @relation(fields: [roleId], references: [id])
-  Teachers              Teacher[]
-  Students              Student[]               @relation(name: "student_user_id")
-  Notifications         Notification[]
-  PurchaseRequests      PurchaseRequest[]
-  Canteens              Canteen[]
-  Post                  Post[]
-  UserLikedPost         UserLikedPost[]
-  Comments              Comment[]
-  CommentLikes          CommentLike[]
-  CanteenPurchases      CanteenPurchase[]
-  PrintRequest          PrintRequest[]
-  StudentHasResponsible StudentHasResponsible[]
+  School                           School?                            @relation(fields: [schoolId], references: [id])
+  Role                             Role                               @relation(fields: [roleId], references: [id])
+  Teachers                         Teacher[]
+  Students                         Student[]                          @relation(name: "student_user_id")
+  Notifications                    Notification[]
+  PurchaseRequests                 PurchaseRequest[]
+  Canteens                         Canteen[]
+  Post                             Post[]
+  UserLikedPost                    UserLikedPost[]
+  Comments                         Comment[]
+  CommentLikes                     CommentLike[]
+  CanteenPurchases                 CanteenPurchase[]
+  PrintRequest                     PrintRequest[]
+  StudentHasResponsible            StudentHasResponsible[]
+  ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
 
   @@index([schoolId])
   @@index([roleId])
@@ -87,15 +88,28 @@ model TeacherAvailability {
 }
 
 model Student {
-  id           String  @id
-  classId      String?
+  id           String @id
   canteenLimit Float?
 
   User                  User                    @relation(name: "student_user_id", fields: [id], references: [id])
-  Class                 Class?                  @relation(fields: [classId], references: [id])
   StudentHasResponsible StudentHasResponsible[]
+  Occurence             Occurence[]
+  StudentHasAssignment  StudentHasAssignment[]
+  StudentAttendingClass StudentAttendingClass[]
 
   @@index([id])
+}
+
+model StudentAttendingClass {
+  id        String   @id @default(uuid())
+  studentId String
+  classId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Student                          Student                            @relation(fields: [studentId], references: [id])
+  Class                            Class                              @relation(fields: [classId], references: [id])
+  ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
 }
 
 model StudentHasResponsible {
@@ -119,6 +133,62 @@ model Canteen {
   School          School        @relation(fields: [schoolId], references: [id])
   ResponsibleUser User          @relation(fields: [responsibleUserId], references: [id])
   CanteenItem     CanteenItem[]
+}
+
+model ClassDay {
+  id                String          @id @default(uuid())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  name              String
+  weekday           Int
+  teacherHasClassId String
+  teacherHasClass   TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
+  Occurence         Occurence[]
+}
+
+model Attendance {
+  id                        String                      @id @default(uuid())
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
+  classDayId                String
+  note                      String                      @db.Text
+  StudentHasClassAttendance StudentHasClassAttendance[]
+}
+
+model StudentHasClassAttendance {
+  id           String   @id @default(uuid())
+  studentId    String
+  attendanceId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  Attendance Attendance @relation(fields: [attendanceId], references: [id])
+}
+
+model Occurence {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  studentId  String
+  text       String   @db.Text
+  classDayId String?
+
+  Student                          Student                            @relation(fields: [studentId], references: [id])
+  ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
+  ClassDay                         ClassDay?                          @relation(fields: [classDayId], references: [id])
+}
+
+model ResponsibleUserAcceptedOccurence {
+  id                String   @id @default(uuid())
+  responsibleUserId String
+  occurenceId       String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  ResponsibleUser         User                   @relation(fields: [responsibleUserId], references: [id])
+  Occurence               Occurence              @relation(fields: [occurenceId], references: [id])
+  StudentAttendingClass   StudentAttendingClass? @relation(fields: [studentAttendingClassId], references: [id])
+  studentAttendingClassId String?
 }
 
 model CanteenItem {
@@ -200,10 +270,38 @@ model TeacherHasClass {
 
   TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
   CalendarSlot        CalendarSlot[]
+  ClassDay            ClassDay[]
+  Assignment          Assignment[]
 
   @@index([teacherId])
   @@index([classId])
   @@index([subjectId])
+}
+
+model Assignment {
+  id                String   @id @default(uuid())
+  name              String
+  slug              String
+  teacherHasClassId String
+  value             Float
+  description       String?  @db.Text
+  dueDate           DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  TeacherHasClass      TeacherHasClass        @relation(fields: [teacherHasClassId], references: [id])
+  StudentHasAssignment StudentHasAssignment[]
+}
+
+model StudentHasAssignment {
+  id           String   @id @default(uuid())
+  studentId    String
+  assignmentId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  Student    Student    @relation(fields: [studentId], references: [id])
+  Assignment Assignment @relation(fields: [assignmentId], references: [id])
 }
 
 model TeacherHasSubject {
@@ -263,12 +361,12 @@ model Class {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  TeacherHasClass TeacherHasClass[]
-  School          School            @relation(fields: [schoolId], references: [id])
-  Student         Student[]
-  FixedClass      FixedClass[]
-  ClassSchedule   ClassSchedule[]
-  Calendar        Calendar[]
+  TeacherHasClass       TeacherHasClass[]
+  School                School                  @relation(fields: [schoolId], references: [id])
+  FixedClass            FixedClass[]
+  ClassSchedule         ClassSchedule[]
+  Calendar              Calendar[]
+  StudentAttendingClass StudentAttendingClass[]
 
   @@index([schoolId])
 }
