@@ -175,7 +175,7 @@ importers:
         version: 1.3.1(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^3.1.36
-        version: 3.2.6(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
+        version: 3.2.7(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -903,13 +903,13 @@ importers:
     dependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: 4.2.1
-        version: 4.2.1(prettier@3.3.2)
+        version: 4.2.1(@vue/compiler-sfc@3.4.30)(prettier@3.3.2)
       prettier:
         specifier: 3.3.2
         version: 3.3.2
       prettier-plugin-tailwindcss:
         specifier: 0.6.5
-        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.2.1(prettier@3.3.2))(prettier@3.3.2)
+        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.2.1(@vue/compiler-sfc@3.4.30)(prettier@3.3.2))(prettier@3.3.2)
     devDependencies:
       '@acme/tsconfig':
         specifier: workspace:^0.1.0
@@ -972,8 +972,8 @@ packages:
     resolution: {integrity: sha512-NzkrtREQpHID1cTqY/C4CI30PVOaXWKYytDR2EcytmFgnP7Z6+CrGIA/YCnNhYAuUm6Nx+nGpRL/Hmyrv7NYzg==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@0.0.6':
-    resolution: {integrity: sha512-k0gpsiUxDTkDMYsdWl0WhujXVPMZvfPMCSbxZtzGvEao0YZNFQ/9ct+SZJvb5t9126oiNG0a344COO9CZ1OdLg==}
+  '@ai-sdk/react@0.0.7':
+    resolution: {integrity: sha512-BI3KeFg/rSmYwne66wT0vex5y3ND+k2+woNlz6kXdpFeTcUHvTbduDMzhwRSblsrxkoSIMMv6Gzre8Iy+ctkvA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -984,8 +984,8 @@ packages:
       zod:
         optional: true
 
-  '@ai-sdk/solid@0.0.5':
-    resolution: {integrity: sha512-h43y+Vt4if2/6ms2u5OtPCzrA64FqyrpLJCnM2wcCF1WNiu11GGJI+GMHKWZrNPDqokD+PYeh1GG9Xd9DCppKA==}
+  '@ai-sdk/solid@0.0.6':
+    resolution: {integrity: sha512-Bz39DXrXuoh5hxm1/4pqT4tMQcjRPAkooOtSYvOgr7QVCIVMiKAVWyH29V5E+EA2DHqKr2yw3sk32DuoBu9chQ==}
     engines: {node: '>=18'}
     peerDependencies:
       solid-js: ^1.7.7
@@ -993,8 +993,8 @@ packages:
       solid-js:
         optional: true
 
-  '@ai-sdk/svelte@0.0.5':
-    resolution: {integrity: sha512-5Jqww5Jtuyyg5NGRxS4GjxnWaSG5bkLPd/lOQnCj+RhS1DqGfjw0Qz76OYNXnjR/5AeJoAU4FTU45P8z5Kmy2A==}
+  '@ai-sdk/svelte@0.0.6':
+    resolution: {integrity: sha512-LLO0TxrRTcviA0T9wfJ8lzdXp48wZ7+wbmSdRnJ5fO6/rX1czLfgh4m/Vsvs6bs0VJ6+IXwXVD2ojtOeTG5dQw==}
     engines: {node: '>=18'}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0
@@ -1011,8 +1011,8 @@ packages:
       zod:
         optional: true
 
-  '@ai-sdk/vue@0.0.5':
-    resolution: {integrity: sha512-G4wdK2LKD7QevNvbnroatnkQ/V2X4H6iif4+wdFhlPo9am24+mgf4bXjvuIwNIgCVd0wwQ3hE+2kGuBDATu9gA==}
+  '@ai-sdk/vue@0.0.6':
+    resolution: {integrity: sha512-HNJ6UkeZ+0G4QBPK8+45Ip9NRuxsbrG2f3SZ38C1ioteeMDI9ou78Hq5ftRI3wvicJ60c2L9ze+ui/UFwV1O5w==}
     engines: {node: '>=18'}
     peerDependencies:
       vue: ^3.3.4
@@ -4316,8 +4316,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@3.2.6:
-    resolution: {integrity: sha512-2XCKi6XO2RTMSFIqSP52IpqqmW2GSw6DZhqmokPBo8NlkV0PD46IxZm8dw/xphQe/UzKfg0v5t6q6fY6MLCAPA==}
+  ai@3.2.7:
+    resolution: {integrity: sha512-ySWOEjjSwwcCyWbQ+gRN1cxKCUoM7L5ARNI56aagRdOp+c8cIvEQMPSf/gDno1U1HTDgaKbJiXdJqGoxhj6xcA==}
     engines: {node: '>=18'}
     peerDependencies:
       openai: ^4.42.0
@@ -7996,7 +7996,7 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@0.0.6(react@18.3.1)(zod@3.23.8)':
+  '@ai-sdk/react@0.0.7(react@18.3.1)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 0.0.16(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.5(zod@3.23.8)
@@ -8005,7 +8005,7 @@ snapshots:
       react: 18.3.1
       zod: 3.23.8
 
-  '@ai-sdk/solid@0.0.5(solid-js@1.8.17)(zod@3.23.8)':
+  '@ai-sdk/solid@0.0.6(solid-js@1.8.17)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/ui-utils': 0.0.5(zod@3.23.8)
       solid-swr-store: 0.10.7(solid-js@1.8.17)(swr-store@0.10.6)
@@ -8015,7 +8015,7 @@ snapshots:
     transitivePeerDependencies:
       - zod
 
-  '@ai-sdk/svelte@0.0.5(svelte@4.2.18)(zod@3.23.8)':
+  '@ai-sdk/svelte@0.0.6(svelte@4.2.18)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 0.0.16(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.5(zod@3.23.8)
@@ -8032,7 +8032,7 @@ snapshots:
     optionalDependencies:
       zod: 3.23.8
 
-  '@ai-sdk/vue@0.0.5(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)':
+  '@ai-sdk/vue@0.0.6(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)':
     dependencies:
       '@ai-sdk/ui-utils': 0.0.5(zod@3.23.8)
       swrv: 1.0.4(vue@3.4.30(typescript@5.5.2))
@@ -8691,7 +8691,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.3.0': {}
 
-  '@ianvs/prettier-plugin-sort-imports@4.2.1(prettier@3.3.2)':
+  '@ianvs/prettier-plugin-sort-imports@4.2.1(@vue/compiler-sfc@3.4.30)(prettier@3.3.2)':
     dependencies:
       '@babel/core': 7.24.7
       '@babel/generator': 7.24.7
@@ -8700,6 +8700,8 @@ snapshots:
       '@babel/types': 7.24.7
       prettier: 3.3.2
       semver: 7.6.2
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.4.30
     transitivePeerDependencies:
       - supports-color
 
@@ -11507,15 +11509,15 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@3.2.6(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8):
+  ai@3.2.7(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8):
     dependencies:
       '@ai-sdk/provider': 0.0.10
       '@ai-sdk/provider-utils': 0.0.16(zod@3.23.8)
-      '@ai-sdk/react': 0.0.6(react@18.3.1)(zod@3.23.8)
-      '@ai-sdk/solid': 0.0.5(solid-js@1.8.17)(zod@3.23.8)
-      '@ai-sdk/svelte': 0.0.5(svelte@4.2.18)(zod@3.23.8)
+      '@ai-sdk/react': 0.0.7(react@18.3.1)(zod@3.23.8)
+      '@ai-sdk/solid': 0.0.6(solid-js@1.8.17)(zod@3.23.8)
+      '@ai-sdk/svelte': 0.0.6(svelte@4.2.18)(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.5(zod@3.23.8)
-      '@ai-sdk/vue': 0.0.5(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
+      '@ai-sdk/vue': 0.0.6(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
       eventsource-parser: 1.1.2
       json-schema: 0.4.0
       jsondiffpatch: 0.6.0
@@ -13925,11 +13927,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.2.1(prettier@3.3.2))(prettier@3.3.2):
+  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.2.1(@vue/compiler-sfc@3.4.30)(prettier@3.3.2))(prettier@3.3.2):
     dependencies:
       prettier: 3.3.2
     optionalDependencies:
-      '@ianvs/prettier-plugin-sort-imports': 4.2.1(prettier@3.3.2)
+      '@ianvs/prettier-plugin-sort-imports': 4.2.1(@vue/compiler-sfc@3.4.30)(prettier@3.3.2)
 
   prettier@3.3.2: {}
 
