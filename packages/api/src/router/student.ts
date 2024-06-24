@@ -49,40 +49,32 @@ export const studentRouter = createTRPCRouter({
       `;
     },
   ),
-  studentsBySchoolId: publicProcedure
+  allBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
-        schoolId: z.string(),
         page: z.number().optional().default(1),
-        limit: z.number().optional().default(5),
+        size: z.number().optional().default(5),
       }),
     )
     .query(async ({ ctx, input }) => {
       return ctx.prisma.student.findMany({
         where: {
           User: {
-            schoolId: input.schoolId,
+            schoolId: ctx.session.school.id,
           },
         },
-        take: input.limit,
-        skip: (input.page - 1) * input.limit,
+        take: input.size,
+        skip: (input.page - 1) * input.size,
         include: {
           User: true,
+          StudentHasResponsible: {
+            include: {
+              ResponsibleUser: true,
+            },
+          },
         },
       });
     }),
-  allBySchoolId: isUserLoggedInAndAssignedToSchool.query(async ({ ctx }) => {
-    return ctx.prisma.student.findMany({
-      where: {
-        User: {
-          schoolId: ctx.session.school.id,
-        },
-      },
-      include: {
-        User: true,
-      },
-    });
-  }),
   countAllBySchoolId: isUserLoggedInAndAssignedToSchool.query(
     async ({ ctx }) => {
       return ctx.prisma.student.count({

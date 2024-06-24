@@ -6,6 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Button } from "@acme/ui/button";
 
 import { api, createSSRHelper } from "~/trpc/server";
+import { StudentsTable } from "./containers/students-table";
 
 export default async function StudentsPage({
   params,
@@ -25,6 +26,11 @@ export default async function StudentsPage({
     ? Number(url.searchParams?.get("size"))
     : 10;
   const helper = await createSSRHelper();
+  helper.student.allBySchoolId.prefetch({
+    page,
+    size,
+  });
+  helper.student.countAllBySchoolId.prefetch();
   const dehydratedState = dehydrate(helper.queryClient);
   return (
     <HydrationBoundary state={dehydratedState}>
@@ -36,6 +42,9 @@ export default async function StudentsPage({
           <Button>Adicionar aluno</Button>
         </Link>
       </div>
+      <Suspense>
+        <StudentsTable />
+      </Suspense>
     </HydrationBoundary>
   );
 }

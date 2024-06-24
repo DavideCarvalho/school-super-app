@@ -9,8 +9,8 @@ import { api, createSSRHelper } from "~/trpc/server";
 import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 import { EditWorkerModalListener } from "./_components/edit-worker-modal-listener";
 import { NewWorkerModalListener } from "./_components/new-worker-modal-listener";
-import { WorkersTable } from "./containers/school-workers-table";
-import { mapRolesInPortugueseToEnum } from "./containers/school-workers-table/utils";
+import { WorkersTable } from "./containers/workers-table";
+import { mapRolesInPortugueseToEnum } from "./containers/workers-table/utils";
 
 export default async function WorkersPage({
   params,

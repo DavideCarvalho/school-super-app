@@ -5,14 +5,14 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import { useSchoolWorkerColumns } from "./use-school-worker-columns";
-import { mapRolesInPortugueseToEnum, rolesMap } from "./utils";
+import { useWorkersColumns } from "./use-worker-columns";
+import { mapRolesInPortugueseToEnum } from "./utils";
 
 export function WorkersTable() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const columns = useSchoolWorkerColumns();
+  const columns = useWorkersColumns();
 
   const filters = [
     {

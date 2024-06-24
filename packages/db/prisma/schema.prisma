@@ -15,7 +15,7 @@ datasource db {
 }
 
 model School {
-  id               String            @id @default(cuid())
+  id               String            @id @default(uuid())
   name             String
   slug             String
   Users            User[]
@@ -29,7 +29,7 @@ model School {
 }
 
 model User {
-  id             String   @id @default(cuid())
+  id             String   @id @default(uuid())
   name           String
   slug           String
   email          String   @unique
@@ -74,7 +74,7 @@ model Teacher {
 }
 
 model TeacherAvailability {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   teacherId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -100,7 +100,7 @@ model Student {
 }
 
 model StudentHasResponsible {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   studentId     String
   responsibleId String
   createdAt     DateTime @default(now())
@@ -111,7 +111,7 @@ model StudentHasResponsible {
 }
 
 model Canteen {
-  id                String   @id @default(cuid())
+  id                String   @id @default(uuid())
   schoolId          String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -123,7 +123,7 @@ model Canteen {
 }
 
 model CanteenItem {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   price     Float
   canteenId String
@@ -138,7 +138,7 @@ model CanteenItem {
 }
 
 model CanteenItemPurchased {
-  id                String   @id @default(cuid())
+  id                String   @id @default(uuid())
   price             Float
   quantity          Int
   createdAt         DateTime @default(now())
@@ -151,7 +151,7 @@ model CanteenItemPurchased {
 }
 
 model CanteenPurchase {
-  id String @id @default(cuid())
+  id String @id @default(uuid())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -165,7 +165,7 @@ model CanteenPurchase {
 }
 
 model CalendarSlot {
-  id                String   @id @default(cuid())
+  id                String   @id @default(uuid())
   teacherHasClassId String?
   classWeekDay      Int
   startTime         DateTime @db.Time(6)
@@ -182,7 +182,7 @@ model CalendarSlot {
 }
 
 model TeacherHasClass {
-  id                    String   @id @default(cuid())
+  id                    String   @id @default(uuid())
   teacherId             String
   classId               String
   subjectId             String
@@ -208,7 +208,7 @@ model TeacherHasClass {
 }
 
 model TeacherHasSubject {
-  id        String @id @default(cuid())
+  id        String @id @default(uuid())
   teacherId String
   subjectId String
 
@@ -219,7 +219,7 @@ model TeacherHasSubject {
 }
 
 model Subject {
-  id                      String              @id @default(cuid())
+  id                      String              @id @default(uuid())
   name                    String
   slug                    String
   schoolId                String
@@ -235,7 +235,7 @@ model Subject {
 }
 
 model PrintRequest {
-  id               String   @id @default(cuid())
+  id               String   @id @default(uuid())
   userId           String
   name             String
   path             String
@@ -251,13 +251,13 @@ model PrintRequest {
 }
 
 model Role {
-  id    String @id @default(cuid())
+  id    String @id @default(uuid())
   name  String
   Users User[]
 }
 
 model Class {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   slug      String
   schoolId  String
@@ -275,7 +275,7 @@ model Class {
 }
 
 model PurchaseRequest {
-  id                   String    @id @default(cuid())
+  id                   String    @id @default(uuid())
   productName          String
   quantity             Int // quantidade do produto de acordo com quem fez o pedido
   finalQuantity        Int? // quantidade final do produto de acordo com quem fez a compra
@@ -306,7 +306,7 @@ model PurchaseRequest {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   title     String
   body      String?  @db.Text
   cleared   Boolean  @default(false)
@@ -320,7 +320,7 @@ model Notification {
 }
 
 model SchoolChain {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   name      String
   slug      String
   createdAt DateTime @default(now())
@@ -331,7 +331,7 @@ model SchoolChain {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  uuid      String   @default(cuid())
+  uuid      String   @default(uuid())
   content   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -347,7 +347,7 @@ model Post {
 }
 
 model UserLikedPost {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   postId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -359,7 +359,7 @@ model UserLikedPost {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  uuid      String   @default(cuid())
+  uuid      String   @default(uuid())
   postId    Int
   comment   String   @db.Text
   createdAt DateTime @default(now())
@@ -374,7 +374,7 @@ model Comment {
 }
 
 model CommentLike {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   commentId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -385,7 +385,7 @@ model CommentLike {
 }
 
 model Calendar {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   classId   String
   name      String // Nome do calendário, por exemplo, "Calendário 2024"
   createdAt DateTime @default(now())
@@ -399,7 +399,7 @@ model Calendar {
 }
 
 model CalendarConfig {
-  id                 String   @id @default(cuid())
+  id                 String   @id @default(uuid())
   classesConfig      Json?
   classesClashConfig Json?
   createdAt          DateTime @default(now())
@@ -407,7 +407,7 @@ model CalendarConfig {
 }
 
 model ClassSchedule {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   classId   String
   name      String // Nome do calendário, por exemplo, "Calendário 2024"
   createdAt DateTime @default(now())
@@ -421,7 +421,7 @@ model ClassSchedule {
 }
 
 model FixedClass {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid())
   classScheduleId String
   teacherId       String
   classId         String

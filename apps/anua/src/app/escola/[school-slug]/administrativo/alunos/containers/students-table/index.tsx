@@ -1,0 +1,39 @@
+"use client";
+
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
+
+import { api } from "~/trpc/react";
+import { useStudentsColumns } from "./use-students-columns";
+
+export function StudentsTable() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const columns = useStudentsColumns();
+
+  const page = searchParams?.has("page") ? Number(searchParams.get("page")) : 1;
+  const size = searchParams?.has("size")
+    ? Number(searchParams?.get("size"))
+    : 10;
+
+  const { data: students, isLoading: isLoadingWorkers } =
+    api.student.allBySchoolId.useQuery({
+      page,
+      size,
+    });
+
+  const { data: studentsCount } = api.student.countAllBySchoolId.useQuery();
+
+  return (
+    <TableWithPagination
+      isLoading={!students && isLoadingWorkers}
+      data={students ?? []}
+      columns={columns}
+      totalCount={studentsCount ?? 0}
+      pageIndex={page - 1}
+      pageSize={size}
+    />
+  );
+}

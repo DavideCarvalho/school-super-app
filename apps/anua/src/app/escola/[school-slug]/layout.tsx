@@ -295,6 +295,10 @@ const routes: Route[] = [
     href: (params) =>
       `/escola/${params.schoolSlug}/administrativo/funcionarios`,
   },
+  {
+    name: "Alunos",
+    href: (params) => `/escola/${params.schoolSlug}/administrativo/alunos`,
+  },
 ];
 
 const canteenRoutes: Route[] = [
