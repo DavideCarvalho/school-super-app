@@ -153,30 +153,41 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
     scheduleConfig.Friday.duration,
   ]);
 
-  const { data: generatedSchedule, refetch: refetchGeneratedSchedule } =
-    api.school.generateSchoolCalendar.useQuery(
-      {
-        fixedClasses,
-        scheduleConfig,
-        classId: selectedClassId ?? "",
-        generationRules: {
-          subjectsQuantities,
-          subjectsExclusions: subjectsExclusions.reduce(
-            (acc, exclusion) => {
-              acc[exclusion.subject.id] = exclusion.exclusions;
-              return acc;
-            },
-            {} as Record<string, string[]>,
-          ),
-        },
+  const {
+    data: generatedSchedule,
+    refetch: refetchGeneratedSchedule,
+    isLoading: isLoadingGeneratedSchedule,
+  } = api.school.generateSchoolCalendar.useQuery(
+    {
+      fixedClasses,
+      scheduleConfig,
+      classId: selectedClassId ?? "",
+      generationRules: {
+        subjectsQuantities,
+        subjectsExclusions: subjectsExclusions.reduce(
+          (acc, exclusion) => {
+            acc[exclusion.subject.id] = exclusion.exclusions;
+            return acc;
+          },
+          {} as Record<string, string[]>,
+        ),
       },
-      {
-        enabled: selectedClassId != null,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchInterval: false,
-      },
-    );
+    },
+    {
+      enabled: selectedClassId != null,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchInterval: false,
+    },
+  );
+
+  useEffect(() => {
+    if (!newSchedule) return;
+    toast.dismiss();
+    if (isLoadingGeneratedSchedule) {
+      toast.loading("Gerando horários...");
+    }
+  }, [isLoadingGeneratedSchedule, newSchedule]);
 
   const { data: subjects } = api.subject.getAllSubjectsForClass.useQuery(
     {
@@ -586,9 +597,9 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
                 setNewSchedule(true);
                 return;
               }
-              const toastId = toast.loading("Gerando horários...");
+              // const toastId = toast.loading("Gerando horários...");
               await refetchGeneratedSchedule();
-              toast.dismiss(toastId);
+              // toast.dismiss(toastId);
             }}
           >
             Gerar horários
