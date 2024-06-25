@@ -3,7 +3,7 @@
 import type { DragEndEvent } from "@dnd-kit/core";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowDownIcon, ArrowRightIcon } from "@heroicons/react/20/solid";
-import { format, subHours } from "date-fns";
+import { format } from "date-fns";
 import { FormProvider, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -633,7 +633,7 @@ function generateBlankSchedule(
   classesDuration: number,
 ): CalendarScheduledSlot[] {
   const classes: CalendarScheduledSlot[] = [];
-  let _startTime = subHours(hoursToDate(startTime), 3);
+  let _startTime = hoursToDate(startTime);
   for (let i = 0; i < numClasses; i++) {
     // calculate the end time of the class
     // the endtime is the start time + the duration of the class
