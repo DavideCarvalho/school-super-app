@@ -260,6 +260,10 @@ async function generateSchoolSchedule(
       string,
     ];
     const [startTime, endTime] = timeSlot.split("-") as [string, string];
+    const startTimeDate = hoursToDate(startTime);
+    const endTimeDate = hoursToDate(endTime);
+    const formattedStartTime = format(startTimeDate, "HH:mm");
+    const formattedEndTime = format(endTimeDate, "HH:mm");
     const teacher = teachers.find((t) => t.id === teacherId);
     const subject = subjectsWithLessons.find((s) => s.id === subjectId);
 
@@ -267,8 +271,8 @@ async function generateSchoolSchedule(
 
     const existingEntryIndex = schedule[day as DayOfWeek].findIndex(
       (entry) =>
-        format(entry.startTime, "HH:mm") === startTime &&
-        format(entry.endTime, "HH:mm") === endTime,
+        format(entry.startTime, "HH:mm") === formattedStartTime &&
+        format(entry.endTime, "HH:mm") === formattedEndTime,
     );
 
     const teacherHasClass = await prisma.teacherHasClass.findFirst({
