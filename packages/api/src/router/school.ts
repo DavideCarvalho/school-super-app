@@ -1,5 +1,3 @@
-import { createOpenAI, openai } from "@ai-sdk/openai";
-import { generateObject, generateText } from "ai";
 import {
   addMinutes,
   format,
@@ -8,6 +6,7 @@ import {
   setHours,
   setMinutes,
 } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { z } from "zod";
 
 import type {
@@ -24,13 +23,8 @@ import {
   isUserLoggedInAndAssignedToSchool,
   publicProcedure,
 } from "../trpc";
+import { getUTCDate } from "../utils/get-utc-date";
 import { hoursToDate } from "../utils/hours-to-date";
-import { TeacherHasSubject } from "./../../../db/prisma/generated/types";
-
-const groq = createOpenAI({
-  baseURL: "https://api.groq.com/openai/v1",
-  apiKey: process.env.GROQ_API_KEY,
-});
 
 const scheduleConfigSchema = z.object({
   start: z.string(),
@@ -104,7 +98,7 @@ export const schoolRouter = createTRPCRouter({
         await tx.calendar.create({
           data: {
             classId: input.classId,
-            name: `Calendário ${format(new Date(), "dd-MM-yyyy")}`,
+            name: `Calendário ${format(new Date(), "dd-MM-yyyy", { locale: ptBR })}`,
             isActive: true,
             CalendarSlot: {
               createMany: {
@@ -299,14 +293,14 @@ async function generateSchoolSchedule(
     if (existingEntryIndex !== -1) {
       schedule[day as DayOfWeek][existingEntryIndex] = {
         TeacherHasClass: teacherHasClass,
-        startTime: hoursToDate(startTime),
-        endTime: hoursToDate(endTime),
+        startTime: getUTCDate(hoursToDate(startTime)),
+        endTime: getUTCDate(hoursToDate(endTime)),
       };
     } else {
       schedule[day as DayOfWeek].push({
         TeacherHasClass: teacherHasClass,
-        startTime: hoursToDate(startTime),
-        endTime: hoursToDate(endTime),
+        startTime: getUTCDate(hoursToDate(startTime)),
+        endTime: getUTCDate(hoursToDate(endTime)),
       });
     }
 
