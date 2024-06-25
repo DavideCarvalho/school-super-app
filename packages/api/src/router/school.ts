@@ -82,7 +82,6 @@ export const schoolRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // console.log("input.classes", input.classes);
       await ctx.prisma.$transaction(async (tx) => {
         // Definir isActive como false para todos os calendários atuais da turma
         await tx.calendar.updateMany({
@@ -294,6 +293,7 @@ async function generateSchoolSchedule(
       },
     });
 
+    console.log("existingEntryIndex", existingEntryIndex);
     if (existingEntryIndex !== -1) {
       schedule[day as DayOfWeek][existingEntryIndex] = {
         TeacherHasClass: teacherHasClass,
@@ -301,11 +301,11 @@ async function generateSchoolSchedule(
         endTime: hoursToDate(endTime),
       };
     } else {
-      schedule[day as DayOfWeek].push({
-        TeacherHasClass: teacherHasClass,
-        startTime: hoursToDate(startTime),
-        endTime: hoursToDate(endTime),
-      });
+      // schedule[day as DayOfWeek].push({
+      //   TeacherHasClass: teacherHasClass,
+      //   startTime: hoursToDate(startTime),
+      //   endTime: hoursToDate(endTime),
+      // });
     }
 
     subject.remainingLessons--;
@@ -313,10 +313,9 @@ async function generateSchoolSchedule(
 
   // Continuar a geração do calendário respeitando a configuração do horário e regras de geração
   for (const day of Object.keys(schedule)) {
-    const dayAvailableTimeSlots = schedule[day as DayOfWeek].filter(
-      (entry) => entry.TeacherHasClass == null,
-    );
+    const dayAvailableTimeSlots = schedule[day as DayOfWeek];
     for (const [index, timeSlot] of dayAvailableTimeSlots.entries()) {
+      if (timeSlot.TeacherHasClass != null) continue;
       for (const teacher of teachers) {
         const subject = findRandomSubjectForTeacher(
           teacher,
