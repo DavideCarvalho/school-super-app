@@ -156,7 +156,7 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   const {
     data: generatedSchedule,
     refetch: refetchGeneratedSchedule,
-    isLoading: isLoadingGeneratedSchedule,
+    isFetching: isFetchingGeneratedSchedule,
   } = api.school.generateSchoolCalendar.useQuery(
     {
       fixedClasses,
@@ -184,10 +184,10 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   useEffect(() => {
     if (!newSchedule) return;
     toast.dismiss();
-    if (isLoadingGeneratedSchedule) {
+    if (isFetchingGeneratedSchedule) {
       toast.loading("Gerando horários...");
     }
-  }, [isLoadingGeneratedSchedule, newSchedule]);
+  }, [isFetchingGeneratedSchedule, newSchedule]);
 
   const { data: subjects } = api.subject.getAllSubjectsForClass.useQuery(
     {

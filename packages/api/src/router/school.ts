@@ -215,35 +215,46 @@ async function generateSchoolSchedule(
 ): Promise<{ schedule: Schedule; errors: ScheduleError[] }> {
   let bestSchedule: Schedule | null = null;
   let fewestErrors: ScheduleError[] = [];
-  let attempts = 0;
-  const maxAttempts = 3;
 
-  while (attempts < maxAttempts) {
-    const { schedule, errors } = await tryGenerateSchoolSchedule(
-      schoolId,
-      classId,
-      fixedClasses,
-      scheduleConfig,
-      generationRules,
+  const maxParallelAttempts = 3;
+  const maxTotalAttempts = 3;
+  let totalAttempts = 0;
+
+  while (totalAttempts < maxTotalAttempts) {
+    const schedulesWithErrors = await Promise.allSettled(
+      Array.from({ length: maxParallelAttempts }).map(() =>
+        tryGenerateSchoolSchedule(
+          schoolId,
+          classId,
+          fixedClasses,
+          scheduleConfig,
+          generationRules,
+        ),
+      ),
     );
 
-    if (errors.length === 0) {
-      return { schedule, errors };
+    for (const result of schedulesWithErrors) {
+      if (result.status === "fulfilled") {
+        const { schedule, errors } = result.value;
+
+        if (errors.length === 0) {
+          return { schedule, errors };
+        }
+
+        if (
+          fewestErrors.length === 0 ||
+          errors.length < fewestErrors.length ||
+          (errors.length === fewestErrors.length &&
+            getTotalRemainingLessons(errors) <
+              getTotalRemainingLessons(fewestErrors))
+        ) {
+          bestSchedule = schedule;
+          fewestErrors = errors;
+        }
+      }
     }
 
-    if (
-      fewestErrors.length === 0 ||
-      errors.length < fewestErrors.length ||
-      (errors.length === fewestErrors.length &&
-        getTotalRemainingLessons(errors) <
-          getTotalRemainingLessons(fewestErrors))
-    ) {
-      bestSchedule = schedule;
-      fewestErrors = errors;
-      attempts = 0; // Reset attempts since we found a better schedule
-    } else {
-      attempts++;
-    }
+    totalAttempts++;
   }
 
   return { schedule: bestSchedule!, errors: fewestErrors };
