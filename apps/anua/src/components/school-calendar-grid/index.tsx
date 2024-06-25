@@ -101,10 +101,11 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
     useState(false);
 
   useEffect(() => {
+    if (form.getValues("selectedClassId") === classId) return;
     form.setValue("selectedClassId", classId);
     form.setValue("subjectsQuantities", {});
     form.setValue("subjectsExclusions", []);
-  }, [classId, form.setValue]);
+  }, [classId, form.setValue, form.getValues]);
 
   const initializeSchedule = useCallback(() => {
     return {
@@ -171,6 +172,9 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       },
       {
         enabled: selectedClassId != null,
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchInterval: false,
       },
     );
 
