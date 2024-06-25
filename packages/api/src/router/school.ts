@@ -64,10 +64,6 @@ export const schoolRouter = createTRPCRouter({
         input.scheduleConfig,
         input.generationRules,
       );
-      console.error(
-        "Intl.DateTimeFormat().resolvedOptions().timeZone",
-        Intl.DateTimeFormat().resolvedOptions().timeZone,
-      );
       return schedule;
     }),
   saveSchoolCalendar: isUserLoggedInAndAssignedToSchool
