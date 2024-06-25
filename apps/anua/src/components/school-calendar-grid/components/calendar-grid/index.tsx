@@ -15,7 +15,8 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { addHours, format } from "date-fns";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 import type { Subject, Teacher, TeacherAvailability, User } from "@acme/db";
 
@@ -152,7 +153,7 @@ export function CalendarGrid({
               ];
               return (
                 <TableRow key={timeSlot} className="hover:bg-gray-100">
-                  <TableCell className="border-b border-gray-300 px-4 py-2">{`${format(addHours(hoursToDate(startTime), 3), "HH:mm")} - ${format(addHours(hoursToDate(endTime), 3), "HH:mm")}`}</TableCell>
+                  <TableCell className="border-b border-gray-300 px-4 py-2">{`${format(hoursToDate(startTime), "HH:mm", { locale: ptBR })} - ${format(hoursToDate(endTime), "HH:mm", { locale: ptBR })}`}</TableCell>
                   {daysOfWeek.map((day: DayOfWeek) => {
                     const entry = schedule[day as keyof typeof schedule].find(
                       (e) =>
