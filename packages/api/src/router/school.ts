@@ -64,6 +64,10 @@ export const schoolRouter = createTRPCRouter({
         input.scheduleConfig,
         input.generationRules,
       );
+      console.error(
+        "Intl.DateTimeFormat().resolvedOptions().timeZone",
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+      );
       return schedule;
     }),
   saveSchoolCalendar: isUserLoggedInAndAssignedToSchool
@@ -297,14 +301,14 @@ async function generateSchoolSchedule(
     if (existingEntryIndex !== -1) {
       schedule[day as DayOfWeek][existingEntryIndex] = {
         TeacherHasClass: teacherHasClass,
-        startTime: getUTCDate(hoursToDate(startTime)),
-        endTime: getUTCDate(hoursToDate(endTime)),
+        startTime: hoursToDate(startTime),
+        endTime: hoursToDate(endTime),
       };
     } else {
       schedule[day as DayOfWeek].push({
         TeacherHasClass: teacherHasClass,
-        startTime: getUTCDate(hoursToDate(startTime)),
-        endTime: getUTCDate(hoursToDate(endTime)),
+        startTime: hoursToDate(startTime),
+        endTime: hoursToDate(endTime),
       });
     }
 
