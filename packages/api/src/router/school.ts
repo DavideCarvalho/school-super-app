@@ -23,7 +23,6 @@ import {
   isUserLoggedInAndAssignedToSchool,
   publicProcedure,
 } from "../trpc";
-import { getUTCDate } from "../utils/get-utc-date";
 import { hoursToDate } from "../utils/hours-to-date";
 
 const scheduleConfigSchema = z.object({
@@ -57,13 +56,14 @@ export const schoolRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      const schedule = generateSchoolSchedule(
+      const { schedule, errors } = await generateSchoolSchedule(
         ctx.session.school.id,
         input.classId,
         input.fixedClasses,
         input.scheduleConfig,
         input.generationRules,
       );
+      console.log("errors", errors);
       return schedule;
     }),
   saveSchoolCalendar: isUserLoggedInAndAssignedToSchool
@@ -201,13 +201,63 @@ type ScheduleConfig = {
   };
 };
 
+type ScheduleError = {
+  message: string;
+  subjectId?: string;
+};
+
 async function generateSchoolSchedule(
   schoolId: string,
   classId: string,
   fixedClasses: string[],
   scheduleConfig: ScheduleConfig,
   generationRules: GenerationRules,
-): Promise<Schedule> {
+): Promise<{ schedule: Schedule; errors: ScheduleError[] }> {
+  let bestSchedule: Schedule | null = null;
+  let fewestErrors: ScheduleError[] = [];
+  let attempts = 0;
+  const maxAttempts = 3;
+
+  while (attempts < maxAttempts) {
+    const { schedule, errors } = await tryGenerateSchoolSchedule(
+      schoolId,
+      classId,
+      fixedClasses,
+      scheduleConfig,
+      generationRules,
+    );
+
+    if (errors.length === 0) {
+      return { schedule, errors };
+    }
+
+    if (
+      fewestErrors.length === 0 ||
+      errors.length < fewestErrors.length ||
+      (errors.length === fewestErrors.length &&
+        getTotalRemainingLessons(errors) <
+          getTotalRemainingLessons(fewestErrors))
+    ) {
+      bestSchedule = schedule;
+      fewestErrors = errors;
+      attempts = 0; // Reset attempts since we found a better schedule
+    } else {
+      attempts++;
+    }
+  }
+
+  return { schedule: bestSchedule!, errors: fewestErrors };
+}
+
+async function tryGenerateSchoolSchedule(
+  schoolId: string,
+  classId: string,
+  fixedClasses: string[],
+  scheduleConfig: ScheduleConfig,
+  generationRules: GenerationRules,
+): Promise<{ schedule: Schedule; errors: ScheduleError[] }> {
+  const errors: ScheduleError[] = [];
+
   const teachers = await prisma.teacher.findMany({
     where: {
       User: {
@@ -299,12 +349,6 @@ async function generateSchoolSchedule(
         startTime: hoursToDate(startTime),
         endTime: hoursToDate(endTime),
       };
-    } else {
-      // schedule[day as DayOfWeek].push({
-      //   TeacherHasClass: teacherHasClass,
-      //   startTime: hoursToDate(startTime),
-      //   endTime: hoursToDate(endTime),
-      // });
     }
 
     subject.remainingLessons--;
@@ -315,6 +359,7 @@ async function generateSchoolSchedule(
     const dayAvailableTimeSlots = schedule[day as DayOfWeek];
     for (const [index, timeSlot] of dayAvailableTimeSlots.entries()) {
       if (timeSlot.TeacherHasClass != null) continue;
+
       for (const teacher of teachers) {
         const subject = findRandomSubjectForTeacher(
           teacher,
@@ -363,119 +408,47 @@ async function generateSchoolSchedule(
     }
   }
 
-  // Verificar matérias faltando e tentar realocar
+  // Verificar matérias ainda faltando e adicionar erros
   for (const subject of subjectsWithLessons) {
     if (subject.remainingLessons > 0) {
-      await tryReallocateSubject(
-        schedule,
-        teachers,
-        subject,
-        scheduleConfig,
-        generationRules,
-      );
+      errors.push({
+        message: `A matéria ${subject.name} está faltando ${subject.remainingLessons} aulas porque o professor não tem mais horário disponível.`,
+        subjectId: subject.id,
+      });
     }
   }
 
-  return schedule;
+  // Verificar se há mais matérias do que o possível para a grade
+  const totalAvailableSlots = Object.values(scheduleConfig).reduce(
+    (total, dayConfig) => total + dayConfig.numClasses,
+    0,
+  );
+  const totalRequiredLessons = Object.keys(
+    generationRules.subjectsQuantities,
+  ).reduce(
+    (total, subjectId) =>
+      total + (generationRules.subjectsQuantities?.[subjectId] ?? 0),
+    0,
+  );
+
+  if (totalRequiredLessons > totalAvailableSlots) {
+    const notScheduledSubjects = subjectsWithLessons
+      .filter((subject) => subject.remainingLessons > 0)
+      .map((subject) => subject.name)
+      .join(", ");
+    errors.push({
+      message: `Você colocou mais matérias (${totalRequiredLessons}) do que o possível para essa grade (${totalAvailableSlots}). As matérias que ficaram de fora ou não tiveram todas as aulas alocadas são: ${notScheduledSubjects}.`,
+    });
+  }
+
+  return { schedule, errors };
 }
 
-async function tryReallocateSubject(
-  schedule: Schedule,
-  teachers: (Teacher & {
-    Classes: TeacherHasClass[];
-    Availabilities: TeacherAvailability[];
-  })[],
-  subject: SubjectWithRemainingLessons,
-  scheduleConfig: ScheduleConfig,
-  generationRules: GenerationRules,
-) {
-  for (const teacher of teachers) {
-    if (!teacher.Classes.some((thc) => thc.subjectId === subject.id)) continue;
-
-    for (const day of Object.keys(schedule)) {
-      const dayAvailableTimeSlots = schedule[day as DayOfWeek];
-      for (const [index, timeSlot] of dayAvailableTimeSlots.entries()) {
-        if (timeSlot.TeacherHasClass != null) continue;
-
-        const teacherAvailability = teacher.Availabilities.some((avail) => {
-          const availabilityStartTimeFormatted = format(
-            avail.startTime,
-            "HH:mm",
-          );
-          const availabilityEndTimeFormatted = format(avail.endTime, "HH:mm");
-          return (
-            avail.day === day &&
-            availabilityStartTimeFormatted <=
-              format(timeSlot.startTime, "HH:mm") &&
-            availabilityEndTimeFormatted >= format(timeSlot.endTime, "HH:mm")
-          );
-        });
-
-        if (teacherAvailability) {
-          const otherDay = findDayWithReplaceableClass(
-            schedule,
-            teacher,
-            subject,
-            generationRules,
-          );
-          if (otherDay) {
-            const teacherHasClass = await prisma.teacherHasClass.findFirst({
-              where: {
-                teacherId: teacher.id,
-                classId: teacher!.Classes[0]!.classId,
-                subjectId: subject.id,
-                isActive: true,
-              },
-              include: {
-                Teacher: {
-                  include: {
-                    Availabilities: true,
-                    User: true,
-                  },
-                },
-                TeacherAvailability: true,
-                Subject: true,
-              },
-            });
-
-            schedule[day as DayOfWeek][index] = {
-              TeacherHasClass: teacherHasClass,
-              startTime: timeSlot.startTime,
-              endTime: timeSlot.endTime,
-            };
-
-            subject.remainingLessons--;
-            if (subject.remainingLessons === 0) return;
-
-            break;
-          }
-        }
-      }
-    }
-  }
-}
-
-function findDayWithReplaceableClass(
-  schedule: Schedule,
-  teacher: Teacher,
-  subject: SubjectWithRemainingLessons,
-  generationRules: GenerationRules,
-): DayOfWeek | null {
-  for (const day of Object.keys(schedule)) {
-    const daySchedule = schedule[day as DayOfWeek];
-    for (const timeSlot of daySchedule) {
-      if (
-        timeSlot.TeacherHasClass?.Teacher?.id === teacher.id &&
-        timeSlot.TeacherHasClass.Subject.id !== subject.id &&
-        !generationRules.subjectsExclusions[subject.id]?.includes(
-          timeSlot.TeacherHasClass.Subject.id,
-        )
-      ) {
-        return day as DayOfWeek;
-      }
-    }
-  }
-  return null;
+function getTotalRemainingLessons(errors: ScheduleError[]): number {
+  return errors.reduce((total, error) => {
+    const match = error.message.match(/faltando (\d+) aulas/);
+    return match ? total + Number.parseInt(match[1], 10) : total;
+  }, 0);
 }
 
 function generateTimeSlots(
