@@ -375,10 +375,7 @@ function generateTimeSlots(
   duration: number,
 ): TimeSlot[] {
   const timeSlots: TimeSlot[] = [];
-  let startTime = setMinutes(
-    setHours(new Date(), Number(start.split(":")[0]) - 3),
-    Number(start.split(":")[1]),
-  );
+  let startTime = hoursToDate(start);
 
   for (let i = 0; i < numClasses; i++) {
     const endTime = addMinutes(startTime, duration);

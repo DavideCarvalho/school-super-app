@@ -6,6 +6,63 @@ import type { TeacherHasClass } from "@acme/db";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
+  getClassAssignments: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        limit: z.number().optional().default(5),
+        page: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.assignment.findMany({
+        where: {
+          TeacherHasClass: {
+            classId: input.classId,
+            isActive: true,
+          },
+        },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
+        include: {
+          TeacherHasClass: {
+            include: {
+              Teacher: {
+                include: {
+                  User: true,
+                },
+              },
+              Subject: true,
+            },
+          },
+          StudentHasAssignment: {
+            include: {
+              Student: {
+                include: {
+                  User: true,
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
+  countAllClassAssignments: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.assignment.count({
+        where: {
+          TeacherHasClass: {
+            classId: input.classId,
+            isActive: true,
+          },
+        },
+      });
+    }),
   findBySlug: isUserLoggedInAndAssignedToSchool
     .input(z.object({ slug: z.string() }))
     .query(({ ctx, input }) => {
