@@ -1,3 +1,4 @@
+import type { NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
@@ -24,7 +25,7 @@ export const OPTIONS = () => {
   return response;
 };
 
-const handler = async (req) => {
+const handler = async (req: NextRequest) => {
   const response = await fetchRequestHandler({
     endpoint: "/api/trpc",
     router: appRouter,
