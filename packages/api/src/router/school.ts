@@ -293,7 +293,6 @@ async function generateSchoolSchedule(
       },
     });
 
-    console.log("existingEntryIndex", existingEntryIndex);
     if (existingEntryIndex !== -1) {
       schedule[day as DayOfWeek][existingEntryIndex] = {
         TeacherHasClass: teacherHasClass,
@@ -363,7 +362,120 @@ async function generateSchoolSchedule(
       }
     }
   }
+
+  // Verificar matérias faltando e tentar realocar
+  for (const subject of subjectsWithLessons) {
+    if (subject.remainingLessons > 0) {
+      await tryReallocateSubject(
+        schedule,
+        teachers,
+        subject,
+        scheduleConfig,
+        generationRules,
+      );
+    }
+  }
+
   return schedule;
+}
+
+async function tryReallocateSubject(
+  schedule: Schedule,
+  teachers: (Teacher & {
+    Classes: TeacherHasClass[];
+    Availabilities: TeacherAvailability[];
+  })[],
+  subject: SubjectWithRemainingLessons,
+  scheduleConfig: ScheduleConfig,
+  generationRules: GenerationRules,
+) {
+  for (const teacher of teachers) {
+    if (!teacher.Classes.some((thc) => thc.subjectId === subject.id)) continue;
+
+    for (const day of Object.keys(schedule)) {
+      const dayAvailableTimeSlots = schedule[day as DayOfWeek];
+      for (const [index, timeSlot] of dayAvailableTimeSlots.entries()) {
+        if (timeSlot.TeacherHasClass != null) continue;
+
+        const teacherAvailability = teacher.Availabilities.some((avail) => {
+          const availabilityStartTimeFormatted = format(
+            avail.startTime,
+            "HH:mm",
+          );
+          const availabilityEndTimeFormatted = format(avail.endTime, "HH:mm");
+          return (
+            avail.day === day &&
+            availabilityStartTimeFormatted <=
+              format(timeSlot.startTime, "HH:mm") &&
+            availabilityEndTimeFormatted >= format(timeSlot.endTime, "HH:mm")
+          );
+        });
+
+        if (teacherAvailability) {
+          const otherDay = findDayWithReplaceableClass(
+            schedule,
+            teacher,
+            subject,
+            generationRules,
+          );
+          if (otherDay) {
+            const teacherHasClass = await prisma.teacherHasClass.findFirst({
+              where: {
+                teacherId: teacher.id,
+                classId: teacher!.Classes[0]!.classId,
+                subjectId: subject.id,
+                isActive: true,
+              },
+              include: {
+                Teacher: {
+                  include: {
+                    Availabilities: true,
+                    User: true,
+                  },
+                },
+                TeacherAvailability: true,
+                Subject: true,
+              },
+            });
+
+            schedule[day as DayOfWeek][index] = {
+              TeacherHasClass: teacherHasClass,
+              startTime: timeSlot.startTime,
+              endTime: timeSlot.endTime,
+            };
+
+            subject.remainingLessons--;
+            if (subject.remainingLessons === 0) return;
+
+            break;
+          }
+        }
+      }
+    }
+  }
+}
+
+function findDayWithReplaceableClass(
+  schedule: Schedule,
+  teacher: Teacher,
+  subject: SubjectWithRemainingLessons,
+  generationRules: GenerationRules,
+): DayOfWeek | null {
+  for (const day of Object.keys(schedule)) {
+    const daySchedule = schedule[day as DayOfWeek];
+    for (const timeSlot of daySchedule) {
+      if (
+        timeSlot.TeacherHasClass?.Teacher?.id === teacher.id &&
+        timeSlot.TeacherHasClass.Subject.id !== subject.id &&
+        !generationRules.subjectsExclusions[subject.id]?.includes(
+          timeSlot.TeacherHasClass.Subject.id,
+        )
+      ) {
+        return day as DayOfWeek;
+      }
+    }
+  }
+  return null;
 }
 
 function generateTimeSlots(
@@ -440,8 +552,6 @@ function findRandomSubjectForTeacher(
 
   if (!availabilityForDay) return null;
 
-  //TODO: problema depois daqui
-
   // Obter a programação do professor para o dia atual
   const teacherSchedule =
     schedule[day]?.filter(
@@ -452,6 +562,18 @@ function findRandomSubjectForTeacher(
   const lastSubject = teacherSchedule.length
     ? teacherSchedule[teacherSchedule.length - 1]?.TeacherHasClass?.Subject
     : null;
+
+  // Verificar se o professor já tem duas aulas consecutivas da mesma matéria
+  const consecutiveClasses = teacherSchedule.reduce((count, entry) => {
+    if (entry.TeacherHasClass?.Subject?.id === lastSubject?.id) {
+      return count + 1;
+    }
+    return 0;
+  }, 0);
+
+  if (consecutiveClasses >= 2) {
+    return null;
+  }
 
   // Filtrar as matérias restantes do professor
   let eligibleSubjects = subjects.filter(
