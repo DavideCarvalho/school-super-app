@@ -3,6 +3,8 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 
 import { appRouter, createTRPCContext } from "@acme/api";
 
+process.env.TZ = "America/Sao_Paulo";
+
 /**
  * Configure basic CORS headers
  * You should extend this to match your needs
