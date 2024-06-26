@@ -1,4 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import { isAfter, isBefore, isToday } from "date-fns";
 
 import type { RouterOutputs } from "@acme/api";
 
@@ -26,5 +27,21 @@ export function useAssignmentsTableColumns() {
         header: "Entregas",
       },
     ),
+    columnHelper.display({
+      id: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        if (isAfter(row.original.dueDate, new Date())) {
+          return "Esperando entregas";
+        }
+
+        if (
+          isToday(row.original.dueDate) ||
+          isBefore(row.original.dueDate, new Date())
+        ) {
+          return "Finalizado";
+        }
+      },
+    }),
   ];
 }

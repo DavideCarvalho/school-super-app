@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import {
   Card,
   CardContent,
@@ -15,14 +17,21 @@ import {
 } from "@acme/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@acme/ui/tabs";
 
-export default function ClassPage({
+import { api } from "~/trpc/server";
+import { AssignmentsTableServer } from "./containers/assignments-table.server copy";
+
+export default async function ClassPage({
   params,
 }: {
   params: { "class-slug": string[] };
 }) {
   const classSlugParams = params["class-slug"] as unknown as string[];
-  const classSlug = classSlugParams[0];
+  const classSlug = classSlugParams[0] as unknown as string;
   const route = classSlugParams[1] ?? "assignments";
+  const foundClass = await api.class.findBySlug({ slug: classSlug });
+  if (!foundClass) {
+    return redirect("/escola");
+  }
   return (
     <Tabs defaultValue="assignments" className="w-full" value={route}>
       <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
@@ -39,47 +48,7 @@ export default function ClassPage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Atividade</TableHead>
-                  <TableHead>Data de entrega</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">Final Project</TableCell>
-                  <TableCell>4/15/2023</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CircleCheckIcon className="h-4 w-4 text-green-500" />
-                      <span>Submitted</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Midterm Exam</TableCell>
-                  <TableCell>3/1/2023</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CircleCheckIcon className="h-4 w-4 text-green-500" />
-                      <span>Graded</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Lab 5</TableCell>
-                  <TableCell>2/28/2023</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <CircleCheckIcon className="h-4 w-4 text-green-500" />
-                      <span>Graded</span>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <AssignmentsTableServer classId={foundClass.id} />
           </CardContent>
         </Card>
       </TabsContent>
