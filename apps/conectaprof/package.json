@@ -72,7 +72,7 @@
     "emailjs": "^4.0.3",
     "flatpickr": "4.6.13",
     "highlight.run": "8.13.0",
-    "lucide-react": "0.395.0",
+    "lucide-react": "0.396.0",
     "minio": "8.0.1",
     "next": "14.2.4",
     "next-auth": "4.24.7",
