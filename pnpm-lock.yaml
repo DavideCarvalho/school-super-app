@@ -211,7 +211,7 @@ importers:
         version: 1.3.0(@types/node@20.14.9)(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.31.1)
       next-superjson:
         specifier: 0.0.4
-        version: 0.0.4(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.92.1(@swc/core@1.3.101))
+        version: 0.0.4(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.92.1(@swc/core@1.3.101))
       nodemailer:
         specifier: 6.9.14
         version: 6.9.14
@@ -252,8 +252,8 @@ importers:
         specifier: 1.6.6
         version: 1.6.6
       superjson:
-        specifier: 1.13.3
-        version: 1.13.3
+        specifier: 2.2.1
+        version: 2.2.1
       tailwind-merge:
         specifier: 2.3.0
         version: 2.3.0
@@ -509,7 +509,7 @@ importers:
         version: 7.1.2(@types/json-schema@7.0.15)(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8)
       next-superjson:
         specifier: 0.0.4
-        version: 0.0.4(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.92.1(@swc/core@1.3.101))
+        version: 0.0.4(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.92.1(@swc/core@1.3.101))
       nodemailer:
         specifier: 6.9.14
         version: 6.9.14
@@ -562,8 +562,8 @@ importers:
         specifier: 1.6.6
         version: 1.6.6
       superjson:
-        specifier: 1.13.3
-        version: 1.13.3
+        specifier: 2.2.1
+        version: 2.2.1
       tailwind-merge:
         specifier: 2.3.0
         version: 2.3.0
@@ -665,8 +665,8 @@ importers:
         specifier: 1.6.6
         version: 1.6.6
       superjson:
-        specifier: 1.13.3
-        version: 1.13.3
+        specifier: 2.2.1
+        version: 2.2.1
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -7336,9 +7336,9 @@ packages:
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
 
-  superjson@1.13.3:
-    resolution: {integrity: sha512-mJiVjfd2vokfDxsQPOwJ/PtanO87LhpYY88ubI5dUB1Ab58Txbyje3+jpm+/83R/fevaq/107NNhtYBLuoTrFg==}
-    engines: {node: '>=10'}
+  superjson@2.2.1:
+    resolution: {integrity: sha512-8iGv75BYOa0xRJHK5vRLEjE2H/i4lulTjzpUXic3Eg8akftYjkmQDa8JARQ42rlczXyFR3IeRoeFCc7RxHsYZA==}
+    engines: {node: '>=16'}
 
   supports-color@5.5.0:
     resolution: {integrity: sha512-QjVjwdXIt408MIiAqCX4oUKsgU2EqAGzs2Ppkm4aQYbjm+ZEWEcW4SfFNTr4uMNZma0ey4f5lgLrkB0aX0QMow==}
@@ -11695,13 +11695,13 @@ snapshots:
       schema-utils: 2.7.1
       webpack: 5.92.1(@swc/core@1.3.101(@swc/helpers@0.5.11))(esbuild@0.19.11)
 
-  babel-plugin-superjson-next@0.4.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3):
+  babel-plugin-superjson-next@0.4.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1):
     dependencies:
       '@babel/helper-module-imports': 7.24.7
       '@babel/types': 7.24.7
       hoist-non-react-statics: 3.3.2
       next: 14.2.4(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      superjson: 1.13.3
+      superjson: 2.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -13502,13 +13502,13 @@ snapshots:
       - '@typeschema/yup'
       - zod-to-json-schema
 
-  next-superjson@0.0.4(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)(webpack@5.92.1(@swc/core@1.3.101)):
+  next-superjson@0.0.4(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.92.1(@swc/core@1.3.101)):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/plugin-syntax-jsx': 7.24.7(@babel/core@7.24.7)
       '@babel/plugin-syntax-typescript': 7.24.7(@babel/core@7.24.7)
       babel-loader: 8.3.0(@babel/core@7.24.7)(webpack@5.92.1(@swc/core@1.3.101))
-      babel-plugin-superjson-next: 0.4.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@1.13.3)
+      babel-plugin-superjson-next: 0.4.5(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)
       next: 14.2.4(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - superjson
@@ -14882,7 +14882,7 @@ snapshots:
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
 
-  superjson@1.13.3:
+  superjson@2.2.1:
     dependencies:
       copy-anything: 3.0.5
 

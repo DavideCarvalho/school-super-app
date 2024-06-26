@@ -21,7 +21,7 @@
     "@trpc/server": "11.0.0-rc.421",
     "minio": "8.0.1",
     "nodemailer": "6.9.14",
-    "superjson": "1.13.3",
+    "superjson": "2.2.1",
     "zod": "3.23.8",
     "@clerk/clerk-sdk-node": "5.0.12",
     "slugify": "1.6.6"
