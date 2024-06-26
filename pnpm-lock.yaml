@@ -175,7 +175,7 @@ importers:
         version: 1.3.1(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^3.1.36
-        version: 3.2.10(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
+        version: 3.2.11(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -975,8 +975,8 @@ packages:
     resolution: {integrity: sha512-NzkrtREQpHID1cTqY/C4CI30PVOaXWKYytDR2EcytmFgnP7Z6+CrGIA/YCnNhYAuUm6Nx+nGpRL/Hmyrv7NYzg==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@0.0.10':
-    resolution: {integrity: sha512-T3z5PdidmAe3FJLODwdhD19ohKelqhfgV2l8jbpMQ1m7AYGGMbMPLOBVXpi5SqDTtJ6znx5Hj7cEQ61+peACyw==}
+  '@ai-sdk/react@0.0.11':
+    resolution: {integrity: sha512-luyEBmXCwiwx349OrV/GfpS2d4YslrJ99su53pjyKUWNczsPvbvx7fQhY9b2YMx6dBGtZKQLbGCvitMYoOe0WA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -987,8 +987,8 @@ packages:
       zod:
         optional: true
 
-  '@ai-sdk/solid@0.0.7':
-    resolution: {integrity: sha512-3aN5JWbgRMeyZiXgSVwTL6TjNrTIvESl05Hm2+eAFEDMcnSzgYKnCUbKgBNm4eZgKvrY7XDRMdJ37uXzRxdF7Q==}
+  '@ai-sdk/solid@0.0.8':
+    resolution: {integrity: sha512-snVSRnz1wpSIL/fXhNWmXuxMOEgffyOALFB3mt94Meu26YLgDhIBWIUxxPe3znFGOVtEgCCFqb0heBCdFDH/vA==}
     engines: {node: '>=18'}
     peerDependencies:
       solid-js: ^1.7.7
@@ -996,8 +996,8 @@ packages:
       solid-js:
         optional: true
 
-  '@ai-sdk/svelte@0.0.8':
-    resolution: {integrity: sha512-JcyjDZ2M7Mb/8ZTvy9hCn2Rob++LmJE+icqBL90TcjKFdvINvc1GlNlVntXIJFkRO5XyIfqEOGOmqwkTp4mRmg==}
+  '@ai-sdk/svelte@0.0.9':
+    resolution: {integrity: sha512-khMwcyHDyxC005c9Dvol2x3ysyXQvYQqIcDkG0zyGAMM59RbXaY32SRsj+2QsUFcghiKCz5PISy3f1QqA9NAuQ==}
     engines: {node: '>=18'}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0
@@ -4319,8 +4319,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@3.2.10:
-    resolution: {integrity: sha512-RsNt4h7ygV150qWzIAdJimzKEPP2VtboVk1aZvR4vsIhQqbgglIRfHHuGTBRQgX6JMEXY5u1+VqQRdwcvzvr5w==}
+  ai@3.2.11:
+    resolution: {integrity: sha512-EyCABeSzYKtlFumhWegHWqll8lw1u+l3fgmDsG9V6GjyS+LGdZuDW+/eOtNfT/tuRqWIG/ZjEzNlziZz+CBJNQ==}
     engines: {node: '>=18'}
     peerDependencies:
       openai: ^4.42.0
@@ -6679,8 +6679,8 @@ packages:
   prosemirror-model@1.21.1:
     resolution: {integrity: sha512-IVBAuMqOfltTr7yPypwpfdGT+6rGAteVOw2FO6GEvCGGa1ZwxLseqC1Eax/EChDvG/xGquB2d/hLdgh3THpsYg==}
 
-  prosemirror-model@1.21.2:
-    resolution: {integrity: sha512-zT9DBnr/6pzw85+dDfEF11KZmS4mmjgvUIoTxQkm96HxhpF2KGZaq+zWt/xHe32Dh8dn/u/UC77TjGVnYoClGQ==}
+  prosemirror-model@1.21.3:
+    resolution: {integrity: sha512-nt2Xs/RNGepD9hrrkzXvtCm1mpGJoQfFSPktGa0BF/aav6XsnmVGZ9sTXNWRLupAz5SCLa3EyKlFeK7zJWROKg==}
 
   prosemirror-schema-basic@1.2.2:
     resolution: {integrity: sha512-/dT4JFEGyO7QnNTe9UaKUhjDXbTNkiWTq/N4VpKaF79bBjSExVV2NXmJpcM7z/gD7mbqNjxbmWW5nf1iNSSGnw==}
@@ -7178,13 +7178,6 @@ packages:
   solid-js@1.8.17:
     resolution: {integrity: sha512-E0FkUgv9sG/gEBWkHr/2XkBluHb1fkrHywUgA6o6XolPDCJ4g1HaLmQufcBBhiF36ee40q+HpG/vCZu7fLpI3Q==}
 
-  solid-swr-store@0.10.7:
-    resolution: {integrity: sha512-A6d68aJmRP471aWqKKPE2tpgOiR5fH4qXQNfKIec+Vap+MGQm3tvXlT8n0I8UgJSlNAsSAUuw2VTviH2h3Vv5g==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      solid-js: ^1.2
-      swr-store: ^0.10
-
   sonner@1.3.1:
     resolution: {integrity: sha512-+rOAO56b2eI3q5BtgljERSn2umRk63KFIvgb2ohbZ5X+Eb5u+a/7/0ZgswYqgBMg8dyl7n6OXd9KasA8QF9ToA==}
     peerDependencies:
@@ -7366,10 +7359,6 @@ packages:
 
   swap-case@1.1.2:
     resolution: {integrity: sha512-BAmWG6/bx8syfc6qXPprof3Mn5vQgf5dwdUNJhsNqU9WdPt5P+ES/wQ5bxfijy8zwZgZZHslC3iAsxsuQMCzJQ==}
-
-  swr-store@0.10.6:
-    resolution: {integrity: sha512-xPjB1hARSiRaNNlUQvWSVrG5SirCjk2TmaUyzzvk69SZQan9hCJqw/5rG9iL7xElHU784GxRPISClq4488/XVw==}
-    engines: {node: '>=10'}
 
   swr@2.2.0:
     resolution: {integrity: sha512-AjqHOv2lAhkuUdIiBu9xbuettzAzWXmCEcLONNKJRba87WAefz8Ca9d6ds/SzrPc235n1IxWYdhJ2zF3MNUaoQ==}
@@ -8002,7 +7991,7 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@0.0.10(react@18.3.1)(zod@3.23.8)':
+  '@ai-sdk/react@0.0.11(react@18.3.1)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 0.0.16(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.6(zod@3.23.8)
@@ -8011,17 +8000,15 @@ snapshots:
       react: 18.3.1
       zod: 3.23.8
 
-  '@ai-sdk/solid@0.0.7(solid-js@1.8.17)(zod@3.23.8)':
+  '@ai-sdk/solid@0.0.8(solid-js@1.8.17)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/ui-utils': 0.0.6(zod@3.23.8)
-      solid-swr-store: 0.10.7(solid-js@1.8.17)(swr-store@0.10.6)
-      swr-store: 0.10.6
     optionalDependencies:
       solid-js: 1.8.17
     transitivePeerDependencies:
       - zod
 
-  '@ai-sdk/svelte@0.0.8(svelte@4.2.18)(zod@3.23.8)':
+  '@ai-sdk/svelte@0.0.9(svelte@4.2.18)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 0.0.16(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.6(zod@3.23.8)
@@ -10915,12 +10902,12 @@ snapshots:
       prosemirror-keymap: 1.2.2
       prosemirror-markdown: 1.13.0
       prosemirror-menu: 1.2.4
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
       prosemirror-schema-basic: 1.2.2
       prosemirror-schema-list: 1.4.0
       prosemirror-state: 1.4.3
       prosemirror-tables: 1.3.7
-      prosemirror-trailing-node: 2.0.8(prosemirror-model@1.21.2)(prosemirror-state@1.4.3)(prosemirror-view@1.33.8)
+      prosemirror-trailing-node: 2.0.8(prosemirror-model@1.21.3)(prosemirror-state@1.4.3)(prosemirror-view@1.33.8)
       prosemirror-transform: 1.9.0
       prosemirror-view: 1.33.8
 
@@ -11520,13 +11507,13 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@3.2.10(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8):
+  ai@3.2.11(react@18.3.1)(solid-js@1.8.17)(svelte@4.2.18)(vue@3.4.30(typescript@5.5.2))(zod@3.23.8):
     dependencies:
       '@ai-sdk/provider': 0.0.10
       '@ai-sdk/provider-utils': 0.0.16(zod@3.23.8)
-      '@ai-sdk/react': 0.0.10(react@18.3.1)(zod@3.23.8)
-      '@ai-sdk/solid': 0.0.7(solid-js@1.8.17)(zod@3.23.8)
-      '@ai-sdk/svelte': 0.0.8(svelte@4.2.18)(zod@3.23.8)
+      '@ai-sdk/react': 0.0.11(react@18.3.1)(zod@3.23.8)
+      '@ai-sdk/solid': 0.0.8(solid-js@1.8.17)(zod@3.23.8)
+      '@ai-sdk/svelte': 0.0.9(svelte@4.2.18)(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.6(zod@3.23.8)
       '@ai-sdk/vue': 0.0.8(vue@3.4.30(typescript@5.5.2))(zod@3.23.8)
       eventsource-parser: 1.1.2
@@ -14014,7 +14001,7 @@ snapshots:
 
   prosemirror-commands@1.5.2:
     dependencies:
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.9.0
 
@@ -14027,7 +14014,7 @@ snapshots:
   prosemirror-gapcursor@1.3.2:
     dependencies:
       prosemirror-keymap: 1.2.2
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
       prosemirror-state: 1.4.3
       prosemirror-view: 1.33.8
 
@@ -14051,7 +14038,7 @@ snapshots:
   prosemirror-markdown@1.13.0:
     dependencies:
       markdown-it: 14.1.0
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
 
   prosemirror-menu@1.2.4:
     dependencies:
@@ -14064,17 +14051,17 @@ snapshots:
     dependencies:
       orderedmap: 2.1.1
 
-  prosemirror-model@1.21.2:
+  prosemirror-model@1.21.3:
     dependencies:
       orderedmap: 2.1.1
 
   prosemirror-schema-basic@1.2.2:
     dependencies:
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
 
   prosemirror-schema-list@1.4.0:
     dependencies:
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.9.0
 
@@ -14087,16 +14074,16 @@ snapshots:
   prosemirror-tables@1.3.7:
     dependencies:
       prosemirror-keymap: 1.2.2
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
       prosemirror-state: 1.4.3
       prosemirror-transform: 1.9.0
       prosemirror-view: 1.33.8
 
-  prosemirror-trailing-node@2.0.8(prosemirror-model@1.21.2)(prosemirror-state@1.4.3)(prosemirror-view@1.33.8):
+  prosemirror-trailing-node@2.0.8(prosemirror-model@1.21.3)(prosemirror-state@1.4.3)(prosemirror-view@1.33.8):
     dependencies:
       '@remirror/core-constants': 2.0.2
       escape-string-regexp: 4.0.0
-      prosemirror-model: 1.21.2
+      prosemirror-model: 1.21.3
       prosemirror-state: 1.4.3
       prosemirror-view: 1.33.8
 
@@ -14579,8 +14566,10 @@ snapshots:
   seroval-plugins@1.0.7(seroval@1.0.7):
     dependencies:
       seroval: 1.0.7
+    optional: true
 
-  seroval@1.0.7: {}
+  seroval@1.0.7:
+    optional: true
 
   server-only@0.0.1: {}
 
@@ -14735,11 +14724,7 @@ snapshots:
       csstype: 3.1.3
       seroval: 1.0.7
       seroval-plugins: 1.0.7(seroval@1.0.7)
-
-  solid-swr-store@0.10.7(solid-js@1.8.17)(swr-store@0.10.6):
-    dependencies:
-      solid-js: 1.8.17
-      swr-store: 0.10.6
+    optional: true
 
   sonner@1.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
@@ -14926,10 +14911,6 @@ snapshots:
     dependencies:
       lower-case: 1.1.4
       upper-case: 1.1.3
-
-  swr-store@0.10.6:
-    dependencies:
-      dequal: 2.0.3
 
   swr@2.2.0(react@18.3.1):
     dependencies:
