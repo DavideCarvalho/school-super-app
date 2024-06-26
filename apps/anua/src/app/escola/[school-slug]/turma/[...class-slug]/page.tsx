@@ -18,7 +18,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@acme/ui/tabs";
 
 import { api } from "~/trpc/server";
-import { AssignmentsTableServer } from "./containers/assignments-table.server copy";
+import { AssignmentsTableServer } from "./containers/assignments-table/assignments-table.server";
+import { GradesTableServer } from "./containers/grades-table/grades-table.server";
+
+const routes = ["atividades", "presencas", "notas"];
 
 export default async function ClassPage({
   params,
@@ -27,17 +30,22 @@ export default async function ClassPage({
 }) {
   const classSlugParams = params["class-slug"] as unknown as string[];
   const classSlug = classSlugParams[0] as unknown as string;
-  const route = classSlugParams[1] ?? "assignments";
+  const wantedRouted =
+    (classSlugParams[1] as unknown as string | undefined) ?? "atividades";
+  const doesRouteExists = routes.includes(wantedRouted);
+  if (!doesRouteExists) {
+    return redirect("/escola");
+  }
   const foundClass = await api.class.findBySlug({ slug: classSlug });
   if (!foundClass) {
     return redirect("/escola");
   }
   return (
-    <Tabs defaultValue="assignments" className="w-full" value={route}>
+    <Tabs defaultValue="atividades" className="w-full" value={wantedRouted}>
       <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
-        <TabsTrigger value="assignments">Atividades pra nota</TabsTrigger>
-        <TabsTrigger value="attendance">Presença</TabsTrigger>
-        <TabsTrigger value="grades">Notas</TabsTrigger>
+        <TabsTrigger value="atividades">Atividades pra nota</TabsTrigger>
+        <TabsTrigger value="presencas">Presença</TabsTrigger>
+        <TabsTrigger value="notas">Notas</TabsTrigger>
       </TabsList>
       <TabsContent value="assignments">
         <Card>
@@ -55,45 +63,17 @@ export default async function ClassPage({
       <TabsContent value="attendance">
         <Card>
           <CardHeader>
-            <CardTitle>Attendance</CardTitle>
-            <CardDescription>
-              View and manage attendance for this class.
-            </CardDescription>
+            <CardTitle>Presença</CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Absences</TableHead>
-                  <TableHead>Tardies</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">John Doe</TableCell>
-                  <TableCell>2</TableCell>
-                  <TableCell>1</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Jane Smith</TableCell>
-                  <TableCell>1</TableCell>
-                  <TableCell>0</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">Bob Johnson</TableCell>
-                  <TableCell>4</TableCell>
-                  <TableCell>2</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <GradesTableServer classId={foundClass.id} />
           </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="grades">
         <Card>
           <CardHeader>
-            <CardTitle>Grades</CardTitle>
+            <CardTitle>Notas</CardTitle>
             <CardDescription>
               View and manage grades for this class.
             </CardDescription>

@@ -110,6 +110,8 @@ model StudentAttendingClass {
   Student                          Student                            @relation(fields: [studentId], references: [id])
   Class                            Class                              @relation(fields: [classId], references: [id])
   ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
+  AcademicYear                     AcademicYear?                      @relation(fields: [academicYearId], references: [id])
+  academicYearId                   String?
 }
 
 model StudentHasResponsible {
@@ -121,6 +123,18 @@ model StudentHasResponsible {
 
   Student         Student @relation(fields: [studentId], references: [id])
   ResponsibleUser User    @relation(fields: [responsibleId], references: [id])
+}
+
+model AcademicYear {
+  id        String   @id @default(uuid())
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  StudentAttendingClasses StudentAttendingClass[]
+  Assignments             Assignment[]
 }
 
 model Canteen {
@@ -144,14 +158,17 @@ model ClassDay {
   teacherHasClassId String
   teacherHasClass   TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
   Occurence         Occurence[]
+  Attendance        Attendance[]
 }
 
 model Attendance {
-  id                        String                      @id @default(uuid())
-  createdAt                 DateTime                    @default(now())
-  updatedAt                 DateTime                    @updatedAt
-  classDayId                String
-  note                      String                      @db.Text
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  classDayId String
+  note       String   @db.Text
+
+  classDay                  ClassDay                    @relation(fields: [classDayId], references: [id])
   StudentHasClassAttendance StudentHasClassAttendance[]
 }
 
@@ -291,6 +308,8 @@ model Assignment {
 
   TeacherHasClass      TeacherHasClass        @relation(fields: [teacherHasClassId], references: [id])
   StudentHasAssignment StudentHasAssignment[]
+  AcademicYear         AcademicYear?          @relation(fields: [academicYearId], references: [id])
+  academicYearId       String?
 }
 
 model StudentHasAssignment {

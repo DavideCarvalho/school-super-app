@@ -2,10 +2,128 @@ import slugify from "slugify";
 import { z } from "zod";
 
 import type { TeacherHasClass } from "@acme/db";
+import { sql } from "@acme/db";
 
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
+  getClassAttendance: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        limit: z.number().optional().default(5),
+        page: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let academicYear = await ctx.prisma.academicYear.findFirst({
+        where: {
+          isActive: true,
+        },
+      });
+      if (!academicYear) {
+        academicYear = await ctx.prisma.academicYear.findFirst({
+          orderBy: {
+            endDate: "desc",
+          },
+        });
+      }
+
+      if (!academicYear) {
+        return [];
+      }
+
+      const data = await ctx.prisma.$kysely
+        .selectFrom("StudentAttendingClass as sac")
+        .leftJoin(
+          ctx.prisma.$kysely
+            .selectFrom("StudentHasClassAttendance as shca")
+            .select([
+              "shca.studentId",
+              sql<number>`COUNT(shca.id)`.as("attendedClasses"),
+            ])
+            .groupBy("shca.studentId")
+            .as("attended"),
+          "sac.studentId",
+          "attended.studentId",
+        )
+        .leftJoin(
+          ctx.prisma.$kysely
+            .selectFrom("StudentAttendingClass as sac2")
+            .select([
+              "sac2.studentId",
+              sql<number>`COUNT(sac2.classId)`.as("totalClasses"),
+            ])
+            .groupBy("sac2.studentId")
+            .as("total"),
+          "sac.studentId",
+          "total.studentId",
+        )
+        .leftJoin("Student as s", "sac.studentId", "s.id")
+        .leftJoin("User as u", "s.id", "u.id")
+        .select([
+          "sac.studentId as studentId",
+          "u.name as userName",
+          "u.email as userEmail",
+          sql<number>`COALESCE(attended.attendedClasses, 0)`.as(
+            "attendedClasses",
+          ),
+          sql<number>`COALESCE(total.totalClasses, 0)`.as("totalClasses"),
+          sql<number>`(COALESCE(attended.attendedClasses, 0) / COALESCE(total.totalClasses, 1)) * 100`.as(
+            "attendancePercentage",
+          ),
+        ])
+        .where("sac.classId", "=", input.classId)
+        .where("sac.academicYearId", "=", academicYear.id)
+        .groupBy("sac.studentId")
+        .offset((input.page - 1) * input.limit)
+        .limit(input.limit)
+        .execute();
+
+      return data.map((item) => ({
+        Student: {
+          id: item.studentId,
+          User: {
+            name: item.userName,
+            email: item.userEmail,
+          },
+        },
+        attendedClasses: item.attendedClasses,
+        totalClasses: item.totalClasses,
+        attendancePercentage: item.attendancePercentage,
+      }));
+    }),
+  countClassAttendance: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      let academicYear = await ctx.prisma.academicYear.findFirst({
+        where: {
+          isActive: true,
+        },
+      });
+      if (!academicYear) {
+        academicYear = await ctx.prisma.academicYear.findFirst({
+          orderBy: {
+            endDate: "desc",
+          },
+        });
+      }
+
+      if (!academicYear) {
+        return 0;
+      }
+
+      return ctx.prisma.studentAttendingClass.count({
+        where: {
+          classId: input.classId,
+          academicYearId: academicYear.id,
+        },
+      });
+    }),
   getClassAssignments: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
