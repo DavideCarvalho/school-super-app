@@ -35,15 +35,15 @@ export default function ClassPage({
           <CardHeader>
             <CardTitle>Atividades pra nota</CardTitle>
             <CardDescription>
-              View and manage all assignments for this class.
+              Veja, crie e edite todas as atividades pra nota dessa disciplina.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Assignment</TableHead>
-                  <TableHead>Due Date</TableHead>
+                  <TableHead>Atividade</TableHead>
+                  <TableHead>Data de entrega</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>

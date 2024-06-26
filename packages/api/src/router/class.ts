@@ -33,6 +33,11 @@ export const classRouter = createTRPCRouter({
                 },
               },
               Subject: true,
+              Class: {
+                include: {
+                  StudentAttendingClass: true,
+                },
+              },
             },
           },
           StudentHasAssignment: {
