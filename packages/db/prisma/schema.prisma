@@ -101,17 +101,17 @@ model Student {
 }
 
 model StudentAttendingClass {
-  id        String   @id @default(uuid())
-  studentId String
-  classId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(uuid())
+  studentId        String
+  classId          String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  academicPeriodId String?
 
   Student                          Student                            @relation(fields: [studentId], references: [id])
   Class                            Class                              @relation(fields: [classId], references: [id])
   ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
-  AcademicYear                     AcademicYear?                      @relation(fields: [academicYearId], references: [id])
-  academicYearId                   String?
+  AcademicPeriod                   AcademicPeriod?                    @relation(fields: [academicPeriodId], references: [id])
 }
 
 model StudentHasResponsible {
@@ -125,7 +125,7 @@ model StudentHasResponsible {
   ResponsibleUser User    @relation(fields: [responsibleId], references: [id])
 }
 
-model AcademicYear {
+model AcademicPeriod {
   id        String   @id @default(uuid())
   startDate DateTime
   endDate   DateTime
@@ -153,6 +153,7 @@ model ClassDay {
   id                String          @id @default(uuid())
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+  date              DateTime
   name              String
   weekday           Int
   teacherHasClassId String
@@ -306,10 +307,11 @@ model Assignment {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
+  academicPeriodId String?
+
   TeacherHasClass      TeacherHasClass        @relation(fields: [teacherHasClassId], references: [id])
   StudentHasAssignment StudentHasAssignment[]
-  AcademicYear         AcademicYear?          @relation(fields: [academicYearId], references: [id])
-  academicYearId       String?
+  AcademicPeriod       AcademicPeriod?        @relation(fields: [academicPeriodId], references: [id])
 }
 
 model StudentHasAssignment {

@@ -1,3 +1,4 @@
+import { differenceInBusinessDays, getYear, startOfYear } from "date-fns";
 import slugify from "slugify";
 import { z } from "zod";
 
@@ -16,48 +17,70 @@ export const classRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      let academicYear = await ctx.prisma.academicYear.findFirst({
+      const defaultAcademicYearEndDate = new Date(
+        new Date().getFullYear(),
+        10,
+        30,
+      ); // 30 de novembro do ano corrente
+      const defaultAcademicYearStartDate = new Date(
+        new Date().getFullYear(),
+        0,
+        31,
+      ); // 31 de janeiro do ano corrente
+      const startOfCurrentYear = startOfYear(new Date());
+      let firstDayOfClass = new Date(defaultAcademicYearStartDate);
+      let lastDayOfClass = new Date(defaultAcademicYearEndDate);
+      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
         where: {
-          isActive: true,
+          startDate: {
+            gte: startOfCurrentYear,
+          },
+        },
+        orderBy: {
+          startDate: "desc",
         },
       });
-      if (!academicYear) {
-        academicYear = await ctx.prisma.academicYear.findFirst({
+      if (latestAcademicPeriod) {
+        firstDayOfClass = new Date(latestAcademicPeriod.startDate);
+        lastDayOfClass = new Date(latestAcademicPeriod.endDate);
+      }
+      if (!latestAcademicPeriod) {
+        const firstClassDayOfCurrentYear = await ctx.prisma.classDay.findFirst({
+          where: {
+            date: {
+              gte: startOfCurrentYear,
+            },
+          },
           orderBy: {
-            endDate: "desc",
+            date: "asc",
           },
         });
+        if (firstClassDayOfCurrentYear) {
+          firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
+        }
       }
 
-      if (!academicYear) {
-        return [];
-      }
+      const totalClasses = differenceInBusinessDays(
+        new Date(lastDayOfClass),
+        new Date(firstDayOfClass),
+      );
 
       const data = await ctx.prisma.$kysely
         .selectFrom("StudentAttendingClass as sac")
         .leftJoin(
           ctx.prisma.$kysely
             .selectFrom("StudentHasClassAttendance as shca")
+            .leftJoin("Attendance as a", "shca.attendanceId", "a.id")
             .select([
               "shca.studentId",
               sql<number>`COUNT(shca.id)`.as("attendedClasses"),
             ])
+            .where("a.createdAt", ">=", firstDayOfClass)
+            .where("a.createdAt", "<=", lastDayOfClass)
             .groupBy("shca.studentId")
             .as("attended"),
           "sac.studentId",
           "attended.studentId",
-        )
-        .leftJoin(
-          ctx.prisma.$kysely
-            .selectFrom("StudentAttendingClass as sac2")
-            .select([
-              "sac2.studentId",
-              sql<number>`COUNT(sac2.classId)`.as("totalClasses"),
-            ])
-            .groupBy("sac2.studentId")
-            .as("total"),
-          "sac.studentId",
-          "total.studentId",
         )
         .leftJoin("Student as s", "sac.studentId", "s.id")
         .leftJoin("User as u", "s.id", "u.id")
@@ -68,13 +91,12 @@ export const classRouter = createTRPCRouter({
           sql<number>`COALESCE(attended.attendedClasses, 0)`.as(
             "attendedClasses",
           ),
-          sql<number>`COALESCE(total.totalClasses, 0)`.as("totalClasses"),
-          sql<number>`(COALESCE(attended.attendedClasses, 0) / COALESCE(total.totalClasses, 1)) * 100`.as(
+          sql<number>`${totalClasses}`.as("totalClasses"),
+          sql<number>`(COALESCE(attended.attendedClasses, 0) / ${totalClasses}) * 100`.as(
             "attendancePercentage",
           ),
         ])
         .where("sac.classId", "=", input.classId)
-        .where("sac.academicYearId", "=", academicYear.id)
         .groupBy("sac.studentId")
         .offset((input.page - 1) * input.limit)
         .limit(input.limit)
@@ -100,29 +122,51 @@ export const classRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      let academicYear = await ctx.prisma.academicYear.findFirst({
+      const defaultAcademicYearStartDate = new Date(
+        new Date().getFullYear(),
+        0,
+        31,
+      ); // 31 de janeiro do ano corrente
+      const startOfCurrentYear = startOfYear(new Date());
+      let firstDayOfClass = new Date(defaultAcademicYearStartDate);
+      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
         where: {
-          isActive: true,
+          startDate: {
+            gte: startOfCurrentYear,
+          },
+        },
+        orderBy: {
+          startDate: "desc",
         },
       });
-      if (!academicYear) {
-        academicYear = await ctx.prisma.academicYear.findFirst({
+      if (latestAcademicPeriod) {
+        firstDayOfClass = new Date(latestAcademicPeriod.startDate);
+      }
+      if (!latestAcademicPeriod) {
+        const firstClassDayOfCurrentYear = await ctx.prisma.classDay.findFirst({
+          where: {
+            date: {
+              gte: startOfCurrentYear,
+            },
+          },
           orderBy: {
-            endDate: "desc",
+            date: "asc",
           },
         });
+        if (firstClassDayOfCurrentYear) {
+          firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
+        }
       }
 
-      if (!academicYear) {
-        return 0;
-      }
-
-      return ctx.prisma.studentAttendingClass.count({
-        where: {
-          classId: input.classId,
-          academicYearId: academicYear.id,
-        },
-      });
+      const response = await ctx.prisma.$kysely
+        .selectFrom("StudentAttendingClass as sac")
+        .select([sql<number>`COUNT(DISTINCT sac.studentId)`.as("totalCount")])
+        .leftJoin("ClassDay as cd", "sac.classId", "cd.teacherHasClassId")
+        .leftJoin("Attendance as a", "cd.id", "a.classDayId")
+        .where("sac.classId", "=", input.classId)
+        .where(sql`YEAR(a.createdAt)`, "=", getYear(firstDayOfClass))
+        .execute();
+      return response[0]?.totalCount ?? 0;
     }),
   getClassAssignments: isUserLoggedInAndAssignedToSchool
     .input(

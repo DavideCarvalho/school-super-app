@@ -6,7 +6,7 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export type AcademicYear = {
+export type AcademicPeriod = {
   id: string;
   startDate: Timestamp;
   endDate: Timestamp;
@@ -24,7 +24,7 @@ export type Assignment = {
   dueDate: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  academicYearId: string | null;
+  academicPeriodId: string | null;
 };
 export type Attendance = {
   id: string;
@@ -103,6 +103,7 @@ export type ClassDay = {
   id: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  date: Timestamp;
   name: string;
   weekday: number;
   teacherHasClassId: string;
@@ -242,7 +243,7 @@ export type StudentAttendingClass = {
   classId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  academicYearId: string | null;
+  academicPeriodId: string | null;
 };
 export type StudentHasAssignment = {
   id: string;
@@ -327,7 +328,7 @@ export type UserLikedPost = {
   userId: string;
 };
 export type DB = {
-  AcademicYear: AcademicYear;
+  AcademicPeriod: AcademicPeriod;
   Assignment: Assignment;
   Attendance: Attendance;
   Calendar: Calendar;
