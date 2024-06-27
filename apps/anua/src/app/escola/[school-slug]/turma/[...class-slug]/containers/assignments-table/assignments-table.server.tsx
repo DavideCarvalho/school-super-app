@@ -42,6 +42,9 @@ async function AssignmentsTableDataLoader(props: AssignmentsTableServerProps) {
     helper.class.countClassAssignments.prefetch({
       classId: props.classId,
     }),
+    helper.class.countClassAttendance.prefetch({
+      classId: props.classId,
+    }),
   ]);
   const dehydratedState = dehydrate(helper.queryClient);
   return (

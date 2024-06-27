@@ -17,7 +17,7 @@ export function AssignmentsTableClient({ classId }: AssignmentsTableProps) {
   const page = searchParams.has("page") ? Number(searchParams.get("page")) : 1;
   const size = searchParams.has("size") ? Number(searchParams.get("size")) : 10;
 
-  const columns = useAssignmentsTableColumns();
+  const columns = useAssignmentsTableColumns(classId);
   const { data: assignments, isLoading: isLoadingAssignments } =
     api.class.getClassAssignments.useQuery({
       classId,

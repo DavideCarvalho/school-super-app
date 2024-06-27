@@ -17,9 +17,7 @@ export type AcademicPeriod = {
 export type Assignment = {
   id: string;
   name: string;
-  slug: string;
-  teacherHasClassId: string;
-  value: number;
+  classId: string;
   description: string | null;
   dueDate: Timestamp;
   createdAt: Generated<Timestamp>;

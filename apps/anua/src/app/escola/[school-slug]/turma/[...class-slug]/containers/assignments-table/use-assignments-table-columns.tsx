@@ -1,14 +1,21 @@
+"use client";
+
 import { createColumnHelper } from "@tanstack/react-table";
 import { isAfter, isBefore, isToday } from "date-fns";
 
 import type { RouterOutputs } from "@acme/api";
 
+import { api } from "~/trpc/react";
 import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
 
 type Row = RouterOutputs["class"]["getClassAssignments"][0];
 
-export function useAssignmentsTableColumns() {
+export function useAssignmentsTableColumns(classId: string) {
   const columnHelper = createColumnHelper<Row>();
+
+  const { data: attendanceCount } = api.class.countClassAttendance.useQuery({
+    classId,
+  });
 
   return [
     columnHelper.accessor("name", {
@@ -20,8 +27,7 @@ export function useAssignmentsTableColumns() {
       header: "Data de entrega",
     }),
     columnHelper.accessor(
-      (row) =>
-        `${row.StudentHasAssignment.length} / ${row.TeacherHasClass.Class.StudentAttendingClass.length}`,
+      (row) => `${row.StudentHasAssignment.length} / ${attendanceCount ?? 0}`,
       {
         id: "deliveries",
         header: "Entregas",

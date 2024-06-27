@@ -1,6 +1,7 @@
-import Link from "next/link";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { Button } from "@acme/ui/button";
 import {
   Card,
   CardContent,
@@ -11,7 +12,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@acme/ui/tabs";
 
 import { api } from "~/trpc/server";
-import { TabLink } from "./components/tab-link";
+import { NewAssignmentModalListener } from "./_components/new-assignment-modal-listener";
+import { TabLink } from "./_components/tab-link";
 import { AssignmentsTableServer } from "./containers/assignments-table/assignments-table.server";
 import { AttendancesTableServer } from "./containers/attendances-table/attendances-table.server";
 import { GradesTableServer } from "./containers/grades-table/grades-table.server";
@@ -23,6 +25,10 @@ export default async function ClassPage({
 }: {
   params: { "class-slug": string[]; "school-slug": string };
 }) {
+  const requestHeaders = headers();
+  const xUrl = requestHeaders.get("x-url");
+  if (!xUrl) throw new Error("unreachable");
+  const url = new URL(xUrl);
   const classSlugParams = params["class-slug"] as unknown as string[];
   const classSlug = classSlugParams[0] as unknown as string;
   const wantedRouted =
@@ -42,20 +48,23 @@ export default async function ClassPage({
         <TabsTrigger value="atividades">
           <TabLink
             href={`/escola/${params["school-slug"]}/turma/${classSlug}/atividades`}
-            label="Atividades"
-          />
+          >
+            Atividades
+          </TabLink>
         </TabsTrigger>
         <TabsTrigger value="presencas">
           <TabLink
             href={`/escola/${params["school-slug"]}/turma/${classSlug}/presencas`}
-            label="Presenças"
-          />
+          >
+            Presenças
+          </TabLink>
         </TabsTrigger>
         <TabsTrigger value="notas">
           <TabLink
             href={`/escola/${params["school-slug"]}/turma/${classSlug}/notas`}
-            label="Notas"
-          />
+          >
+            Notas
+          </TabLink>
         </TabsTrigger>
       </TabsList>
       <TabsContent value="atividades">
@@ -67,6 +76,12 @@ export default async function ClassPage({
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <NewAssignmentModalListener classId={foundClass.id} />
+            <TabLink
+              href={`${url.pathname}?${url.searchParams.toString()}#adicionar-atividade`}
+            >
+              <Button>Adicionar atividade</Button>
+            </TabLink>
             <AssignmentsTableServer classId={foundClass.id} />
           </CardContent>
         </Card>
@@ -80,7 +95,7 @@ export default async function ClassPage({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <AttendancesTableServer classId={foundClass.id} />
+            {/* <AttendancesTableServer classId={foundClass.id} /> */}
           </CardContent>
         </Card>
       </TabsContent>
@@ -91,7 +106,7 @@ export default async function ClassPage({
             <CardDescription>Veja todas as notas dessa turma.</CardDescription>
           </CardHeader>
           <CardContent>
-            <GradesTableServer classId={foundClass.id} />
+            {/* <GradesTableServer classId={foundClass.id} /> */}
           </CardContent>
         </Card>
       </TabsContent>

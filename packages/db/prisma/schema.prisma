@@ -289,7 +289,6 @@ model TeacherHasClass {
   TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
   CalendarSlot        CalendarSlot[]
   ClassDay            ClassDay[]
-  Assignment          Assignment[]
 
   @@index([teacherId])
   @@index([classId])
@@ -297,20 +296,18 @@ model TeacherHasClass {
 }
 
 model Assignment {
-  id                String   @id @default(uuid())
-  name              String
-  slug              String
-  teacherHasClassId String
-  value             Float
-  description       String?  @db.Text
-  dueDate           DateTime
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  grade             Float    @default(0)
+  id          String   @id @default(uuid())
+  name        String
+  classId     String
+  description String?  @db.Text
+  dueDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  grade       Float    @default(0)
 
   academicPeriodId String?
 
-  TeacherHasClass      TeacherHasClass        @relation(fields: [teacherHasClassId], references: [id])
+  Class                Class                  @relation(fields: [classId], references: [id])
   StudentHasAssignment StudentHasAssignment[]
   AcademicPeriod       AcademicPeriod?        @relation(fields: [academicPeriodId], references: [id])
 }
@@ -390,6 +387,7 @@ model Class {
   ClassSchedule         ClassSchedule[]
   Calendar              Calendar[]
   StudentAttendingClass StudentAttendingClass[]
+  Assignment            Assignment[]
 
   @@index([schoolId])
 }

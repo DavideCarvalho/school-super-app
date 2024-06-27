@@ -4,13 +4,13 @@ import Link from "next/link";
 
 interface TabLinkProps {
   href: string;
-  label: string;
+  children: React.ReactNode;
 }
 
-export function TabLink({ href, label }: TabLinkProps) {
+export function TabLink({ href, children }: TabLinkProps) {
   return (
     <Link className="w-full" href={href}>
-      {label}
+      {children}
     </Link>
   );
 }

@@ -252,6 +252,27 @@ export const classRouter = createTRPCRouter({
       const totalCount = response[0]?.totalCount ?? 0n;
       return Number(totalCount);
     }),
+  createAssignment: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        name: z.string(),
+        dueDate: z.date(),
+        grade: z.number().min(0),
+        classId: z.string(),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.prisma.assignment.create({
+        data: {
+          name: input.name,
+          dueDate: input.dueDate,
+          grade: input.grade,
+          classId: input.classId,
+          description: input.description,
+        },
+      });
+    }),
   getClassAssignments: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
@@ -261,31 +282,59 @@ export const classRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      const defaultAcademicYearEndDate = new Date(
+        new Date().getFullYear(),
+        10,
+        30,
+      ); // 30 de novembro do ano corrente
+      const defaultAcademicYearStartDate = new Date(
+        new Date().getFullYear(),
+        0,
+        31,
+      ); // 31 de janeiro do ano corrente
+      const startOfCurrentYear = startOfYear(new Date());
+      let firstDayOfClass = new Date(defaultAcademicYearStartDate);
+      let lastDayOfClass = new Date(defaultAcademicYearEndDate);
+      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
+        where: {
+          startDate: {
+            gte: startOfCurrentYear,
+          },
+        },
+        orderBy: {
+          startDate: "desc",
+        },
+      });
+      if (latestAcademicPeriod) {
+        firstDayOfClass = new Date(latestAcademicPeriod.startDate);
+        lastDayOfClass = new Date(latestAcademicPeriod.endDate);
+      }
+      if (!latestAcademicPeriod) {
+        const firstClassDayOfCurrentYear = await ctx.prisma.classDay.findFirst({
+          where: {
+            date: {
+              gte: startOfCurrentYear,
+            },
+          },
+          orderBy: {
+            date: "asc",
+          },
+        });
+        if (firstClassDayOfCurrentYear) {
+          firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
+        }
+      }
       return ctx.prisma.assignment.findMany({
         where: {
-          TeacherHasClass: {
-            classId: input.classId,
-            isActive: true,
+          classId: input.classId,
+          createdAt: {
+            gte: firstDayOfClass,
+            lte: lastDayOfClass,
           },
         },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
         include: {
-          TeacherHasClass: {
-            include: {
-              Teacher: {
-                include: {
-                  User: true,
-                },
-              },
-              Subject: true,
-              Class: {
-                include: {
-                  StudentAttendingClass: true,
-                },
-              },
-            },
-          },
           StudentHasAssignment: {
             include: {
               Student: {
@@ -305,11 +354,54 @@ export const classRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      const defaultAcademicYearEndDate = new Date(
+        new Date().getFullYear(),
+        10,
+        30,
+      ); // 30 de novembro do ano corrente
+      const defaultAcademicYearStartDate = new Date(
+        new Date().getFullYear(),
+        0,
+        31,
+      ); // 31 de janeiro do ano corrente
+      const startOfCurrentYear = startOfYear(new Date());
+      let firstDayOfClass = new Date(defaultAcademicYearStartDate);
+      let lastDayOfClass = new Date(defaultAcademicYearEndDate);
+      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
+        where: {
+          startDate: {
+            gte: startOfCurrentYear,
+          },
+        },
+        orderBy: {
+          startDate: "desc",
+        },
+      });
+      if (latestAcademicPeriod) {
+        firstDayOfClass = new Date(latestAcademicPeriod.startDate);
+        lastDayOfClass = new Date(latestAcademicPeriod.endDate);
+      }
+      if (!latestAcademicPeriod) {
+        const firstClassDayOfCurrentYear = await ctx.prisma.classDay.findFirst({
+          where: {
+            date: {
+              gte: startOfCurrentYear,
+            },
+          },
+          orderBy: {
+            date: "asc",
+          },
+        });
+        if (firstClassDayOfCurrentYear) {
+          firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
+        }
+      }
       return ctx.prisma.assignment.count({
         where: {
-          TeacherHasClass: {
-            classId: input.classId,
-            isActive: true,
+          classId: input.classId,
+          createdAt: {
+            gte: firstDayOfClass,
+            lte: lastDayOfClass,
           },
         },
       });
