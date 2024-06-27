@@ -24,6 +24,7 @@ export type Assignment = {
   dueDate: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  grade: Generated<number>;
   academicPeriodId: string | null;
 };
 export type Attendance = {
@@ -251,6 +252,7 @@ export type StudentHasAssignment = {
   assignmentId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  grade: Generated<number>;
 };
 export type StudentHasClassAttendance = {
   id: string;

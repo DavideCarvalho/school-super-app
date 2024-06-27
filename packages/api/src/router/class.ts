@@ -8,6 +8,89 @@ import { sql } from "@acme/db";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
+  getStudentsGrades: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        limit: z.number().optional().default(5),
+        page: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const defaultAcademicYearEndDate = new Date(
+        new Date().getFullYear(),
+        10,
+        30,
+      ); // 30 de novembro do ano corrente
+      const defaultAcademicYearStartDate = new Date(
+        new Date().getFullYear(),
+        0,
+        31,
+      ); // 31 de janeiro do ano corrente
+      const startOfCurrentYear = startOfYear(new Date());
+      let firstDayOfClass = new Date(defaultAcademicYearStartDate);
+      let lastDayOfClass = new Date(defaultAcademicYearEndDate);
+      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
+        where: {
+          startDate: {
+            gte: startOfCurrentYear,
+          },
+        },
+        orderBy: {
+          startDate: "desc",
+        },
+      });
+      if (latestAcademicPeriod) {
+        firstDayOfClass = new Date(latestAcademicPeriod.startDate);
+        lastDayOfClass = new Date(latestAcademicPeriod.endDate);
+      }
+      if (!latestAcademicPeriod) {
+        const firstClassDayOfCurrentYear = await ctx.prisma.classDay.findFirst({
+          where: {
+            date: {
+              gte: startOfCurrentYear,
+            },
+          },
+          orderBy: {
+            date: "asc",
+          },
+        });
+        if (firstClassDayOfCurrentYear) {
+          firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
+        }
+      }
+
+      const data = await ctx.prisma.$kysely
+        .selectFrom("StudentAttendingClass as sac")
+        .leftJoin("Student as s", "sac.studentId", "s.id")
+        .leftJoin("User as u", "s.id", "u.id")
+        .leftJoin("StudentHasAssignment as sha", "s.id", "sha.studentId")
+        .leftJoin("Assignment as a", "sha.assignmentId", "a.id")
+        .select([
+          "s.id as studentId",
+          "u.name as userName",
+          "u.email as userEmail",
+          sql<number>`SUM(sha.grade)`.as("studentTotalGrade"),
+          sql<number>`SUM(a.value)`.as("totalGrade"),
+        ])
+        .where("sac.classId", "=", input.classId)
+        .where("a.dueDate", ">=", firstDayOfClass)
+        .where("a.dueDate", "<=", lastDayOfClass)
+        .groupBy("s.id")
+        .execute();
+
+      return data.map((item) => ({
+        Student: {
+          id: item.studentId,
+          User: {
+            name: item.userName,
+            email: item.userEmail,
+          },
+        },
+        studentTotalGrade: item.studentTotalGrade,
+        totalGrade: item.totalGrade,
+      }));
+    }),
   getClassAttendance: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
@@ -160,13 +243,14 @@ export const classRouter = createTRPCRouter({
 
       const response = await ctx.prisma.$kysely
         .selectFrom("StudentAttendingClass as sac")
-        .select([sql<number>`COUNT(DISTINCT sac.studentId)`.as("totalCount")])
+        .select([sql<bigint>`COUNT(DISTINCT sac.studentId)`.as("totalCount")])
         .leftJoin("ClassDay as cd", "sac.classId", "cd.teacherHasClassId")
         .leftJoin("Attendance as a", "cd.id", "a.classDayId")
         .where("sac.classId", "=", input.classId)
         .where(sql`YEAR(a.createdAt)`, "=", getYear(firstDayOfClass))
         .execute();
-      return response[0]?.totalCount ?? 0;
+      const totalCount = response[0]?.totalCount ?? 0n;
+      return Number(totalCount);
     }),
   getClassAssignments: isUserLoggedInAndAssignedToSchool
     .input(
@@ -214,7 +298,7 @@ export const classRouter = createTRPCRouter({
         },
       });
     }),
-  countAllClassAssignments: isUserLoggedInAndAssignedToSchool
+  countClassAssignments: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         classId: z.string(),

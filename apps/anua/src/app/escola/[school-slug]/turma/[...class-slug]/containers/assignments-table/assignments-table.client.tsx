@@ -24,10 +24,9 @@ export function AssignmentsTableClient({ classId }: AssignmentsTableProps) {
       page,
       limit: size,
     });
-  const { data: assignmentsCount } =
-    api.class.countAllClassAssignments.useQuery({
-      classId,
-    });
+  const { data: assignmentsCount } = api.class.countClassAssignments.useQuery({
+    classId,
+  });
   return (
     <TableWithPagination
       data={assignments ?? []}

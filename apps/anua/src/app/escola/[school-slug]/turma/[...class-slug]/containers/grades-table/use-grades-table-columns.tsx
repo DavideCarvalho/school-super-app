@@ -2,7 +2,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 import type { RouterOutputs } from "@acme/api";
 
-type Row = RouterOutputs["class"]["getClassAttendance"][0];
+type Row = RouterOutputs["class"]["getStudentsGrades"][0];
 
 export function useAssignmentsTableColumns() {
   const columnHelper = createColumnHelper<Row>();
@@ -12,13 +12,9 @@ export function useAssignmentsTableColumns() {
       id: "name",
       header: "Aluno",
     }),
-    columnHelper.accessor("attendedClasses", {
+    columnHelper.accessor("studentTotalGrade", {
       id: "attendedClasses",
       header: "Presença",
-    }),
-    columnHelper.accessor("attendancePercentage", {
-      id: "attendancePercentage",
-      header: "Percentual de presença",
     }),
   ];
 }

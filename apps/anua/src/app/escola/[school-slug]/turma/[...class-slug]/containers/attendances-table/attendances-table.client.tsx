@@ -5,33 +5,33 @@ import { useSearchParams } from "next/navigation";
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
 import { api } from "~/trpc/react";
-import { useAssignmentsTableColumns } from "./use-grades-table-columns";
+import { useAttendancesTableColumns } from "./use-attendances-table-columns";
 
-interface GradeTableProps {
+interface AttendancesTableProps {
   classId: string;
 }
 
-export function GradesTableClient({ classId }: GradeTableProps) {
+export function AttendancesTableClient({ classId }: AttendancesTableProps) {
   const searchParams = useSearchParams();
 
   const page = searchParams.has("page") ? Number(searchParams.get("page")) : 1;
   const size = searchParams.has("size") ? Number(searchParams.get("size")) : 10;
 
-  const columns = useAssignmentsTableColumns();
-  const { data: studentGrades, isLoading: isLoadingStudentGrades } =
-    api.class.getStudentsGrades.useQuery({
+  const columns = useAttendancesTableColumns();
+  const { data: attendances, isLoading: isLoadingAttendances } =
+    api.class.getClassAttendance.useQuery({
       classId,
       page,
       limit: size,
     });
-  const { data: attendancesCount } = api.class.countClassAttendance.useQuery({
+  const { data: attendanceCount } = api.class.countClassAttendance.useQuery({
     classId,
   });
   return (
     <TableWithPagination
-      data={studentGrades ?? []}
-      isLoading={!studentGrades && isLoadingStudentGrades}
-      totalCount={attendancesCount ?? 0}
+      data={attendances ?? []}
+      isLoading={!attendances && isLoadingAttendances}
+      totalCount={attendanceCount ?? 0}
       columns={columns}
     />
   );

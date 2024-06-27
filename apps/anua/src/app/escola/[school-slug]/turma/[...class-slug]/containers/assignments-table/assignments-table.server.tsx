@@ -39,7 +39,7 @@ async function AssignmentsTableDataLoader(props: AssignmentsTableServerProps) {
       page,
       limit: size,
     }),
-    helper.class.countAllClassAssignments.prefetch({
+    helper.class.countClassAssignments.prefetch({
       classId: props.classId,
     }),
   ]);
