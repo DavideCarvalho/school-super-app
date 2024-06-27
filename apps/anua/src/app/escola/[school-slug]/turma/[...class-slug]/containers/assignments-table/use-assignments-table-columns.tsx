@@ -26,13 +26,10 @@ export function useAssignmentsTableColumns(classId: string) {
       id: "dueDate",
       header: "Data de entrega",
     }),
-    columnHelper.accessor(
-      (row) => `${row.StudentHasAssignment.length} / ${attendanceCount ?? 0}`,
-      {
-        id: "deliveries",
-        header: "Entregas",
-      },
-    ),
+    columnHelper.accessor("grade", {
+      id: "grade",
+      header: "Nota",
+    }),
     columnHelper.display({
       id: "status",
       header: "Status",
