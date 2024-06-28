@@ -337,9 +337,23 @@ export const classRouter = createTRPCRouter({
           firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
         }
       }
+      const teacherSubjects = await ctx.prisma.teacherHasClass.findMany({
+        where: {
+          teacherId: ctx.session.user.id,
+          classId: input.classId,
+          isActive: true,
+        },
+      });
       return ctx.prisma.assignment.findMany({
         where: {
-          classId: input.classId,
+          TeacherHasClass: {
+            classId: input.classId,
+            teacherId: ctx.session.user.id,
+            subjectId: {
+              in: teacherSubjects.map((ts) => ts.subjectId),
+            },
+            isActive: true,
+          },
           createdAt: {
             gte: firstDayOfClass,
             lte: lastDayOfClass,
@@ -409,9 +423,23 @@ export const classRouter = createTRPCRouter({
           firstDayOfClass = new Date(firstClassDayOfCurrentYear.date);
         }
       }
+      const teacherSubjects = await ctx.prisma.teacherHasClass.findMany({
+        where: {
+          teacherId: ctx.session.user.id,
+          classId: input.classId,
+          isActive: true,
+        },
+      });
       return ctx.prisma.assignment.count({
         where: {
-          classId: input.classId,
+          TeacherHasClass: {
+            classId: input.classId,
+            teacherId: ctx.session.user.id,
+            subjectId: {
+              in: teacherSubjects.map((ts) => ts.subjectId),
+            },
+            isActive: true,
+          },
           createdAt: {
             gte: firstDayOfClass,
             lte: lastDayOfClass,
