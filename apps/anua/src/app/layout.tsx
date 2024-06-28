@@ -5,8 +5,6 @@ import { ToasterPortal } from "./toaster-portal";
 
 import "../styles/globals.css";
 
-import { createPortal } from "react-dom";
-
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata = {

@@ -36,7 +36,6 @@ export default function LandingPage() {
     }
   }
   useEffect(() => {
-    // Focus the input element
     setFocus("email");
   }, [setFocus]);
   return (
@@ -746,7 +745,7 @@ export function Features() {
             </div>
             <h3 className="mt-8 text-lg font-semibold text-black">
               Tarefas
-              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
+              <span className="ml-2 rounded-xl bg-purple-300 p-1 text-sm">
                 Em breve
               </span>
             </h3>
@@ -786,7 +785,7 @@ export function Features() {
             </div>
             <h3 className="mt-8 text-lg font-semibold text-black">
               Dashboard
-              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
+              <span className="ml-2 rounded-xl bg-purple-300 p-1 text-sm">
                 Em breve
               </span>
             </h3>
@@ -826,7 +825,7 @@ export function Features() {
             </div>
             <h3 className="mt-8 text-lg font-semibold text-black">
               Módulo pedagógico
-              <span className="ml-2  rounded-xl bg-purple-300 p-1 text-sm">
+              <span className="ml-2 rounded-xl bg-purple-300 p-1 text-sm">
                 Em breve
               </span>
             </h3>

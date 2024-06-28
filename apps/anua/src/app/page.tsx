@@ -1,4 +1,3 @@
-import type { NextPage } from "next";
 import Head from "next/head";
 
 import LandingPageBanner from "~/components/landing-page-banner";

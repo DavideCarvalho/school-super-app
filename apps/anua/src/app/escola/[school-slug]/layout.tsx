@@ -6,6 +6,7 @@ import { useUser } from "@clerk/nextjs";
 
 import { cn } from "@acme/ui";
 
+import { api } from "~/trpc/react";
 import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
 import { matchesPathname } from "~/utils/url";
 
@@ -19,7 +20,10 @@ export default function RootLayout({
   if (!user) return null;
   const userPublicMetadata = getUserPublicMetadata(user);
   const schoolSlug = userPublicMetadata.school.slug;
-  const canteenId = userPublicMetadata?.canteen?.id;
+  const { data: classes } = api.class.allBySchoolId.useQuery({
+    page: 1,
+    limit: 999,
+  });
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
@@ -170,7 +174,7 @@ export default function RootLayout({
                     Administrativo
                   </p>
                   {routes.map((route) => {
-                    const routeHref = route.href({ schoolSlug, canteenId });
+                    const routeHref = route.href({ schoolSlug });
                     return (
                       <Link
                         key={route.name}
@@ -205,7 +209,7 @@ export default function RootLayout({
                     Cantina
                   </p>
                   {canteenRoutes.map((route) => {
-                    const routeHref = route.href({ schoolSlug, canteenId });
+                    const routeHref = route.href({ schoolSlug });
                     return (
                       <Link
                         key={route.name}
@@ -240,7 +244,7 @@ export default function RootLayout({
                     Pedagógico
                   </p>
                   {pedagogicRoutes.map((route) => {
-                    const routeHref = route.href({ schoolSlug, canteenId });
+                    const routeHref = route.href({ schoolSlug });
                     return (
                       <Link
                         key={route.name}
@@ -268,6 +272,45 @@ export default function RootLayout({
                           />
                         </svg>
                         {route.name}
+                      </Link>
+                    );
+                  })}
+
+                  {classes && classes.length > 0 ? (
+                    <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                      Turmas
+                    </p>
+                  ) : null}
+
+                  {classes?.map((clasz) => {
+                    const routeHref = `/escola/${schoolSlug}/turma/${clasz.slug}`;
+                    return (
+                      <Link
+                        key={clasz.slug}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname ?? "")
+                            ? "bg-gray-200"
+                            : "",
+                        )}
+                      >
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>{clasz.name}</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        {clasz.name}
                       </Link>
                     );
                   })}
