@@ -17,6 +17,10 @@ export function useAssignmentsTableColumns(classId: string) {
       id: "name",
       header: "Atividade",
     }),
+    columnHelper.accessor("TeacherHasClass.Subject.name", {
+      id: "subjectName",
+      header: "Matéria",
+    }),
     columnHelper.accessor((row) => brazilianDateFormatter(row.dueDate), {
       id: "dueDate",
       header: "Data de entrega",
