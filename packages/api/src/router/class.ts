@@ -259,16 +259,29 @@ export const classRouter = createTRPCRouter({
         dueDate: z.date(),
         grade: z.number().min(0),
         classId: z.string(),
+        subjectId: z.string(),
         description: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
+        where: {
+          teacherId: ctx.session.user.id,
+          classId: input.classId,
+          subjectId: input.subjectId,
+          isActive: true,
+        },
+      });
+      if (!teacherHasClass) {
+        throw new Error("Professor não está na turma");
+      }
       return ctx.prisma.assignment.create({
         data: {
           name: input.name,
           dueDate: input.dueDate,
           grade: input.grade,
           classId: input.classId,
+          teacherHasClassId: teacherHasClass.id,
           description: input.description,
         },
       });

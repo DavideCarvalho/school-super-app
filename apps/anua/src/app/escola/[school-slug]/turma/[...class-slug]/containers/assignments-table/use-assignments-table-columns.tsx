@@ -5,17 +5,12 @@ import { isAfter, isBefore, isToday } from "date-fns";
 
 import type { RouterOutputs } from "@acme/api";
 
-import { api } from "~/trpc/react";
 import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
 
 type Row = RouterOutputs["class"]["getClassAssignments"][0];
 
 export function useAssignmentsTableColumns(classId: string) {
   const columnHelper = createColumnHelper<Row>();
-
-  const { data: attendanceCount } = api.class.countClassAttendance.useQuery({
-    classId,
-  });
 
   return [
     columnHelper.accessor("name", {

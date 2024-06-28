@@ -23,6 +23,7 @@ export type Assignment = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   grade: Generated<number>;
+  teacherHasClassId: string | null;
   academicPeriodId: string | null;
 };
 export type Attendance = {

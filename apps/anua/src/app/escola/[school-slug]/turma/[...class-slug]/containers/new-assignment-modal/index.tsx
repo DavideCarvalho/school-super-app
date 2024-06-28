@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -23,18 +24,24 @@ import {
   FormMessage,
 } from "@acme/ui/form";
 import { Input } from "@acme/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@acme/ui/select";
 import { Textarea } from "@acme/ui/textarea";
 
 import { api } from "~/trpc/react";
 
-const schema = z
-  .object({
-    name: z.string({ required_error: "Qual o nome da atividade?" }),
-    dueDate: z.date({ required_error: "Quando é a data de entrega?" }),
-    grade: z.number({ required_error: "Qual a nota?" }).min(0),
-    description: z.string().optional(),
-  })
-  .required();
+const schema = z.object({
+  name: z.string({ required_error: "Qual o nome da atividade?" }),
+  dueDate: z.date({ required_error: "Quando é a data de entrega?" }),
+  grade: z.number({ required_error: "Qual a nota?" }).min(0),
+  subjectId: z.string({ required_error: "Qual matéria?" }),
+  description: z.string().optional(),
+});
 
 interface NewAssignmentModalProps {
   classId: string;
@@ -56,11 +63,26 @@ export function NewAssignmentModal({
       dueDate: new Date(),
       grade: 0,
       description: undefined,
+      subjectId: undefined,
     },
   });
 
   const { mutateAsync: createAssignment } =
     api.class.createAssignment.useMutation();
+
+  const { data: teacherSubjectsOnClass } =
+    api.teacher.getTeacherSubjectsOnClass.useQuery({
+      classId,
+    });
+
+  useEffect(() => {
+    if (!teacherSubjectsOnClass) return;
+    if (teacherSubjectsOnClass.length === 1) {
+      const onlySubject = teacherSubjectsOnClass[0];
+      if (!onlySubject) return;
+      form.setValue("subjectId", onlySubject.id);
+    }
+  }, [teacherSubjectsOnClass, form.setValue]);
 
   async function onSubmit(data: z.infer<typeof schema>) {
     const toastId = toast.loading("Criando atividade...");
@@ -69,8 +91,9 @@ export function NewAssignmentModal({
         name: data.name,
         dueDate: data.dueDate,
         grade: data.grade,
-        classId: classId,
+        subjectId: data.subjectId,
         description: data.description,
+        classId,
       });
       toast.dismiss(toastId);
       toast.success("Atividade criada com sucesso!");
@@ -106,6 +129,37 @@ export function NewAssignmentModal({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="subjectId"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Pra qual matéria?*</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) =>
+                          form.setValue("subjectId", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="matéria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {teacherSubjectsOnClass?.map((subject) => (
+                            <SelectItem key={subject.id} value={subject.id}>
+                              {subject.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="grade"
