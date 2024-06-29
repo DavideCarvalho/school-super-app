@@ -1,14 +1,12 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { api, createSSRHelper } from "~/trpc/server";
 import { EditSubjectModalListener } from "./_components/edit-subject-modal-listener";
 import { NewSubjectModalListener } from "./_components/new-subject-modal-listener";
-import { SubjectsTable } from "./containers/school-subjects-table";
+import { SubjectsTableClient } from "./containers/school-subjects-table/subjects-table.client";
 
 export default async function SubjectsPage({
   params,
@@ -17,26 +15,10 @@ export default async function SubjectsPage({
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
   const requestHeaders = headers();
-  const xUrl = requestHeaders.get("x-url");
-  if (!xUrl) throw new Error("unreachable");
+  const xUrl = requestHeaders.get("x-url")!;
   const url = new URL(xUrl);
-  if (!url.searchParams.has("page")) {
-    url.searchParams.set("page", "1");
-  }
-  if (!url.searchParams.has("limit")) {
-    url.searchParams.set("limit", "10");
-  }
-  const school = await api.school.bySlug({ slug: params["school-slug"] });
-  if (!school) throw new Error("School not found");
-  const helper = await createSSRHelper();
-  await helper.subject.allBySchoolId.prefetch({
-    page: Number(url.searchParams.get("page")),
-    limit: Number(url.searchParams.get("limit")),
-  });
-  await helper.subject.countAllBySchoolId.prefetch();
-  const dehydratedState = dehydrate(helper.queryClient);
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Matérias</h2>
         <Link
@@ -49,8 +31,8 @@ export default async function SubjectsPage({
       <NewSubjectModalListener />
       <EditSubjectModalListener />
       <Suspense>
-        <SubjectsTable />
+        <SubjectsTableClient />
       </Suspense>
-    </HydrationBoundary>
+    </>
   );
 }

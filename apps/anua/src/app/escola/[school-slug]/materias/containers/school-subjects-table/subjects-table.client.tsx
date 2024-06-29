@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { format } from "date-fns";
 import toast from "react-hot-toast";
 
 import { Button } from "@acme/ui/button";
@@ -19,15 +18,7 @@ import {
 
 import { api } from "~/trpc/react";
 
-const daysOfWeekToPortuguese = {
-  Monday: "Segunda-feira",
-  Tuesday: "Terça-feira",
-  Wednesday: "Quarta-feira",
-  Thursday: "Quinta-feira",
-  Friday: "Sexta-feira",
-};
-
-export function TeachersTable() {
+export function SubjectsTableClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -37,29 +28,29 @@ export function TeachersTable() {
     : 10;
 
   const rowList = Array(limit).fill(0);
-  const [teachers] = api.teacher.getSchoolTeachers.useSuspenseQuery({
+  const [subjects] = api.subject.allBySchoolId.useSuspenseQuery({
     page,
     limit,
   });
 
-  const [teachersCount] = api.teacher.countSchoolTeachers.useSuspenseQuery();
+  const [subjectsCount] = api.subject.countAllBySchoolId.useSuspenseQuery();
 
   const utils = api.useUtils();
 
-  const { mutateAsync: deleteUser } = api.teacher.deleteById.useMutation();
+  const { mutateAsync: deleteById } = api.subject.deleteById.useMutation();
 
-  async function deleteTeacher(teacherId: string) {
-    const toastId = toast.loading("Removendo professor...");
+  async function deleteSubject(subjectId: string) {
+    const toastId = toast.loading("Removendo matéria...");
     try {
-      await deleteUser({ userId: teacherId });
-      toast.success("Professor removido com sucesso!");
+      await deleteById({ subjectId });
+      toast.success("Matéria removido com sucesso!");
     } catch (e) {
-      toast.error("Erro ao remover professor");
+      toast.error("Erro ao remover matéria");
     } finally {
       toast.dismiss(toastId);
       await Promise.all([
-        utils.teacher.getSchoolTeachers.invalidate(),
-        utils.teacher.countSchoolTeachers.invalidate(),
+        utils.subject.allBySchoolId.invalidate(),
+        utils.subject.countAllBySchoolId.invalidate(),
       ]);
     }
   }
@@ -78,45 +69,32 @@ export function TeachersTable() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nome do Professor</TableHead>
-            <TableHead>Matérias</TableHead>
-            <TableHead>Turmas</TableHead>
-            <TableHead>Disponibilidade</TableHead>
+            <TableHead>Nome da Matéria</TableHead>
+            <TableHead>Professores</TableHead>
             <TableHead>Ações</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rowList.map((_row, index) => {
-            const teacher = teachers ? teachers[index] : undefined;
+            const subject = subjects ? subjects[index] : undefined;
             return (
               <TableRow
-                key={teacher?.id ?? `${_row}-${index}-${page}`}
+                key={subject?.id ?? `${_row}-${index}-${page}`}
                 style={{
                   height: "60px",
                 }}
               >
-                <TableCell>{teacher?.User?.name ?? "-"}</TableCell>
+                <TableCell>{subject?.name ?? "-"}</TableCell>
                 <TableCell>
-                  {teacher?.Classes?.map(({ Subject }) => Subject.name)?.join(
-                    ", ",
-                  ) ?? "-"}
-                </TableCell>
-                <TableCell>
-                  {teacher?.Classes?.map(({ Class }) => Class.name)?.join(
-                    ", ",
-                  ) ?? "-"}
-                </TableCell>
-                <TableCell>
-                  {teacher?.Availabilities?.map(
-                    (availability) =>
-                      `${daysOfWeekToPortuguese[availability.day as keyof typeof daysOfWeekToPortuguese]} - ${format(availability.startTime, "HH:mm")} - ${format(availability.endTime, "HH:mm")}`,
+                  {subject?.TeacherHasClass?.map(
+                    ({ Teacher }) => Teacher.User.name,
                   )?.join(", ") ?? "-"}
                 </TableCell>
                 <TableCell>
-                  {teacher ? (
+                  {subject ? (
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`${pathname}?${searchParams?.toString()}#editar-professor?professor=${teacher.User.slug}`}
+                        href={`${pathname}?${searchParams?.toString()}#editar-materia?materia=${subject.slug}`}
                       >
                         <Button size="sm" variant="ghost">
                           <UserIcon className="h-4 w-4" />
@@ -127,7 +105,7 @@ export function TeachersTable() {
                         className="text-red-600 hover:text-red-800"
                         size="sm"
                         variant="ghost"
-                        onClick={() => deleteTeacher(teacher.id)}
+                        onClick={() => deleteSubject(subject.id)}
                       >
                         <Trash2Icon className="h-4 w-4" />
                         <span className="sr-only">Remover</span>
@@ -143,7 +121,7 @@ export function TeachersTable() {
       <PaginationV2
         currentPage={page}
         itemsPerPage={limit}
-        totalCount={teachersCount}
+        totalCount={subjectsCount}
       />
     </>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-pagination";
 
@@ -16,18 +16,17 @@ export function StudentsTableClient() {
     ? Number(searchParams?.get("size"))
     : 10;
 
-  const { data: students, isLoading: isLoadingWorkers } =
+  const { data: students, isLoading: isLoadingStudents } =
     api.student.allBySchoolId.useQuery({
       page,
       size,
     });
-  console.log("students", students);
 
   const { data: studentsCount } = api.student.countAllBySchoolId.useQuery();
 
   return (
     <TableWithPagination
-      isLoading={!students && isLoadingWorkers}
+      isLoading={!students && isLoadingStudents}
       data={students ?? []}
       columns={columns}
       totalCount={studentsCount ?? 0}
