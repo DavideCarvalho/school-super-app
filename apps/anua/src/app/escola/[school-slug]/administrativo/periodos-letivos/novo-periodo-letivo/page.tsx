@@ -6,8 +6,10 @@ import { Step, Stepper, useStepper } from "@acme/ui/stepper";
 
 import { SubjectsTableClient } from "../../../materias/containers/school-subjects-table/subjects-table.client";
 import { StudentsTableClient } from "../../alunos/containers/students-table/students-table.client";
+import { CalendarFormClient } from "./containers/calendar-form/calendar-form.client";
 
 const steps = [
+  { label: "Calendário" },
   { label: "Alunos" },
   { label: "Matérias" },
   { label: "Professores" },
@@ -24,29 +26,25 @@ export default function NewAcademicPeriodPage() {
             if (index === 0) {
               return (
                 <Step key={stepProps.label} {...stepProps}>
+                  <CalendarFormClient />
+                </Step>
+              );
+            }
+            if (index === 1) {
+              return (
+                <Step key={stepProps.label} {...stepProps}>
                   <StudentsTableClient />
                 </Step>
               );
             }
-            if (index === 1) {
+            if (index === 2) {
               return (
                 <Step key={stepProps.label} {...stepProps}>
                   <SubjectsTableClient />
                 </Step>
               );
             }
-            if (index === 1) {
-              return (
-                <Step key={stepProps.label} {...stepProps}>
-                  <SubjectsTableClient />
-                </Step>
-              );
-            }
-            return (
-              <Step key={stepProps.label} {...stepProps}>
-                <StudentsTableClient />
-              </Step>
-            );
+            return null;
           })}
           <Footer />
         </Stepper>

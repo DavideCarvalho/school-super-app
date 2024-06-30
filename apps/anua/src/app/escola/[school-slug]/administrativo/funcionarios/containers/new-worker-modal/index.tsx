@@ -77,6 +77,7 @@ export function NewWorkerModal({
           name: data.name,
           email: data.email,
           availabilities: [],
+          subjectIds: [],
         });
       } else {
         await createWorker({
