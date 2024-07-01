@@ -86,7 +86,7 @@
     "react-contenteditable": "^3.3.7",
     "react-dom": "18.3.1",
     "react-dropzone": "14.2.3",
-    "react-email": "2.1.4",
+    "react-email": "2.1.5",
     "react-error-boundary": "4.0.13",
     "react-flatpickr": "3.10.13",
     "react-highlight-within-textarea": "^3.2.1",
