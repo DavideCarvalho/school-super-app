@@ -1,8 +1,10 @@
 "use client";
 
 import type { DayDateProps } from "react-day-picker";
+import { redirect, useParams, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
@@ -12,6 +14,8 @@ import { Form } from "@acme/ui/form";
 import { Label } from "@acme/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@acme/ui/popover";
 
+import { api } from "~/trpc/react";
+
 const generateDateRange = (start: Date | undefined, end: Date | undefined) => {
   if (!start || !end) return [];
   const dates = [];
@@ -20,7 +24,6 @@ const generateDateRange = (start: Date | undefined, end: Date | undefined) => {
   while (currentDate <= endDate) {
     const dayOfWeek = currentDate.getDay();
     if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-      // Exclude Sundays (0) and Saturdays (6)
       dates.push(new Date(currentDate));
     }
     currentDate.setDate(currentDate.getDate() + 1);
@@ -36,6 +39,7 @@ const schema = z.object({
 });
 
 export function CalendarFormClient() {
+  const params = useParams();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -45,6 +49,33 @@ export function CalendarFormClient() {
       weekendDayWithClasses: [],
     },
   });
+
+  const { mutateAsync: createPeriod } =
+    api.academicPeriod.createPeriod.useMutation();
+
+  async function onSubmit(data: z.infer<typeof schema>) {
+    const toastId = toast.loading("Criando período letivo...");
+    try {
+      if (!data.from || !data.to) return;
+      await createPeriod({
+        from: data.from,
+        to: data.to,
+        holidays: data.holidays,
+        weekendDayWithClasses: data.weekendDayWithClasses,
+      });
+      toast.dismiss(toastId);
+      toast.success("Período letivo criado com sucesso!");
+      form.reset();
+      redirect(
+        `/escola/${params["school-slug"]}/administrativo/periodos-letivos`,
+      );
+    } catch (e) {
+      toast.dismiss(toastId);
+      toast.error("Erro ao criar período letivo");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  }
 
   const fromDate = form.watch("from");
   const toDate = form.watch("to");
@@ -57,10 +88,9 @@ export function CalendarFormClient() {
     ...weekendDayWithClasses,
   ];
 
-  const daysWithClasses = [
-    ...generateDateRange(fromDate, toDate),
-    ...weekendDayWithClasses,
-  ].length;
+  const daysWithClasses =
+    [...generateDateRange(fromDate, toDate), ...weekendDayWithClasses].length -
+    holidays.length;
 
   const isHoliday = (date: Date) =>
     holidays.some(
@@ -73,7 +103,7 @@ export function CalendarFormClient() {
   return (
     <div className="w-full">
       <Form {...form}>
-        <form>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="space-y-2">
             <Label>De quando até quando?</Label>
             <DateRangePicker
@@ -161,7 +191,7 @@ export function CalendarFormClient() {
               },
             }}
           />
-          <Button>Salvar</Button>
+          <Button type="submit">Salvar</Button>
         </form>
       </Form>
     </div>

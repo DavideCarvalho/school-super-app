@@ -377,6 +377,11 @@ const routes: Route[] = [
     name: "Alunos",
     href: (params) => `/escola/${params.schoolSlug}/administrativo/alunos`,
   },
+  {
+    name: "Períodos letivos",
+    href: (params) =>
+      `/escola/${params.schoolSlug}/administrativo/periodos-letivos`,
+  },
 ];
 
 const canteenRoutes: Route[] = [
