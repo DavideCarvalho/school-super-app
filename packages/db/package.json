@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "prisma": "5.16.1",
-    "typescript": "5.5.2",
+    "typescript": "5.5.3",
     "prisma-kysely": "1.8.0"
   }
 }
