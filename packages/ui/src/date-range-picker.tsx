@@ -60,6 +60,7 @@ export function DateRangePicker({
               onSelectDate(date.from, date.to);
             }}
             numberOfMonths={2}
+            pagedNavigation={true}
           />
         </PopoverContent>
       </Popover>
