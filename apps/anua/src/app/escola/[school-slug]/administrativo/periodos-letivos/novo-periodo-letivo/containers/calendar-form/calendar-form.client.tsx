@@ -122,8 +122,10 @@ export function CalendarFormClient() {
               <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="multiple"
-                  selected={holidays}
-                  onSelect={(dates) => form.setValue("holidays", dates)}
+                  selected={weekendDayWithClasses}
+                  onSelect={(dates) =>
+                    form.setValue("weekendDayWithClasses", dates)
+                  }
                   disabled={{ dayOfWeek: [1, 2, 3, 4, 5] }}
                 />
               </PopoverContent>
