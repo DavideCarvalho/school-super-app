@@ -175,7 +175,7 @@ importers:
         version: 1.3.1(next@14.2.4(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^3.1.36
-        version: 3.2.15(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.2))(zod@3.23.8)
+        version: 3.2.16(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.2))(zod@3.23.8)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -906,13 +906,13 @@ importers:
     dependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: 4.3.0
-        version: 4.3.0(prettier@3.3.2)
+        version: 4.3.0(@vue/compiler-sfc@3.4.31)(prettier@3.3.2)
       prettier:
         specifier: 3.3.2
         version: 3.3.2
       prettier-plugin-tailwindcss:
         specifier: 0.6.5
-        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.0(prettier@3.3.2))(prettier@3.3.2)
+        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.0(@vue/compiler-sfc@3.4.31)(prettier@3.3.2))(prettier@3.3.2)
     devDependencies:
       '@acme/tsconfig':
         specifier: workspace:^0.1.0
@@ -988,8 +988,8 @@ packages:
     resolution: {integrity: sha512-VTipPQ92Moa5Ovg/nZIc8yNoIFfukZjUHZcQMduJbiUh3CLQyrBAKTEV9AwjPy8wgVxj3+GZjon0yyOJKhfp5g==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@0.0.15':
-    resolution: {integrity: sha512-Nd+Ikr8aBemEByKtNbmzT4keKqM0dCsDYqMZL2/2/HeOb7QC5XwOw5LKYJ8Yu8JW3oRItEsVdFTaZenjrXVJ6w==}
+  '@ai-sdk/react@0.0.16':
+    resolution: {integrity: sha512-PUPjI4XB8or2m2NvRU8SBzGfSwjlJ19Mdde8LkeppFoNj++53kgM4BiniAsVRl8v8WNGZ55rrsLyY5g8h+gfeA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -4301,8 +4301,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@3.2.15:
-    resolution: {integrity: sha512-8xBW8jGTbw/eD54jetw32h6/AzzaM0qsgMVPGbpsnSAOW6AVxohQXFWVGBjyi3NNluzRmpaqg8yrBgCeEI+v8A==}
+  ai@3.2.16:
+    resolution: {integrity: sha512-kNqnmSQxUm3dcxLv/NoOusoMAq7EK/zahB/N//wkGoawgYqfOUpvz3+uS/FG52tZwMyy4YblVoeuBHpfPWzNDw==}
     engines: {node: '>=18'}
     peerDependencies:
       openai: ^4.42.0
@@ -7974,7 +7974,7 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@0.0.15(react@18.3.1)(zod@3.23.8)':
+  '@ai-sdk/react@0.0.16(react@18.3.1)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 1.0.0(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.9(zod@3.23.8)
@@ -8665,7 +8665,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.3.0': {}
 
-  '@ianvs/prettier-plugin-sort-imports@4.3.0(prettier@3.3.2)':
+  '@ianvs/prettier-plugin-sort-imports@4.3.0(@vue/compiler-sfc@3.4.31)(prettier@3.3.2)':
     dependencies:
       '@babel/core': 7.24.7
       '@babel/generator': 7.24.7
@@ -8674,6 +8674,8 @@ snapshots:
       '@babel/types': 7.24.7
       prettier: 3.3.2
       semver: 7.6.2
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.4.31
     transitivePeerDependencies:
       - supports-color
 
@@ -11447,11 +11449,11 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@3.2.15(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.2))(zod@3.23.8):
+  ai@3.2.16(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.2))(zod@3.23.8):
     dependencies:
       '@ai-sdk/provider': 0.0.11
       '@ai-sdk/provider-utils': 1.0.0(zod@3.23.8)
-      '@ai-sdk/react': 0.0.15(react@18.3.1)(zod@3.23.8)
+      '@ai-sdk/react': 0.0.16(react@18.3.1)(zod@3.23.8)
       '@ai-sdk/solid': 0.0.11(zod@3.23.8)
       '@ai-sdk/svelte': 0.0.12(svelte@4.2.18)(zod@3.23.8)
       '@ai-sdk/ui-utils': 0.0.9(zod@3.23.8)
@@ -13857,11 +13859,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.0(prettier@3.3.2))(prettier@3.3.2):
+  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.0(@vue/compiler-sfc@3.4.31)(prettier@3.3.2))(prettier@3.3.2):
     dependencies:
       prettier: 3.3.2
     optionalDependencies:
-      '@ianvs/prettier-plugin-sort-imports': 4.3.0(prettier@3.3.2)
+      '@ianvs/prettier-plugin-sort-imports': 4.3.0(@vue/compiler-sfc@3.4.31)(prettier@3.3.2)
 
   prettier@3.3.2: {}
 
