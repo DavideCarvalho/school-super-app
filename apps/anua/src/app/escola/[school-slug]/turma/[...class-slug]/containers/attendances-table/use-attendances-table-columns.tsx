@@ -1,11 +1,9 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { isAfter, isBefore, isToday } from "date-fns";
 
 import type { RouterOutputs } from "@acme/api";
 
-import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
-
-type Row = RouterOutputs["class"]["getClassAttendance"][0];
+type Row =
+  RouterOutputs["attendance"]["getClassAttendanceForCurrentAcademicPeriod"][0];
 
 export function useAttendancesTableColumns() {
   const columnHelper = createColumnHelper<Row>();

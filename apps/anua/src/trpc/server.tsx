@@ -24,10 +24,3 @@ export const createSSRHelper = async () =>
     ctx: await createContext(),
     transformer: SuperJSON,
   });
-
-// Not working yet
-// export const helpers = createServerSideHelpers({
-//   router: appRouter,
-//   ctx: await createContext(),
-//   transformer: SuperJSON,
-// });

@@ -15,6 +15,20 @@ export type AcademicPeriod = {
   updatedAt: Timestamp;
   schoolId: string;
 };
+export type AcademicPeriodHoliday = {
+  id: string;
+  date: Timestamp;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+  academicPeriodId: string;
+};
+export type AcademicPeriodWeekendClass = {
+  id: string;
+  academicPeriodId: string;
+  date: Timestamp;
+  createdAt: Generated<Timestamp>;
+  updatedAt: Timestamp;
+};
 export type Assignment = {
   id: string;
   name: string;
@@ -31,8 +45,9 @@ export type Attendance = {
   id: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  classDayId: string;
   note: string;
+  date: Timestamp;
+  calendarSlotId: string;
 };
 export type Calendar = {
   id: string;
@@ -49,6 +64,11 @@ export type CalendarConfig = {
   classesClashConfig: unknown | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+};
+export type CalendarHasAcademicPeriod = {
+  id: string;
+  calendarId: string;
+  academicPeriodId: string;
 };
 export type CalendarSlot = {
   id: string;
@@ -100,15 +120,6 @@ export type Class = {
   schoolId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-};
-export type ClassDay = {
-  id: string;
-  createdAt: Generated<Timestamp>;
-  updatedAt: Timestamp;
-  date: Timestamp;
-  name: string;
-  weekday: number;
-  teacherHasClassId: string;
 };
 export type ClassHasAcademicPeriod = {
   id: string;
@@ -163,11 +174,12 @@ export type Notification = {
 };
 export type Occurence = {
   id: string;
+  date: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   studentId: string;
   text: string;
-  classDayId: string | null;
+  calendarSlotId: string;
 };
 export type Post = {
   id: Generated<number>;
@@ -352,17 +364,19 @@ export type UserLikedPost = {
 };
 export type DB = {
   AcademicPeriod: AcademicPeriod;
+  AcademicPeriodHoliday: AcademicPeriodHoliday;
+  AcademicPeriodWeekendClass: AcademicPeriodWeekendClass;
   Assignment: Assignment;
   Attendance: Attendance;
   Calendar: Calendar;
   CalendarConfig: CalendarConfig;
+  CalendarHasAcademicPeriod: CalendarHasAcademicPeriod;
   CalendarSlot: CalendarSlot;
   Canteen: Canteen;
   CanteenItem: CanteenItem;
   CanteenItemPurchased: CanteenItemPurchased;
   CanteenPurchase: CanteenPurchase;
   Class: Class;
-  ClassDay: ClassDay;
   ClassHasAcademicPeriod: ClassHasAcademicPeriod;
   ClassSchedule: ClassSchedule;
   Comment: Comment;

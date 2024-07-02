@@ -2,7 +2,8 @@ import { createColumnHelper } from "@tanstack/react-table";
 
 import type { RouterOutputs } from "@acme/api";
 
-type Row = RouterOutputs["class"]["getStudentsGrades"][0];
+type Row =
+  RouterOutputs["grade"]["getStudentsGradesForClassOnCurrentAcademicPeriod"][0];
 
 export function useAssignmentsTableColumns() {
   const columnHelper = createColumnHelper<Row>();

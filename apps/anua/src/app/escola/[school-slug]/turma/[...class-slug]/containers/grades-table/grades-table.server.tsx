@@ -32,12 +32,12 @@ async function GradesTableDataLoader(props: GradesTableServerProps) {
     : 10;
   const helper = await createSSRHelper();
   await Promise.all([
-    helper.class.getStudentsGrades.prefetch({
+    helper.grade.getStudentsGradesForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
       page,
       limit: size,
     }),
-    helper.class.countClassAttendance.prefetch({
+    helper.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
     }),
   ]);

@@ -34,12 +34,12 @@ async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
     : 10;
   const helper = await createSSRHelper();
   await Promise.all([
-    helper.class.getClassAttendance.prefetch({
+    helper.attendance.getClassAttendanceForCurrentAcademicPeriod.prefetch({
       classId: props.classId,
       page,
       limit: size,
     }),
-    helper.class.countClassAttendance.prefetch({
+    helper.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
     }),
   ]);

@@ -30,8 +30,6 @@ export function WorkersTable() {
     (filters[0]?.value ?? []).filter((v) => v !== ""),
   );
 
-  console.log("roles", rolesFiltered.length ? rolesFiltered : undefined);
-
   const { data: workers, isLoading: isLoadingWorkers } =
     api.user.allBySchoolId.useQuery({
       page,

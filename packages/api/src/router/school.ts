@@ -63,7 +63,6 @@ export const schoolRouter = createTRPCRouter({
         input.scheduleConfig,
         input.generationRules,
       );
-      console.log("errors", errors);
       return schedule;
     }),
   saveSchoolCalendar: isUserLoggedInAndAssignedToSchool

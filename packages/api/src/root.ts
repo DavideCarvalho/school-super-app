@@ -5,10 +5,12 @@ import { prisma } from "@acme/db";
 
 import { academicPeriodRouter } from "./router/academicPeriod";
 import { assignmentRouter } from "./router/assignment";
+import { attendanceRouter } from "./router/attendance";
 import { authRouter } from "./router/auth";
 import { canteenRouter } from "./router/canteen";
 import { classRouter } from "./router/class";
 import { emailRouter } from "./router/email";
+import { gradeRouter } from "./router/grade";
 import { peiRouter } from "./router/pei";
 import { postRouter } from "./router/post";
 import { printRequestRouter } from "./router/printRequest";
@@ -40,6 +42,8 @@ export const appRouter = createTRPCRouter({
   post: postRouter,
   academicPeriod: academicPeriodRouter,
   assignment: assignmentRouter,
+  attendance: attendanceRouter,
+  grade: gradeRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });

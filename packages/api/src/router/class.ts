@@ -5,9 +5,37 @@ import { z } from "zod";
 import type { TeacherHasClass } from "@acme/db";
 import { sql } from "@acme/db";
 
+import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
+  countStudentsForClassOnCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        if (!academicPeriod) {
+          return 0;
+        }
+        return ctx.prisma.student.count({
+          where: {
+            User: {
+              schoolId: ctx.session.school.id,
+            },
+            StudentAttendingClass: {
+              every: {
+                academicPeriodId: academicPeriod.id,
+                classId: input.classId,
+              },
+            },
+          },
+        });
+      }),
   getStudentsGrades: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

@@ -92,6 +92,22 @@ export const academicPeriodRouter = createTRPCRouter({
             endDate: input.to,
             isActive: true,
             schoolId: ctx.session.school.id,
+            Holidays: {
+              createMany: {
+                data: input.holidays.map((holiday) => ({
+                  date: holiday,
+                })),
+              },
+            },
+            WeekendClasses: {
+              createMany: {
+                data: input.weekendDayWithClasses.map(
+                  (weekendDayWithClass) => ({
+                    date: weekendDayWithClass,
+                  }),
+                ),
+              },
+            },
           },
         });
         await tx.classHasAcademicPeriod.createMany({

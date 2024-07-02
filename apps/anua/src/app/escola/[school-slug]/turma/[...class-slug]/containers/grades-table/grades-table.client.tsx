@@ -19,19 +19,20 @@ export function GradesTableClient({ classId }: GradeTableProps) {
 
   const columns = useAssignmentsTableColumns();
   const { data: studentGrades, isLoading: isLoadingStudentGrades } =
-    api.class.getStudentsGrades.useQuery({
+    api.grade.getStudentsGradesForClassOnCurrentAcademicPeriod.useQuery({
       classId,
       page,
       limit: size,
     });
-  const { data: attendancesCount } = api.class.countClassAttendance.useQuery({
-    classId,
-  });
+  const { data: studentsCount } =
+    api.class.countStudentsForClassOnCurrentAcademicPeriod.useQuery({
+      classId,
+    });
   return (
     <TableWithPagination
       data={studentGrades ?? []}
       isLoading={!studentGrades && isLoadingStudentGrades}
-      totalCount={attendancesCount ?? 0}
+      totalCount={studentsCount ?? 0}
       columns={columns}
     />
   );

@@ -19,19 +19,20 @@ export function AttendancesTableClient({ classId }: AttendancesTableProps) {
 
   const columns = useAttendancesTableColumns();
   const { data: attendances, isLoading: isLoadingAttendances } =
-    api.class.getClassAttendance.useQuery({
+    api.attendance.getClassAttendanceForCurrentAcademicPeriod.useQuery({
       classId,
       page,
       limit: size,
     });
-  const { data: attendanceCount } = api.class.countClassAttendance.useQuery({
-    classId,
-  });
+  const { data: studentsCount } =
+    api.class.countStudentsForClassOnCurrentAcademicPeriod.useQuery({
+      classId,
+    });
   return (
     <TableWithPagination
       data={attendances ?? []}
       isLoading={!attendances && isLoadingAttendances}
-      totalCount={attendanceCount ?? 0}
+      totalCount={studentsCount ?? 0}
       columns={columns}
     />
   );
