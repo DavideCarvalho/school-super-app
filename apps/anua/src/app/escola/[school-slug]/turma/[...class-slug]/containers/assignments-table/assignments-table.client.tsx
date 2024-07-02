@@ -19,14 +19,15 @@ export function AssignmentsTableClient({ classId }: AssignmentsTableProps) {
 
   const columns = useAssignmentsTableColumns(classId);
   const { data: assignments, isLoading: isLoadingAssignments } =
-    api.class.getClassAssignments.useQuery({
+    api.assignment.getCurrentAcademicPeriodAssignments.useQuery({
       classId,
       page,
       limit: size,
     });
-  const { data: assignmentsCount } = api.class.countClassAssignments.useQuery({
-    classId,
-  });
+  const { data: assignmentsCount } =
+    api.assignment.countCurrentAcademicPeriodAssignments.useQuery({
+      classId,
+    });
   return (
     <TableWithPagination
       data={assignments ?? []}

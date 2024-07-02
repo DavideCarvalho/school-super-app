@@ -7,7 +7,8 @@ import type { RouterOutputs } from "@acme/api";
 
 import { brazilianDateFormatter } from "~/utils/brazilian-date-formatter";
 
-type Row = RouterOutputs["class"]["getClassAssignments"][0];
+type Row =
+  RouterOutputs["assignment"]["getCurrentAcademicPeriodAssignments"][0];
 
 export function useAssignmentsTableColumns(classId: string) {
   const columnHelper = createColumnHelper<Row>();

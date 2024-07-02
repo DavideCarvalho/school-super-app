@@ -322,24 +322,39 @@ export const teacherRouter = createTRPCRouter({
       });
     },
   ),
-  getTeacherSubjectsOnClass: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        classId: z.string(),
-      }),
-    )
-    .query(({ ctx, input }) => {
-      if (!ctx.session.user) return [];
-      return ctx.prisma.subject.findMany({
-        where: {
-          TeacherHasClass: {
-            some: {
-              classId: input.classId,
-              teacherId: ctx.session.user.id,
-              isActive: true,
+  getTeacherSubjectsOnClassForCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
+          where: {
+            schoolId: ctx.session.school.id,
+          },
+          orderBy: {
+            startDate: "desc",
+          },
+        });
+        if (!latestAcademicPeriod) {
+          return [];
+        }
+        return ctx.prisma.subject.findMany({
+          where: {
+            TeacherHasClass: {
+              some: {
+                classId: input.classId,
+                teacherId: ctx.session.user.id,
+                TeacherHasClassAcademicPeriod: {
+                  every: {
+                    academicPeriodId: latestAcademicPeriod.id,
+                  },
+                },
+              },
             },
           },
-        },
-      });
-    }),
+        });
+      }),
 });

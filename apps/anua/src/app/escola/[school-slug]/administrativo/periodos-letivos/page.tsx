@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { headers } from "next/headers";
 import Link from "next/link";
 
 import { Button } from "@acme/ui/button";
@@ -13,10 +12,6 @@ export default async function AcademicPeriodsPage({
   params: { "school-slug": string };
   searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const requestHeaders = headers();
-  const xUrl = requestHeaders.get("x-url");
-  if (!xUrl) throw new Error("unreachable");
-  const url = new URL(xUrl);
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
   return (
