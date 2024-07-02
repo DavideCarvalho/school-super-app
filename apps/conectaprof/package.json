@@ -91,7 +91,7 @@
     "react-flatpickr": "3.10.13",
     "react-highlight-within-textarea": "^3.2.1",
     "react-highlight-words": "^0.20.0",
-    "react-hook-form": "7.52.0",
+    "react-hook-form": "7.52.1",
     "react-hot-toast": "2.4.1",
     "react-infinite-scroll-component": "^6.1.0",
     "sharp": "0.33.4",
