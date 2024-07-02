@@ -647,8 +647,8 @@ importers:
         specifier: 5.0.12
         version: 5.0.12(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-email/render':
-        specifier: 0.0.15
-        version: 0.0.15
+        specifier: 0.0.16
+        version: 0.0.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@trpc/client':
         specifier: 11.0.0-rc.433
         version: 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
@@ -3084,9 +3084,12 @@ packages:
     peerDependencies:
       react: ^18.2.0
 
-  '@react-email/render@0.0.15':
-    resolution: {integrity: sha512-/pT5dBu0y1mogrfEpc002rgRcXpbShK6PFtxTVU6LZZ+bccvZPgk67HKc01lxpa1eYGQgZ6I+VQ02GRnMDclTg==}
+  '@react-email/render@0.0.16':
+    resolution: {integrity: sha512-wDaMy27xAq1cJHtSFptp0DTKPuV2GYhloqia95ub/DH9Dea1aWYsbdM918MOc/b/HvVS3w1z8DWzfAk13bGStQ==}
     engines: {node: '>=18.0.0'}
+    peerDependencies:
+      react: ^18.2.0
+      react-dom: ^18.2.0
 
   '@react-email/section@0.0.12':
     resolution: {integrity: sha512-UCD/N/BeOTN4h3VZBUaFdiSem6HnpuxD1Q51TdBFnqeNqS5hBomp8LWJJ9s4gzwHWk1XPdNfLA3I/fJwulJshg==}
@@ -10220,7 +10223,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@react-email/render@0.0.15':
+  '@react-email/render@0.0.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       html-to-text: 9.0.5
       js-beautify: 1.15.1
