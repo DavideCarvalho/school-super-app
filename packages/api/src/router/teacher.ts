@@ -2,8 +2,11 @@ import { clerkClient } from "@clerk/clerk-sdk-node";
 import slugify from "slugify";
 import { z } from "zod";
 
+import * as academicPeriodRepository from "../repository/academicPeriod.repository";
+import * as academicPeriodService from "../service/academicPeriod.service";
 import {
   createTRPCRouter,
+  getCurrentOrLastActiveAcademicPeriodMiddleware,
   isUserLoggedInAndAssignedToSchool,
   publicProcedure,
 } from "../trpc";
@@ -330,15 +333,9 @@ export const teacherRouter = createTRPCRouter({
         }),
       )
       .query(async ({ ctx, input }) => {
-        const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
-          where: {
-            schoolId: ctx.session.school.id,
-          },
-          orderBy: {
-            startDate: "desc",
-          },
-        });
-        if (!latestAcademicPeriod) {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        if (!academicPeriod) {
           return [];
         }
         return ctx.prisma.subject.findMany({
@@ -349,7 +346,7 @@ export const teacherRouter = createTRPCRouter({
                 teacherId: ctx.session.user.id,
                 TeacherHasClassAcademicPeriod: {
                   every: {
-                    academicPeriodId: latestAcademicPeriod.id,
+                    academicPeriodId: academicPeriod.id,
                   },
                 },
               },

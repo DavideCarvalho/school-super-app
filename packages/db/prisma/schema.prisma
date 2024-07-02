@@ -140,8 +140,8 @@ model StudentHasResponsible {
 
 model AcademicPeriod {
   id        String   @id @default(uuid())
-  startDate DateTime
-  endDate   DateTime
+  startDate DateTime @db.Date()
+  endDate   DateTime @db.Date()
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

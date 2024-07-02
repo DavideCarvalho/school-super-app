@@ -29,8 +29,8 @@ export function NewAssignmentModalListener({
   async function handleOnClickSubmit() {
     setOpenNewAssignmentModal(false);
     await Promise.all([
-      utils.class.getStudentsGrades.invalidate(),
-      utils.class.countClassAttendance.invalidate(),
+      utils.assignment.getCurrentAcademicPeriodAssignments.invalidate(),
+      utils.assignment.countCurrentAcademicPeriodAssignments.invalidate(),
     ]);
     setHash("");
   }
@@ -38,8 +38,8 @@ export function NewAssignmentModalListener({
   async function handleOnClickCancel() {
     setOpenNewAssignmentModal(false);
     await Promise.all([
-      utils.class.getStudentsGrades.invalidate(),
-      utils.class.countClassAttendance.invalidate(),
+      utils.assignment.getCurrentAcademicPeriodAssignments.invalidate(),
+      utils.assignment.countCurrentAcademicPeriodAssignments.invalidate(),
     ]);
     setHash("");
   }
