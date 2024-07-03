@@ -192,8 +192,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 9.0.2
-        version: 9.0.2
+        specifier: 9.0.3
+        version: 9.0.3
       lucide-react:
         specifier: 0.400.0
         version: 0.400.0(react@18.3.1)
@@ -487,8 +487,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 9.0.2
-        version: 9.0.2
+        specifier: 9.0.3
+        version: 9.0.3
       lucide-react:
         specifier: 0.400.0
         version: 0.400.0(react@18.3.1)
@@ -5357,8 +5357,8 @@ packages:
   highlight-words-core@1.2.2:
     resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
 
-  highlight.run@9.0.2:
-    resolution: {integrity: sha512-nXWl1gAwzuXJvmfvw+l7lQkwplkZJzPF2aTzs3K3Fppoe4At5t5GofZgafh7dzn2OxVlcd8ULgQNtBzmroGG0Q==}
+  highlight.run@9.0.3:
+    resolution: {integrity: sha512-6H2BJSMTiAXOGHLDVtuBVmwIMnjBz9XwZGJVWNf2pUTLxj1BWEo2bBnhqI/JMpYYxtBKQFjS8pWC54WBp/+Zfg==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -12752,7 +12752,7 @@ snapshots:
 
   highlight-words-core@1.2.2: {}
 
-  highlight.run@9.0.2: {}
+  highlight.run@9.0.3: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
