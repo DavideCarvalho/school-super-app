@@ -365,7 +365,7 @@ model StudentHasAssignment {
   assignmentId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  grade        Float    @default(0)
+  grade        Float?
 
   Student    Student    @relation(fields: [studentId], references: [id])
   Assignment Assignment @relation(fields: [assignmentId], references: [id])

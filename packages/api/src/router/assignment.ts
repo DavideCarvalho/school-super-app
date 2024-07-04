@@ -127,4 +127,70 @@ export const assignmentRouter = createTRPCRouter({
           },
         });
       }),
+
+  createAssignmentForClassOnCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          name: z.string(),
+          dueDate: z.date(),
+          grade: z.number().min(0),
+          classId: z.string(),
+          subjectId: z.string(),
+          description: z.string().optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        if (!academicPeriod) {
+          return;
+        }
+        const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
+          where: {
+            teacherId: ctx.session.user.id,
+            classId: input.classId,
+            subjectId: input.subjectId,
+            TeacherHasClassAcademicPeriod: {
+              every: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
+          },
+        });
+        if (!teacherHasClass) {
+          throw new Error("Professor não está na turma");
+        }
+        const students = await ctx.prisma.student.findMany({
+          where: {
+            User: {
+              schoolId: ctx.session.school.id,
+            },
+            StudentAttendingClass: {
+              every: {
+                academicPeriodId: academicPeriod.id,
+                classId: input.classId,
+              },
+            },
+          },
+        });
+        return ctx.prisma.assignment.create({
+          data: {
+            name: input.name,
+            dueDate: input.dueDate,
+            grade: input.grade,
+            classId: input.classId,
+            teacherHasClassId: teacherHasClass.id,
+            description: input.description,
+            academicPeriodId: academicPeriod.id,
+            StudentHasAssignment: {
+              createMany: {
+                data: students.map((student) => ({
+                  studentId: student.id,
+                })),
+              },
+            },
+          },
+        });
+      }),
 });

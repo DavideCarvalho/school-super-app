@@ -270,7 +270,7 @@ export type StudentHasAssignment = {
   assignmentId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  grade: Generated<number>;
+  grade: number | null;
 };
 export type StudentHasClassAttendance = {
   id: string;
