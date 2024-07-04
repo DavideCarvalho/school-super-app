@@ -161,19 +161,6 @@ export const assignmentRouter = createTRPCRouter({
         if (!teacherHasClass) {
           throw new Error("Professor não está na turma");
         }
-        const students = await ctx.prisma.student.findMany({
-          where: {
-            User: {
-              schoolId: ctx.session.school.id,
-            },
-            StudentAttendingClass: {
-              every: {
-                academicPeriodId: academicPeriod.id,
-                classId: input.classId,
-              },
-            },
-          },
-        });
         return ctx.prisma.assignment.create({
           data: {
             name: input.name,
@@ -183,13 +170,6 @@ export const assignmentRouter = createTRPCRouter({
             teacherHasClassId: teacherHasClass.id,
             description: input.description,
             academicPeriodId: academicPeriod.id,
-            StudentHasAssignment: {
-              createMany: {
-                data: students.map((student) => ({
-                  studentId: student.id,
-                })),
-              },
-            },
           },
         });
       }),
