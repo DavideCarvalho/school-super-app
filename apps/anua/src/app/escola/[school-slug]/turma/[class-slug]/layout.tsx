@@ -3,23 +3,33 @@
  * @see https://v0.dev/t/sVkaIv01xZU
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@acme/ui/card";
+import { headers } from "next/headers";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
+import { Tabs, TabsList, TabsTrigger } from "@acme/ui/tabs";
 
 export default function ClassLayout({
   params,
   children,
 }: {
-  params: { "class-slug": string[] };
+  params: { "class-slug": string; "school-slug": string };
   children: React.ReactNode;
 }) {
-  const classSlugParams = params["class-slug"] as unknown as string[];
-  const classSlug = classSlugParams[0];
+  const schoolSlug = params["school-slug"];
+  const classSlug = params["class-slug"];
+  const requestHeaders = headers();
+  const xUrl = requestHeaders.get("x-url");
+  if (!xUrl) throw new Error("unreachable");
+  const url = new URL(xUrl);
+  const splittedPathName = url.pathname.split("/");
+  if (splittedPathName[splittedPathName.length - 1] === classSlug) {
+    return redirect(
+      `/escola/${params["school-slug"]}/turma/${classSlug}/atividades`,
+    );
+  }
+  const tabValue = splittedPathName[splittedPathName.length - 1];
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
@@ -73,7 +83,37 @@ export default function ClassLayout({
             </CardContent>
           </Card>
         </div>
-        <div>{children}</div>
+        <div>
+          <Tabs defaultValue="atividades" className="w-full" value={tabValue}>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
+              <TabsTrigger value="atividades">
+                <Link
+                  className="w-full"
+                  href={`/escola/${schoolSlug}/turma/${classSlug}/atividades`}
+                >
+                  Atividades
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="presencas">
+                <Link
+                  className="w-full"
+                  href={`/escola/${schoolSlug}/turma/${classSlug}/presencas`}
+                >
+                  Presenças
+                </Link>
+              </TabsTrigger>
+              <TabsTrigger value="notas">
+                <Link
+                  className="w-full"
+                  href={`/escola/${schoolSlug}/turma/${classSlug}/notas`}
+                >
+                  Notas
+                </Link>
+              </TabsTrigger>
+            </TabsList>
+            {children}
+          </Tabs>
+        </div>
       </div>
     </div>
   );
