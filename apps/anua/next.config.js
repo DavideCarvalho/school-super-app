@@ -25,6 +25,15 @@ const config = {
 			},
 		],
 	},
+	async redirects() {
+		return [
+			{
+        source: '/escola/:schoolSlug/turma/:classSlug',
+        destination: '/escola/:schoolSlug/turma/:classSlug/atividades',
+        permanent: true,
+      },
+		];
+	},
 	experimental: {
 		instrumentationHook: false,
 	},

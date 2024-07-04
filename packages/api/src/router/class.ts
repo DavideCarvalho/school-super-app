@@ -9,6 +9,44 @@ import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
+  getStudentsForClassOnCurrentAcademicPeriod: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        page: z.number().optional().default(1),
+        limit: z.number().optional().default(5),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+      if (!academicPeriod) {
+        return [];
+      }
+      return ctx.prisma.student.findMany({
+        where: {
+          User: {
+            schoolId: ctx.session.school.id,
+          },
+          StudentAttendingClass: {
+            every: {
+              academicPeriodId: academicPeriod.id,
+              classId: input.classId,
+            },
+          },
+        },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
+        include: {
+          User: true,
+          StudentHasResponsible: {
+            include: {
+              ResponsibleUser: true,
+            },
+          },
+        },
+      });
+    }),
   countStudentsForClassOnCurrentAcademicPeriod:
     isUserLoggedInAndAssignedToSchool
       .input(

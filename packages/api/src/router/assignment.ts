@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const assignmentRouter = createTRPCRouter({
@@ -26,14 +27,12 @@ export const assignmentRouter = createTRPCRouter({
       return ctx.prisma.assignment.findMany({
         where: {
           TeacherHasClass: {
-            teacherId: ctx.session.user.id,
             classId: input.classId,
             TeacherHasClassAcademicPeriod: {
               every: {
                 academicPeriodId: latestAcademicPeriod.id,
               },
             },
-            isActive: true,
           },
           academicPeriodId: latestAcademicPeriod.id,
         },
@@ -91,4 +90,41 @@ export const assignmentRouter = createTRPCRouter({
         },
       });
     }),
+  getStudentsAssignmentsGradesForClassOnCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        if (!academicPeriod) {
+          return [];
+        }
+        return ctx.prisma.assignment.findMany({
+          where: {
+            TeacherHasClass: {
+              classId: input.classId,
+              TeacherHasClassAcademicPeriod: {
+                every: {
+                  academicPeriodId: academicPeriod.id,
+                },
+              },
+            },
+          },
+          include: {
+            StudentHasAssignment: {
+              include: {
+                Student: {
+                  include: {
+                    User: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+      }),
 });
