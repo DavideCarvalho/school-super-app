@@ -103,7 +103,28 @@ export const assignmentRouter = createTRPCRouter({
         if (!academicPeriod) {
           return [];
         }
-        return ctx.prisma.assignment.findMany({
+        const students = await ctx.prisma.student.findMany({
+          where: {
+            User: {
+              schoolId: ctx.session.school.id,
+            },
+            StudentAttendingClass: {
+              every: {
+                academicPeriodId: academicPeriod.id,
+                classId: input.classId,
+              },
+            },
+          },
+          include: {
+            User: true,
+            StudentHasAssignment: {
+              include: {
+                Assignment: true,
+              },
+            },
+          },
+        });
+        const assignments = await ctx.prisma.assignment.findMany({
           where: {
             TeacherHasClass: {
               classId: input.classId,
@@ -114,20 +135,24 @@ export const assignmentRouter = createTRPCRouter({
               },
             },
           },
-          include: {
-            StudentHasAssignment: {
-              include: {
-                Student: {
-                  include: {
-                    User: true,
-                  },
-                },
-              },
-            },
-          },
+        });
+        const assignmentNames = assignments.map(
+          (assignment) => assignment.name,
+        );
+        return students.map((student) => {
+          const grades: Record<string, number | null> = {};
+          for (const assignmentName of assignmentNames) {
+            grades[assignmentName] = null;
+          }
+          for (const sha of student.StudentHasAssignment) {
+            grades[sha.Assignment.name] = sha.grade;
+          }
+          return {
+            Student: student.User.name,
+            ...grades,
+          };
         });
       }),
-
   createAssignmentForClassOnCurrentAcademicPeriod:
     isUserLoggedInAndAssignedToSchool
       .input(

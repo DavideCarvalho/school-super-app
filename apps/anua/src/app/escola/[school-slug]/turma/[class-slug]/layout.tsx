@@ -1,31 +1,12 @@
-import { headers } from "next/headers";
-import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@acme/ui/tabs";
 
 import { ClassTabs } from "./_components/class-tabs";
 
 export default function ClassLayout({
-  params,
   children,
 }: {
-  params: { "class-slug": string; "school-slug": string };
   children: React.ReactNode;
 }) {
-  const schoolSlug = params["school-slug"];
-  const classSlug = params["class-slug"];
-  const requestHeaders = headers();
-  const xUrl = requestHeaders.get("x-url");
-  if (!xUrl) throw new Error("unreachable");
-  const url = new URL(xUrl);
-  const splittedPathName = url.pathname.split("/");
-  let tabValue = splittedPathName[splittedPathName.length - 1];
-  if (splittedPathName[splittedPathName.length - 1] === classSlug) {
-    tabValue = "atividades";
-    redirect(`/escola/${params["school-slug"]}/turma/${classSlug}/atividades`);
-  }
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">

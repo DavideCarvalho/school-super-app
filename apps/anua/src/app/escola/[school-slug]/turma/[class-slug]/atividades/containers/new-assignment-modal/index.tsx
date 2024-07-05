@@ -68,7 +68,7 @@ export function NewAssignmentModal({
   });
 
   const { mutateAsync: createAssignment } =
-    api.class.createAssignment.useMutation();
+    api.assignment.createAssignmentForClassOnCurrentAcademicPeriod.useMutation();
 
   const { data: teacherSubjectsOnClass } =
     api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.useQuery({

@@ -17,13 +17,13 @@ export default function RootLayout({
 }) {
   const { user } = useUser();
   const pathname = usePathname();
-  if (!user) return null;
-  const userPublicMetadata = getUserPublicMetadata(user);
-  const schoolSlug = userPublicMetadata.school.slug;
   const { data: classes } = api.class.allBySchoolId.useQuery({
     page: 1,
     limit: 999,
   });
+  if (!user) return null;
+  const userPublicMetadata = getUserPublicMetadata(user);
+  const schoolSlug = userPublicMetadata.school.slug;
   return (
     <div className="flex h-full flex-1 flex-col bg-white">
       <header className="border-b border-gray-200 bg-white">
