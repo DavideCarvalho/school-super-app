@@ -54,7 +54,7 @@
     "@remixicon/react": "4.2.0",
     "@sentry/nextjs": "8.14.0",
     "@sentry/opentelemetry-node": "7.114.0",
-    "@tanstack/react-query": "5.49.2",
+    "@tanstack/react-query": "5.50.1",
     "@tanstack/react-table": "8.19.2",
     "@tremor/react": "3.17.4",
     "@trpc/client": "11.0.0-rc.444",
