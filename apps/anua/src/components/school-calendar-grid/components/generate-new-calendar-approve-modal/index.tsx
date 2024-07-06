@@ -30,9 +30,26 @@ export function GenerateNewCalendarApproveModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Trocar grade de horários?</AlertDialogTitle>
           <AlertDialogDescription>
-            Você já tem uma grade de horários para essa turma. Salvar uma nova
-            grade de horários vai sobrescrever a grade de horários existente.
-            Tem certeza que deseja continuar?
+            <p>
+              Você já tem uma grade de horários para essa turma. Salvar uma nova
+              grade de horários encerrará o período letivo atual e começará um
+              novo período letivo.
+            </p>
+            <p>
+              Se o período letivo atual não tiver terminado, sua data de término
+              será alterada para hoje, e o novo período letivo será criado com a
+              data de início para amanhã.
+            </p>
+            <p>
+              Caso não tenha um período letivo em andamento, o período letivo
+              criado terá a data de início como hoje e a data de término para o
+              ano que vem.
+            </p>
+            <p>
+              Não se preocupe, o período letivo pode ser alterado na lista de
+              períodos letivos.
+            </p>
+            <p>Deseja continuar?</p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

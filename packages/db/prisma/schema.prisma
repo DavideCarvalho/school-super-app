@@ -117,14 +117,15 @@ model StudentAttendingClass {
   id               String   @id @default(uuid())
   studentId        String
   classId          String
+  calendarId       String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-  academicPeriodId String?
+  academicPeriodId String
 
   Student                          Student                            @relation(fields: [studentId], references: [id])
   Class                            Class                              @relation(fields: [classId], references: [id])
   ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
-  AcademicPeriod                   AcademicPeriod?                    @relation(fields: [academicPeriodId], references: [id])
+  AcademicPeriod                   AcademicPeriod                     @relation(fields: [academicPeriodId], references: [id])
 }
 
 model StudentHasResponsible {
@@ -166,6 +167,7 @@ model AcademicPeriod {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   schoolId  String
+  isClosed  Boolean  @default(false)
 
   StudentAttendingClasses       StudentAttendingClass[]
   Assignments                   Assignment[]

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
@@ -23,7 +24,30 @@ interface AssignmentsGradesClientProps {
   classId: string;
 }
 
-const schema = z.object({ grades: z.array(z.record(z.number().nullable())) });
+const schema = z.object({
+  students: z.array(
+    z.object({
+      id: z.string(),
+      User: z.object({
+        id: z.string(),
+        name: z.string(),
+      }),
+      grades: z.array(
+        z.object({
+          Assignment: z.object({
+            id: z.string(),
+            name: z.string(),
+          }),
+          StudentHasAssignment: z
+            .object({
+              grade: z.number().min(0).nullable().optional(),
+            })
+            .nullable(),
+        }),
+      ),
+    }),
+  ),
+});
 
 export function AssignmentsGradesClient({
   classId,
@@ -31,31 +55,52 @@ export function AssignmentsGradesClient({
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
-      grades: [],
+      students: [],
     },
   });
 
-  const { data: assignments } =
+  const { data: assignments, refetch: refetchAssignments } =
     api.assignment.getCurrentAcademicPeriodAssignments.useQuery({
       classId: classId,
     });
-  const { data: studentsGrades } =
+  const { data: studentsGrades, refetch: refetchStudentsGrades } =
     api.assignment.getStudentsAssignmentsGradesForClassOnCurrentAcademicPeriod.useQuery(
       {
         classId: classId,
       },
     );
+  const { mutateAsync: saveStudentsGrades } =
+    api.grade.saveStudentsGradesForClassOnCurrentAcademicPeriod.useMutation();
 
-  const grades = form.watch("grades");
+  const students = form.watch("students");
 
   useEffect(() => {
     if (!studentsGrades) return;
-    const grades = studentsGrades.map((student) => student.grades);
-    form.setValue("grades", grades);
+    form.setValue("students", studentsGrades);
   }, [studentsGrades, form.setValue]);
 
   async function onSubmit(data: z.infer<typeof schema>) {
-    console.log(data);
+    const toastId = toast.loading("Salvando notas...");
+    try {
+      const grades = data.students.flatMap((student) =>
+        student.grades.map((grade) => ({
+          studentId: student.id,
+          assignmentId: grade.Assignment.id,
+          grade: grade.StudentHasAssignment?.grade,
+        })),
+      );
+      await saveStudentsGrades({
+        classId,
+        grades,
+      });
+      toast.dismiss(toastId);
+      toast.success("Notas salvas com sucesso!");
+      await form.reset();
+      await Promise.all([refetchStudentsGrades(), refetchAssignments()]);
+    } catch (e) {
+      toast.dismiss(toastId);
+      toast.error("Erro ao salvar notas");
+    }
   }
 
   return (
@@ -72,28 +117,50 @@ export function AssignmentsGradesClient({
           </TableHeader>
 
           <TableBody>
-            {studentsGrades?.map((student, index) => {
-              const studentGrades = grades[index] ?? {};
+            {students?.map((student, studentIndex) => {
               return (
                 <TableRow key={student.id}>
                   <TableCell>{student.User.name}</TableCell>
-                  {Object.keys(studentGrades).map((assignmentName) => {
+                  {student.grades.map((_, gradeIndex) => {
+                    if (!assignments) return null;
+                    const currentAssignmentColumn = assignments[gradeIndex];
+                    if (!currentAssignmentColumn) return null;
+                    const gradeForCurrentAssignment = student.grades.find(
+                      (grade) =>
+                        grade.Assignment.id === currentAssignmentColumn.id,
+                    );
+                    if (!gradeForCurrentAssignment) return null;
                     return (
-                      <TableCell key={assignmentName}>
+                      <TableCell key={gradeForCurrentAssignment.Assignment.id}>
                         <Input
                           type="number"
                           min={0}
                           max={
-                            assignments?.find((a) => a.name === assignmentName)
-                              ?.grade
+                            assignments?.find(
+                              (a) =>
+                                a.id ===
+                                gradeForCurrentAssignment.Assignment.id,
+                            )?.grade
                           }
                           inputMode="numeric"
-                          {...form.register(
-                            `grades.${index}.${assignmentName}`,
-                            {
-                              valueAsNumber: true,
-                            },
-                          )}
+                          value={
+                            gradeForCurrentAssignment?.StudentHasAssignment
+                              ?.grade ?? ""
+                          }
+                          onChange={(e) => {
+                            const grade = e.target.valueAsNumber;
+                            if (Number.isNaN(grade)) {
+                              form.setValue(
+                                `students.${studentIndex}.grades.${gradeIndex}.StudentHasAssignment.grade`,
+                                null,
+                              );
+                              return;
+                            }
+                            form.setValue(
+                              `students.${studentIndex}.grades.${gradeIndex}.StudentHasAssignment.grade`,
+                              grade,
+                            );
+                          }}
                         />
                       </TableCell>
                     );

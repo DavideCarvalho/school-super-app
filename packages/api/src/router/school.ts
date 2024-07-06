@@ -1,10 +1,14 @@
 import {
   addMinutes,
+  addYears,
+  endOfYear,
   format,
   getHours,
   getMinutes,
+  isAfter,
   setHours,
   setMinutes,
+  startOfYear,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { z } from "zod";
@@ -18,6 +22,7 @@ import type {
 } from "@acme/db";
 import { prisma } from "@acme/db";
 
+import * as academicPeriodService from "../service/academicPeriod.service";
 import {
   createTRPCRouter,
   isUserLoggedInAndAssignedToSchool,
@@ -93,10 +98,37 @@ export const schoolRouter = createTRPCRouter({
           },
         });
 
+        let academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+
+        if (!academicPeriod) {
+          academicPeriod = await tx.academicPeriod.create({
+            data: {
+              startDate: startOfYear(new Date()),
+              endDate: endOfYear(new Date()),
+              isActive: true,
+              schoolId: ctx.session.school.id,
+            },
+          });
+        }
+
+        if (academicPeriod) {
+          if (isAfter(new Date(), academicPeriod.endDate)) {
+            academicPeriod = await tx.academicPeriod.create({
+              data: {
+                startDate: new Date(),
+                endDate: addYears(new Date(), 1),
+                isActive: true,
+                schoolId: ctx.session.school.id,
+              },
+            });
+          }
+        }
+
         await tx.calendar.create({
           data: {
             classId: input.classId,
-            name: `Calendário ${format(new Date(), "dd-MM-yyyy", { locale: ptBR })}`,
+            name: `Calendário ${format(academicPeriod.startDate, "dd-MM-yyyy", { locale: ptBR })} - ${format(academicPeriod.endDate, "dd-MM-yyyy", { locale: ptBR })}`,
             isActive: true,
             CalendarSlot: {
               createMany: {
@@ -114,6 +146,7 @@ export const schoolRouter = createTRPCRouter({
                 })),
               },
             },
+            academicPeriodId: academicPeriod.id,
           },
         });
       });

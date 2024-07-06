@@ -1,4 +1,7 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+
+import type { Assignment, StudentHasAssignment } from "@acme/db";
 
 import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
@@ -140,12 +143,19 @@ export const assignmentRouter = createTRPCRouter({
           (assignment) => assignment.name,
         );
         return students.map((student) => {
-          const grades: Record<string, number | null> = {};
-          for (const assignmentName of assignmentNames) {
-            grades[assignmentName] = null;
-          }
-          for (const sha of student.StudentHasAssignment) {
-            grades[sha.Assignment.name] = sha.grade;
+          const grades: {
+            Assignment: Assignment;
+            StudentHasAssignment: StudentHasAssignment | null;
+          }[] = [];
+          for (const assignment of assignments) {
+            const studentHasAssignment =
+              student.StudentHasAssignment.find(
+                (sha) => sha.Assignment.id === assignment.id,
+              ) ?? null;
+            grades.push({
+              Assignment: assignment,
+              StudentHasAssignment: studentHasAssignment,
+            });
           }
           return {
             ...student,
@@ -169,7 +179,16 @@ export const assignmentRouter = createTRPCRouter({
         const academicPeriod =
           await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
         if (!academicPeriod) {
-          return;
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Não há período letivo ativo",
+          });
+        }
+        if (academicPeriod.isClosed) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "O período letivo já está encerrado",
+          });
         }
         const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
           where: {

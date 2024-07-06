@@ -23,8 +23,7 @@ export const gradeRouter = createTRPCRouter({
         }
 
         const data = await ctx.prisma.$kysely
-          .selectFrom("StudentAttendingClass as sac")
-          .leftJoin("Student as s", "sac.studentId", "s.id")
+          .selectFrom("Student as s")
           .leftJoin("User as u", "s.id", "u.id")
           .leftJoin("StudentHasAssignment as sha", "s.id", "sha.studentId")
           .leftJoin("Assignment as a", "sha.assignmentId", "a.id")
@@ -35,7 +34,7 @@ export const gradeRouter = createTRPCRouter({
             sql<number>`SUM(sha.grade)`.as("studentTotalGrade"),
             sql<number>`SUM(a.grade)`.as("totalGrade"),
           ])
-          .where("sac.classId", "=", input.classId)
+          .where("a.classId", "=", input.classId)
           .where("a.academicPeriodId", "=", academicPeriod.id)
           .groupBy("s.id")
           .execute();
@@ -51,5 +50,69 @@ export const gradeRouter = createTRPCRouter({
           studentTotalGrade: item.studentTotalGrade,
           totalGrade: item.totalGrade,
         }));
+      }),
+  saveStudentsGradesForClassOnCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+          grades: z.array(
+            z.object({
+              studentId: z.string(),
+              assignmentId: z.string(),
+              grade: z.number().nullable().optional(),
+            }),
+          ),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        if (!academicPeriod) {
+          return;
+        }
+        await ctx.prisma.$transaction(async (tx) => {
+          for (const grade of input.grades) {
+            const existingStudentHasAssignment =
+              await tx.studentHasAssignment.findFirst({
+                where: {
+                  Student: {
+                    id: grade.studentId,
+                  },
+                  Assignment: {
+                    id: grade.assignmentId,
+                    academicPeriodId: academicPeriod.id,
+                  },
+                },
+              });
+            if (existingStudentHasAssignment) {
+              await tx.studentHasAssignment.update({
+                where: {
+                  id: existingStudentHasAssignment.id,
+                },
+                data: {
+                  grade: grade.grade,
+                },
+              });
+            } else {
+              await tx.studentHasAssignment.create({
+                data: {
+                  grade: grade.grade,
+                  Student: {
+                    connect: {
+                      id: grade.studentId,
+                    },
+                  },
+                  Assignment: {
+                    connect: {
+                      id: grade.assignmentId,
+                      academicPeriodId: academicPeriod.id,
+                    },
+                  },
+                },
+              });
+            }
+          }
+        });
       }),
 });

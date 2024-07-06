@@ -15,7 +15,7 @@ export function useAssignmentsTableColumns() {
     }),
     columnHelper.accessor("studentTotalGrade", {
       id: "attendedClasses",
-      header: "Presença",
+      header: "Nota do aluno",
     }),
   ];
 }

@@ -14,6 +14,7 @@ export type AcademicPeriod = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   schoolId: string;
+  isClosed: Generated<number>;
 };
 export type AcademicPeriodHoliday = {
   id: string;
