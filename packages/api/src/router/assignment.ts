@@ -148,8 +148,8 @@ export const assignmentRouter = createTRPCRouter({
             grades[sha.Assignment.name] = sha.grade;
           }
           return {
-            Student: student.User.name,
-            ...grades,
+            ...student,
+            grades,
           };
         });
       }),
