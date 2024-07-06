@@ -32,7 +32,7 @@
     "@headlessui/react": "2.1.2",
     "@heroicons/react": "2.1.4",
     "@highlight-run/react": "3.2.3",
-    "@hookform/resolvers": "3.8.0",
+    "@hookform/resolvers": "3.9.0",
     "@next/third-parties": "14.2.4",
     "@opentelemetry/exporter-trace-otlp-http": "0.52.1",
     "@opentelemetry/resources": "1.25.1",
