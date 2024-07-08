@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import {
   addMinutes,
   addYears,
@@ -97,29 +98,25 @@ export const schoolRouter = createTRPCRouter({
           },
         });
 
-        let academicPeriod =
+        const academicPeriod =
           await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
 
-        const currentActiveCalendar = academicPeriod
-          ? await tx.calendar.findFirst({
-              where: {
-                classId: input.classId,
-                CalendarHasAcademicPeriod: {
-                  every: {
-                    academicPeriodId: academicPeriod.id,
-                  },
-                },
-              },
-            })
-          : null;
+        if (!academicPeriod) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Não há período letivo ativo",
+          });
+        }
+
+        let newAcademicPeriod = academicPeriod ? { ...academicPeriod } : null;
 
         // TODO: Criar novo periodo academico e finalizar o atual
         // apenas se o atual já tiver um calendário
         // ou talvez nem finalizar o periodo letivo já que o calendário
         // é por turma e não por período letivo
         // talvez isso seja o mais correto
-        if (!academicPeriod) {
-          academicPeriod = await tx.academicPeriod.create({
+        if (!newAcademicPeriod) {
+          newAcademicPeriod = await tx.academicPeriod.create({
             data: {
               startDate: startOfYear(new Date()),
               endDate: endOfYear(new Date()),
@@ -131,7 +128,7 @@ export const schoolRouter = createTRPCRouter({
 
         if (academicPeriod) {
           if (isAfter(new Date(), academicPeriod.endDate)) {
-            academicPeriod = await tx.academicPeriod.create({
+            newAcademicPeriod = await tx.academicPeriod.create({
               data: {
                 startDate: new Date(),
                 endDate: addYears(new Date(), 1),
@@ -142,10 +139,10 @@ export const schoolRouter = createTRPCRouter({
           }
         }
 
-        const calendar = await tx.calendar.create({
+        await tx.calendar.create({
           data: {
             classId: input.classId,
-            name: `Calendário ${format(academicPeriod.startDate, "dd-MM-yyyy", { locale: ptBR })} - ${format(academicPeriod.endDate, "dd-MM-yyyy", { locale: ptBR })}`,
+            name: `Calendário ${format(newAcademicPeriod.startDate, "dd-MM-yyyy", { locale: ptBR })} - ${format(newAcademicPeriod.endDate, "dd-MM-yyyy", { locale: ptBR })}`,
             isActive: true,
             CalendarSlot: {
               createMany: {
@@ -165,12 +162,9 @@ export const schoolRouter = createTRPCRouter({
             },
             CalendarHasAcademicPeriod: {
               create: {
-                academicPeriodId: academicPeriod.id,
+                academicPeriodId: newAcademicPeriod.id,
               },
             },
-          },
-          include: {
-            CalendarSlot: true,
           },
         });
 
@@ -187,6 +181,15 @@ export const schoolRouter = createTRPCRouter({
             },
           },
         });
+
+        if (academicPeriod.id !== newAcademicPeriod.id) {
+          await tx.studentHasAcademicPeriod.createMany({
+            data: students.map((student) => ({
+              studentId: student.id,
+              academicPeriodId: newAcademicPeriod.id,
+            })),
+          });
+        }
       });
     }),
   getClassSchedule: publicProcedure

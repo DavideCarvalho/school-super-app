@@ -1,12 +1,10 @@
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  isUserLoggedInAndAssignedToSchool,
-  publicProcedure,
-} from "../trpc";
+import * as academicPeriodService from "../service/academicPeriod.service";
+import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const studentRouter = createTRPCRouter({
   // TODO: Mudar isso daqui
@@ -118,13 +116,24 @@ export const studentRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+      if (!academicPeriod) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Não há período letivo ativo",
+        });
+      }
       const studentRole = await ctx.prisma.role.findFirst({
         where: {
           name: "STUDENT",
         },
       });
       if (!studentRole) {
-        throw new Error("Role not found");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Função de estudante não encontrada",
+        });
       }
       const responsibleRole = await ctx.prisma.role.findFirst({
         where: {
@@ -132,7 +141,10 @@ export const studentRouter = createTRPCRouter({
         },
       });
       if (!responsibleRole) {
-        throw new Error("Role not found");
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Função de responsável não encontrada",
+        });
       }
       const [firstName, ...rest] = input.name.split(" ");
       await clerkClient.users.createUser({
@@ -188,11 +200,14 @@ export const studentRouter = createTRPCRouter({
           },
           StudentHasResponsible: {
             createMany: {
-              data: responsiblesSaved.map((responsibleSaved) => {
-                return {
-                  responsibleId: responsibleSaved.id,
-                };
-              }),
+              data: responsiblesSaved.map((responsibleSaved) => ({
+                responsibleId: responsibleSaved.id,
+              })),
+            },
+          },
+          StudentHasAcademicPeriod: {
+            create: {
+              academicPeriodId: academicPeriod.id,
             },
           },
         },

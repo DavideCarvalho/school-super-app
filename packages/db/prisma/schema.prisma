@@ -151,12 +151,12 @@ model AcademicPeriod {
   schoolId  String
   isClosed  Boolean  @default(false)
 
-  Assignments              Assignment[]
-  School                   School                       @relation(fields: [schoolId], references: [id])
-  Holidays                 AcademicPeriodHoliday[]
-  WeekendClasses           AcademicPeriodWeekendClass[]
-  Calendars                CalendarHasAcademicPeriod[]
-  StudentHasAcademicPeriod StudentHasAcademicPeriod[]
+  School         School                       @relation(fields: [schoolId], references: [id])
+  Assignments    Assignment[]
+  Holidays       AcademicPeriodHoliday[]
+  WeekendClasses AcademicPeriodWeekendClass[]
+  Calendars      CalendarHasAcademicPeriod[]
+  Students       StudentHasAcademicPeriod[]
 }
 
 model Canteen {
