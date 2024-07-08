@@ -24,14 +24,13 @@ export const classRouter = createTRPCRouter({
       }
       return ctx.prisma.student.findMany({
         where: {
-          User: {
-            schoolId: ctx.session.school.id,
-          },
-          StudentAttendingClass: {
+          StudentHasAcademicPeriod: {
             every: {
               academicPeriodId: academicPeriod.id,
-              classId: input.classId,
             },
+          },
+          User: {
+            schoolId: ctx.session.school.id,
           },
         },
         take: input.limit,
@@ -61,14 +60,13 @@ export const classRouter = createTRPCRouter({
         }
         return ctx.prisma.student.count({
           where: {
-            User: {
-              schoolId: ctx.session.school.id,
-            },
-            StudentAttendingClass: {
+            StudentHasAcademicPeriod: {
               every: {
                 academicPeriodId: academicPeriod.id,
-                classId: input.classId,
               },
+            },
+            User: {
+              schoolId: ctx.session.school.id,
             },
           },
         });
@@ -112,7 +110,6 @@ export const classRouter = createTRPCRouter({
           name: input.name,
           dueDate: input.dueDate,
           grade: input.grade,
-          classId: input.classId,
           teacherHasClassId: teacherHasClass.id,
           description: input.description,
           academicPeriodId: latestAcademicPeriod.id,
@@ -144,12 +141,13 @@ export const classRouter = createTRPCRouter({
           TeacherHasClass: {
             teacherId: ctx.session.user.id,
             classId: input.classId,
-            TeacherHasClassAcademicPeriod: {
+            CalendarSlot: {
               every: {
-                academicPeriodId: latestAcademicPeriod.id,
+                Calendar: {
+                  academicPeriodId: latestAcademicPeriod.id,
+                },
               },
             },
-            isActive: true,
           },
           academicPeriodId: latestAcademicPeriod.id,
         },
@@ -196,12 +194,13 @@ export const classRouter = createTRPCRouter({
           TeacherHasClass: {
             teacherId: ctx.session.user.id,
             classId: input.classId,
-            TeacherHasClassAcademicPeriod: {
+            CalendarSlot: {
               every: {
-                academicPeriodId: latestAcademicPeriod.id,
+                Calendar: {
+                  academicPeriodId: latestAcademicPeriod.id,
+                },
               },
             },
-            isActive: true,
           },
           academicPeriodId: latestAcademicPeriod.id,
         },

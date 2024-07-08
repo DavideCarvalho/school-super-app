@@ -10,16 +10,14 @@ export default async function AcademicPeriodsPage({
   params,
 }: {
   params: { "school-slug": string };
-  searchParams?: { [key: string]: string | string[] | undefined };
 }) {
-  const school = await api.school.bySlug({ slug: params["school-slug"] });
-  if (!school) throw new Error("School not found");
+  const schoolSlug = params["school-slug"];
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Solicitações de compra</h2>
         <Link
-          href={`/escola/${params["school-slug"]}/administrativo/periodos-letivos/novo-periodo-letivo`}
+          href={`/escola/${schoolSlug}/administrativo/periodos-letivos/novo-periodo-letivo`}
         >
           <Button>Criar período letivo</Button>
         </Link>

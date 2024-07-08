@@ -249,6 +249,7 @@ export type StudentHasAcademicPeriod = {
   id: string;
   studentId: string;
   academicPeriodId: string;
+  classId: string;
 };
 export type StudentHasAssignment = {
   id: string;

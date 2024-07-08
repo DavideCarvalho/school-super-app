@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import {
   addMinutes,
   addYears,
@@ -98,23 +97,26 @@ export const schoolRouter = createTRPCRouter({
           },
         });
 
-        const academicPeriod =
+        let academicPeriod =
           await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
 
         if (!academicPeriod) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Não há período letivo ativo",
+          academicPeriod = await tx.academicPeriod.create({
+            data: {
+              startDate: new Date(),
+              endDate: endOfYear(new Date()),
+              isActive: true,
+              schoolId: ctx.session.school.id,
+            },
+            include: {
+              Holidays: true,
+              WeekendClasses: true,
+            },
           });
         }
 
         let newAcademicPeriod = academicPeriod ? { ...academicPeriod } : null;
 
-        // TODO: Criar novo periodo academico e finalizar o atual
-        // apenas se o atual já tiver um calendário
-        // ou talvez nem finalizar o periodo letivo já que o calendário
-        // é por turma e não por período letivo
-        // talvez isso seja o mais correto
         if (!newAcademicPeriod) {
           newAcademicPeriod = await tx.academicPeriod.create({
             data: {
@@ -123,20 +125,26 @@ export const schoolRouter = createTRPCRouter({
               isActive: true,
               schoolId: ctx.session.school.id,
             },
+            include: {
+              Holidays: true,
+              WeekendClasses: true,
+            },
           });
         }
 
-        if (academicPeriod) {
-          if (isAfter(new Date(), academicPeriod.endDate)) {
-            newAcademicPeriod = await tx.academicPeriod.create({
-              data: {
-                startDate: new Date(),
-                endDate: addYears(new Date(), 1),
-                isActive: true,
-                schoolId: ctx.session.school.id,
-              },
-            });
-          }
+        if (isAfter(new Date(), academicPeriod.endDate)) {
+          newAcademicPeriod = await tx.academicPeriod.create({
+            data: {
+              startDate: new Date(),
+              endDate: addYears(new Date(), 1),
+              isActive: true,
+              schoolId: ctx.session.school.id,
+            },
+            include: {
+              Holidays: true,
+              WeekendClasses: true,
+            },
+          });
         }
 
         await tx.calendar.create({

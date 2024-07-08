@@ -27,6 +27,7 @@ export const gradeRouter = createTRPCRouter({
           .leftJoin("User as u", "s.id", "u.id")
           .leftJoin("StudentHasAssignment as sha", "s.id", "sha.studentId")
           .leftJoin("Assignment as a", "sha.assignmentId", "a.id")
+          .leftJoin("TeacherHasClass as thc", "a.teacherHasClassId", "thc.id")
           .select([
             "s.id as studentId",
             "u.name as userName",
@@ -34,7 +35,7 @@ export const gradeRouter = createTRPCRouter({
             sql<number>`SUM(sha.grade)`.as("studentTotalGrade"),
             sql<number>`SUM(a.grade)`.as("totalGrade"),
           ])
-          .where("a.classId", "=", input.classId)
+          .where("thc.classId", "=", input.classId)
           .where("a.academicPeriodId", "=", academicPeriod.id)
           .groupBy("s.id")
           .execute();
