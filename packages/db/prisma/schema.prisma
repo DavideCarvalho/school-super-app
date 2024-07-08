@@ -65,26 +65,14 @@ model User {
 }
 
 model Teacher {
-  id                       String                     @id
-  Classes                  TeacherHasClass[]
-  User                     User                       @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  Availabilities           TeacherAvailability[]
-  FixedClass               FixedClass[]
-  Subjects                 TeacherHasSubject[]
-  TeacherHasAcademicPeriod TeacherHasAcademicPeriod[]
+  id             String                @id
+  Classes        TeacherHasClass[]
+  User           User                  @relation(fields: [id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Availabilities TeacherAvailability[]
+  FixedClass     FixedClass[]
+  Subjects       TeacherHasSubject[]
 
   @@index([id])
-}
-
-model TeacherHasAcademicPeriod {
-  id               String @id @default(uuid())
-  teacherId        String
-  academicPeriodId String
-
-  Teacher        Teacher        @relation(fields: [teacherId], references: [id])
-  AcademicPeriod AcademicPeriod @relation(fields: [academicPeriodId], references: [id])
-
-  @@index([teacherId, academicPeriodId])
 }
 
 model TeacherAvailability {
@@ -169,17 +157,12 @@ model AcademicPeriod {
   schoolId  String
   isClosed  Boolean  @default(false)
 
-  StudentAttendingClasses       StudentAttendingClass[]
-  Assignments                   Assignment[]
-  SubjectHasAcademicPeriod      SubjectHasAcademicPeriod[]
-  TeacherHasAcademicPeriod      TeacherHasAcademicPeriod[]
-  TeacherHasClassAcademicPeriod TeacherHasClassAcademicPeriod[]
-  ClassHasAcademicPeriod        ClassHasAcademicPeriod[]
-  Calendar                      Calendar[]
-  School                        School                          @relation(fields: [schoolId], references: [id])
-  Holidays                      AcademicPeriodHoliday[]
-  WeekendClasses                AcademicPeriodWeekendClass[]
-  CalendarHasAcademicPeriod     CalendarHasAcademicPeriod[]
+  StudentAttendingClasses StudentAttendingClass[]
+  Assignments             Assignment[]
+  School                  School                       @relation(fields: [schoolId], references: [id])
+  Holidays                AcademicPeriodHoliday[]
+  WeekendClasses          AcademicPeriodWeekendClass[]
+  Calendars               CalendarHasAcademicPeriod[]
 }
 
 model Canteen {
@@ -305,17 +288,6 @@ model CalendarSlot {
   @@unique([teacherHasClassId, classWeekDay, startTime])
 }
 
-model TeacherHasClassAcademicPeriod {
-  id                String @id @default(uuid())
-  teacherHasClassId String
-  academicPeriodId  String
-
-  TeacherHasClass TeacherHasClass @relation(fields: [teacherHasClassId], references: [id])
-  AcademicPeriod  AcademicPeriod  @relation(fields: [academicPeriodId], references: [id])
-
-  @@index([teacherHasClassId, academicPeriodId])
-}
-
 model TeacherHasClass {
   id                    String   @id @default(uuid())
   teacherId             String
@@ -334,10 +306,9 @@ model TeacherHasClass {
   Class   Class   @relation(fields: [classId], references: [id])
   Subject Subject @relation(fields: [subjectId], references: [id])
 
-  TeacherAvailability           TeacherAvailability?            @relation(fields: [teacherAvailabilityId], references: [id])
-  CalendarSlot                  CalendarSlot[]
-  Assignment                    Assignment[]
-  TeacherHasClassAcademicPeriod TeacherHasClassAcademicPeriod[]
+  TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
+  CalendarSlot        CalendarSlot[]
+  Assignment          Assignment[]
 
   @@index([teacherId])
   @@index([classId])
@@ -347,19 +318,17 @@ model TeacherHasClass {
 model Assignment {
   id                String   @id @default(uuid())
   name              String
-  classId           String
   description       String?  @db.Text
   dueDate           DateTime
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   grade             Float    @default(0)
-  teacherHasClassId String?
-  academicPeriodId  String?
+  teacherHasClassId String
+  academicPeriodId  String
 
-  Class                Class                  @relation(fields: [classId], references: [id])
   StudentHasAssignment StudentHasAssignment[]
-  AcademicPeriod       AcademicPeriod?        @relation(fields: [academicPeriodId], references: [id])
-  TeacherHasClass      TeacherHasClass?       @relation(fields: [teacherHasClassId], references: [id])
+  AcademicPeriod       AcademicPeriod         @relation(fields: [academicPeriodId], references: [id])
+  TeacherHasClass      TeacherHasClass        @relation(fields: [teacherHasClassId], references: [id])
 }
 
 model StudentHasAssignment {
@@ -385,30 +354,18 @@ model TeacherHasSubject {
   @@index([teacherId, subjectId])
 }
 
-model SubjectHasAcademicPeriod {
-  id               String @id @default(uuid())
-  subjectId        String
-  academicPeriodId String
-
-  Subject        Subject        @relation(fields: [subjectId], references: [id])
-  AcademicPeriod AcademicPeriod @relation(fields: [academicPeriodId], references: [id])
-
-  @@index([subjectId, academicPeriodId])
-}
-
 model Subject {
-  id                       String                     @id @default(uuid())
-  name                     String
-  slug                     String
-  schoolId                 String
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
-  TeacherHasClass          TeacherHasClass[]
-  School                   School                     @relation(fields: [schoolId], references: [id])
-  quantityNeededScheduled  Int                        @default(0)
-  FixedClass               FixedClass[]
-  TeacherHasSubject        TeacherHasSubject[]
-  SubjectHasAcademicPeriod SubjectHasAcademicPeriod[]
+  id                      String              @id @default(uuid())
+  name                    String
+  slug                    String
+  schoolId                String
+  createdAt               DateTime            @default(now())
+  updatedAt               DateTime            @updatedAt
+  TeacherHasClass         TeacherHasClass[]
+  School                  School              @relation(fields: [schoolId], references: [id])
+  quantityNeededScheduled Int                 @default(0)
+  FixedClass              FixedClass[]
+  TeacherHasSubject       TeacherHasSubject[]
 
   @@index([schoolId])
 }
@@ -435,17 +392,6 @@ model Role {
   Users User[]
 }
 
-model ClassHasAcademicPeriod {
-  id               String @id @default(uuid())
-  classId          String
-  academicPeriodId String
-
-  Class          Class          @relation(fields: [classId], references: [id])
-  AcademicPeriod AcademicPeriod @relation(fields: [academicPeriodId], references: [id])
-
-  @@index([classId, academicPeriodId])
-}
-
 model Class {
   id        String   @id @default(uuid())
   name      String
@@ -454,13 +400,11 @@ model Class {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  TeacherHasClass        TeacherHasClass[]
-  School                 School                   @relation(fields: [schoolId], references: [id])
-  FixedClass             FixedClass[]
-  ClassSchedule          ClassSchedule[]
-  Calendar               Calendar[]
-  Assignment             Assignment[]
-  ClassHasAcademicPeriod ClassHasAcademicPeriod[]
+  TeacherHasClass TeacherHasClass[]
+  School          School            @relation(fields: [schoolId], references: [id])
+  FixedClass      FixedClass[]
+  ClassSchedule   ClassSchedule[]
+  Calendar        Calendar[]
 
   @@index([schoolId])
 }
@@ -594,8 +538,6 @@ model Calendar {
 
   Class                     Class                       @relation(fields: [classId], references: [id])
   CalendarSlot              CalendarSlot[]
-  AcademicPeriod            AcademicPeriod?             @relation(fields: [academicPeriodId], references: [id])
-  academicPeriodId          String?
   CalendarHasAcademicPeriod CalendarHasAcademicPeriod[]
 
   @@index([classId])

@@ -87,7 +87,6 @@ export const schoolRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$transaction(async (tx) => {
-        // Definir isActive como false para todos os calendários atuais da turma
         await tx.calendar.updateMany({
           where: {
             classId: input.classId,
@@ -146,7 +145,11 @@ export const schoolRouter = createTRPCRouter({
                 })),
               },
             },
-            academicPeriodId: academicPeriod.id,
+            CalendarHasAcademicPeriod: {
+              create: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
           },
         });
       });
@@ -289,7 +292,7 @@ async function generateSchoolSchedule(
     totalAttempts++;
   }
 
-  return { schedule: bestSchedule!, errors: fewestErrors };
+  return { schedule: bestSchedule as Schedule, errors: fewestErrors };
 }
 
 async function tryGenerateSchoolSchedule(
@@ -490,7 +493,7 @@ async function tryGenerateSchoolSchedule(
 function getTotalRemainingLessons(errors: ScheduleError[]): number {
   return errors.reduce((total, error) => {
     const match = error.message.match(/faltando (\d+) aulas/);
-    return match ? total + Number.parseInt(match[1], 10) : total;
+    return match?.[1] ? total + Number.parseInt(match[1], 10) : total;
   }, 0);
 }
 

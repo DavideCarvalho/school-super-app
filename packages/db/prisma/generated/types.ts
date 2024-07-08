@@ -33,14 +33,13 @@ export type AcademicPeriodWeekendClass = {
 export type Assignment = {
   id: string;
   name: string;
-  classId: string;
   description: string | null;
   dueDate: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   grade: Generated<number>;
-  teacherHasClassId: string | null;
-  academicPeriodId: string | null;
+  teacherHasClassId: string;
+  academicPeriodId: string;
 };
 export type Attendance = {
   id: string;
@@ -57,7 +56,6 @@ export type Calendar = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   isActive: Generated<number>;
-  academicPeriodId: string | null;
 };
 export type CalendarConfig = {
   id: string;
@@ -121,11 +119,6 @@ export type Class = {
   schoolId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-};
-export type ClassHasAcademicPeriod = {
-  id: string;
-  classId: string;
-  academicPeriodId: string;
 };
 export type ClassSchedule = {
   id: string;
@@ -260,10 +253,11 @@ export type Student = {
 export type StudentAttendingClass = {
   id: string;
   studentId: string;
-  classId: string;
+  calendarSlotId: string;
+  calendarId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  academicPeriodId: string | null;
+  academicPeriodId: string;
 };
 export type StudentHasAssignment = {
   id: string;
@@ -296,11 +290,6 @@ export type Subject = {
   updatedAt: Timestamp;
   quantityNeededScheduled: Generated<number>;
 };
-export type SubjectHasAcademicPeriod = {
-  id: string;
-  subjectId: string;
-  academicPeriodId: string;
-};
 export type Teacher = {
   id: string;
 };
@@ -312,11 +301,6 @@ export type TeacherAvailability = {
   day: string;
   startTime: Timestamp;
   endTime: Timestamp;
-};
-export type TeacherHasAcademicPeriod = {
-  id: string;
-  teacherId: string;
-  academicPeriodId: string;
 };
 export type TeacherHasClass = {
   id: string;
@@ -331,11 +315,6 @@ export type TeacherHasClass = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   isActive: Generated<number>;
-};
-export type TeacherHasClassAcademicPeriod = {
-  id: string;
-  teacherHasClassId: string;
-  academicPeriodId: string;
 };
 export type TeacherHasSubject = {
   id: string;
@@ -378,7 +357,6 @@ export type DB = {
   CanteenItemPurchased: CanteenItemPurchased;
   CanteenPurchase: CanteenPurchase;
   Class: Class;
-  ClassHasAcademicPeriod: ClassHasAcademicPeriod;
   ClassSchedule: ClassSchedule;
   Comment: Comment;
   CommentLike: CommentLike;
@@ -398,12 +376,9 @@ export type DB = {
   StudentHasClassAttendance: StudentHasClassAttendance;
   StudentHasResponsible: StudentHasResponsible;
   Subject: Subject;
-  SubjectHasAcademicPeriod: SubjectHasAcademicPeriod;
   Teacher: Teacher;
   TeacherAvailability: TeacherAvailability;
-  TeacherHasAcademicPeriod: TeacherHasAcademicPeriod;
   TeacherHasClass: TeacherHasClass;
-  TeacherHasClassAcademicPeriod: TeacherHasClassAcademicPeriod;
   TeacherHasSubject: TeacherHasSubject;
   User: User;
   UserLikedPost: UserLikedPost;
