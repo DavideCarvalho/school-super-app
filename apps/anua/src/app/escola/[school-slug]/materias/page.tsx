@@ -6,7 +6,7 @@ import { Button } from "@acme/ui/button";
 
 import { EditSubjectModalListener } from "./_components/edit-subject-modal-listener";
 import { NewSubjectModalListener } from "./_components/new-subject-modal-listener";
-import { SubjectsTableClient } from "./containers/school-subjects-table/subjects-table.client";
+import { SubjectsTableServer } from "./containers/school-subjects-table/subjects-table.server";
 
 export default async function SubjectsPage({
   params,
@@ -30,9 +30,7 @@ export default async function SubjectsPage({
 
       <NewSubjectModalListener />
       <EditSubjectModalListener />
-      <Suspense>
-        <SubjectsTableClient />
-      </Suspense>
+      <SubjectsTableServer />
     </>
   );
 }

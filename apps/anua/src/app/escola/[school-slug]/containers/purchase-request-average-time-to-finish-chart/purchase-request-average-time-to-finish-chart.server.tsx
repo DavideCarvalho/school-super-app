@@ -1,8 +1,7 @@
 import { Suspense } from "react";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { createSSRHelper } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import { PurchaseRequestsAverageTimeToFinishChartClient } from "./purchase-request-average-time-to-finish-chart.client";
 
 export async function PurchaseRequestsAverageTimeToFinishChartServer() {
@@ -16,12 +15,10 @@ export async function PurchaseRequestsAverageTimeToFinishChartServer() {
 }
 
 async function PurchaseRequestsAverageTimeToFinishChartDataLoader() {
-  const helper = await createSSRHelper();
-  await helper.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.prefetch();
-  const dehydratedState = dehydrate(helper.queryClient);
+  await api.purchaseRequest.purchaseRequestsTimeToFinalStatusInLast360Days.prefetch();
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <PurchaseRequestsAverageTimeToFinishChartClient />
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

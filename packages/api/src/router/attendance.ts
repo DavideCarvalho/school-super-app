@@ -1,10 +1,11 @@
 import { differenceInBusinessDays } from "date-fns";
 import { z } from "zod";
 
-import { sql } from "@acme/db";
+import type { Subject, Teacher, TeacherHasClass, User } from "@acme/db";
 
 import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
+import { Class } from "./../../../db/prisma/generated/types";
 
 export const attendanceRouter = createTRPCRouter({
   getClassAttendanceForCurrentAcademicPeriod: isUserLoggedInAndAssignedToSchool
@@ -18,68 +19,131 @@ export const attendanceRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const academicPeriod =
         await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+
       if (!academicPeriod) {
         return [];
       }
-      const totalClasses = differenceInBusinessDays(
-        new Date(academicPeriod.startDate),
-        new Date(academicPeriod.endDate),
-      );
 
-      const data = await ctx.prisma.$kysely
-        .selectFrom("StudentAttendingClass as sac")
-        .leftJoin(
-          ctx.prisma.$kysely
-            .selectFrom("StudentHasClassAttendance as shca")
-            .leftJoin("Attendance as a", "shca.attendanceId", "a.id")
-            .leftJoin("CalendarSlot as cs", "a.calendarSlotId", "cs.id")
-            .leftJoin("Calendar as c", "cs.calendarId", "c.id")
-            .leftJoin(
-              "CalendarHasAcademicPeriod as chap",
-              "c.id",
-              "chap.calendarId",
-            )
-            .select([
-              "shca.studentId",
-              sql<number>`COUNT(shca.id)`.as("attendedClasses"),
-            ])
-            .where("chap.academicPeriodId", "=", academicPeriod.id)
-            .groupBy("shca.studentId")
-            .as("attended"),
-          "sac.studentId",
-          "attended.studentId",
-        )
-        .leftJoin("Student as s", "sac.studentId", "s.id")
-        .leftJoin("User as u", "s.id", "u.id")
-        .select([
-          "sac.studentId as studentId",
-          "u.name as userName",
-          "u.email as userEmail",
-          sql<number>`COALESCE(attended.attendedClasses, 0)`.as(
-            "attendedClasses",
-          ),
-          sql<number>`${totalClasses}`.as("totalClasses"),
-          sql<number>`(COALESCE(attended.attendedClasses, 0) / ${totalClasses}) * 100`.as(
-            "attendancePercentage",
-          ),
-        ])
-        .where("sac.classId", "=", input.classId)
-        .groupBy("sac.studentId")
-        .offset((input.page - 1) * input.limit)
-        .limit(input.limit)
-        .execute();
-
-      return data.map((item) => ({
-        Student: {
-          id: item.studentId,
-          User: {
-            name: item.userName,
-            email: item.userEmail,
+      const rawData = await ctx.prisma.student.findMany({
+        where: {
+          StudentHasAcademicPeriod: {
+            some: {
+              academicPeriodId: academicPeriod.id,
+            },
           },
         },
-        attendedClasses: item.attendedClasses,
-        totalClasses: item.totalClasses,
-        attendancePercentage: item.attendancePercentage,
-      }));
+        include: {
+          User: true,
+          StudentHasAttendance: {
+            include: {
+              Student: {
+                include: {
+                  User: true,
+                },
+              },
+              Attendance: {
+                include: {
+                  CalendarSlot: {
+                    include: {
+                      TeacherHasClass: {
+                        include: {
+                          Subject: true,
+                          Teacher: {
+                            include: {
+                              User: true,
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        skip: (input.page - 1) * input.limit,
+        take: input.limit,
+      });
+
+      const attendanceData = [];
+
+      for (const student of rawData) {
+        const totalAttendanceMap = new Map<
+          string,
+          {
+            TeacherHasClass: TeacherHasClass & {
+              Subject: Subject;
+              Teacher: Teacher & {
+                User: User;
+              };
+            };
+            attendanceNumber: number;
+          }
+        >();
+
+        for (const studentAttendance of student.StudentHasAttendance) {
+          const { CalendarSlot } = studentAttendance.Attendance;
+          const { TeacherHasClass } = CalendarSlot;
+
+          if (TeacherHasClass) {
+            const key = TeacherHasClass.id;
+
+            if (!totalAttendanceMap.has(key)) {
+              totalAttendanceMap.set(key, {
+                TeacherHasClass: TeacherHasClass,
+                attendanceNumber: 0,
+              });
+            }
+
+            const attendanceData = totalAttendanceMap.get(key);
+            if (attendanceData) {
+              attendanceData.attendanceNumber++;
+            }
+          }
+        }
+
+        const attendancePerTeacherHasClass = [];
+        let totalAttendanceNumber = 0;
+
+        for (const [key, value] of totalAttendanceMap) {
+          const totalClasses =
+            await academicPeriodService.getTeacherHasClassAmmountOfClassesOverAcademicPeriod(
+              key,
+              academicPeriod.id,
+            );
+          const attendancePercentage =
+            totalClasses > 0
+              ? (value.attendanceNumber / totalClasses) * 100
+              : 0;
+
+          attendancePerTeacherHasClass.push({
+            TeacherHasClass: value.TeacherHasClass,
+            attendancePercentage,
+            attendanceNumber: value.attendanceNumber,
+          });
+
+          totalAttendanceNumber += value.attendanceNumber;
+        }
+
+        const totalClassesOverall = attendancePerTeacherHasClass.reduce(
+          (acc, curr) => acc + curr.TeacherHasClass.subjectQuantity,
+          0,
+        );
+        const totalAttendancePercentage =
+          totalClassesOverall > 0
+            ? (totalAttendanceNumber / totalClassesOverall) * 100
+            : 0;
+
+        student;
+
+        attendanceData.push({
+          Student: student,
+          totalAttendancePercentage,
+          totalAttendanceNumber,
+          attendancePerTeacherHasClass,
+        });
+      }
+      return attendanceData;
     }),
 });

@@ -1,9 +1,13 @@
 import { cache } from "react";
 import { headers } from "next/headers";
+import { createHydrationHelpers } from "@trpc/react-query/rsc";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import SuperJSON from "superjson";
 
+import type { AppRouter } from "@acme/api";
 import { appRouter, createCaller, createTRPCContext } from "@acme/api";
+
+import { createQueryClient } from "./query-client";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -16,7 +20,13 @@ const createContext = cache(async () => {
   return createTRPCContext({ session: null, headers: heads });
 });
 
-export const api = createCaller(createContext);
+const getQueryClient = cache(createQueryClient);
+const caller = createCaller(createContext);
+
+export const { trpc: api, HydrateClient } = createHydrationHelpers<AppRouter>(
+  caller,
+  getQueryClient,
+);
 
 export const createSSRHelper = async () =>
   createServerSideHelpers({

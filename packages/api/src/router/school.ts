@@ -160,11 +160,7 @@ export const schoolRouter = createTRPCRouter({
                 })),
               },
             },
-            CalendarHasAcademicPeriod: {
-              create: {
-                academicPeriodId: newAcademicPeriod.id,
-              },
-            },
+            academicPeriodId: newAcademicPeriod.id,
           },
         });
 

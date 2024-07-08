@@ -23,8 +23,8 @@ export function NewClassModalListener() {
   async function handleOnClickSubmit() {
     setOpenNewClassModal(false);
     await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
+      utils.class.allBySchoolId.invalidate(),
+      utils.class.countAllBySchoolId.invalidate(),
     ]);
     setHash("");
   }
@@ -32,8 +32,8 @@ export function NewClassModalListener() {
   async function handleOnClickCancel() {
     setOpenNewClassModal(false);
     await Promise.all([
-      utils.teacher.getSchoolTeachers.invalidate(),
-      utils.teacher.countSchoolTeachers.invalidate(),
+      utils.class.allBySchoolId.invalidate(),
+      utils.class.countAllBySchoolId.invalidate(),
     ]);
     setHash("");
   }

@@ -56,6 +56,7 @@ export type Calendar = {
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   isActive: Generated<number>;
+  academicPeriodId: string;
 };
 export type CalendarConfig = {
   id: string;
@@ -63,11 +64,6 @@ export type CalendarConfig = {
   classesClashConfig: unknown | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-};
-export type CalendarHasAcademicPeriod = {
-  id: string;
-  calendarId: string;
-  academicPeriodId: string;
 };
 export type CalendarSlot = {
   id: string;
@@ -173,7 +169,7 @@ export type Occurence = {
   updatedAt: Timestamp;
   studentId: string;
   text: string;
-  calendarSlotId: string;
+  teacherHasClassId: string;
 };
 export type Post = {
   id: Generated<number>;
@@ -262,7 +258,7 @@ export type StudentHasAssignment = {
   updatedAt: Timestamp;
   grade: number | null;
 };
-export type StudentHasClassAttendance = {
+export type StudentHasAttendance = {
   id: string;
   studentId: string;
   attendanceId: string;
@@ -325,7 +321,6 @@ export type User = {
   roleId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  teacherId: string | null;
   externalAuthId: string | null;
   imageUrl: string | null;
   active: Generated<number>;
@@ -345,7 +340,6 @@ export type DB = {
   Attendance: Attendance;
   Calendar: Calendar;
   CalendarConfig: CalendarConfig;
-  CalendarHasAcademicPeriod: CalendarHasAcademicPeriod;
   CalendarSlot: CalendarSlot;
   Canteen: Canteen;
   CanteenItem: CanteenItem;
@@ -368,7 +362,7 @@ export type DB = {
   Student: Student;
   StudentHasAcademicPeriod: StudentHasAcademicPeriod;
   StudentHasAssignment: StudentHasAssignment;
-  StudentHasClassAttendance: StudentHasClassAttendance;
+  StudentHasAttendance: StudentHasAttendance;
   StudentHasResponsible: StudentHasResponsible;
   Subject: Subject;
   Teacher: Teacher;

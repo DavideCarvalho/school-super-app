@@ -1,8 +1,7 @@
 import { Suspense } from "react";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { api, createSSRHelper } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import { PurchaseRequestsValueMonthlyChartClient } from "./purchase-request-value-monthly-chart.client";
 
 export async function PurchaseRequestsValueMonthlyChartServer() {
@@ -16,12 +15,10 @@ export async function PurchaseRequestsValueMonthlyChartServer() {
 }
 
 async function PurchaseRequestsValueMonthlyChartDataLoader() {
-  const helper = await createSSRHelper();
-  await helper.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.prefetch();
-  const dehydratedState = dehydrate(helper.queryClient);
+  await api.purchaseRequest.purchaseRequestsMonthlyValueInLast360Days.prefetch();
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <PurchaseRequestsValueMonthlyChartClient />
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

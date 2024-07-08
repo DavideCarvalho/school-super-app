@@ -1,8 +1,7 @@
 import { Suspense } from "react";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { createSSRHelper } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import { CanteenSellsQuantityByMonthChart } from "./canteen-sells-quantity-by-month-chart.client";
 
 export async function CanteenSellsQuantityByMonthChartServer() {
@@ -16,12 +15,10 @@ export async function CanteenSellsQuantityByMonthChartServer() {
 }
 
 async function CanteenSellsQuantityByMonthChartDataLoader() {
-  const helper = await createSSRHelper();
-  helper.canteen.canteenSellsByMonth.prefetch();
-  const dehydratedState = dehydrate(helper.queryClient);
+  await api.canteen.canteenSellsByMonth.prefetch();
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <CanteenSellsQuantityByMonthChart />
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

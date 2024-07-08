@@ -22,6 +22,10 @@ export function getCurrentAcademicPeriod() {
     orderBy: {
       startDate: "desc",
     },
+    include: {
+      Holidays: true,
+      WeekendClasses: true,
+    },
   });
 }
 
@@ -31,6 +35,10 @@ export function getLatestAcademicPeriod() {
   return prisma.academicPeriod.findFirst({
     orderBy: {
       startDate: "desc",
+    },
+    include: {
+      Holidays: true,
+      WeekendClasses: true,
     },
   });
 }
@@ -48,6 +56,22 @@ export function getLastActiveAcademicPeriod() {
     },
     orderBy: {
       startDate: "desc",
+    },
+    include: {
+      Holidays: true,
+      WeekendClasses: true,
+    },
+  });
+}
+
+export function findById(academicPeriodId: string) {
+  return prisma.academicPeriod.findUnique({
+    where: {
+      id: academicPeriodId,
+    },
+    include: {
+      Holidays: true,
+      WeekendClasses: true,
     },
   });
 }

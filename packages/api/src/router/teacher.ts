@@ -1,7 +1,9 @@
 import { clerkClient } from "@clerk/clerk-sdk-node";
+import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
+import { hoursToDate } from "~/utils/hours-to-date";
 import * as academicPeriodRepository from "../repository/academicPeriod.repository";
 import * as academicPeriodService from "../service/academicPeriod.service";
 import {
@@ -134,51 +136,47 @@ export const teacherRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      try {
-        const roleTeacher = await ctx.prisma.role.findFirst({
-          where: { name: "TEACHER" },
-        });
-        if (!roleTeacher) throw new Error("Role not found");
+      const roleTeacher = await ctx.prisma.role.findFirst({
+        where: { name: "TEACHER" },
+      });
+      if (!roleTeacher) throw new TRPCError({ code: "BAD_REQUEST" });
 
-        const [firstName, ...rest] = input.name.split(" ");
-        const createdUserOnClerk = await clerkClient.users.createUser({
-          firstName,
-          lastName: rest.join(" "),
-          emailAddress: [input.email],
-        });
-        await ctx.prisma.teacher.create({
-          data: {
-            User: {
-              create: {
-                name: input.name,
-                slug: slugify(input.name),
-                email: input.email,
-                roleId: roleTeacher.id,
-                schoolId: ctx.session.school.id,
-                externalAuthId: createdUserOnClerk.id,
-              },
-            },
-            Availabilities: {
-              createMany: {
-                data: input.availabilities.map((availability) => ({
-                  day: availability.day,
-                  startTime: availability.startTime,
-                  endTime: availability.endTime,
-                })),
-              },
-            },
-            Subjects: {
-              createMany: {
-                data: input.subjectIds.map((subjectId) => ({
-                  subjectId,
-                })),
-              },
+      const [firstName, ...rest] = input.name.split(" ");
+      const createdUserOnClerk = await clerkClient.users.createUser({
+        firstName,
+        lastName: rest.join(" "),
+        emailAddress: [input.email],
+      });
+      await ctx.prisma.teacher.create({
+        data: {
+          User: {
+            create: {
+              name: input.name,
+              slug: slugify(input.name),
+              email: input.email,
+              roleId: roleTeacher.id,
+              schoolId: ctx.session.school.id,
+              externalAuthId: createdUserOnClerk.id,
             },
           },
-        });
-      } catch (error) {
-        console.log(error);
-      }
+          Availabilities: {
+            createMany: {
+              data: input.availabilities.map((availability) => ({
+                day: availability.day,
+                startTime: hoursToDate(availability.startTime),
+                endTime: hoursToDate(availability.endTime),
+              })),
+            },
+          },
+          Subjects: {
+            createMany: {
+              data: input.subjectIds.map((subjectId) => ({
+                subjectId,
+              })),
+            },
+          },
+        },
+      });
     }),
   editTeacher: isUserLoggedInAndAssignedToSchool
     .input(

@@ -5,7 +5,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { api, createSSRHelper } from "~/trpc/server";
+import { api, createSSRHelper, HydrateClient } from "~/trpc/server";
 import { EditTeacherModalListener } from "./_components/edit-teacher-modal-listener";
 import { NewTeacherModalListener } from "./_components/new-teacher-modal-listener";
 import { TeachersTableClient } from "./containers/school-teachers-table/teachers-table.client";
@@ -28,15 +28,13 @@ export default async function TeachersPage({
   }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
-  const helper = await createSSRHelper();
-  await helper.teacher.getSchoolTeachers.prefetch({
+  await api.teacher.getSchoolTeachers.prefetch({
     page: Number(url.searchParams.get("page")),
     limit: Number(url.searchParams.get("limit")),
   });
-  await helper.teacher.countSchoolTeachers.prefetch();
-  const dehydratedState = dehydrate(helper.queryClient);
+  await api.teacher.countSchoolTeachers.prefetch();
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Professores</h2>
         <Link
@@ -50,6 +48,6 @@ export default async function TeachersPage({
       <Suspense>
         <TeachersTableClient />
       </Suspense>
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { createSSRHelper } from "~/trpc/server";
+import { api, createSSRHelper, HydrateClient } from "~/trpc/server";
 import { AttendancesTableClient } from "./attendances-table.client";
 
 interface AssignmentsTableServerProps {
@@ -34,19 +34,18 @@ async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
     : 10;
   const helper = await createSSRHelper();
   await Promise.all([
-    helper.attendance.getClassAttendanceForCurrentAcademicPeriod.prefetch({
+    api.attendance.getClassAttendanceForCurrentAcademicPeriod.prefetch({
       classId: props.classId,
       page,
       limit: size,
     }),
-    helper.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
+    api.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
     }),
   ]);
-  const dehydratedState = dehydrate(helper.queryClient);
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <AttendancesTableClient {...props} />
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

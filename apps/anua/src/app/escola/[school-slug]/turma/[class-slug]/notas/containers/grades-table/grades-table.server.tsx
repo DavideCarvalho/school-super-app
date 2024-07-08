@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { createSSRHelper } from "~/trpc/server";
+import { api, createSSRHelper, HydrateClient } from "~/trpc/server";
 import { GradesTableClient } from "./grades-table.client";
 
 interface GradesTableServerProps {
@@ -30,21 +30,19 @@ async function GradesTableDataLoader(props: GradesTableServerProps) {
   const size = url.searchParams.has("size")
     ? Number(url.searchParams.get("size"))
     : 10;
-  const helper = await createSSRHelper();
   await Promise.all([
-    helper.grade.getStudentsGradesForClassOnCurrentAcademicPeriod.prefetch({
+    api.grade.getStudentsGradesForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
       page,
       limit: size,
     }),
-    helper.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
+    api.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
     }),
   ]);
-  const dehydratedState = dehydrate(helper.queryClient);
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <GradesTableClient {...props} />
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

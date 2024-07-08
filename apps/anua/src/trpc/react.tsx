@@ -14,8 +14,7 @@ import SuperJSON from "superjson";
 import type { AppRouter } from "@acme/api";
 
 import { env } from "~/env";
-
-const createQueryClient = () => new QueryClient();
+import { createQueryClient } from "./query-client";
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {

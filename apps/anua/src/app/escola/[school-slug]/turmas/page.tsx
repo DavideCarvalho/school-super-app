@@ -1,16 +1,15 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { Button } from "@acme/ui/button";
 
-import { api, createSSRHelper } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import { EditClassModalListener } from "./_components/edit-class-modal-listener";
 import { NewClassModalListener } from "./_components/new-class-modal-listener";
 import { ClassesTable } from "./containers/classes-table";
 
-export default async function SubjectsPage({
+export default async function ClassesPage({
   params,
 }: {
   params: { "school-slug": string };
@@ -28,15 +27,13 @@ export default async function SubjectsPage({
   }
   const school = await api.school.bySlug({ slug: params["school-slug"] });
   if (!school) throw new Error("School not found");
-  const helper = await createSSRHelper();
-  await helper.class.allBySchoolId.prefetch({
+  await api.class.allBySchoolId.prefetch({
     page: Number(url.searchParams.get("page")),
     limit: Number(url.searchParams.get("limit")),
   });
-  await helper.class.countAllBySchoolId.prefetch();
-  const dehydratedState = dehydrate(helper.queryClient);
+  await api.class.countAllBySchoolId.prefetch();
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Turmas</h2>
         <Link
@@ -50,6 +47,6 @@ export default async function SubjectsPage({
       <Suspense>
         <ClassesTable />
       </Suspense>
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

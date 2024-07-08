@@ -6,7 +6,7 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { prisma } from "@acme/db";
 import { Button } from "@acme/ui/button";
 
-import { api, createSSRHelper } from "~/trpc/server";
+import { api, createSSRHelper, HydrateClient } from "~/trpc/server";
 import { EditCanteenItemModalListener } from "./_components/edit-canteen-item-modal-listener";
 import { NewCanteenItemModalListener } from "./_components/new-canteen-item-modal-listener";
 import { CanteenItemsTable } from "./containers/school-canteen-items-table";
@@ -35,20 +35,18 @@ export default async function CanteenItemsPage({
     },
   });
   if (!canteen) throw new Error("Canteen not found");
-  const helper = await createSSRHelper();
   await Promise.all([
-    helper.canteen.allCanteenItems.prefetch({
+    api.canteen.allCanteenItems.prefetch({
       canteenId: canteen.id,
       page: Number(url.searchParams.get("page")),
       limit: Number(url.searchParams.get("limit")),
     }),
-    helper.canteen.countAllCanteenItems.prefetch({
+    api.canteen.countAllCanteenItems.prefetch({
       canteenId: canteen.id,
     }),
   ]);
-  const dehydratedState = dehydrate(helper.queryClient);
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">Itens da cantina</h2>
         <Link
@@ -63,6 +61,6 @@ export default async function CanteenItemsPage({
       <Suspense>
         <CanteenItemsTable canteenId={canteen.id} />
       </Suspense>
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

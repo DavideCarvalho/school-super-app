@@ -31,9 +31,12 @@ export const assignmentRouter = createTRPCRouter({
         where: {
           TeacherHasClass: {
             classId: input.classId,
-            TeacherHasClassAcademicPeriod: {
+            CalendarSlot: {
               every: {
-                academicPeriodId: latestAcademicPeriod.id,
+                Calendar: {
+                  academicPeriodId: latestAcademicPeriod.id,
+                  isActive: true,
+                },
               },
             },
           },
@@ -82,12 +85,14 @@ export const assignmentRouter = createTRPCRouter({
           TeacherHasClass: {
             teacherId: ctx.session.user.id,
             classId: input.classId,
-            TeacherHasClassAcademicPeriod: {
+            CalendarSlot: {
               every: {
-                academicPeriodId: latestAcademicPeriod.id,
+                Calendar: {
+                  academicPeriodId: latestAcademicPeriod.id,
+                  isActive: true,
+                },
               },
             },
-            isActive: true,
           },
           academicPeriodId: latestAcademicPeriod.id,
         },
@@ -111,10 +116,9 @@ export const assignmentRouter = createTRPCRouter({
             User: {
               schoolId: ctx.session.school.id,
             },
-            StudentAttendingClass: {
+            StudentHasAcademicPeriod: {
               every: {
                 academicPeriodId: academicPeriod.id,
-                classId: input.classId,
               },
             },
           },
@@ -131,17 +135,16 @@ export const assignmentRouter = createTRPCRouter({
           where: {
             TeacherHasClass: {
               classId: input.classId,
-              TeacherHasClassAcademicPeriod: {
+              CalendarSlot: {
                 every: {
-                  academicPeriodId: academicPeriod.id,
+                  Calendar: {
+                    academicPeriodId: academicPeriod.id,
+                  },
                 },
               },
             },
           },
         });
-        const assignmentNames = assignments.map(
-          (assignment) => assignment.name,
-        );
         return students.map((student) => {
           const grades: {
             Assignment: Assignment;
@@ -195,22 +198,57 @@ export const assignmentRouter = createTRPCRouter({
             teacherId: ctx.session.user.id,
             classId: input.classId,
             subjectId: input.subjectId,
-            TeacherHasClassAcademicPeriod: {
+            CalendarSlot: {
               every: {
-                academicPeriodId: academicPeriod.id,
+                Calendar: {
+                  academicPeriodId: academicPeriod.id,
+                },
+              },
+            },
+          },
+          include: {
+            CalendarSlot: {
+              where: {
+                TeacherHasClass: {
+                  teacherId: ctx.session.user.id,
+                  classId: input.classId,
+                  subjectId: input.subjectId,
+                },
+                Calendar: {
+                  academicPeriodId: academicPeriod.id,
+                },
+              },
+              include: {
+                Calendar: {
+                  include: {
+                    AcademicPeriod: true,
+                  },
+                },
               },
             },
           },
         });
         if (!teacherHasClass) {
-          throw new Error("Professor não está na turma");
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Professor não está na turma",
+          });
+        }
+        if (teacherHasClass.CalendarSlot[0]) {
+          if (
+            teacherHasClass.CalendarSlot[0].Calendar.AcademicPeriod.isClosed
+          ) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "O período letivo já está fechado",
+            });
+          }
         }
         return ctx.prisma.assignment.create({
           data: {
             name: input.name,
             dueDate: input.dueDate,
             grade: input.grade,
-            classId: input.classId,
             teacherHasClassId: teacherHasClass.id,
             description: input.description,
             academicPeriodId: academicPeriod.id,

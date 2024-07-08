@@ -38,7 +38,6 @@ model User {
   roleId         String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  teacherId      String?
   externalAuthId String?
   imageUrl       String?
   active         Boolean  @default(true)
@@ -97,6 +96,7 @@ model Student {
   Occurence                Occurence[]
   StudentHasAssignment     StudentHasAssignment[]
   StudentHasAcademicPeriod StudentHasAcademicPeriod[]
+  StudentHasAttendance     StudentHasAttendance[]
 
   @@index([id])
 }
@@ -155,7 +155,7 @@ model AcademicPeriod {
   Assignments    Assignment[]
   Holidays       AcademicPeriodHoliday[]
   WeekendClasses AcademicPeriodWeekendClass[]
-  Calendars      CalendarHasAcademicPeriod[]
+  Calendars      Calendar[]
   Students       StudentHasAcademicPeriod[]
 }
 
@@ -179,11 +179,11 @@ model Attendance {
   date           DateTime @db.Date
   calendarSlotId String
 
-  StudentHasClassAttendance StudentHasClassAttendance[]
-  CalendarSlot              CalendarSlot                @relation(fields: [calendarSlotId], references: [id])
+  StudentHasClassAttendance StudentHasAttendance[]
+  CalendarSlot              CalendarSlot           @relation(fields: [calendarSlotId], references: [id])
 }
 
-model StudentHasClassAttendance {
+model StudentHasAttendance {
   id           String   @id @default(uuid())
   studentId    String
   attendanceId String
@@ -191,20 +191,21 @@ model StudentHasClassAttendance {
   updatedAt    DateTime @updatedAt
 
   Attendance Attendance @relation(fields: [attendanceId], references: [id])
+  Student    Student    @relation(fields: [studentId], references: [id])
 }
 
 model Occurence {
-  id             String   @id @default(uuid())
-  date           DateTime @db.Date
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  studentId      String
-  text           String   @db.Text
-  calendarSlotId String
+  id                String   @id @default(uuid())
+  date              DateTime @db.Date
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  studentId         String
+  text              String   @db.Text
+  teacherHasClassId String
 
   Student                          Student                            @relation(fields: [studentId], references: [id])
   ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
-  CalendarSlot                     CalendarSlot                       @relation(fields: [calendarSlotId], references: [id])
+  TeacherHasClass                  TeacherHasClass                    @relation(fields: [teacherHasClassId], references: [id])
 }
 
 model ResponsibleUserAcceptedOccurence {
@@ -274,9 +275,8 @@ model CalendarSlot {
   TeacherHasClass TeacherHasClass? @relation(fields: [teacherHasClassId], references: [id])
   Calendar        Calendar         @relation(fields: [calendarId], references: [id])
   Attendance      Attendance[]
-  Occurence       Occurence[]
 
-  @@unique([teacherHasClassId, classWeekDay, startTime])
+  @@unique([calendarId, teacherHasClassId, classWeekDay, startTime])
 }
 
 model TeacherHasClass {
@@ -300,6 +300,7 @@ model TeacherHasClass {
   TeacherAvailability TeacherAvailability? @relation(fields: [teacherAvailabilityId], references: [id])
   CalendarSlot        CalendarSlot[]
   Assignment          Assignment[]
+  Occurence           Occurence[]
 
   @@index([teacherId])
   @@index([classId])
@@ -510,26 +511,18 @@ model CommentLike {
   Comment Comment @relation(fields: [commentId], references: [id])
 }
 
-model CalendarHasAcademicPeriod {
-  id               String @id @default(uuid())
-  calendarId       String
+model Calendar {
+  id               String   @id @default(uuid())
+  classId          String
+  name             String // Nome do calendário, por exemplo, "Calendário 2024"
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  isActive         Boolean  @default(true) // Flag para indicar se o calendário é o atual
   academicPeriodId String
 
-  Calendar       Calendar       @relation(fields: [calendarId], references: [id])
+  Class          Class          @relation(fields: [classId], references: [id])
   AcademicPeriod AcademicPeriod @relation(fields: [academicPeriodId], references: [id])
-}
-
-model Calendar {
-  id        String   @id @default(uuid())
-  classId   String
-  name      String // Nome do calendário, por exemplo, "Calendário 2024"
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isActive  Boolean  @default(true) // Flag para indicar se o calendário é o atual
-
-  Class                     Class                       @relation(fields: [classId], references: [id])
-  CalendarSlot              CalendarSlot[]
-  CalendarHasAcademicPeriod CalendarHasAcademicPeriod[]
+  CalendarSlot   CalendarSlot[]
 
   @@index([classId])
 }

@@ -91,7 +91,10 @@ export function ClassClashForm() {
           variant="outline"
           onClick={() =>
             setValue(`subjectsExclusions.${subjectsExclusions.length}`, {
-              subjectId: undefined,
+              subject: {
+                id: undefined,
+                name: "",
+              },
               exclusions: [],
             })
           }
