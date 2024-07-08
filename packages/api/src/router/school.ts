@@ -100,6 +100,24 @@ export const schoolRouter = createTRPCRouter({
         let academicPeriod =
           await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
 
+        const currentActiveCalendar = academicPeriod
+          ? await tx.calendar.findFirst({
+              where: {
+                classId: input.classId,
+                CalendarHasAcademicPeriod: {
+                  every: {
+                    academicPeriodId: academicPeriod.id,
+                  },
+                },
+              },
+            })
+          : null;
+
+        // TODO: Criar novo periodo academico e finalizar o atual
+        // apenas se o atual já tiver um calendário
+        // ou talvez nem finalizar o periodo letivo já que o calendário
+        // é por turma e não por período letivo
+        // talvez isso seja o mais correto
         if (!academicPeriod) {
           academicPeriod = await tx.academicPeriod.create({
             data: {
@@ -124,7 +142,7 @@ export const schoolRouter = createTRPCRouter({
           }
         }
 
-        await tx.calendar.create({
+        const calendar = await tx.calendar.create({
           data: {
             classId: input.classId,
             name: `Calendário ${format(academicPeriod.startDate, "dd-MM-yyyy", { locale: ptBR })} - ${format(academicPeriod.endDate, "dd-MM-yyyy", { locale: ptBR })}`,
@@ -147,6 +165,23 @@ export const schoolRouter = createTRPCRouter({
             },
             CalendarHasAcademicPeriod: {
               create: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
+          },
+          include: {
+            CalendarSlot: true,
+          },
+        });
+
+        const students = await tx.student.findMany({
+          where: {
+            User: {
+              schoolId: ctx.session.school.id,
+              active: true,
+            },
+            StudentHasAcademicPeriod: {
+              some: {
                 academicPeriodId: academicPeriod.id,
               },
             },

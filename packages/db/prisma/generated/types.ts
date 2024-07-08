@@ -227,7 +227,6 @@ export type ResponsibleUserAcceptedOccurence = {
   occurenceId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  studentAttendingClassId: string | null;
 };
 export type Role = {
   id: string;
@@ -250,13 +249,9 @@ export type Student = {
   id: string;
   canteenLimit: number | null;
 };
-export type StudentAttendingClass = {
+export type StudentHasAcademicPeriod = {
   id: string;
   studentId: string;
-  calendarSlotId: string;
-  calendarId: string;
-  createdAt: Generated<Timestamp>;
-  updatedAt: Timestamp;
   academicPeriodId: string;
 };
 export type StudentHasAssignment = {
@@ -371,7 +366,7 @@ export type DB = {
   School: School;
   SchoolChain: SchoolChain;
   Student: Student;
-  StudentAttendingClass: StudentAttendingClass;
+  StudentHasAcademicPeriod: StudentHasAcademicPeriod;
   StudentHasAssignment: StudentHasAssignment;
   StudentHasClassAttendance: StudentHasClassAttendance;
   StudentHasResponsible: StudentHasResponsible;
