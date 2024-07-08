@@ -116,14 +116,14 @@ model Student {
 model StudentAttendingClass {
   id               String   @id @default(uuid())
   studentId        String
-  classId          String
+  calendarSlotId   String
   calendarId       String
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   academicPeriodId String
 
   Student                          Student                            @relation(fields: [studentId], references: [id])
-  Class                            Class                              @relation(fields: [classId], references: [id])
+  CalendarSlot                     CalendarSlot                       @relation(fields: [calendarSlotId], references: [id])
   ResponsibleUserAcceptedOccurence ResponsibleUserAcceptedOccurence[]
   AcademicPeriod                   AcademicPeriod                     @relation(fields: [academicPeriodId], references: [id])
 }
@@ -296,10 +296,11 @@ model CalendarSlot {
   updatedAt         DateTime @updatedAt
   calendarId        String
 
-  TeacherHasClass TeacherHasClass? @relation(fields: [teacherHasClassId], references: [id])
-  Calendar        Calendar         @relation(fields: [calendarId], references: [id])
-  Attendance      Attendance[]
-  Occurence       Occurence[]
+  TeacherHasClass       TeacherHasClass?        @relation(fields: [teacherHasClassId], references: [id])
+  Calendar              Calendar                @relation(fields: [calendarId], references: [id])
+  Attendance            Attendance[]
+  Occurence             Occurence[]
+  StudentAttendingClass StudentAttendingClass[]
 
   @@unique([teacherHasClassId, classWeekDay, startTime])
 }
@@ -458,7 +459,6 @@ model Class {
   FixedClass             FixedClass[]
   ClassSchedule          ClassSchedule[]
   Calendar               Calendar[]
-  StudentAttendingClass  StudentAttendingClass[]
   Assignment             Assignment[]
   ClassHasAcademicPeriod ClassHasAcademicPeriod[]
 
