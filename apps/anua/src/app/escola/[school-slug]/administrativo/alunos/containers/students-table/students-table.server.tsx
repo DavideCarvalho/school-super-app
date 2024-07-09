@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { createSSRHelper } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import { StudentsTableClient } from "./students-table.client";
 
 export async function StudentsTableServer() {
@@ -26,18 +25,16 @@ async function StudentsTableDataLoader() {
   const size = url.searchParams.has("size")
     ? Number(url.searchParams.get("size"))
     : 10;
-  const helper = await createSSRHelper();
   await Promise.all([
-    helper.student.allBySchoolId.prefetch({
+    api.student.allBySchoolId.prefetch({
       page,
       size,
     }),
-    helper.student.countAllBySchoolId.prefetch(),
+    api.student.countAllBySchoolId.prefetch(),
   ]);
-  const dehydratedState = dehydrate(helper.queryClient);
   return (
-    <HydrationBoundary state={dehydratedState}>
+    <HydrateClient>
       <StudentsTableClient />
-    </HydrationBoundary>
+    </HydrateClient>
   );
 }

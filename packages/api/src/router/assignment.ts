@@ -11,6 +11,7 @@ export const assignmentRouter = createTRPCRouter({
     .input(
       z.object({
         classId: z.string(),
+        subjectId: z.string(),
         limit: z.number().optional().default(5),
         page: z.number().optional().default(1),
       }),
@@ -31,6 +32,7 @@ export const assignmentRouter = createTRPCRouter({
         where: {
           TeacherHasClass: {
             classId: input.classId,
+            subjectId: input.subjectId,
             CalendarSlot: {
               every: {
                 Calendar: {
@@ -66,6 +68,7 @@ export const assignmentRouter = createTRPCRouter({
     .input(
       z.object({
         classId: z.string(),
+        subjectId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -85,6 +88,7 @@ export const assignmentRouter = createTRPCRouter({
           TeacherHasClass: {
             teacherId: ctx.session.user.id,
             classId: input.classId,
+            subjectId: input.subjectId,
             CalendarSlot: {
               every: {
                 Calendar: {
@@ -106,6 +110,7 @@ export const assignmentRouter = createTRPCRouter({
         }),
       )
       .query(async ({ ctx, input }) => {
+        console.log("input", input);
         const academicPeriod =
           await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
         if (!academicPeriod) {
@@ -117,8 +122,9 @@ export const assignmentRouter = createTRPCRouter({
               schoolId: ctx.session.school.id,
             },
             StudentHasAcademicPeriod: {
-              every: {
+              some: {
                 academicPeriodId: academicPeriod.id,
+                classId: input.classId,
               },
             },
           },
@@ -129,14 +135,20 @@ export const assignmentRouter = createTRPCRouter({
                 Assignment: true,
               },
             },
+            StudentHasAcademicPeriod: {
+              include: {
+                AcademicPeriod: true,
+              },
+            },
           },
         });
+
         const assignments = await ctx.prisma.assignment.findMany({
           where: {
             TeacherHasClass: {
               classId: input.classId,
               CalendarSlot: {
-                every: {
+                some: {
                   Calendar: {
                     academicPeriodId: academicPeriod.id,
                   },

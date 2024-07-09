@@ -121,7 +121,7 @@ export const userRouter = createTRPCRouter({
           data: {
             schoolId: ctx.session.school.id,
             name: input.name,
-            slug: slugify(`${input.name}${countSuffix}`),
+            slug: slugify(`${input.name}${countSuffix}`).toLowerCase(),
             email: input.email,
             roleId: role.id,
             externalAuthId: createdUserOnClerk.id,
@@ -177,7 +177,7 @@ export const userRouter = createTRPCRouter({
         where: { id: input.userId },
         data: {
           name: input.name,
-          slug: slugify(`${input.name}${countSuffix}`),
+          slug: slugify(`${input.name}${countSuffix}`).toLowerCase(),
           email: input.email,
           roleId: role.id,
           externalAuthId: userExternalAuthId,
@@ -239,7 +239,7 @@ export const userRouter = createTRPCRouter({
         where: { id: input.userId },
         data: {
           name: input.name,
-          slug: slugify(`${input.name}${countSuffix}`),
+          slug: slugify(`${input.name}${countSuffix}`).toLowerCase(),
           imageUrl: userOnClerk.imageUrl,
         },
       });

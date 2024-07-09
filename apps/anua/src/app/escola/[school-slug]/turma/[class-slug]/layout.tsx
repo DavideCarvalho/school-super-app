@@ -1,71 +1,89 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
 
 import { ClassTabs } from "./_components/class-tabs";
+import { SubjectSelectClient } from "./containers/subject-select/subject-select.client";
+import { ClassContextProvider } from "./contexts/class.context";
+import { SubjectContextProvider } from "./contexts/subject.context";
+import { ClassGuard } from "./guards/class.guard";
+import { SubjectGuard } from "./guards/subject.guard";
 
 export default function ClassLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: {
+    "school-slug": string;
+    "class-slug": string;
+  };
 }) {
+  const classSlug = params["class-slug"];
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
-      <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                Next Assignment
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  Due 4/15/2023
-                </span>
+    <ClassContextProvider classSlug={classSlug}>
+      <ClassGuard>
+        <div className="flex min-h-screen w-full flex-col bg-background">
+          <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
+            <SubjectContextProvider>
+              <SubjectSelectClient />
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Next Assignment
+                    </CardTitle>
+                    <div className="flex items-center gap-2">
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        Due 4/15/2023
+                      </span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold">Final Project</div>
+                    <p className="text-sm text-muted-foreground">
+                      Create a web application that demonstrates your
+                      understanding of the course material.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Attendance Issues
+                    </CardTitle>
+                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold">3 Students</div>
+                    <p className="text-sm text-muted-foreground">
+                      Have missed more than 3 classes this semester.
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Upcoming Events
+                    </CardTitle>
+                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold">Guest Speaker</div>
+                    <p className="text-sm text-muted-foreground">
+                      4/20/2023 - 2:00 PM
+                    </p>
+                  </CardContent>
+                </Card>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold">Final Project</div>
-              <p className="text-sm text-muted-foreground">
-                Create a web application that demonstrates your understanding of
-                the course material.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                Attendance Issues
-              </CardTitle>
-              <UsersIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold">3 Students</div>
-              <p className="text-sm text-muted-foreground">
-                Have missed more than 3 classes this semester.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
-                Upcoming Events
-              </CardTitle>
-              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold">Guest Speaker</div>
-              <p className="text-sm text-muted-foreground">
-                4/20/2023 - 2:00 PM
-              </p>
-            </CardContent>
-          </Card>
+              <div className="flex flex-col gap-4">
+                <ClassTabs />
+                {children}
+              </div>
+            </SubjectContextProvider>
+          </div>
         </div>
-        <div className="flex flex-col gap-4">
-          <ClassTabs />
-          {children}
-        </div>
-      </div>
-    </div>
+      </ClassGuard>
+    </ClassContextProvider>
   );
 }
 

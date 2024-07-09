@@ -30,7 +30,7 @@ export const canteenRouter = createTRPCRouter({
         data: {
           schoolId: ctx.session.school.id,
           name: input.responsibleName,
-          slug: slugify(input.responsibleName),
+          slug: slugify(input.responsibleName).toLowerCase(),
           email: input.responsibleEmail,
           roleId: roleCanteenWorker.id,
           externalAuthId: createdUserOnClerk.id,

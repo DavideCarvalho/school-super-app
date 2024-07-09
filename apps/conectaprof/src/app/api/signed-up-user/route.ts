@@ -32,7 +32,9 @@ async function handler(req: Request) {
       const createdUser = await prisma.user.create({
         data: {
           name: "Novo Usuário",
-          slug: slugify(`novo usuário-${body.email}-${new Date().getTime()}`),
+          slug: slugify(
+            `novo usuário-${body.email}-${new Date().getTime()}`,
+          ).toLowerCase(),
           email: body.email,
           externalAuthId: body.externalAuthId,
           roleId: role.id,

@@ -52,7 +52,7 @@ export const subjectRouter = createTRPCRouter({
       return ctx.prisma.subject.create({
         data: {
           name: input.name,
-          slug: slugify(input.name),
+          slug: slugify(input.name).toLowerCase(),
           School: { connect: { id: ctx.session.school.id } },
         },
       });
@@ -104,7 +104,7 @@ export const subjectRouter = createTRPCRouter({
         where: { id: input.subjectId, schoolId: ctx.session.school.id },
         data: {
           name: input.name,
-          slug: slugify(input.name),
+          slug: slugify(input.name).toLowerCase(),
         },
       });
     }),

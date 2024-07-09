@@ -115,102 +115,106 @@ export const studentRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const academicPeriod =
-        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
-      if (!academicPeriod) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Não há período letivo ativo",
+      return ctx.prisma.$transaction(async (tx) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        if (!academicPeriod) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Não há período letivo ativo",
+          });
+        }
+        const studentRole = await tx.role.findFirst({
+          where: {
+            name: "STUDENT",
+          },
         });
-      }
-      const studentRole = await ctx.prisma.role.findFirst({
-        where: {
-          name: "STUDENT",
-        },
-      });
-      if (!studentRole) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Função de estudante não encontrada",
+        if (!studentRole) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Função de estudante não encontrada",
+          });
+        }
+        const responsibleRole = await tx.role.findFirst({
+          where: {
+            name: "STUDENT_RESPONSIBLE",
+          },
         });
-      }
-      const responsibleRole = await ctx.prisma.role.findFirst({
-        where: {
-          name: "STUDENT_RESPONSIBLE",
-        },
-      });
-      if (!responsibleRole) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Função de responsável não encontrada",
-        });
-      }
-      const [firstName, ...rest] = input.name.split(" ");
-      await clerkClient.users.createUser({
-        firstName: firstName,
-        lastName: rest.join(" "),
-        emailAddress: [input.email],
-      });
-      const countUserWithSameName = await ctx.prisma.user.count({
-        where: {
-          name: input.name,
-        },
-      });
-      const countSuffix =
-        countUserWithSameName > 0 ? `-${String(countUserWithSameName)}` : "";
-      const responsiblesToSave = [];
-      for (const responsible of input.responsibles) {
-        const [firstName, ...rest] = responsible.name.split(" ");
+        if (!responsibleRole) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Função de responsável não encontrada",
+          });
+        }
+        const [firstName, ...rest] = input.name.split(" ");
         await clerkClient.users.createUser({
           firstName: firstName,
           lastName: rest.join(" "),
-          emailAddress: [responsible.email],
+          emailAddress: [input.email],
         });
-        const countUserWithSameName = await ctx.prisma.user.count({
+        const countUserWithSameName = await tx.user.count({
           where: {
-            name: responsible.name,
+            name: input.name,
           },
         });
         const countSuffix =
           countUserWithSameName > 0 ? `-${String(countUserWithSameName)}` : "";
-        responsiblesToSave.push({
-          name: responsible.name,
-          email: responsible.email,
-          schoolId: ctx.session.school.id,
-          roleId: responsibleRole.id,
-          slug: slugify(`${responsible.name}${countSuffix}`),
+        const responsiblesToSave = [];
+        for (const responsible of input.responsibles) {
+          const [firstName, ...rest] = responsible.name.split(" ");
+          await clerkClient.users.createUser({
+            firstName: firstName,
+            lastName: rest.join(" "),
+            emailAddress: [responsible.email],
+          });
+          const countUserWithSameName = await tx.user.count({
+            where: {
+              name: responsible.name,
+            },
+          });
+          const countSuffix =
+            countUserWithSameName > 0
+              ? `-${String(countUserWithSameName)}`
+              : "";
+          responsiblesToSave.push({
+            name: responsible.name,
+            email: responsible.email,
+            schoolId: ctx.session.school.id,
+            roleId: responsibleRole.id,
+            slug: slugify(`${responsible.name}${countSuffix}`).toLowerCase(),
+          });
+        }
+        const responsiblesSaved = await Promise.all(
+          responsiblesToSave.map((responsible) =>
+            tx.user.create({ data: responsible }),
+          ),
+        );
+        const student = await tx.student.create({
+          data: {
+            User: {
+              create: {
+                name: input.name,
+                email: input.email,
+                schoolId: ctx.session.school.id,
+                roleId: studentRole.id,
+                slug: slugify(`${input.name}${countSuffix}`).toLowerCase(),
+              },
+            },
+            StudentHasResponsible: {
+              createMany: {
+                data: responsiblesSaved.map((responsibleSaved) => ({
+                  responsibleId: responsibleSaved.id,
+                })),
+              },
+            },
+            StudentHasAcademicPeriod: {
+              create: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
+          },
         });
-      }
-      const responsiblesSaved = await Promise.all(
-        responsiblesToSave.map((responsible) =>
-          ctx.prisma.user.create({ data: responsible }),
-        ),
-      );
-      const student = await ctx.prisma.student.create({
-        data: {
-          User: {
-            create: {
-              name: input.name,
-              email: input.email,
-              schoolId: ctx.session.school.id,
-              roleId: studentRole.id,
-              slug: slugify(`${input.name}${countSuffix}`),
-            },
-          },
-          StudentHasResponsible: {
-            createMany: {
-              data: responsiblesSaved.map((responsibleSaved) => ({
-                responsibleId: responsibleSaved.id,
-              })),
-            },
-          },
-          StudentHasAcademicPeriod: {
-            create: {
-              academicPeriodId: academicPeriod.id,
-            },
-          },
-        },
+        return student;
       });
-      return student;
     }),
 });

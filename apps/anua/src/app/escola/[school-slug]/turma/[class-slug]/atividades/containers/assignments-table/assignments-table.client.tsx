@@ -9,9 +9,13 @@ import { useAssignmentsTableColumns } from "./use-assignments-table-columns";
 
 interface AssignmentsTableProps {
   classId: string;
+  subjectId: string;
 }
 
-export function AssignmentsTableClient({ classId }: AssignmentsTableProps) {
+export function AssignmentsTableClient({
+  classId,
+  subjectId,
+}: AssignmentsTableProps) {
   const searchParams = useSearchParams();
 
   const page = searchParams.has("page") ? Number(searchParams.get("page")) : 1;
@@ -21,12 +25,14 @@ export function AssignmentsTableClient({ classId }: AssignmentsTableProps) {
   const { data: assignments, isLoading: isLoadingAssignments } =
     api.assignment.getCurrentAcademicPeriodAssignments.useQuery({
       classId,
+      subjectId,
       page,
       limit: size,
     });
   const { data: assignmentsCount } =
     api.assignment.countCurrentAcademicPeriodAssignments.useQuery({
       classId,
+      subjectId,
     });
   return (
     <TableWithPagination

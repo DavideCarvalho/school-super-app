@@ -115,96 +115,6 @@ export const classRouter = createTRPCRouter({
         },
       });
     }),
-  getClassAssignments: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        classId: z.string(),
-        limit: z.number().optional().default(5),
-        page: z.number().optional().default(1),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
-        where: {
-          schoolId: ctx.session.school.id,
-        },
-        orderBy: {
-          startDate: "desc",
-        },
-      });
-      if (!latestAcademicPeriod) {
-        return [];
-      }
-      return ctx.prisma.assignment.findMany({
-        where: {
-          TeacherHasClass: {
-            teacherId: ctx.session.user.id,
-            classId: input.classId,
-            CalendarSlot: {
-              every: {
-                Calendar: {
-                  academicPeriodId: latestAcademicPeriod.id,
-                },
-              },
-            },
-          },
-          academicPeriodId: latestAcademicPeriod.id,
-        },
-        take: input.limit,
-        skip: (input.page - 1) * input.limit,
-        include: {
-          TeacherHasClass: {
-            include: {
-              Subject: true,
-            },
-          },
-          StudentHasAssignment: {
-            include: {
-              Student: {
-                include: {
-                  User: true,
-                },
-              },
-            },
-          },
-        },
-      });
-    }),
-  countClassAssignments: isUserLoggedInAndAssignedToSchool
-    .input(
-      z.object({
-        classId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const latestAcademicPeriod = await ctx.prisma.academicPeriod.findFirst({
-        where: {
-          schoolId: ctx.session.school.id,
-        },
-        orderBy: {
-          startDate: "desc",
-        },
-      });
-      if (!latestAcademicPeriod) {
-        return 0;
-      }
-      return ctx.prisma.assignment.count({
-        where: {
-          TeacherHasClass: {
-            teacherId: ctx.session.user.id,
-            classId: input.classId,
-            CalendarSlot: {
-              every: {
-                Calendar: {
-                  academicPeriodId: latestAcademicPeriod.id,
-                },
-              },
-            },
-          },
-          academicPeriodId: latestAcademicPeriod.id,
-        },
-      });
-    }),
   findBySlug: isUserLoggedInAndAssignedToSchool
     .input(z.object({ slug: z.string() }))
     .query(({ ctx, input }) => {
@@ -309,7 +219,7 @@ export const classRouter = createTRPCRouter({
         return tx.class.create({
           data: {
             name: input.name,
-            slug: slugify(input.name),
+            slug: slugify(input.name).toLowerCase(),
             schoolId: ctx.session.school.id,
             TeacherHasClass: {
               createMany: {

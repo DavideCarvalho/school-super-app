@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   useParams,
   usePathname,
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import queryString from "query-string";
 
 // How do I get the pathname with hash.
 // source: https://github.com/vercel/next.js/discussions/49465
@@ -34,12 +33,15 @@ export const useHashQueryValue = (queryKey: string) => {
     getHashQueryValue(),
   );
 
-  const setHashQueryValue = (newValue: string) => {
+  const setHashQueryValue = useCallback((newValue: string) => {
     const hash =
       typeof window !== "undefined"
         ? window.location.hash.replace(/^#!?/, "")
         : "";
     const [hashWithoutQueryString, ...hashQueryStringParams] = hash.split("?");
+    if (!hashQueryStringParams.length) {
+      hashQueryStringParams.push(`${queryKey}=${newValue}`);
+    }
     let newHashQueryString = [];
     if (!newValue) {
       newHashQueryString = hashQueryStringParams.filter((queryString) => {
@@ -53,11 +55,12 @@ export const useHashQueryValue = (queryKey: string) => {
         return `${queryString.split("=")[0]}=${newValue}`;
       });
     }
-    const updatedUrl = `${pathname}${searchParams?.toString()}${hashWithoutQueryString}?${hashQueryStringParams.join("&")}`;
+    const updatedUrl = `${pathname}${searchParams?.toString()}#${hashWithoutQueryString}${hashQueryStringParams.join("&")}`;
 
+    console.log("updatedUrl", updatedUrl);
     _setHashQueryValue(newValue);
     router.replace(updatedUrl);
-  };
+  }, []);
   useEffect(() => {
     const currentHash = getHashQueryValue();
     _setHashQueryValue(currentHash);

@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Subject } from "@acme/db";
 import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/server";
@@ -10,8 +11,10 @@ import { AssignmentsTableServer } from "./containers/assignments-table/assignmen
 
 export default async function ClassActivityPage({
   params,
+  searchParams,
 }: {
   params: { "class-slug": string; "school-slug": string };
+  searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const requestHeaders = headers();
   const xUrl = requestHeaders.get("x-url");
@@ -22,6 +25,23 @@ export default async function ClassActivityPage({
   if (!foundClass) {
     return redirect("/escola");
   }
+  let subjectSlug = searchParams.materia as string | null;
+  if (!subjectSlug) {
+    const subjects =
+      await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod({
+        classId: foundClass.id,
+      });
+    if (!subjects || subjects.length === 0) {
+      return redirect("/escola");
+    }
+    const firstSubject = subjects[0];
+    if (!firstSubject) return redirect("/escola");
+    subjectSlug = firstSubject.slug;
+  }
+  const subject = await api.subject.findBySlug({ slug: subjectSlug });
+  if (!subject) {
+    return redirect("/escola");
+  }
   return (
     <>
       <NewAssignmentModalListener classId={foundClass.id} />
@@ -30,7 +50,7 @@ export default async function ClassActivityPage({
       >
         <Button>Adicionar atividade</Button>
       </Link>
-      <AssignmentsTableServer classId={foundClass.id} />
+      <AssignmentsTableServer classId={foundClass.id} subjectId={subject.id} />
     </>
   );
 }

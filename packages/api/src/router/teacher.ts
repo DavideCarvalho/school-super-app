@@ -150,7 +150,7 @@ export const teacherRouter = createTRPCRouter({
           User: {
             create: {
               name: input.name,
-              slug: slugify(input.name),
+              slug: slugify(input.name).toLowerCase(),
               email: input.email,
               roleId: roleTeacher.id,
               schoolId: ctx.session.school.id,
@@ -227,7 +227,7 @@ export const teacherRouter = createTRPCRouter({
           User: {
             update: {
               name: input.name,
-              slug: slugify(input.name),
+              slug: slugify(input.name).toLowerCase(),
               email: input.email,
             },
           },
