@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { api, createSSRHelper, HydrateClient } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 import { GradesTableClient } from "./grades-table.client";
 
 interface GradesTableServerProps {
   classId: string;
+  subjectId: string;
 }
 
 export async function GradesTableServer(props: GradesTableServerProps) {
@@ -33,6 +33,7 @@ async function GradesTableDataLoader(props: GradesTableServerProps) {
   await Promise.all([
     api.grade.getStudentsGradesForClassOnCurrentAcademicPeriod.prefetch({
       classId: props.classId,
+      subjectId: props.subjectId,
       page,
       limit: size,
     }),

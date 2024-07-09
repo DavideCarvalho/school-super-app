@@ -57,7 +57,6 @@ export const useHashQueryValue = (queryKey: string) => {
     }
     const updatedUrl = `${pathname}${searchParams?.toString()}#${hashWithoutQueryString}${hashQueryStringParams.join("&")}`;
 
-    console.log("updatedUrl", updatedUrl);
     _setHashQueryValue(newValue);
     router.replace(updatedUrl);
   }, []);

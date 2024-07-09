@@ -22,6 +22,7 @@ import { api } from "~/trpc/react";
 
 interface AssignmentsGradesClientProps {
   classId: string;
+  subjectId: string;
 }
 
 const schema = z.object({
@@ -50,6 +51,7 @@ const schema = z.object({
 });
 
 export function AssignmentsGradesClient({
+  subjectId,
   classId,
 }: AssignmentsGradesClientProps) {
   const form = useForm<z.infer<typeof schema>>({
@@ -61,7 +63,8 @@ export function AssignmentsGradesClient({
 
   const { data: assignments, refetch: refetchAssignments } =
     api.assignment.getCurrentAcademicPeriodAssignments.useQuery({
-      classId: classId,
+      classId,
+      subjectId,
     });
   const { data: studentsGrades, refetch: refetchStudentsGrades } =
     api.assignment.getStudentsAssignmentsGradesForClassOnCurrentAcademicPeriod.useQuery(
@@ -91,6 +94,7 @@ export function AssignmentsGradesClient({
       );
       await saveStudentsGrades({
         classId,
+        subjectId,
         grades,
       });
       toast.dismiss(toastId);

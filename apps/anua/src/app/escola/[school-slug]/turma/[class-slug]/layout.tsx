@@ -29,41 +29,40 @@ export default function ClassLayout({
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Next Assignment
+                      Próxima Atividade
                     </CardTitle>
                     <div className="flex items-center gap-2">
                       <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">
-                        Due 4/15/2023
+                        Para 15/07/2024
                       </span>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-lg font-bold">Final Project</div>
+                    <div className="text-lg font-bold">Atividade</div>
                     <p className="text-sm text-muted-foreground">
-                      Create a web application that demonstrates your
-                      understanding of the course material.
+                      Dia de entrega da atividade está próximo!
                     </p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Attendance Issues
+                      Presença
                     </CardTitle>
                     <UsersIcon className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-lg font-bold">3 Students</div>
+                    <div className="text-lg font-bold">3 Alunos</div>
                     <p className="text-sm text-muted-foreground">
-                      Have missed more than 3 classes this semester.
+                      Estão com risco de reprovar por faltas.
                     </p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Upcoming Events
+                      Eventos
                     </CardTitle>
                     <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>

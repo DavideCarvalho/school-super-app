@@ -5,13 +5,13 @@ import type { Subject, Teacher, TeacherHasClass, User } from "@acme/db";
 
 import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
-import { Class } from "./../../../db/prisma/generated/types";
 
 export const attendanceRouter = createTRPCRouter({
   getClassAttendanceForCurrentAcademicPeriod: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({
         classId: z.string(),
+        subjectId: z.string(),
         limit: z.number().optional().default(5),
         page: z.number().optional().default(1),
       }),
@@ -46,6 +46,10 @@ export const attendanceRouter = createTRPCRouter({
                   CalendarSlot: {
                     include: {
                       TeacherHasClass: {
+                        where: {
+                          classId: input.classId,
+                          subjectId: input.subjectId,
+                        },
                         include: {
                           Subject: true,
                           Teacher: {

@@ -9,9 +9,13 @@ import { useAttendancesTableColumns } from "./use-attendances-table-columns";
 
 interface AttendancesTableProps {
   classId: string;
+  subjectId: string;
 }
 
-export function AttendancesTableClient({ classId }: AttendancesTableProps) {
+export function AttendancesTableClient({
+  classId,
+  subjectId,
+}: AttendancesTableProps) {
   const searchParams = useSearchParams();
 
   const page = searchParams.has("page") ? Number(searchParams.get("page")) : 1;
@@ -21,6 +25,7 @@ export function AttendancesTableClient({ classId }: AttendancesTableProps) {
   const { data: attendances, isLoading: isLoadingAttendances } =
     api.attendance.getClassAttendanceForCurrentAcademicPeriod.useQuery({
       classId,
+      subjectId,
       page,
       limit: size,
     });

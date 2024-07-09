@@ -8,6 +8,7 @@ import { AttendancesTableClient } from "./attendances-table.client";
 
 interface AssignmentsTableServerProps {
   classId: string;
+  subjectId: string;
 }
 
 export async function AttendancesTableServer(
@@ -32,10 +33,10 @@ async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
   const size = url.searchParams.has("size")
     ? Number(url.searchParams.get("size"))
     : 10;
-  const helper = await createSSRHelper();
   await Promise.all([
     api.attendance.getClassAttendanceForCurrentAcademicPeriod.prefetch({
       classId: props.classId,
+      subjectId: props.subjectId,
       page,
       limit: size,
     }),

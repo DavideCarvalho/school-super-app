@@ -110,7 +110,6 @@ export const assignmentRouter = createTRPCRouter({
         }),
       )
       .query(async ({ ctx, input }) => {
-        console.log("input", input);
         const academicPeriod =
           await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
         if (!academicPeriod) {

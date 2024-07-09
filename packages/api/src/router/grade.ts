@@ -11,6 +11,7 @@ export const gradeRouter = createTRPCRouter({
       .input(
         z.object({
           classId: z.string(),
+          subjectId: z.string(),
           limit: z.number().optional().default(5),
           page: z.number().optional().default(1),
         }),
@@ -36,6 +37,7 @@ export const gradeRouter = createTRPCRouter({
             sql<number>`SUM(a.grade)`.as("totalGrade"),
           ])
           .where("thc.classId", "=", input.classId)
+          .where("thc.subjectId", "=", input.subjectId)
           .where("a.academicPeriodId", "=", academicPeriod.id)
           .groupBy("s.id")
           .execute();
@@ -57,6 +59,7 @@ export const gradeRouter = createTRPCRouter({
       .input(
         z.object({
           classId: z.string(),
+          subjectId: z.string(),
           grades: z.array(
             z.object({
               studentId: z.string(),

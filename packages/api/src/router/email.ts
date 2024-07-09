@@ -54,7 +54,7 @@ export const emailRouter = createTRPCRouter({
               message: `
 
                 Nome da escola: ${input.schoolName ?? "Não informado"}
-                
+
                 ${input.message ? input.message : ""}
               `,
               name: input.name ?? "Não informado",
