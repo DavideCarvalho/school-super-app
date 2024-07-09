@@ -2,7 +2,12 @@
 
 import { useEffect } from "react";
 import { revalidatePath } from "next/cache";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import {
   Select,
@@ -13,18 +18,26 @@ import {
 } from "@acme/ui/select";
 
 import { api } from "~/trpc/react";
-import { useClass } from "../../hooks/use-class";
 
 export function SubjectSelectClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const params = useParams();
   const router = useRouter();
-  const clasz = useClass();
+  const classSlug = params["class-slug"];
   const subjectSlug = searchParams.get("materia");
+  const { data: clasz } = api.class.findBySlug.useQuery({
+    slug: classSlug as string,
+  });
   const { data: subjects } =
-    api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.useQuery({
-      classId: clasz.id,
-    });
+    api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.useQuery(
+      {
+        classId: clasz?.id,
+      },
+      {
+        enabled: clasz != null,
+      },
+    );
 
   useEffect(() => {
     if (!subjects || subjects.length === 0 || subjectSlug) return;

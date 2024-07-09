@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 
 import type { Class } from "@acme/db";
 
@@ -10,16 +11,16 @@ export const ClassContext = createContext<Class | undefined | null>(undefined);
 
 export function ClassContextProvider({
   children,
-  classSlug,
 }: {
   children: React.ReactNode;
-  classSlug: string;
 }) {
-  const { data: school } = api.class.findBySlug.useQuery({
-    slug: classSlug,
+  const params = useParams();
+  const classSlug = params["class-slug"];
+  const { data: clasz } = api.class.findBySlug.useQuery({
+    slug: classSlug as string,
   });
 
   return (
-    <ClassContext.Provider value={school}>{children}</ClassContext.Provider>
+    <ClassContext.Provider value={clasz}>{children}</ClassContext.Provider>
   );
 }

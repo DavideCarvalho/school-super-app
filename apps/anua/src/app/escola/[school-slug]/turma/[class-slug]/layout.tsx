@@ -2,87 +2,67 @@ import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
 
 import { ClassTabs } from "./_components/class-tabs";
 import { SubjectSelectClient } from "./containers/subject-select/subject-select.client";
-import { ClassContextProvider } from "./contexts/class.context";
-import { SubjectContextProvider } from "./contexts/subject.context";
-import { ClassGuard } from "./guards/class.guard";
-import { SubjectGuard } from "./guards/subject.guard";
 
-export default function ClassLayout({
+export default async function ClassLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: {
-    "school-slug": string;
-    "class-slug": string;
-  };
 }) {
-  const classSlug = params["class-slug"];
   return (
-    <ClassContextProvider classSlug={classSlug}>
-      <ClassGuard>
-        <div className="flex min-h-screen w-full flex-col bg-background">
-          <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
-            <SubjectContextProvider>
-              <SubjectSelectClient />
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Próxima Atividade
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        Para 15/07/2024
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-lg font-bold">Atividade</div>
-                    <p className="text-sm text-muted-foreground">
-                      Dia de entrega da atividade está próximo!
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Presença
-                    </CardTitle>
-                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-lg font-bold">3 Alunos</div>
-                    <p className="text-sm text-muted-foreground">
-                      Estão com risco de reprovar por faltas.
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Eventos
-                    </CardTitle>
-                    <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-lg font-bold">Guest Speaker</div>
-                    <p className="text-sm text-muted-foreground">
-                      4/20/2023 - 2:00 PM
-                    </p>
-                  </CardContent>
-                </Card>
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
+        <SubjectSelectClient />
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">
+                Próxima Atividade
+              </CardTitle>
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  Para 15/07/2024
+                </span>
               </div>
-              <div className="flex flex-col gap-4">
-                <ClassTabs />
-                {children}
-              </div>
-            </SubjectContextProvider>
-          </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-bold">Atividade</div>
+              <p className="text-sm text-muted-foreground">
+                Dia de entrega da atividade está próximo!
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Presença</CardTitle>
+              <UsersIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-bold">3 Alunos</div>
+              <p className="text-sm text-muted-foreground">
+                Estão com risco de reprovar por faltas.
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Eventos</CardTitle>
+              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-bold">Guest Speaker</div>
+              <p className="text-sm text-muted-foreground">
+                4/20/2023 - 2:00 PM
+              </p>
+            </CardContent>
+          </Card>
         </div>
-      </ClassGuard>
-    </ClassContextProvider>
+        <div className="flex flex-col gap-4">
+          <ClassTabs />
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
