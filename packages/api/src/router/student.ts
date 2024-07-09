@@ -7,7 +7,6 @@ import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const studentRouter = createTRPCRouter({
-  // TODO: Mudar isso daqui
   studentsWithCanteenLimitBySchoolId: isUserLoggedInAndAssignedToSchool.query(
     async ({ ctx }) => {
       // Essa query tenta achar

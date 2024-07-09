@@ -3,15 +3,13 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
-import { hoursToDate } from "~/utils/hours-to-date";
-import * as academicPeriodRepository from "../repository/academicPeriod.repository";
 import * as academicPeriodService from "../service/academicPeriod.service";
 import {
   createTRPCRouter,
-  getCurrentOrLastActiveAcademicPeriodMiddleware,
   isUserLoggedInAndAssignedToSchool,
   publicProcedure,
 } from "../trpc";
+import { hoursToDate } from "../utils/hours-to-date";
 
 export const teacherRouter = createTRPCRouter({
   getUniqueTeachers: isUserLoggedInAndAssignedToSchool.query(({ ctx }) => {

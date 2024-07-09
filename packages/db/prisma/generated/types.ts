@@ -249,7 +249,7 @@ export type StudentHasAcademicPeriod = {
   id: string;
   studentId: string;
   academicPeriodId: string;
-  classId: string;
+  classId: string | null;
 };
 export type StudentHasAssignment = {
   id: string;

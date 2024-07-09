@@ -172,24 +172,33 @@ export const schoolRouter = createTRPCRouter({
           },
         });
 
-        const students = await tx.student.findMany({
-          where: {
-            User: {
-              schoolId: ctx.session.school.id,
-              active: true,
-            },
-            StudentHasAcademicPeriod: {
-              some: {
-                academicPeriodId: academicPeriod.id,
+        // Se o período letivo for alterado
+        // passar os alunos para o novo período letivo
+        if (academicPeriod.id !== newAcademicPeriod.id) {
+          const students = await tx.student.findMany({
+            where: {
+              User: {
+                schoolId: ctx.session.school.id,
+                active: true,
+              },
+              StudentHasAcademicPeriod: {
+                every: {
+                  academicPeriodId: academicPeriod.id,
+                },
               },
             },
-          },
-        });
-
-        if (academicPeriod.id !== newAcademicPeriod.id) {
+            include: {
+              StudentHasAcademicPeriod: true,
+            },
+          });
           await tx.studentHasAcademicPeriod.createMany({
             data: students.map((student) => ({
               studentId: student.id,
+              classId: academicPeriod
+                ? student.StudentHasAcademicPeriod.find(
+                    (s) => s.academicPeriodId === academicPeriod.id,
+                  )?.classId
+                : null,
               academicPeriodId: newAcademicPeriod.id,
             })),
           });

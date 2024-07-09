@@ -102,14 +102,14 @@ model Student {
 }
 
 model StudentHasAcademicPeriod {
-  id               String @id @default(uuid())
+  id               String  @id @default(uuid())
   studentId        String
   academicPeriodId String
-  classId          String
+  classId          String?
 
   Student        Student        @relation(fields: [studentId], references: [id])
   AcademicPeriod AcademicPeriod @relation(fields: [academicPeriodId], references: [id])
-  Class          Class          @relation(fields: [classId], references: [id])
+  Class          Class?         @relation(fields: [classId], references: [id])
 }
 
 model StudentHasResponsible {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter } from "../trpc";
 import { isUserLoggedInAndAssignedToSchool } from "./../trpc";
 
 export const roleRouter = createTRPCRouter({
