@@ -30,7 +30,7 @@
     "@types/nodemailer": "6.4.15",
     "classnames": "2.5.1",
     "eslint": "9.6.0",
-    "framer-motion": "11.2.14",
+    "framer-motion": "11.3.0",
     "prism-react-renderer": "2.3.1",
     "typescript": "5.5.3"
   }
