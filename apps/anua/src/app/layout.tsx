@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="min-h-screen bg-background text-foreground antialiased">
         <ToasterPortal />
-        <ClerkProvider localization={ptBR}>
+        <ClerkProvider localization={ptBR} signInUrl="/sign-in">
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ClerkProvider>
       </body>

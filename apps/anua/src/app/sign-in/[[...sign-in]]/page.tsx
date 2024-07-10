@@ -19,7 +19,7 @@ export default function SignInPage({
       <SignIn
         path="/sign-in"
         routing="path"
-        fallbackRedirectUrl={redirectTo}
+        fallbackRedirectUrl={"/escola"}
         appearance={{
           elements: {
             socialButtonsBlockButton__google: "hidden",
