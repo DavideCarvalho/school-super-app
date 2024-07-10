@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { SignedIn, SignOutButton } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast, Toaster } from "react-hot-toast";
@@ -81,6 +82,19 @@ export default function LandingPage() {
                 Login
               </Link>
             </div>
+
+            <SignedIn>
+              <div className="hidden sm:ml-auto sm:flex sm:items-center sm:justify-end sm:space-x-4">
+                <SignOutButton>
+                  <button
+                    type="button"
+                    className="focus:ring-ring-900 inline-flex items-center justify-center rounded-full border border-purple-900 px-6 py-2.5 text-base font-medium text-purple-900 transition-all duration-200 hover:bg-purple-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-900 focus:ring-offset-2"
+                  >
+                    Sair
+                  </button>
+                </SignOutButton>
+              </div>
+            </SignedIn>
 
             <div className="ml-4 flex lg:hidden">
               <button

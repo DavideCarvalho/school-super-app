@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authMiddleware, clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
 export default clerkMiddleware((auth, req) => {
   const requestHeaders = new Headers(req.headers);
