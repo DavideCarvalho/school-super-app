@@ -6,7 +6,8 @@ import { api, HydrateClient } from "~/trpc/server";
 import { SubjectSelectClient } from "./subject-select.client";
 
 interface SubjectSelectServerProps {
-  classSlug: string;
+  classId: string;
+  subjectId: string;
 }
 
 export async function SubjectSelectServer(props: SubjectSelectServerProps) {
@@ -29,20 +30,15 @@ async function SubjectSelectDataLoader(props: SubjectSelectServerProps) {
   const size = url.searchParams.has("size")
     ? Number(url.searchParams.get("size"))
     : 10;
-  await Promise.all([
-    api.grade.getStudentsGradesForClassOnCurrentAcademicPeriod.prefetch({
-      classId: props.classId,
-      subjectId: props.subjectId,
-      page,
-      limit: size,
-    }),
-    api.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
-      classId: props.classId,
-    }),
-  ]);
+  await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.prefetch({
+    classId: props.classId,
+  });
   return (
     <HydrateClient>
-      <SubjectSelectClient />
+      <SubjectSelectClient
+        classId={props.classId}
+        subjectId={props.subjectId}
+      />
     </HydrateClient>
   );
 }

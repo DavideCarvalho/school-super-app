@@ -19,46 +19,40 @@ import {
 
 import { api } from "~/trpc/react";
 
-export function SubjectSelectClient() {
+interface SubjectSelectClientProps {
+  classId: string;
+  subjectId?: string;
+}
+
+export function SubjectSelectClient({
+  classId,
+  subjectId,
+}: SubjectSelectClientProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const params = useParams();
   const router = useRouter();
-  const classSlug = params["class-slug"];
-  const subjectSlug = searchParams.get("materia");
-  const { data: clasz } = api.class.findBySlug.useQuery({
-    slug: classSlug as string,
-  });
   const { data: subjects } =
-    api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.useQuery(
-      {
-        classId: clasz?.id,
-      },
-      {
-        enabled: clasz != null,
-      },
-    );
-
-  useEffect(() => {
-    if (!subjects || subjects.length === 0 || subjectSlug) return;
-    const firstSubject = subjects[0];
-    if (!firstSubject) return;
-    const newParams = new URLSearchParams(searchParams.toString());
-    newParams.set("materia", firstSubject.slug);
-    router.replace(`${pathname}?${newParams.toString()}`, {
-      scroll: false,
+    api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.useQuery({
+      classId,
     });
-  }, [subjects, subjectSlug, router.replace, pathname, searchParams]);
+
+  console.log("subjectId", subjectId);
+
+  if (subjects?.length === 1) return null;
 
   return (
     <Select
-      value={subjectSlug ?? undefined}
+      value={subjectId}
       onValueChange={(value) => {
+        if (!subjects) return;
+        const subject = subjects.find((s) => s.id === value);
+        if (!subject) return;
         const newParams = new URLSearchParams(searchParams.toString());
-        newParams.set("materia", value);
+        newParams.set("materia", subject.slug);
         router.replace(`${pathname}?${newParams.toString()}`, {
           scroll: false,
         });
+        router.refresh();
       }}
     >
       <SelectTrigger>
@@ -66,7 +60,7 @@ export function SubjectSelectClient() {
       </SelectTrigger>
       <SelectContent>
         {subjects?.map((subject) => (
-          <SelectItem key={subject.id} value={subject.slug}>
+          <SelectItem key={subject.id} value={subject.id}>
             {subject.name}
           </SelectItem>
         ))}

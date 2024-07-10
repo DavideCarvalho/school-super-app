@@ -19,29 +19,23 @@ export default async function ClassGradesPage({
   if (!foundClass) {
     return redirect("/escola");
   }
-  let subjectSlug = searchParams.materia as string | null;
-  if (!subjectSlug) {
-    const subjects =
-      await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod({
-        classId: foundClass.id,
-      });
-    if (!subjects || subjects.length === 0) {
-      return redirect("/escola");
-    }
-    const firstSubject = subjects[0];
-    if (!firstSubject) return redirect("/escola");
-    subjectSlug = firstSubject.slug;
-  }
-  const subject = await api.subject.findBySlug({ slug: subjectSlug });
-  if (!subject) {
-    return redirect("/escola");
+  const subjectSlug = searchParams.materia as string | null;
+  const subjects =
+    await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod({
+      classId: foundClass.id,
+    });
+  const foundSubject = !subjectSlug
+    ? subjects[0]
+    : subjects.find((s) => s.slug === subjectSlug);
+  if (!foundSubject) {
+    return redirect(`/escola/${params["school-slug"]}`);
   }
   return (
     <>
       <Link href="notas/adicionar-notas">
         <Button>Adicionar notas</Button>
       </Link>
-      <GradesTableServer classId={foundClass.id} subjectId={subject.id} />
+      <GradesTableServer classId={foundClass.id} subjectId={foundSubject.id} />
     </>
   );
 }
