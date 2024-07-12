@@ -38,7 +38,6 @@ const schema = z.object({
         id: z.string(),
         name: z.string(),
       }),
-      quantity: z.number().min(1),
     }),
   ),
 });
@@ -104,7 +103,6 @@ export function EditClassModal({
           id: Teacher.id,
           name: Teacher.User.name,
         },
-        quantity: subjectQuantity,
       })),
     );
   }, [clasz, setValue]);
@@ -120,7 +118,6 @@ export function EditClassModal({
           (subjectWithTeacher) => ({
             subjectId: subjectWithTeacher.subject.id,
             teacherId: subjectWithTeacher.teacher.id,
-            quantity: subjectWithTeacher.quantity,
           }),
         ),
       });
@@ -211,12 +208,6 @@ export function EditClassModal({
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input
-                    type="number"
-                    {...register(`subjectsWithTeachers.${index}.quantity`, {
-                      valueAsNumber: true,
-                    })}
-                  />
                   <Button
                     type="button"
                     className="flex w-full items-center justify-center"

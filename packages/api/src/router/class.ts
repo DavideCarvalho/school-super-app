@@ -238,7 +238,6 @@ export const classRouter = createTRPCRouter({
           z.object({
             subjectId: z.string(),
             teacherId: z.string(),
-            quantity: z.number().min(1),
           }),
         ),
       }),
@@ -272,8 +271,7 @@ export const classRouter = createTRPCRouter({
           !currentTeacherHasClasses.some(
             (current) =>
               current.subjectId === subjectWithTeacher.subjectId &&
-              current.teacherId === subjectWithTeacher.teacherId &&
-              current.subjectQuantity === subjectWithTeacher.quantity,
+              current.teacherId === subjectWithTeacher.teacherId,
           ),
       );
 
