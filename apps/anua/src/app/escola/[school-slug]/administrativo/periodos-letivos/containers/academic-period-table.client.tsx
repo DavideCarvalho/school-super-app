@@ -22,7 +22,7 @@ export function AcademicPeriodTableClient() {
       size,
     });
 
-  const { data: workersCount } =
+  const { data: academicPeriodsCount } =
     api.academicPeriod.countAllBySchoolId.useQuery();
 
   return (
@@ -30,7 +30,7 @@ export function AcademicPeriodTableClient() {
       isLoading={!academicPeriods && isLoadingAcademicPeriods}
       data={academicPeriods ?? []}
       columns={columns}
-      totalCount={workersCount ?? 0}
+      totalCount={academicPeriodsCount ?? 0}
       pageIndex={page - 1}
       pageSize={size}
     />
