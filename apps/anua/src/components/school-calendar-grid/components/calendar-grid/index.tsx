@@ -119,6 +119,8 @@ export function CalendarGrid({
     [schedule],
   );
 
+  console.log("allClassKeys", allClassKeys);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -165,6 +167,11 @@ export function CalendarGrid({
                         day as keyof typeof schedule,
                         startTime as string,
                         endTime as string,
+                      );
+                      console.log("blankCellKey", blankCellKey);
+                      console.log(
+                        "foundClassKey",
+                        allClassKeys.find((c) => c === blankCellKey),
                       );
                       return (
                         <BlankCell id={blankCellKey} draggable={newSchedule} />
@@ -215,7 +222,7 @@ function generateBlankCellKey(
   startTime: string,
   endTime: string,
 ): ClassKey {
-  return `${day}_${startTime}-${endTime}_-_-_-BLANK${new Date().getTime()}`;
+  return `${day}_${startTime}-${endTime}_-_-_-BLANK`;
 }
 
 interface ScheduledClassProps {
