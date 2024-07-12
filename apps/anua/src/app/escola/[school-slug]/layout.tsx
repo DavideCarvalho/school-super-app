@@ -6,8 +6,6 @@ import { cn } from "@acme/ui";
 
 import { api } from "~/trpc/server";
 import { matchesPathname } from "~/utils/url";
-import { SchoolContextProvider } from "./contexts/school.context";
-import { SchoolGuard } from "./guards/school.guard";
 
 export default async function RootLayout({
   children,

@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
@@ -177,53 +178,6 @@ export const classRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.$transaction(async (tx) => {
-        const existingClasses = await tx.teacherHasClass.findMany({
-          where: {
-            teacherId: {
-              in: input.subjectsWithTeachers.map((s) => s.teacherId),
-            },
-            subjectId: {
-              in: input.subjectsWithTeachers.flatMap((s) => s.subjectId),
-            },
-          },
-        });
-        // for (const subjectWithTeacher of input.subjectsWithTeachers) {
-        // for (const subjectId of subjectWithTeacher.subjectIds) {
-        //   const existingClass = await tx.teacherHasClass.findFirst({
-        //     where: {
-        //       teacherId: subjectWithTeacher.teacherId,
-        //       subjectId,
-        //     },
-        //   });
-        //   if (existingClass) {
-        //     existingClasses.push(existingClass);
-        //   }
-        // }
-        // }
-        for (const existingClass of existingClasses) {
-          const teacherHasClassNewValue = input.subjectsWithTeachers.find(
-            (subjectWithTeacher) =>
-              subjectWithTeacher.teacherId === existingClass.teacherId &&
-              subjectWithTeacher.subjectId === existingClass.subjectId,
-          );
-          if (!teacherHasClassNewValue) continue;
-          await tx.teacherHasClass.update({
-            where: {
-              id: existingClass.id,
-            },
-            data: {
-              subjectQuantity: teacherHasClassNewValue.quantity,
-            },
-          });
-        }
-        const newClasses = input.subjectsWithTeachers.filter(
-          (subjectWithTeacher) =>
-            !existingClasses.some(
-              (existingClass) =>
-                existingClass.teacherId === subjectWithTeacher.teacherId &&
-                existingClass.subjectId === subjectWithTeacher.subjectId,
-            ),
-        );
         await tx.class.create({
           data: {
             name: input.name,
@@ -231,7 +185,11 @@ export const classRouter = createTRPCRouter({
             schoolId: ctx.session.school.id,
             TeacherHasClass: {
               createMany: {
-                data: newClasses,
+                data: input.subjectsWithTeachers.map((newClass) => ({
+                  teacherId: newClass.teacherId,
+                  subjectId: newClass.subjectId,
+                  subjectQuantity: newClass.quantity,
+                })),
               },
             },
           },
@@ -247,90 +205,72 @@ export const classRouter = createTRPCRouter({
           z.object({
             subjectId: z.string(),
             teacherId: z.string(),
+            quantity: z.number().min(1),
           }),
         ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const foundClass = await ctx.prisma.class.findUnique({
-        where: { id: input.classId, schoolId: ctx.session.school.id },
-      });
-
-      if (!foundClass) {
-        throw new Error("Turma não encontrada");
-      }
-
-      const currentTeacherHasClasses =
-        await ctx.prisma.teacherHasClass.findMany({
-          where: { classId: input.classId, isActive: true },
+      return ctx.prisma.$transaction(async (tx) => {
+        const foundClass = await tx.class.findUnique({
+          where: { id: input.classId, schoolId: ctx.session.school.id },
+          include: {
+            TeacherHasClass: true,
+          },
         });
 
-      // Identificar as aulas que precisam ser removidas
-      const subjectsToDelete = currentTeacherHasClasses.filter(
-        (current) =>
-          !input.subjectsWithTeachers.some(
-            (subjectWithTeacher) =>
-              subjectWithTeacher.subjectId === current.subjectId,
-          ),
-      );
+        if (!foundClass) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Turma não encontrada",
+          });
+        }
 
-      // Identificar as aulas que precisam ser adicionadas ou atualizadas
-      const subjectsToAddOrUpdate = input.subjectsWithTeachers.filter(
-        (subjectWithTeacher) =>
-          !currentTeacherHasClasses.some(
-            (current) =>
-              current.subjectId === subjectWithTeacher.subjectId &&
-              current.teacherId === subjectWithTeacher.teacherId,
-          ),
-      );
+        const existingTeacherHasClasses = [];
+        for (const subjectWithTeacher of input.subjectsWithTeachers) {
+          const existingTeacherHasClass = foundClass.TeacherHasClass.find(
+            (thc) =>
+              thc.teacherId === subjectWithTeacher.teacherId &&
+              thc.subjectId === subjectWithTeacher.subjectId,
+          );
+          existingTeacherHasClasses.push(existingTeacherHasClass);
+          if (!existingTeacherHasClass) {
+            await tx.teacherHasClass.create({
+              data: {
+                teacherId: subjectWithTeacher.teacherId,
+                classId: input.classId,
+                subjectId: subjectWithTeacher.subjectId,
+                subjectQuantity: subjectWithTeacher.quantity,
+              },
+            });
+          } else {
+            if (
+              existingTeacherHasClass.subjectQuantity !==
+              subjectWithTeacher.quantity
+            ) {
+              await ctx.prisma.teacherHasClass.update({
+                where: {
+                  id: existingTeacherHasClass.id,
+                },
+                data: {
+                  subjectQuantity: subjectWithTeacher.quantity,
+                  isActive: true,
+                },
+              });
+            }
+          }
+        }
 
-      // Iniciar a transação
-      await ctx.prisma.$transaction(async (tx) => {
-        // Remover aulas que não estão no input
         await tx.teacherHasClass.updateMany({
           where: {
-            id: { in: subjectsToDelete.map((subject) => subject.id) },
+            id: {
+              notIn: existingTeacherHasClasses.map((thc) => thc.id),
+            },
           },
           data: {
             isActive: false,
           },
         });
-
-        // Adicionar ou atualizar aulas
-        for (const subjectWithTeacher of subjectsToAddOrUpdate) {
-          const existingClass = currentTeacherHasClasses.find(
-            (current) => current.subjectId === subjectWithTeacher.subjectId,
-          );
-
-          if (existingClass) {
-            // Atualizar aula existente
-            await tx.teacherHasClass.update({
-              where: { id: existingClass.id },
-              data: {
-                teacherId: subjectWithTeacher.teacherId,
-                subjectQuantity: subjectWithTeacher.quantity,
-              },
-            });
-          } else {
-            // Adicionar nova aula
-            await tx.teacherHasClass.create({
-              data: {
-                classId: input.classId,
-                teacherId: subjectWithTeacher.teacherId,
-                subjectId: subjectWithTeacher.subjectId,
-                subjectQuantity: subjectWithTeacher.quantity,
-              },
-            });
-          }
-        }
-
-        // Atualizar o nome da turma, se necessário, dentro da transação
-        if (foundClass.name !== input.name) {
-          await tx.class.update({
-            where: { id: input.classId },
-            data: { name: input.name },
-          });
-        }
       });
     }),
   deleteById: isUserLoggedInAndAssignedToSchool
