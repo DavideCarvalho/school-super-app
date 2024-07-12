@@ -168,54 +168,63 @@ export const classRouter = createTRPCRouter({
         name: z.string(),
         subjectsWithTeachers: z.array(
           z.object({
-            subjectIds: z.array(z.string()),
+            subjectId: z.string(),
             teacherId: z.string(),
+            quantity: z.number().min(1),
           }),
         ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const existingClasses: TeacherHasClass[] = [];
       return ctx.prisma.$transaction(async (tx) => {
-        for (const subjectWithTeacher of input.subjectsWithTeachers) {
-          for (const subjectId of subjectWithTeacher.subjectIds) {
-            const existingClass = await tx.teacherHasClass.findFirst({
-              where: {
-                teacherId: subjectWithTeacher.teacherId,
-                subjectId,
-              },
-            });
-            if (existingClass) {
-              existingClasses.push(existingClass);
-            }
-          }
-        }
-        await tx.teacherHasClass.updateMany({
+        const existingClasses = await tx.teacherHasClass.findMany({
           where: {
-            id: { in: existingClasses.map((c) => c.id) },
-          },
-          data: {
-            isActive: true,
+            teacherId: {
+              in: input.subjectsWithTeachers.map((s) => s.teacherId),
+            },
+            subjectId: {
+              in: input.subjectsWithTeachers.flatMap((s) => s.subjectId),
+            },
           },
         });
-        const newClasses = input.subjectsWithTeachers.flatMap(
+        // for (const subjectWithTeacher of input.subjectsWithTeachers) {
+        // for (const subjectId of subjectWithTeacher.subjectIds) {
+        //   const existingClass = await tx.teacherHasClass.findFirst({
+        //     where: {
+        //       teacherId: subjectWithTeacher.teacherId,
+        //       subjectId,
+        //     },
+        //   });
+        //   if (existingClass) {
+        //     existingClasses.push(existingClass);
+        //   }
+        // }
+        // }
+        for (const existingClass of existingClasses) {
+          const teacherHasClassNewValue = input.subjectsWithTeachers.find(
+            (subjectWithTeacher) =>
+              subjectWithTeacher.teacherId === existingClass.teacherId &&
+              subjectWithTeacher.subjectId === existingClass.subjectId,
+          );
+          if (!teacherHasClassNewValue) continue;
+          await tx.teacherHasClass.update({
+            where: {
+              id: existingClass.id,
+            },
+            data: {
+              subjectQuantity: teacherHasClassNewValue.quantity,
+            },
+          });
+        }
+        const newClasses = input.subjectsWithTeachers.filter(
           (subjectWithTeacher) =>
-            subjectWithTeacher.subjectIds
-              .filter(
-                (subjectId) =>
-                  !existingClasses.some(
-                    (existingClass) =>
-                      existingClass.teacherId ===
-                        subjectWithTeacher.teacherId &&
-                      existingClass.subjectId === subjectId,
-                  ),
-              )
-              .map((subjectId) => ({
-                teacherId: subjectWithTeacher.teacherId,
-                subjectId,
-              })),
+            !existingClasses.some(
+              (existingClass) =>
+                existingClass.teacherId === subjectWithTeacher.teacherId &&
+                existingClass.subjectId === subjectWithTeacher.subjectId,
+            ),
         );
-        return tx.class.create({
+        await tx.class.create({
           data: {
             name: input.name,
             slug: slugify(input.name).toLowerCase(),

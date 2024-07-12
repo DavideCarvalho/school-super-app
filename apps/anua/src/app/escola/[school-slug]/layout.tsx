@@ -1,68 +1,74 @@
-"use client";
-
+import { headers } from "next/headers";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 import { cn } from "@acme/ui";
 
-import { api } from "~/trpc/react";
-import { getUserPublicMetadata } from "~/utils/get-user-public-metadata";
+import { api } from "~/trpc/server";
 import { matchesPathname } from "~/utils/url";
 import { SchoolContextProvider } from "./contexts/school.context";
 import { SchoolGuard } from "./guards/school.guard";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = useUser();
-  const pathname = usePathname();
-  const { data: classes } = api.class.allBySchoolId.useQuery({
+  const requestHeaders = headers();
+  const xUrl = requestHeaders.get("x-url");
+  if (!xUrl) throw new Error("unreachable");
+  const url = new URL(xUrl);
+  const pathname = url.pathname;
+  const userAuth = auth();
+  if (!userAuth?.userId) {
+    return null;
+  }
+  const classes = await api.class.allBySchoolId({
     page: 1,
     limit: 999,
   });
-  if (!user) return null;
-  const userPublicMetadata = getUserPublicMetadata(user);
-  const schoolSlug = userPublicMetadata.school.slug;
+  const user = await api.user.findByExternalAuthId({
+    externalAuthId: userAuth.userId,
+  });
+  if (!user?.School) {
+    return null;
+  }
+  const schoolSlug = user.School.slug;
   return (
-    <SchoolContextProvider schoolSlug={schoolSlug}>
-      <SchoolGuard>
-        <div className="flex h-full flex-1 flex-col bg-white">
-          <header className="border-b border-gray-200 bg-white">
-            <div className="mx-auto px-4">
-              <div className="flex h-16 items-center justify-between">
-                <div className="-m-2 flex items-center lg:hidden">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center rounded-lg bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
-                  >
-                    <svg
-                      className="h-6 w-6"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <title>Menu</title>
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 6h16M4 12h16M4 18h16"
-                      />
-                    </svg>
-                  </button>
-                </div>
+    <div className="flex h-full flex-1 flex-col bg-white">
+      <header className="border-b border-gray-200 bg-white">
+        <div className="mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            <div className="-m-2 flex items-center lg:hidden">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center rounded-lg bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
+              >
+                <svg
+                  className="h-6 w-6"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <title>Menu</title>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+            </div>
 
-                <div className="ml-6 mr-auto flex lg:ml-0">
-                  <div className="flex flex-shrink-0 items-center">
-                    <h1 className="text-2xl font-bold">Anuá</h1>
-                  </div>
-                </div>
+            <div className="ml-6 mr-auto flex lg:ml-0">
+              <div className="flex flex-shrink-0 items-center">
+                <h1 className="text-2xl font-bold">Anuá</h1>
+              </div>
+            </div>
 
-                {/* <div className="flex items-center justify-end space-x-6 sm:ml-5">
+            {/* <div className="flex items-center justify-end space-x-6 sm:ml-5">
               <div className="relative">
                 <button
                   type="button"
@@ -143,19 +149,52 @@ export default function RootLayout({
                 </svg>
               </button>
             </div> */}
-              </div>
-            </div>
-          </header>
+          </div>
+        </div>
+      </header>
 
-          <div className="flex flex-1">
-            <div className="hidden border-r border-gray-200 md:flex md:w-64 md:flex-col">
-              <div className="flex flex-col overflow-y-auto pt-5">
-                <div className="flex h-full flex-1 flex-col justify-between px-4">
-                  <div className="space-y-4">
-                    <nav className="flex-1 space-y-1">
+      <div className="flex flex-1">
+        <div className="hidden border-r border-gray-200 md:flex md:w-64 md:flex-col">
+          <div className="flex flex-col overflow-y-auto pt-5">
+            <div className="flex h-full flex-1 flex-col justify-between px-4">
+              <div className="space-y-4">
+                <nav className="flex-1 space-y-1">
+                  <Link
+                    href={`/escola/${schoolSlug}`}
+                    className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
+                  >
+                    <svg
+                      className="mr-4 h-5 w-5 flex-shrink-0"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <title>Dashboard</title>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                      />
+                    </svg>
+                    Dashboard
+                  </Link>
+                  <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                    Administrativo
+                  </p>
+                  {routes.map((route) => {
+                    const routeHref = route.href({ schoolSlug });
+                    return (
                       <Link
-                        href={`/escola/${schoolSlug}`}
-                        className="group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200"
+                        key={route.name}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname ?? "")
+                            ? "bg-gray-200"
+                            : "",
+                        )}
                       >
                         <svg
                           className="mr-4 h-5 w-5 flex-shrink-0"
@@ -165,176 +204,141 @@ export default function RootLayout({
                           stroke="currentColor"
                           strokeWidth="2"
                         >
-                          <title>Dashboard</title>
+                          <title>{route.name}</title>
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                           />
                         </svg>
-                        Dashboard
+                        {route.name}
                       </Link>
-                      <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-                        Administrativo
-                      </p>
-                      {routes.map((route) => {
-                        const routeHref = route.href({ schoolSlug });
-                        return (
-                          <Link
-                            key={route.name}
-                            href={routeHref}
-                            className={cn(
-                              "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
-                              matchesPathname(routeHref, pathname ?? "")
-                                ? "bg-gray-200"
-                                : "",
-                            )}
-                          >
-                            <svg
-                              className="mr-4 h-5 w-5 flex-shrink-0"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <title>{route.name}</title>
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                              />
-                            </svg>
-                            {route.name}
-                          </Link>
-                        );
-                      })}
-                      <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-                        Cantina
-                      </p>
-                      {canteenRoutes.map((route) => {
-                        const routeHref = route.href({ schoolSlug });
-                        return (
-                          <Link
-                            key={route.name}
-                            href={routeHref}
-                            className={cn(
-                              "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
-                              matchesPathname(routeHref, pathname ?? "")
-                                ? "bg-gray-200"
-                                : "",
-                            )}
-                          >
-                            <svg
-                              className="mr-4 h-5 w-5 flex-shrink-0"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <title>{route.name}</title>
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                              />
-                            </svg>
-                            {route.name}
-                          </Link>
-                        );
-                      })}
-                      <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-                        Pedagógico
-                      </p>
-                      {pedagogicRoutes.map((route) => {
-                        const routeHref = route.href({ schoolSlug });
-                        return (
-                          <Link
-                            key={route.name}
-                            href={routeHref}
-                            className={cn(
-                              "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
-                              matchesPathname(routeHref, pathname ?? "")
-                                ? "bg-gray-200"
-                                : "",
-                            )}
-                          >
-                            <svg
-                              className="mr-4 h-5 w-5 flex-shrink-0"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <title>{route.name}</title>
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                              />
-                            </svg>
-                            {route.name}
-                          </Link>
-                        );
-                      })}
+                    );
+                  })}
+                  <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                    Cantina
+                  </p>
+                  {canteenRoutes.map((route) => {
+                    const routeHref = route.href({ schoolSlug });
+                    return (
+                      <Link
+                        key={route.name}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname ?? "")
+                            ? "bg-gray-200"
+                            : "",
+                        )}
+                      >
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>{route.name}</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        {route.name}
+                      </Link>
+                    );
+                  })}
+                  <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                    Pedagógico
+                  </p>
+                  {pedagogicRoutes.map((route) => {
+                    const routeHref = route.href({ schoolSlug });
+                    return (
+                      <Link
+                        key={route.name}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname ?? "")
+                            ? "bg-gray-200"
+                            : "",
+                        )}
+                      >
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>{route.name}</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        {route.name}
+                      </Link>
+                    );
+                  })}
 
-                      {classes && classes.length > 0 ? (
-                        <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-                          Turmas
-                        </p>
-                      ) : null}
+                  {classes && classes.length > 0 ? (
+                    <p className="px-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                      Turmas
+                    </p>
+                  ) : null}
 
-                      {classes?.map((clasz) => {
-                        const routeHref = `/escola/${schoolSlug}/turma/${clasz.slug}`;
-                        return (
-                          <Link
-                            key={clasz.slug}
-                            href={routeHref}
-                            className={cn(
-                              "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
-                              matchesPathname(routeHref, pathname ?? "")
-                                ? "bg-gray-200"
-                                : "",
-                            )}
-                          >
-                            <svg
-                              className="mr-4 h-5 w-5 flex-shrink-0"
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <title>{clasz.name}</title>
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                              />
-                            </svg>
-                            {clasz.name}
-                          </Link>
-                        );
-                      })}
-                    </nav>
-                  </div>
-                </div>
+                  {classes?.map((clasz) => {
+                    const routeHref = `/escola/${schoolSlug}/turma/${clasz.slug}`;
+                    return (
+                      <Link
+                        key={clasz.slug}
+                        href={routeHref}
+                        className={cn(
+                          "group flex items-center rounded-lg px-4 py-2.5 text-sm font-medium text-gray-900 transition-all duration-200 hover:bg-gray-200",
+                          matchesPathname(routeHref, pathname ?? "")
+                            ? "bg-gray-200"
+                            : "",
+                        )}
+                      >
+                        <svg
+                          className="mr-4 h-5 w-5 flex-shrink-0"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <title>{clasz.name}</title>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                          />
+                        </svg>
+                        {clasz.name}
+                      </Link>
+                    );
+                  })}
+                </nav>
               </div>
-            </div>
-
-            <div className="flex flex-1 flex-col">
-              <main>
-                <div className="py-6">
-                  <div className="px-4 sm:px-6 md:px-8">{children}</div>
-                </div>
-              </main>
             </div>
           </div>
         </div>
-      </SchoolGuard>
-    </SchoolContextProvider>
+
+        <div className="flex flex-1 flex-col">
+          <main>
+            <div className="py-6">
+              <div className="px-4 sm:px-6 md:px-8">{children}</div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
   );
 }
 

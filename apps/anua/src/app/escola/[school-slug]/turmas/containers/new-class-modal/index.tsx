@@ -32,16 +32,15 @@ const schema = z
     name: z.string({ required_error: "Qual o nome da turma?" }),
     subjectsWithTeachers: z.array(
       z.object({
-        subjects: z.array(
-          z.object({
-            id: z.string(),
-            name: z.string(),
-          }),
-        ),
         teacher: z.object({
           id: z.string(),
           name: z.string(),
         }),
+        subject: z.object({
+          id: z.string(),
+          name: z.string(),
+        }),
+        quantity: z.number().min(1),
       }),
     ),
   })
@@ -58,15 +57,9 @@ export function NewClassModal({
   onClickSubmit,
   onClickCancel,
 }: NewClassModalProps) {
-  const {
-    handleSubmit,
-    register,
-    reset,
-    watch,
-    getValues,
-    setValue,
-    formState,
-  } = useForm<z.infer<typeof schema>>({
+  const { handleSubmit, register, reset, watch, getValues, setValue } = useForm<
+    z.infer<typeof schema>
+  >({
     resolver: zodResolver(schema),
     defaultValues: {
       name: undefined,
@@ -95,8 +88,9 @@ export function NewClassModal({
         name: data.name,
         subjectsWithTeachers: data.subjectsWithTeachers.map(
           (subjectWithTeacher) => ({
-            subjectIds: subjectWithTeacher.subjects.map((s) => s.id),
+            subjectId: subjectWithTeacher.subject.id,
             teacherId: subjectWithTeacher.teacher.id,
+            quantity: subjectWithTeacher.quantity,
           }),
         ),
       });
@@ -117,7 +111,7 @@ export function NewClassModal({
       <DialogContent className="sm:max-w-[600px]">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle>Criar nova turma</DialogTitle>
+            <DialogTitle>Nova turma</DialogTitle>
           </DialogHeader>
           <div className="grid gap-6 py-4">
             <div className="grid gap-2">
@@ -155,30 +149,36 @@ export function NewClassModal({
                     ))}
                   </SelectContent>
                 </Select>
-                <MultiSelect
-                  selected={
-                    subjectWithTeacher?.subjects?.map((subject) => {
-                      return {
-                        label: subject.name,
-                        value: subject.id,
-                      };
-                    }) ?? []
-                  }
-                  options={
-                    subjects?.map((subject) => ({
-                      value: subject.id,
-                      label: subject.name,
-                    })) ?? []
-                  }
-                  onChange={(options) => {
-                    setValue(
-                      `subjectsWithTeachers.${index}.subjects`,
-                      options.map((option) => ({
-                        id: option.value,
-                        name: option.label,
-                      })),
-                    );
+                <Select
+                  value={subjectWithTeacher.subject.id}
+                  onValueChange={(e) => {
+                    if (!subjects) return;
+                    const foundSubject = subjects.find((s) => s.id === e);
+                    if (!foundSubject) return;
+                    setValue(`subjectsWithTeachers.${index}.subject`, {
+                      id: foundSubject.id,
+                      name: foundSubject.name,
+                    });
                   }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Matéria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subjects?.map((subject) => (
+                      <SelectItem key={subject.id} value={subject.id}>
+                        {subject.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="Quantidade"
+                  type="number"
+                  min={1}
+                  {...register(`subjectsWithTeachers.${index}.quantity`, {
+                    valueAsNumber: true,
+                  })}
                 />
                 <Button
                   type="button"

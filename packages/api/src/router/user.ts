@@ -11,6 +11,24 @@ import {
 } from "../trpc";
 
 export const userRouter = createTRPCRouter({
+  findByExternalAuthId: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        externalAuthId: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.prisma.user.findFirst({
+        where: {
+          externalAuthId: input.externalAuthId,
+          schoolId: ctx.session.school.id,
+        },
+        include: {
+          Role: true,
+          School: true,
+        },
+      });
+    }),
   countAllBySchoolId: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

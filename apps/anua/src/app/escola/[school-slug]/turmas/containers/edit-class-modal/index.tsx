@@ -38,6 +38,7 @@ const schema = z.object({
         id: z.string(),
         name: z.string(),
       }),
+      quantity: z.number().min(1),
     }),
   ),
 });
@@ -103,6 +104,7 @@ export function EditClassModal({
           id: Teacher.id,
           name: Teacher.User.name,
         },
+        quantity: subjectQuantity,
       })),
     );
   }, [clasz, setValue]);
@@ -118,6 +120,7 @@ export function EditClassModal({
           (subjectWithTeacher) => ({
             subjectId: subjectWithTeacher.subject.id,
             teacherId: subjectWithTeacher.teacher.id,
+            quantity: subjectWithTeacher.quantity,
           }),
         ),
       });
@@ -163,29 +166,6 @@ export function EditClassModal({
                   className={cn("grid gap-4 sm:grid-cols-4")}
                 >
                   <Select
-                    value={subjectWithTeacher.subject.id}
-                    onValueChange={(e) => {
-                      if (!subjects) return;
-                      const foundSubject = subjects.find((s) => s.id === e);
-                      if (!foundSubject) return;
-                      setValue(
-                        `subjectsWithTeachers.${index}.subject`,
-                        foundSubject,
-                      );
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Matéria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {subjects?.map((subject) => (
-                        <SelectItem key={subject.id} value={subject.id}>
-                          {subject.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Select
                     value={subjectWithTeacher.teacher.id}
                     onValueChange={(e) => {
                       if (!teachers) return;
@@ -208,6 +188,37 @@ export function EditClassModal({
                       ))}
                     </SelectContent>
                   </Select>
+                  <Select
+                    value={subjectWithTeacher.subject.id}
+                    onValueChange={(e) => {
+                      if (!subjects) return;
+                      const foundSubject = subjects.find((s) => s.id === e);
+                      if (!foundSubject) return;
+                      setValue(
+                        `subjectsWithTeachers.${index}.subject`,
+                        foundSubject,
+                      );
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Matéria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subjects?.map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id}>
+                          {subject.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    placeholder="Quantidade"
+                    type="number"
+                    min={1}
+                    {...register(`subjectsWithTeachers.${index}.quantity`, {
+                      valueAsNumber: true,
+                    })}
+                  />
                   <Button
                     type="button"
                     className="flex w-full items-center justify-center"

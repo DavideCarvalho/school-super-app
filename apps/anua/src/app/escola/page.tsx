@@ -13,13 +13,10 @@ export default async function SchoolPage() {
   if (!userOnClerk) {
     return redirect("/");
   }
-  const primaryEmailAddress = userOnClerk.emailAddresses.find(
-    ({ id }) => id === userOnClerk.primaryEmailAddressId,
-  );
 
   const dbUser = await prisma.user.findFirst({
     where: {
-      email: primaryEmailAddress?.emailAddress,
+      externalAuthId: userOnClerk.id,
     },
     include: {
       Role: true,
