@@ -1,6 +1,5 @@
 "use client";
 
-import type { Column } from "@tanstack/react-table";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { PencilIcon, TrashIcon } from "@heroicons/react/20/solid";
@@ -9,10 +8,6 @@ import toast from "react-hot-toast";
 
 import type { RouterOutputs } from "@acme/api";
 import { Button } from "@acme/ui/button";
-import {
-  MultiSelectFilter,
-  multiSelectFilterFn,
-} from "@acme/ui/table-with-pagination/_components/multi-select-filter";
 
 import { api } from "~/trpc/react";
 import { rolesMap } from "./utils";

@@ -24,6 +24,13 @@ import {
 } from "@acme/ui/form";
 import { Input } from "@acme/ui/input";
 import { Label } from "@acme/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@acme/ui/select";
 
 import { api } from "~/trpc/react";
 
@@ -32,6 +39,7 @@ const schema = z.object({
   email: z
     .string({ required_error: "Email é obrigatório" })
     .email("Precisa ser um email válido"),
+  classId: z.string({ required_error: "Turma é obrigatória" }),
   responsibles: z
     .array(
       z.object({
@@ -60,6 +68,7 @@ export function NewStudentModal({
     defaultValues: {
       name: undefined,
       email: undefined,
+      classId: undefined,
       responsibles: [
         {
           name: undefined,
@@ -72,6 +81,11 @@ export function NewStudentModal({
   const { mutateAsync: createStudent, reset: resetCreateStudent } =
     api.student.createStudent.useMutation();
 
+  const { data: classes } = api.class.allBySchoolId.useQuery({
+    page: 1,
+    limit: 999,
+  });
+
   const responsibles = form.watch("responsibles");
 
   async function onSubmit(data: z.infer<typeof schema>) {
@@ -80,6 +94,7 @@ export function NewStudentModal({
       await createStudent({
         name: data.name,
         email: data.email,
+        classId: data.classId,
         responsibles: data.responsibles,
       });
       toast.success("Aluno criado com sucesso!");
@@ -94,7 +109,14 @@ export function NewStudentModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClickCancel}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        form.reset();
+        resetCreateStudent();
+        onClickCancel();
+      }}
+    >
       <DialogContent className="sm:max-w-[600px]">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -123,6 +145,35 @@ export function NewStudentModal({
                     <FormLabel>Email do aluno</FormLabel>
                     <FormControl>
                       <Input value={field.value} onChange={field.onChange} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="classId"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Turma</FormLabel>
+                    <FormControl>
+                      <Select
+                        value={field.value}
+                        onValueChange={(value) =>
+                          form.setValue("classId", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Turma" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {classes?.map((classItem) => (
+                            <SelectItem key={classItem.id} value={classItem.id}>
+                              {classItem.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

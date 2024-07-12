@@ -23,7 +23,12 @@ export const userRouter = createTRPCRouter({
         active: true,
         Role: {
           name: {
-            notIn: ["STUDENT", "CONNECTAPROF_USER"],
+            notIn: [
+              "STUDENT",
+              "CONNECTAPROF_USER",
+              "STUDENT_RESPONSIBLE",
+              "ADMIN",
+            ],
           },
         },
       };
@@ -55,7 +60,12 @@ export const userRouter = createTRPCRouter({
         active: true,
         Role: {
           name: {
-            notIn: ["STUDENT", "CONNECTAPROF_USER", "STUDENT_RESPONSIBLE"],
+            notIn: [
+              "STUDENT",
+              "CONNECTAPROF_USER",
+              "STUDENT_RESPONSIBLE",
+              "ADMIN",
+            ],
           },
         },
       };

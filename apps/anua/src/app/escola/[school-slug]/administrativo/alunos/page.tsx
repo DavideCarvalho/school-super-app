@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@acme/ui/button";
 
 import { api, HydrateClient } from "~/trpc/server";
+import { EditStudentModalListener } from "./components/edit-student-modal-listener";
 import { NewStudentModalListener } from "./components/new-student-modal-listener";
 import { StudentsTableServer } from "./containers/students-table/students-table.server";
 
@@ -35,6 +36,7 @@ export default async function StudentsPage({
         </Link>
       </div>
       <NewStudentModalListener />
+      <EditStudentModalListener />
       <StudentsTableServer />
     </HydrateClient>
   );
