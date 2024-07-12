@@ -3,7 +3,6 @@ import Link from "next/link";
 
 import { Button } from "@acme/ui/button";
 
-import { api } from "~/trpc/server";
 import { AcademicPeriodTableClient } from "./containers/academic-period-table.client";
 
 export default async function AcademicPeriodsPage({

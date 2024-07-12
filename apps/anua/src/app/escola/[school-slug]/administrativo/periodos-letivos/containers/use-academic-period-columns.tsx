@@ -26,5 +26,23 @@ export function useAcademicPeriodColumns() {
         return format(row.original.endDate, "dd/MM/yyyy", { locale: ptBR });
       },
     }),
+    columnHelper.accessor("isActive", {
+      id: "isActive",
+      header: "Ativo",
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        return row.original.isActive ? "Sim" : "Não";
+      },
+    }),
+    columnHelper.accessor("isClosed", {
+      id: "isClosed",
+      header: "Fechado",
+      enableColumnFilter: false,
+      enableSorting: false,
+      cell: ({ row }) => {
+        return row.original.isClosed ? "Sim" : "Não";
+      },
+    }),
   ];
 }
