@@ -376,8 +376,21 @@ export const studentRouter = createTRPCRouter({
                 externalAuthId: createdResponsibleOnClerk.id,
               },
             });
+            await tx.studentHasResponsible.create({
+              data: {
+                studentId: input.studentId,
+                responsibleId: createdResponsibleUser.id,
+              },
+            });
             userResponsibles.push(createdResponsibleUser);
           } else {
+            if (
+              responsible.name === responsibleUserOnOurDb.name &&
+              responsible.email === responsibleUserOnOurDb.email
+            ) {
+              userResponsibles.push(responsibleUserOnOurDb);
+              continue;
+            }
             let slug = responsibleUserOnOurDb.slug;
             if (responsible.name !== responsibleUserOnOurDb.name) {
               const countResponsibleWithSameName = await tx.user.count({
@@ -407,56 +420,39 @@ export const studentRouter = createTRPCRouter({
             });
           }
         }
-        await tx.studentHasResponsible.createMany({
-          data: userResponsibles.map((responsibleUser) => ({
-            responsibleId: responsibleUser.id,
-            studentId: input.studentId,
-          })),
-        });
-        const userWithResponsibles = await tx.user.findFirst({
+        const danglingResponsibles = await tx.studentHasResponsible.findMany({
           where: {
-            id: input.studentId,
-            schoolId: ctx.session.school.id,
-          },
-          include: {
-            StudentHasResponsible: {
-              include: {
-                ResponsibleUser: true,
-              },
+            studentId: input.studentId,
+            responsibleId: {
+              notIn: userResponsibles.map(({ id }) => id),
             },
           },
+          include: {
+            ResponsibleUser: true,
+          },
         });
-        if (!userWithResponsibles) return;
-        const danglingResponsibles =
-          userWithResponsibles.StudentHasResponsible.filter(
-            (responsible) =>
-              !userResponsibles.find(
-                (userResponsible) => userResponsible.id === responsible.id,
-              ),
-          );
+        const danglingResponsibleUsers = danglingResponsibles.map(
+          ({ ResponsibleUser }) => ResponsibleUser,
+        );
         await tx.studentHasResponsible.deleteMany({
           where: {
             studentId: input.studentId,
             responsibleId: {
-              in: danglingResponsibles.map(
-                ({ ResponsibleUser }) => ResponsibleUser.id,
-              ),
+              notIn: userResponsibles.map(({ id }) => id),
             },
           },
         });
         await tx.user.deleteMany({
           where: {
             id: {
-              in: danglingResponsibles.map(
-                ({ ResponsibleUser }) => ResponsibleUser.id,
-              ),
+              in: danglingResponsibleUsers.map(({ id }) => id),
             },
           },
         });
-        for (const danglingResponsible of danglingResponsibles) {
-          if (!danglingResponsible.ResponsibleUser.externalAuthId) continue;
+        for (const danglingResponsible of danglingResponsibleUsers) {
+          if (!danglingResponsible.externalAuthId) continue;
           await clerkClient.users.deleteUser(
-            danglingResponsible.ResponsibleUser.externalAuthId,
+            danglingResponsible.externalAuthId,
           );
         }
       });
