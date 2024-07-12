@@ -36,8 +36,6 @@ export function SubjectSelectClient({
       classId,
     });
 
-  console.log("subjectId", subjectId);
-
   if (subjects?.length === 1) return null;
 
   return (
