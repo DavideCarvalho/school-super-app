@@ -60,7 +60,6 @@ interface SchoolConfigFormValues {
     Thursday: { start: string; numClasses: number; duration: number };
     Friday: { start: string; numClasses: number; duration: number };
   };
-  subjectsQuantities: Record<string, number>;
   subjectsExclusions: {
     subject: {
       id: string;
@@ -85,7 +84,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
         Thursday: { start: "07:00", numClasses: 6, duration: 50 },
         Friday: { start: "07:00", numClasses: 6, duration: 50 },
       },
-      subjectsQuantities: {},
       subjectsExclusions: [
         { subject: { id: undefined, name: undefined }, exclusions: [] },
       ],
@@ -95,7 +93,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   const fixedClasses = form.watch("fixedClasses");
   const selectedClass = form.watch("selectedClass");
   const selectedClassId = form.watch("selectedClassId");
-  const subjectsQuantities = form.watch("subjectsQuantities");
   const subjectsExclusions = form.watch("subjectsExclusions");
   const [openGenerateNewCalendarModal, setOpenGenerateNewCalendarModal] =
     useState(false);
@@ -103,7 +100,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
   useEffect(() => {
     if (form.getValues("selectedClassId") === classId) return;
     form.setValue("selectedClassId", classId);
-    form.setValue("subjectsQuantities", {});
     form.setValue("subjectsExclusions", []);
   }, [classId, form.setValue, form.getValues]);
 
@@ -163,7 +159,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       scheduleConfig,
       classId: selectedClassId ?? "",
       generationRules: {
-        subjectsQuantities,
         subjectsExclusions: subjectsExclusions.reduce(
           (acc, exclusion) => {
             acc[exclusion.subject.id] = exclusion.exclusions;
@@ -197,13 +192,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
       enabled: selectedClassId != null,
     },
   );
-
-  useEffect(() => {
-    if (!subjects) return;
-    for (const subject of subjects) {
-      form.setValue(`subjectsQuantities.${subject.id}`, 0);
-    }
-  }, [subjects, form.setValue]);
 
   const {
     data: teachersAvailabilities,
@@ -579,7 +567,6 @@ export function SchoolCalendarGrid({ classId }: SchoolCalendarGridProps) {
               </div>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <SubjectQuantitiesForm />
               <ClassClashForm />
             </CollapsibleContent>
           </Collapsible>

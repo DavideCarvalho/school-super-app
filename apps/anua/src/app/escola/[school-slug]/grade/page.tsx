@@ -25,7 +25,6 @@ export default async function SchoolCalendarPage({
         },
         classId: foundClass.id,
         generationRules: {
-          subjectsQuantities: {},
           subjectsExclusions: {},
         },
       });

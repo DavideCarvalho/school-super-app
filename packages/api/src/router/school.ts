@@ -55,7 +55,6 @@ export const schoolRouter = createTRPCRouter({
           Friday: scheduleConfigSchema,
         }),
         generationRules: z.object({
-          subjectsQuantities: z.record(z.number()),
           subjectsExclusions: z.record(z.array(z.string())),
         }),
       }),
@@ -248,7 +247,6 @@ export const schoolRouter = createTRPCRouter({
 type DayOfWeek = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
 
 type GenerationRules = {
-  subjectsQuantities: Record<string, number>; // Quantidade de aulas por matéria
   subjectsExclusions: Record<string, string[]>; // Matérias que não podem estar no mesmo dia
 };
 
@@ -277,6 +275,7 @@ type Schedule = {
 
 interface SubjectWithRemainingLessons extends Subject {
   remainingLessons: number;
+  subjectQuantity: number;
 }
 
 type ScheduleConfig = {
@@ -388,10 +387,8 @@ async function tryGenerateSchoolSchedule(
       .then((teacherHasClasses) =>
         teacherHasClasses.map((thc) => ({
           ...thc.Subject,
-          subjectQuantity:
-            generationRules.subjectsQuantities[thc.subjectId] ?? 0,
-          remainingLessons:
-            generationRules.subjectsQuantities[thc.subjectId] ?? 0,
+          subjectQuantity: thc.subjectQuantity,
+          remainingLessons: thc.subjectQuantity,
         })),
       );
 
@@ -520,11 +517,8 @@ async function tryGenerateSchoolSchedule(
     (total, dayConfig) => total + dayConfig.numClasses,
     0,
   );
-  const totalRequiredLessons = Object.keys(
-    generationRules.subjectsQuantities,
-  ).reduce(
-    (total, subjectId) =>
-      total + (generationRules.subjectsQuantities?.[subjectId] ?? 0),
+  const totalRequiredLessons = subjectsWithLessons.reduce(
+    (total, subject) => total + subject.subjectQuantity,
     0,
   );
 
