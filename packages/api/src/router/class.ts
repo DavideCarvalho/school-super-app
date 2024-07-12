@@ -170,7 +170,6 @@ export const classRouter = createTRPCRouter({
           z.object({
             subjectIds: z.array(z.string()),
             teacherId: z.string(),
-            quantity: z.number().min(1),
           }),
         ),
       }),

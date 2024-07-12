@@ -32,10 +32,6 @@ const schema = z
     name: z.string({ required_error: "Qual o nome da turma?" }),
     subjectsWithTeachers: z.array(
       z.object({
-        subject: z.object({
-          id: z.string(),
-          name: z.string(),
-        }),
         subjects: z.array(
           z.object({
             id: z.string(),
@@ -62,9 +58,15 @@ export function NewClassModal({
   onClickSubmit,
   onClickCancel,
 }: NewClassModalProps) {
-  const { handleSubmit, register, reset, watch, getValues, setValue } = useForm<
-    z.infer<typeof schema>
-  >({
+  const {
+    handleSubmit,
+    register,
+    reset,
+    watch,
+    getValues,
+    setValue,
+    formState,
+  } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       name: undefined,
@@ -95,7 +97,6 @@ export function NewClassModal({
           (subjectWithTeacher) => ({
             subjectIds: subjectWithTeacher.subjects.map((s) => s.id),
             teacherId: subjectWithTeacher.teacher.id,
-            quantity: 0,
           }),
         ),
       });
