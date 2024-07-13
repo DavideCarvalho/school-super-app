@@ -8,10 +8,11 @@ import { prisma } from "@acme/db";
 // e.g: we have a period from 1/1/2023 to 1/2/2023
 //      and we're on 1/1/2023
 //      then the current academic period is the one from 1/1/2023 to 1/2/2023
-export function getCurrentAcademicPeriod() {
+export function getCurrentAcademicPeriod(schoolId: string) {
   const currentDate = new Date();
   return prisma.academicPeriod.findFirst({
     where: {
+      schoolId,
       startDate: {
         lte: startOfDay(currentDate),
       },
@@ -31,8 +32,11 @@ export function getCurrentAcademicPeriod() {
 
 // latest academic period means
 // the the last one created
-export function getLatestAcademicPeriod() {
+export function getLatestAcademicPeriod(schoolId: string) {
   return prisma.academicPeriod.findFirst({
+    where: {
+      schoolId,
+    },
     orderBy: {
       startDate: "desc",
     },
@@ -46,10 +50,11 @@ export function getLatestAcademicPeriod() {
 // last active academic period means
 // is the last one being used
 // and it will only be used when we're between the start and end date
-export function getLastActiveAcademicPeriod() {
+export function getLastActiveAcademicPeriod(schoolId: string) {
   const currentDate = new Date();
   return prisma.academicPeriod.findFirst({
     where: {
+      schoolId,
       endDate: {
         lt: endOfDay(currentDate),
       },

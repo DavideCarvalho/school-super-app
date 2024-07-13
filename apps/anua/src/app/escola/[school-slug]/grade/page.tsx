@@ -1,7 +1,10 @@
 import { Suspense } from "react";
 
+import type { Class } from "@acme/db";
+
 import { api, HydrateClient } from "~/trpc/server";
 import { ClassesSelect } from "./_components/classes-select";
+import { DownloadTeacherClassesGridClient } from "./containers/download-teacher-grid-button/download-teacher-classes-grid.client";
 import { SchoolCalendarGridClient } from "./containers/school-calendar-grid/school-calendar-grid.client";
 
 export default async function SchoolCalendarPage({
@@ -11,8 +14,9 @@ export default async function SchoolCalendarPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const selectedClassSlug = searchParams.classe as string | null;
+  let foundClass: Class | undefined;
   if (selectedClassSlug) {
-    const foundClass = await api.class.findBySlug({ slug: selectedClassSlug });
+    foundClass = await api.class.findBySlug({ slug: selectedClassSlug });
     if (foundClass) {
       await api.school.generateSchoolCalendar.prefetch({
         fixedClasses: [],
@@ -47,6 +51,9 @@ export default async function SchoolCalendarPage({
       </div>
       <div className="mb-5 flex w-full items-center justify-center">
         <ClassesSelect />
+      </div>
+      <div className="mb-5 flex w-full items-center justify-center">
+        <DownloadTeacherClassesGridClient />
       </div>
       <Suspense>
         <SchoolCalendarGridClient />

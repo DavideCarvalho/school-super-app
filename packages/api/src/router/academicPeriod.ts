@@ -41,7 +41,9 @@ export const academicPeriodRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.$transaction(async (tx) => {
         const lastAcademicPeriod =
-          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
 
         if (!lastAcademicPeriod) {
           return;
@@ -108,7 +110,9 @@ export const academicPeriodRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const academicPeriod =
-        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
       if (!academicPeriod) {
         return [];
       }

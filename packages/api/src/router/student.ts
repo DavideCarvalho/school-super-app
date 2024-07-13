@@ -120,7 +120,9 @@ export const studentRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return ctx.prisma.$transaction(async (tx) => {
         const academicPeriod =
-          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
         if (!academicPeriod) {
           throw new TRPCError({
             code: "BAD_REQUEST",

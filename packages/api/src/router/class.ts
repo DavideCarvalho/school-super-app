@@ -18,7 +18,9 @@ export const classRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const academicPeriod =
-        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
       if (!academicPeriod) {
         return [];
       }
@@ -54,7 +56,9 @@ export const classRouter = createTRPCRouter({
       )
       .query(async ({ ctx, input }) => {
         const academicPeriod =
-          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
         if (!academicPeriod) {
           return 0;
         }

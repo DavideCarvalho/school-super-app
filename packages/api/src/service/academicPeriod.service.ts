@@ -4,12 +4,12 @@ import { prisma } from "@acme/db";
 
 import * as academicPeriodRepository from "../repository/academicPeriod.repository";
 
-export async function getCurrentOrLastActiveAcademicPeriod() {
+export async function getCurrentOrLastActiveAcademicPeriod(schoolId: string) {
   let academicPeriod =
-    await academicPeriodRepository.getCurrentAcademicPeriod();
+    await academicPeriodRepository.getCurrentAcademicPeriod(schoolId);
   if (!academicPeriod) {
     academicPeriod =
-      await academicPeriodRepository.getLastActiveAcademicPeriod();
+      await academicPeriodRepository.getLastActiveAcademicPeriod(schoolId);
   }
   return academicPeriod;
 }

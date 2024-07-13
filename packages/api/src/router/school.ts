@@ -100,7 +100,9 @@ export const schoolRouter = createTRPCRouter({
         });
 
         let academicPeriod =
-          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
 
         if (!academicPeriod) {
           academicPeriod = await tx.academicPeriod.create({
@@ -251,9 +253,11 @@ export const schoolRouter = createTRPCRouter({
         classId: z.string().optional(),
       }),
     )
-    .query(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       const academicPeriod =
-        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
       if (!academicPeriod) {
         return;
       }
@@ -274,6 +278,9 @@ export const schoolRouter = createTRPCRouter({
                 },
               },
             },
+          },
+          User: {
+            schoolId: ctx.session.school.id,
           },
         },
         include: {
@@ -320,6 +327,7 @@ export const schoolRouter = createTRPCRouter({
         },
       });
       const slotsByWeekDay: Map<string, typeof calendarSlots> = new Map();
+      // console.log("calendarSlots", calendarSlots);
       for (const slot of calendarSlots) {
         const weekDay = convertWeekDay(slot.classWeekDay);
         if (!weekDay) continue;
@@ -331,33 +339,48 @@ export const schoolRouter = createTRPCRouter({
       for (const teacher of teachers) {
         for (const weekDay of slotsByWeekDay.keys()) {
           const slots = slotsByWeekDay.get(weekDay);
+          // console.log("slots", slots);
           if (!slots?.length) continue;
+          console.log("slots.length", slots.length);
           for (const slot of slots) {
             const teacherId = teacher.id;
+
             const teacherName = teacher.User.name;
 
-            let subjectName = "";
-            let className = "";
-            if (slot.TeacherHasClass?.Teacher?.id === teacher.id) {
-              subjectName = slot.TeacherHasClass.Subject.name;
-              className = slot.TeacherHasClass.Class.name;
+            if (!dataByTeacher[teacherId]) {
+              dataByTeacher[teacherId] = {
+                name: teacherName,
+                slots: {},
+              };
             }
-            const startTime = slot.startTime.toTimeString().slice(0, 5);
-            const endTime = slot.endTime.toTimeString().slice(0, 5);
-            dataByTeacher[teacherId] = {
-              name: teacherName,
-              slots: {},
-            };
             if (!dataByTeacher[teacherId].slots[weekDay]) {
               dataByTeacher[teacherId].slots[weekDay] = [];
             }
-            dataByTeacher[teacherId]?.slots[weekDay]?.push({
-              time: `${startTime} - ${endTime}`,
-              classAndSubject: `${className} - ${subjectName}`,
-            });
+
+            const startTime = format(slot.startTime, "HH:mm");
+            const endTime = format(slot.endTime, "HH:mm");
+            if (slot.TeacherHasClass?.Teacher?.id === teacher.id) {
+              const subjectName = slot.TeacherHasClass.Subject.name;
+              const className = slot.TeacherHasClass.Class.name;
+              const classAndSubject = `${className} - ${subjectName}`;
+              dataByTeacher[teacherId]?.slots[weekDay]?.push({
+                time: `${startTime} - ${endTime}`,
+                classAndSubject,
+              });
+            } else {
+              dataByTeacher[teacherId]?.slots[weekDay]?.push({
+                time: `${startTime} - ${endTime}`,
+                classAndSubject: "",
+              });
+            }
           }
+          console.log(
+            `dataByTeacher[teacher.id]?.slots[${weekDay}]?.length`,
+            dataByTeacher[teacher.id]?.slots[weekDay]?.length,
+          );
         }
       }
+      // console.log("dataByTeacher", dataByTeacher);
 
       const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
       const wb = xlsx.utils.book_new();
@@ -393,7 +416,10 @@ export const schoolRouter = createTRPCRouter({
         xlsx.utils.book_append_sheet(wb, ws, teacher.name);
       }
 
-      const buffer = xlsx.write(wb, { type: "buffer", bookType: "xlsx" });
+      const buffer: Buffer = xlsx.write(wb, {
+        type: "buffer",
+        bookType: "xlsx",
+      });
       return buffer.toString("base64");
     }),
 });

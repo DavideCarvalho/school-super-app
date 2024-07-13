@@ -111,7 +111,9 @@ export const assignmentRouter = createTRPCRouter({
       )
       .query(async ({ ctx, input }) => {
         const academicPeriod =
-          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
         if (!academicPeriod) {
           return [];
         }
@@ -191,7 +193,9 @@ export const assignmentRouter = createTRPCRouter({
       )
       .mutation(async ({ ctx, input }) => {
         const academicPeriod =
-          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
         if (!academicPeriod) {
           throw new TRPCError({
             code: "BAD_REQUEST",
