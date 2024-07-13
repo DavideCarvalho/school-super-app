@@ -192,8 +192,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 9.0.4
-        version: 9.0.4
+        specifier: 9.0.5
+        version: 9.0.5
       lucide-react:
         specifier: 0.400.0
         version: 0.400.0(react@18.3.1)
@@ -487,8 +487,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 9.0.4
-        version: 9.0.4
+        specifier: 9.0.5
+        version: 9.0.5
       lucide-react:
         specifier: 0.400.0
         version: 0.400.0(react@18.3.1)
@@ -912,13 +912,13 @@ importers:
     dependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: 4.3.1
-        version: 4.3.1(prettier@3.3.2)
+        version: 4.3.1(@vue/compiler-sfc@3.4.31)(prettier@3.3.2)
       prettier:
         specifier: 3.3.2
         version: 3.3.2
       prettier-plugin-tailwindcss:
         specifier: 0.6.5
-        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.2))(prettier@3.3.2)
+        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(@vue/compiler-sfc@3.4.31)(prettier@3.3.2))(prettier@3.3.2)
     devDependencies:
       '@acme/tsconfig':
         specifier: workspace:^0.1.0
@@ -5309,8 +5309,8 @@ packages:
   highlight-words-core@1.2.2:
     resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
 
-  highlight.run@9.0.4:
-    resolution: {integrity: sha512-o9dPEL/ooIdpoT1Z7hlA7VyRVOiyKWKpexoZwfYAlgUG3bHVPm5CKh8+u77e9C6kQEpU5Za6ZLA1hEWNqblJbw==}
+  highlight.run@9.0.5:
+    resolution: {integrity: sha512-krYuTOcEkuXBSagut4efacORqpzAhcLk0I4iz5X8EteH6AWiiNsQpXYcQUpbflWNSG9BY1stxw501O5ZBptpag==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -8491,7 +8491,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.3.0': {}
 
-  '@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.2)':
+  '@ianvs/prettier-plugin-sort-imports@4.3.1(@vue/compiler-sfc@3.4.31)(prettier@3.3.2)':
     dependencies:
       '@babel/core': 7.24.8
       '@babel/generator': 7.24.8
@@ -8500,6 +8500,8 @@ snapshots:
       '@babel/types': 7.24.8
       prettier: 3.3.2
       semver: 7.6.2
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.4.31
     transitivePeerDependencies:
       - supports-color
 
@@ -12620,7 +12622,7 @@ snapshots:
 
   highlight-words-core@1.2.2: {}
 
-  highlight.run@9.0.4: {}
+  highlight.run@9.0.5: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
@@ -13696,11 +13698,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.2))(prettier@3.3.2):
+  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(@vue/compiler-sfc@3.4.31)(prettier@3.3.2))(prettier@3.3.2):
     dependencies:
       prettier: 3.3.2
     optionalDependencies:
-      '@ianvs/prettier-plugin-sort-imports': 4.3.1(prettier@3.3.2)
+      '@ianvs/prettier-plugin-sort-imports': 4.3.1(@vue/compiler-sfc@3.4.31)(prettier@3.3.2)
 
   prettier@3.3.2: {}
 
