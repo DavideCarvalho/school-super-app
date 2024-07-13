@@ -11,9 +11,12 @@ import {
   startOfYear,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import * as xlsx from "xlsx";
 import { z } from "zod";
 
 import type {
+  CalendarSlot,
+  Class,
   Subject,
   Teacher,
   TeacherAvailability,
@@ -241,6 +244,157 @@ export const schoolRouter = createTRPCRouter({
         Thursday: calendarSlots.filter((slot) => slot.classWeekDay === 4),
         Friday: calendarSlots.filter((slot) => slot.classWeekDay === 5),
       };
+    }),
+  getXlsxWithAllTeachersClasses: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+      if (!academicPeriod) {
+        return;
+      }
+      function convertWeekDay(number: number) {
+        const days = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+        return days[number - 1];
+      }
+      const teachers = await ctx.prisma.teacher.findMany({
+        where: {
+          Classes: {
+            some: {
+              CalendarSlot: {
+                some: {
+                  Calendar: {
+                    academicPeriodId: academicPeriod.id,
+                    classId: input.classId,
+                  },
+                },
+              },
+            },
+          },
+        },
+        include: {
+          User: true,
+        },
+      });
+      const dataByTeacher: Record<
+        string,
+        {
+          name: string;
+          slots: Record<string, { time: string; classAndSubject: string }[]>;
+        }
+      > = {};
+      const calendarSlots = await ctx.prisma.calendarSlot.findMany({
+        where: {
+          Calendar: {
+            academicPeriodId: academicPeriod.id,
+            CalendarSlot: {
+              some: {
+                TeacherHasClass: {
+                  classId: input.classId,
+                },
+              },
+            },
+          },
+        },
+        include: {
+          Calendar: {
+            include: {
+              Class: true,
+            },
+          },
+          TeacherHasClass: {
+            include: {
+              Teacher: {
+                include: {
+                  User: true,
+                },
+              },
+              Class: true,
+              Subject: true,
+            },
+          },
+        },
+      });
+      const slotsByWeekDay: Map<string, typeof calendarSlots> = new Map();
+      for (const slot of calendarSlots) {
+        const weekDay = convertWeekDay(slot.classWeekDay);
+        if (!weekDay) continue;
+        if (!slotsByWeekDay.has(weekDay)) {
+          slotsByWeekDay.set(weekDay, []);
+        }
+        slotsByWeekDay.get(weekDay)?.push(slot);
+      }
+      for (const teacher of teachers) {
+        for (const weekDay of slotsByWeekDay.keys()) {
+          const slots = slotsByWeekDay.get(weekDay);
+          if (!slots?.length) continue;
+          for (const slot of slots) {
+            const teacherId = teacher.id;
+            const teacherName = teacher.User.name;
+
+            let subjectName = "";
+            let className = "";
+            if (slot.TeacherHasClass?.Teacher?.id === teacher.id) {
+              subjectName = slot.TeacherHasClass.Subject.name;
+              className = slot.TeacherHasClass.Class.name;
+            }
+            const startTime = slot.startTime.toTimeString().slice(0, 5);
+            const endTime = slot.endTime.toTimeString().slice(0, 5);
+            dataByTeacher[teacherId] = {
+              name: teacherName,
+              slots: {},
+            };
+            if (!dataByTeacher[teacherId].slots[weekDay]) {
+              dataByTeacher[teacherId].slots[weekDay] = [];
+            }
+            dataByTeacher[teacherId]?.slots[weekDay]?.push({
+              time: `${startTime} - ${endTime}`,
+              classAndSubject: `${className} - ${subjectName}`,
+            });
+          }
+        }
+      }
+
+      const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+      const wb = xlsx.utils.book_new();
+
+      for (const teacherId in dataByTeacher) {
+        const teacher = dataByTeacher[teacherId];
+        if (!teacher) continue;
+        const allTimeSlots = new Set();
+        const slots = teacher.slots;
+
+        // Coletar todos os horários únicos
+        for (const day of daysOfWeek) {
+          if (slots[day]) {
+            for (const slot of slots[day]) {
+              allTimeSlots.add(slot.time);
+            }
+          }
+        }
+
+        const ws_data = [["Horário", ...daysOfWeek]];
+
+        // Preencher as linhas com horários únicos e dados correspondentes
+        for (const time of Array.from(allTimeSlots).sort() as string[]) {
+          const row: string[] = [time];
+          for (const day of daysOfWeek) {
+            const slot = (slots[day] || []).find((s) => s.time === time);
+            row.push(slot ? slot.classAndSubject : "");
+          }
+          ws_data.push(row);
+        }
+
+        const ws = xlsx.utils.aoa_to_sheet(ws_data);
+        xlsx.utils.book_append_sheet(wb, ws, teacher.name);
+      }
+
+      const buffer = xlsx.write(wb, { type: "buffer", bookType: "xlsx" });
+      return buffer.toString("base64");
     }),
 });
 
