@@ -10,7 +10,7 @@ export default async function ClassPage({
   const classSlug = params["class-slug"];
   const foundClass = await api.class.findBySlug({ slug: classSlug });
   if (!foundClass) {
-    return redirect("/escola");
+    throw new Error("Class not found");
   }
 
   return null;

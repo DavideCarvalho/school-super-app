@@ -28,7 +28,7 @@ export default async function ClassActivityPage({
   let subjectSlug = searchParams.materia as string | null;
   if (!subjectSlug) {
     const subjects =
-      await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod({
+      await api.academicPeriod.getSubjectsOnClassForCurrentAcademicPeriod({
         classId: foundClass.id,
       });
     if (!subjects || subjects.length === 0) {

@@ -100,4 +100,34 @@ export const academicPeriodRouter = createTRPCRouter({
         });
       });
     }),
+  getSubjectsOnClassForCurrentAcademicPeriod: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod();
+      if (!academicPeriod) {
+        return [];
+      }
+      return ctx.prisma.subject.findMany({
+        where: {
+          TeacherHasClass: {
+            some: {
+              classId: input.classId,
+              isActive: true,
+              CalendarSlot: {
+                some: {
+                  Calendar: {
+                    academicPeriodId: academicPeriod.id,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
 });

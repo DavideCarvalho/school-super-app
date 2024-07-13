@@ -5,11 +5,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@acme/ui/card";
-import { TabsContent } from "@acme/ui/tabs";
 
 export default function TabLayout({ children }: { children: React.ReactNode }) {
   return (
-    // <TabsContent value="atividades">
     <Card>
       <CardHeader>
         <CardTitle>Atividades pra nota</CardTitle>
@@ -19,6 +17,5 @@ export default function TabLayout({ children }: { children: React.ReactNode }) {
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
-    // </TabsContent>
   );
 }

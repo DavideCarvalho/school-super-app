@@ -23,14 +23,14 @@ export default async function ClassLayout({
     slug: classSlug as string,
   });
   if (!clasz) {
-    return redirect("/escola");
+    throw new Error("Class not found");
   }
   const subjectSlug = url.searchParams.get("materia") as
     | string
     | null
     | undefined;
   const subjects =
-    await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod({
+    await api.academicPeriod.getSubjectsOnClassForCurrentAcademicPeriod({
       classId: clasz?.id,
     });
   const foundSubject = !subjectSlug
