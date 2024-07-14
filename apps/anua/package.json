@@ -54,7 +54,7 @@
     "@sentry/opentelemetry-node": "7.114.0",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "5.51.1",
-    "@tanstack/react-table": "8.19.2",
+    "@tanstack/react-table": "8.19.3",
     "@tremor/react": "3.17.4",
     "@trpc/client": "11.0.0-rc.461",
     "@trpc/next": "11.0.0-rc.461",
