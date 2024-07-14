@@ -292,6 +292,8 @@ export const schoolRouter = createTRPCRouter({
         {
           name: string;
           slots: Record<string, { time: string; classAndSubject: string }[]>;
+          classCount: Record<string, number>;
+          totalClasses: number;
         }
       > = {};
       const dataByClass: Record<
@@ -334,7 +336,6 @@ export const schoolRouter = createTRPCRouter({
         },
       });
       const slotsByWeekDay: Map<string, typeof calendarSlots> = new Map();
-      // console.log("calendarSlots", calendarSlots);
       for (const slot of calendarSlots) {
         const weekDay = convertWeekDay(slot.classWeekDay);
         if (!weekDay) continue;
@@ -347,7 +348,6 @@ export const schoolRouter = createTRPCRouter({
         for (const weekDay of slotsByWeekDay.keys()) {
           const slots = slotsByWeekDay.get(weekDay);
           if (!slots?.length) continue;
-          console.log("slots.length", slots.length);
           for (const slot of slots) {
             const teacherId = teacher.id;
             const teacherName = teacher.User.name;
@@ -358,10 +358,15 @@ export const schoolRouter = createTRPCRouter({
               dataByTeacher[teacherId] = {
                 name: teacherName,
                 slots: {},
+                classCount: {},
+                totalClasses: 0,
               };
             }
             if (!dataByTeacher[teacherId].slots[weekDay]) {
               dataByTeacher[teacherId].slots[weekDay] = [];
+            }
+            if (!dataByTeacher[teacherId].classCount[className]) {
+              dataByTeacher[teacherId].classCount[className] = 0;
             }
 
             if (!dataByClass[classId]) {
@@ -384,6 +389,11 @@ export const schoolRouter = createTRPCRouter({
                 time: `${startTime} - ${endTime}`,
                 classAndSubject,
               });
+              if (!dataByTeacher[teacherId].classCount[className]) {
+                dataByTeacher[teacherId].classCount[className] = 0;
+              }
+              dataByTeacher[teacherId].classCount[className] += 1;
+              dataByTeacher[teacherId].totalClasses += 1;
             } else {
               dataByTeacher[teacherId]?.slots[weekDay]?.push({
                 time: `${startTime} - ${endTime}`,
@@ -405,7 +415,6 @@ export const schoolRouter = createTRPCRouter({
           }
         }
       }
-      // console.log("dataByTeacher", dataByTeacher);
 
       const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
       const wb = xlsx.utils.book_new();
@@ -471,6 +480,39 @@ export const schoolRouter = createTRPCRouter({
         const ws = xlsx.utils.aoa_to_sheet(ws_data);
         xlsx.utils.book_append_sheet(wb, ws, clasz.name);
       }
+
+      const classNames = Object.values(dataByClass).map((c) => c.name);
+      const teacherClassCountData = [["Sala", ...classNames, "Total de Aulas"]];
+      const totalByClass: Record<string, number> = {};
+      let totalOverall = 0;
+      for (const teacherId in dataByTeacher) {
+        const teacher = dataByTeacher[teacherId];
+        if (!teacher) continue;
+        const row = [teacher.name];
+        for (const className of classNames) {
+          const classCount = teacher.classCount[className] ?? 0;
+          row.push(classCount.toString());
+          totalByClass[className] = (totalByClass[className] || 0) + classCount;
+        }
+        row.push(teacher.totalClasses.toString());
+        teacherClassCountData.push(row);
+        totalOverall += teacher.totalClasses;
+      }
+      const totalRow = ["Total"];
+      for (const className of classNames) {
+        const classTotal = totalByClass[className] ?? 0;
+        totalRow.push(classTotal.toString());
+      }
+      totalRow.push(totalOverall.toString());
+      teacherClassCountData.push(totalRow);
+      const ws_teacherClassCount = xlsx.utils.aoa_to_sheet(
+        teacherClassCountData,
+      );
+      xlsx.utils.book_append_sheet(
+        wb,
+        ws_teacherClassCount,
+        "Contagem de Aulas",
+      );
 
       const buffer: Buffer = xlsx.write(wb, {
         type: "buffer",

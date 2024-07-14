@@ -30,7 +30,7 @@ export function DownloadTeacherClassesGridClient({
   }
   return (
     <Button onClick={handleClickDownload} variant={"secondary"}>
-      Baixar grade dos professores
+      Baixar grade
     </Button>
   );
 }
