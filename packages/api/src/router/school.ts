@@ -294,6 +294,13 @@ export const schoolRouter = createTRPCRouter({
           slots: Record<string, { time: string; classAndSubject: string }[]>;
         }
       > = {};
+      const dataByClass: Record<
+        string,
+        {
+          name: string;
+          slots: Record<string, { time: string; teacherAndSubject: string }[]>;
+        }
+      > = {};
       const calendarSlots = await ctx.prisma.calendarSlot.findMany({
         where: {
           Calendar: {
@@ -339,13 +346,13 @@ export const schoolRouter = createTRPCRouter({
       for (const teacher of teachers) {
         for (const weekDay of slotsByWeekDay.keys()) {
           const slots = slotsByWeekDay.get(weekDay);
-          // console.log("slots", slots);
           if (!slots?.length) continue;
           console.log("slots.length", slots.length);
           for (const slot of slots) {
             const teacherId = teacher.id;
-
             const teacherName = teacher.User.name;
+            const classId = slot.Calendar.classId;
+            const className = slot.Calendar.Class.name;
 
             if (!dataByTeacher[teacherId]) {
               dataByTeacher[teacherId] = {
@@ -355,6 +362,16 @@ export const schoolRouter = createTRPCRouter({
             }
             if (!dataByTeacher[teacherId].slots[weekDay]) {
               dataByTeacher[teacherId].slots[weekDay] = [];
+            }
+
+            if (!dataByClass[classId]) {
+              dataByClass[classId] = {
+                name: className,
+                slots: {},
+              };
+            }
+            if (!dataByClass[classId].slots[weekDay]) {
+              dataByClass[classId].slots[weekDay] = [];
             }
 
             const startTime = format(slot.startTime, "HH:mm");
@@ -373,11 +390,19 @@ export const schoolRouter = createTRPCRouter({
                 classAndSubject: "",
               });
             }
+
+            if (slot.TeacherHasClass) {
+              dataByClass[classId]?.slots[weekDay]?.push({
+                time: `${startTime} - ${endTime}`,
+                teacherAndSubject: `${teacherName} - ${slot.TeacherHasClass.Subject.name}`,
+              });
+            } else {
+              dataByClass[classId]?.slots[weekDay]?.push({
+                time: `${startTime} - ${endTime}`,
+                teacherAndSubject: "",
+              });
+            }
           }
-          console.log(
-            `dataByTeacher[teacher.id]?.slots[${weekDay}]?.length`,
-            dataByTeacher[teacher.id]?.slots[weekDay]?.length,
-          );
         }
       }
       // console.log("dataByTeacher", dataByTeacher);
@@ -414,6 +439,37 @@ export const schoolRouter = createTRPCRouter({
 
         const ws = xlsx.utils.aoa_to_sheet(ws_data);
         xlsx.utils.book_append_sheet(wb, ws, teacher.name);
+      }
+
+      for (const classId in dataByClass) {
+        const clasz = dataByClass[classId];
+        if (!clasz) continue;
+        const allTimeSlots = new Set();
+        const slots = clasz.slots;
+
+        // Coletar todos os horários únicos
+        for (const day of daysOfWeek) {
+          if (slots[day]) {
+            for (const slot of slots[day]) {
+              allTimeSlots.add(slot.time);
+            }
+          }
+        }
+
+        const ws_data = [["Horário", ...daysOfWeek]];
+
+        // Preencher as linhas com horários únicos e dados correspondentes
+        for (const time of Array.from(allTimeSlots).sort() as string[]) {
+          const row: string[] = [time];
+          for (const day of daysOfWeek) {
+            const slot = (slots[day] || []).find((s) => s.time === time);
+            row.push(slot ? slot.teacherAndSubject : "");
+          }
+          ws_data.push(row);
+        }
+
+        const ws = xlsx.utils.aoa_to_sheet(ws_data);
+        xlsx.utils.book_append_sheet(wb, ws, clasz.name);
       }
 
       const buffer: Buffer = xlsx.write(wb, {
