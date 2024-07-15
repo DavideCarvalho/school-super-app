@@ -339,9 +339,8 @@ export const teacherRouter = createTRPCRouter({
         return ctx.prisma.subject.findMany({
           where: {
             TeacherHasClass: {
-              every: {
+              some: {
                 classId: input.classId,
-                teacherId: ctx.session.user.id,
                 CalendarSlot: {
                   every: {
                     Calendar: {
