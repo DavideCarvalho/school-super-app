@@ -12,6 +12,7 @@ export default async function ClassPage({
   if (!foundClass) {
     throw new Error("Class not found");
   }
+  setClass(clasz);
 
   return null;
 }

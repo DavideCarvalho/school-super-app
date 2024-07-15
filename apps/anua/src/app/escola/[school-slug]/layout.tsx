@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 
 import { cn } from "@acme/ui";
@@ -9,8 +10,10 @@ import { matchesPathname } from "~/utils/url";
 
 export default async function RootLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: { "school-slug": string };
 }) {
   const requestHeaders = headers();
   const xUrl = requestHeaders.get("x-url");
@@ -27,6 +30,9 @@ export default async function RootLayout({
   });
   if (!user?.School) {
     return null;
+  }
+  if (user.School.slug !== params["school-slug"]) {
+    return redirect(`/escola/${user.School.slug}`);
   }
   const schoolSlug = user.School.slug;
   return (

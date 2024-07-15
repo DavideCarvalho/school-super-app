@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Subject } from "@acme/db";
 import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/server";
