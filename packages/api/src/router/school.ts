@@ -726,6 +726,13 @@ async function tryGenerateSchoolSchedule(
     subject.remainingLessons--;
   }
 
+  // Verificar os horários já ocupados pelos professores em outras turmas
+  const occupiedSlots = await getOccupiedSlotsForTeachers(
+    schoolId,
+    teachers,
+    classId,
+  );
+
   // Continuar a geração do calendário respeitando a configuração do horário e regras de geração
   for (const day of Object.keys(schedule)) {
     const dayAvailableTimeSlots = schedule[day as DayOfWeek];
@@ -733,6 +740,11 @@ async function tryGenerateSchoolSchedule(
       if (timeSlot.TeacherHasClass != null) continue;
 
       for (const teacher of teachers) {
+        if (
+          isSlotOccupied(occupiedSlots, teacher.id, day as DayOfWeek, timeSlot)
+        )
+          continue;
+
         const subject = findRandomSubjectForTeacher(
           teacher,
           subjectsWithLessons,
@@ -813,6 +825,89 @@ async function tryGenerateSchoolSchedule(
   return { schedule, errors };
 }
 
+async function getOccupiedSlotsForTeachers(
+  schoolId: string,
+  teachers: Array<Teacher & { Classes: TeacherHasClass[] }>,
+  classId: string,
+): Promise<Record<string, Record<DayOfWeek, TimeSlot[]>>> {
+  const occupiedSlots: Record<string, Record<DayOfWeek, TimeSlot[]>> = {};
+
+  for (const teacher of teachers) {
+    const teacherId = teacher.id;
+    occupiedSlots[teacherId] = {
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: [],
+    };
+
+    const teacherHasClasses = await prisma.teacherHasClass.findMany({
+      where: {
+        teacherId,
+        isActive: true,
+        Class: {
+          schoolId,
+        },
+      },
+      include: {
+        CalendarSlot: {
+          include: {
+            Calendar: true,
+          },
+        },
+      },
+    });
+
+    for (const teacherHasClass of teacherHasClasses) {
+      for (const slot of teacherHasClass.CalendarSlot) {
+        if (slot.Calendar.classId === classId) continue;
+        const day = dayOfWeekFromInt(slot.classWeekDay) as DayOfWeek;
+        const timeSlot: TimeSlot = {
+          startTime: slot.startTime,
+          endTime: slot.endTime,
+        };
+        occupiedSlots[teacherId][day].push(timeSlot);
+      }
+    }
+  }
+
+  return occupiedSlots;
+}
+
+function dayOfWeekFromInt(dayInt: number): string {
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  return days[dayInt];
+}
+
+function isSlotOccupied(
+  occupiedSlots: Record<string, Record<DayOfWeek, TimeSlot[]>>,
+  teacherId: string,
+  day: DayOfWeek,
+  timeSlot: TimeSlot,
+): boolean {
+  const teacherSlots = occupiedSlots[teacherId]?.[day] || [];
+  const formattedStartTime = format(timeSlot.startTime, "HH:mm");
+  const formattedEndTime = format(timeSlot.endTime, "HH:mm");
+  return teacherSlots.some(
+    (slot) =>
+      (formattedStartTime >= format(slot.startTime, "HH:mm") &&
+        formattedStartTime < format(slot.endTime, "HH:mm")) ||
+      (formattedEndTime > format(slot.startTime, "HH:mm") &&
+        formattedEndTime <= format(slot.endTime, "HH:mm")) ||
+      (formattedStartTime <= format(slot.startTime, "HH:mm") &&
+        formattedEndTime >= format(slot.endTime, "HH:mm")),
+  );
+}
+
 function getTotalRemainingLessons(errors: ScheduleError[]): number {
   return errors.reduce((total, error) => {
     const match = error.message.match(/faltando (\d+) aulas/);
@@ -881,6 +976,7 @@ function findRandomSubjectForTeacher(
 ): SubjectWithRemainingLessons | null | undefined {
   const timeSlotStartTimeFormatted = format(timeSlot.startTime, "HH:mm");
   const timeSlotEndTimeFormatted = format(timeSlot.endTime, "HH:mm");
+
   // Verificar se o professor está disponível no dia e horário
   const availabilityForDay = teacher.Availabilities.some((avail) => {
     const availabilityStartTimeFormatted = format(avail.startTime, "HH:mm");
@@ -949,10 +1045,36 @@ function findRandomSubjectForTeacher(
     if (sameSubject) return sameSubject;
   }
 
-  // Escolher aleatoriamente a partir das matérias restantes
-  return eligibleSubjects.length > 0
-    ? eligibleSubjects[Math.floor(Math.random() * eligibleSubjects.length)]
-    : null;
+  // Priorizar encaixar as matérias para evitar janelas
+  eligibleSubjects.sort((a, b) => {
+    const aClassIndex = teacher.Classes.findIndex(
+      (thc) => thc.subjectId === a.id,
+    );
+    const bClassIndex = teacher.Classes.findIndex(
+      (thc) => thc.subjectId === b.id,
+    );
+    const aHasAdjacent = teacherSchedule.some(
+      (entry, index, array) =>
+        entry.TeacherHasClass?.Subject?.id === a.id &&
+        ((index > 0 &&
+          array[index - 1]?.TeacherHasClass?.Subject?.id === a.id) ||
+          (index < array.length - 1 &&
+            array[index + 1]?.TeacherHasClass?.Subject?.id === a.id)),
+    );
+    const bHasAdjacent = teacherSchedule.some(
+      (entry, index, array) =>
+        entry.TeacherHasClass?.Subject?.id === b.id &&
+        ((index > 0 &&
+          array[index - 1]?.TeacherHasClass?.Subject?.id === b.id) ||
+          (index < array.length - 1 &&
+            array[index + 1]?.TeacherHasClass?.Subject?.id === b.id)),
+    );
+    if (aHasAdjacent && !bHasAdjacent) return -1;
+    if (!aHasAdjacent && bHasAdjacent) return 1;
+    return aClassIndex - bClassIndex;
+  });
+
+  return eligibleSubjects.length > 0 ? eligibleSubjects[0] : null;
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: We don't need to know the type, we just need to shuffle the array

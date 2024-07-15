@@ -237,9 +237,8 @@ export const classRouter = createTRPCRouter({
               thc.teacherId === subjectWithTeacher.teacherId &&
               thc.subjectId === subjectWithTeacher.subjectId,
           );
-          existingTeacherHasClasses.push(existingTeacherHasClass);
           if (!existingTeacherHasClass) {
-            await tx.teacherHasClass.create({
+            const createdTeacherHasClass = await tx.teacherHasClass.create({
               data: {
                 teacherId: subjectWithTeacher.teacherId,
                 classId: input.classId,
@@ -247,20 +246,24 @@ export const classRouter = createTRPCRouter({
                 subjectQuantity: subjectWithTeacher.quantity,
               },
             });
+            existingTeacherHasClasses.push(createdTeacherHasClass);
           } else {
             if (
               existingTeacherHasClass.subjectQuantity !==
-              subjectWithTeacher.quantity
+                subjectWithTeacher.quantity ||
+              existingTeacherHasClass.isActive !== true
             ) {
-              await ctx.prisma.teacherHasClass.update({
-                where: {
-                  id: existingTeacherHasClass.id,
-                },
-                data: {
-                  subjectQuantity: subjectWithTeacher.quantity,
-                  isActive: true,
-                },
-              });
+              const updatedTeacherHasClass =
+                await ctx.prisma.teacherHasClass.update({
+                  where: {
+                    id: existingTeacherHasClass.id,
+                  },
+                  data: {
+                    subjectQuantity: subjectWithTeacher.quantity,
+                    isActive: true,
+                  },
+                });
+              existingTeacherHasClasses.push(updatedTeacherHasClass);
             }
           }
         }
@@ -270,6 +273,7 @@ export const classRouter = createTRPCRouter({
             id: {
               notIn: existingTeacherHasClasses.map((thc) => thc.id),
             },
+            classId: input.classId,
           },
           data: {
             isActive: false,

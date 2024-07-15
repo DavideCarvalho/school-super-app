@@ -161,10 +161,7 @@ export function EditClassModal({
                 />
               </div>
               {subjectsWithTeachers.map((subjectWithTeacher, index) => (
-                <div
-                  key={`${subjectWithTeacher.subject.id}-${subjectWithTeacher.teacher.id}-${subjectWithTeacher.quantity}-${index}`}
-                  className={cn("grid gap-4 sm:grid-cols-4")}
-                >
+                <div key={index} className={cn("grid gap-4 sm:grid-cols-4")}>
                   <Select
                     value={subjectWithTeacher.teacher.id}
                     onValueChange={(e) => {
