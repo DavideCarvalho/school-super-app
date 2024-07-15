@@ -21,10 +21,7 @@ export default async function RootLayout({
   if (!userAuth?.userId) {
     return null;
   }
-  const classes = await api.class.allBySchoolId({
-    page: 1,
-    limit: 999,
-  });
+  const classes = await api.class.classesOnCalendarOnCurrentAcademicPeriod();
   const user = await api.user.findByExternalAuthId({
     externalAuthId: userAuth.userId,
   });

@@ -292,4 +292,30 @@ export const classRouter = createTRPCRouter({
         where: { id: input.classId, schoolId: ctx.session.school.id },
       });
     }),
+  classesOnCalendarOnCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool.query(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
+      if (!academicPeriod) {
+        return [];
+      }
+      return ctx.prisma.class.findMany({
+        where: {
+          schoolId: ctx.session.school.id,
+          TeacherHasClass: {
+            some: {
+              CalendarSlot: {
+                some: {
+                  Calendar: {
+                    academicPeriodId: academicPeriod.id,
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }),
 });
