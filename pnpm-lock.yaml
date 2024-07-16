@@ -175,7 +175,7 @@ importers:
         version: 1.3.1(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       ai:
         specifier: ^3.1.36
-        version: 3.2.24(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.3))(zod@3.23.8)
+        version: 3.2.25(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.3))(zod@3.23.8)
       class-variance-authority:
         specifier: 0.7.0
         version: 0.7.0
@@ -1016,8 +1016,8 @@ packages:
     resolution: {integrity: sha512-oOwPQD8i2Ynpn22cur4sk26FW3mSy6t6/X/K1Ay2yGBKYiSpRyLfObhOrZEGsXDx+3euKy4nEZ193R36NM+tpQ==}
     engines: {node: '>=18'}
 
-  '@ai-sdk/react@0.0.21':
-    resolution: {integrity: sha512-d2Kaa0+QtsR08mR5sx0tccKohUG3kw6m5P1tFciVInpnxaS3Yqgyumuan0OQkRm1V3Obbr8HTy0HAYV9hSPhig==}
+  '@ai-sdk/react@0.0.22':
+    resolution: {integrity: sha512-r84qhn08GHtVGjvbveMekP1CeXDs5sIrdDvMaoxhCL8o90HjYTWBSDywuRJU1Jk1uPE/BwZWQu9f5bqaIx6AgA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19
@@ -1028,8 +1028,8 @@ packages:
       zod:
         optional: true
 
-  '@ai-sdk/solid@0.0.15':
-    resolution: {integrity: sha512-7ox9WmuyOMWFfflLywxZ6SzqrWlnc1hEUqVcuauBlvw3SF/3QcmjbaBqlRFMa3YZyHeu8AQBHKWYCqIV2X1C0w==}
+  '@ai-sdk/solid@0.0.16':
+    resolution: {integrity: sha512-rhBTHLY2fx+weF/vrNmYY8S+D6Gcni77YlDDq9kANpNycL99WQo1hRy9fVJ44ICMJCpVrY/kHIl3Jlumdy3oPw==}
     engines: {node: '>=18'}
     peerDependencies:
       solid-js: ^1.7.7
@@ -1037,8 +1037,8 @@ packages:
       solid-js:
         optional: true
 
-  '@ai-sdk/svelte@0.0.16':
-    resolution: {integrity: sha512-CVaFlR5iw/N+tSAS2yFUhP7BBql+jP5Sohlg2OY7e8hsktxwnDahMMnn896ohM4sfRun81hZWdYWkwi3v6QNWw==}
+  '@ai-sdk/svelte@0.0.17':
+    resolution: {integrity: sha512-dkN8tTMNq7U4Ya02aKd1nH2gZLj0BdleuSY6PAeIQ3huo2Z8Ixgf90ZdnWEf1BSUtdIuXwkkVz6gn+jbh3IbQQ==}
     engines: {node: '>=18'}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0
@@ -1046,8 +1046,8 @@ packages:
       svelte:
         optional: true
 
-  '@ai-sdk/ui-utils@0.0.13':
-    resolution: {integrity: sha512-BUPlYgWGns2X0JFNpwywhgcrXwmW+mW3NYIMx9JREAsT6PwE1dtgeykSIZOra/+pLkHqMlZs1HRDXbD7Da6DBg==}
+  '@ai-sdk/ui-utils@0.0.14':
+    resolution: {integrity: sha512-mm9jAkdZW+UTrSLMGwRcT7o8pHGO7Z5FmmLC0B1NH7BRzLfh1/t0ZuF1U6T7GQbmRQXwQUWjdjnlpY83kc62zw==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.0.0
@@ -1055,8 +1055,8 @@ packages:
       zod:
         optional: true
 
-  '@ai-sdk/vue@0.0.16':
-    resolution: {integrity: sha512-Yms/6lUWpVepwaBhLw2BCQuBXv4msKFNYMWIllbFQG2hsNfw5y634ur+LWwjRdiEVZega8CRBRAdMR7Juf+zxA==}
+  '@ai-sdk/vue@0.0.17':
+    resolution: {integrity: sha512-DoWimMtYNQbqaZZZT00NlfR/G/hEMZLwOZLC58Jp0iIxagJnAcamMJlS1rSR4+vd2UWNk4iPdgsMFdkpDvD9aA==}
     engines: {node: '>=18'}
     peerDependencies:
       vue: ^3.3.4
@@ -4139,8 +4139,8 @@ packages:
     resolution: {integrity: sha512-4I7Td01quW/RpocfNayFdFVk1qSuoh0E7JrbRJ16nH01HhKFQ88INq9Sd+nd72zqRySlr9BmDA8xlEJ6vJMrYA==}
     engines: {node: '>=8'}
 
-  ai@3.2.24:
-    resolution: {integrity: sha512-rJE1J9I/3vx4V5dF9FqjHoBIUqzjQMHy6VUpfCp9t+ulFCls3GSds8CbheAbXxKRpK08Rx5REtwd63vYJFqySg==}
+  ai@3.2.25:
+    resolution: {integrity: sha512-cjTgTRnj6mTcBAum90k4klipzGxVuEZ+6TSf6Lvsw3/zoVYviSYJPshm+dxN5Hc7lSV/Vods0rF81omDRyzkrA==}
     engines: {node: '>=18'}
     peerDependencies:
       openai: ^4.42.0
@@ -7845,42 +7845,42 @@ snapshots:
     dependencies:
       json-schema: 0.4.0
 
-  '@ai-sdk/react@0.0.21(react@18.3.1)(zod@3.23.8)':
+  '@ai-sdk/react@0.0.22(react@18.3.1)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 1.0.2(zod@3.23.8)
-      '@ai-sdk/ui-utils': 0.0.13(zod@3.23.8)
+      '@ai-sdk/ui-utils': 0.0.14(zod@3.23.8)
       swr: 2.2.0(react@18.3.1)
     optionalDependencies:
       react: 18.3.1
       zod: 3.23.8
 
-  '@ai-sdk/solid@0.0.15(zod@3.23.8)':
+  '@ai-sdk/solid@0.0.16(zod@3.23.8)':
     dependencies:
-      '@ai-sdk/ui-utils': 0.0.13(zod@3.23.8)
+      '@ai-sdk/ui-utils': 0.0.14(zod@3.23.8)
     transitivePeerDependencies:
       - zod
 
-  '@ai-sdk/svelte@0.0.16(svelte@4.2.18)(zod@3.23.8)':
+  '@ai-sdk/svelte@0.0.17(svelte@4.2.18)(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 1.0.2(zod@3.23.8)
-      '@ai-sdk/ui-utils': 0.0.13(zod@3.23.8)
+      '@ai-sdk/ui-utils': 0.0.14(zod@3.23.8)
       sswr: 2.1.0(svelte@4.2.18)
     optionalDependencies:
       svelte: 4.2.18
     transitivePeerDependencies:
       - zod
 
-  '@ai-sdk/ui-utils@0.0.13(zod@3.23.8)':
+  '@ai-sdk/ui-utils@0.0.14(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 1.0.2(zod@3.23.8)
       secure-json-parse: 2.7.0
     optionalDependencies:
       zod: 3.23.8
 
-  '@ai-sdk/vue@0.0.16(vue@3.4.31(typescript@5.5.3))(zod@3.23.8)':
+  '@ai-sdk/vue@0.0.17(vue@3.4.31(typescript@5.5.3))(zod@3.23.8)':
     dependencies:
       '@ai-sdk/provider-utils': 0.0.14(zod@3.23.8)
-      '@ai-sdk/ui-utils': 0.0.13(zod@3.23.8)
+      '@ai-sdk/ui-utils': 0.0.14(zod@3.23.8)
       swrv: 1.0.4(vue@3.4.31(typescript@5.5.3))
     optionalDependencies:
       vue: 3.4.31(typescript@5.5.3)
@@ -11345,15 +11345,15 @@ snapshots:
       clean-stack: 2.2.0
       indent-string: 4.0.0
 
-  ai@3.2.24(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.3))(zod@3.23.8):
+  ai@3.2.25(react@18.3.1)(svelte@4.2.18)(vue@3.4.31(typescript@5.5.3))(zod@3.23.8):
     dependencies:
       '@ai-sdk/provider': 0.0.12
       '@ai-sdk/provider-utils': 1.0.2(zod@3.23.8)
-      '@ai-sdk/react': 0.0.21(react@18.3.1)(zod@3.23.8)
-      '@ai-sdk/solid': 0.0.15(zod@3.23.8)
-      '@ai-sdk/svelte': 0.0.16(svelte@4.2.18)(zod@3.23.8)
-      '@ai-sdk/ui-utils': 0.0.13(zod@3.23.8)
-      '@ai-sdk/vue': 0.0.16(vue@3.4.31(typescript@5.5.3))(zod@3.23.8)
+      '@ai-sdk/react': 0.0.22(react@18.3.1)(zod@3.23.8)
+      '@ai-sdk/solid': 0.0.16(zod@3.23.8)
+      '@ai-sdk/svelte': 0.0.17(svelte@4.2.18)(zod@3.23.8)
+      '@ai-sdk/ui-utils': 0.0.14(zod@3.23.8)
+      '@ai-sdk/vue': 0.0.17(vue@3.4.31(typescript@5.5.3))(zod@3.23.8)
       '@opentelemetry/api': 1.9.0
       eventsource-parser: 1.1.2
       json-schema: 0.4.0
