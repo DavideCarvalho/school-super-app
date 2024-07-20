@@ -514,8 +514,8 @@ importers:
         specifier: 1.3.0
         version: 1.3.0(@types/node@20.14.11)(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.31.2)
       next-safe-action:
-        specifier: 7.1.3
-        version: 7.1.3(@types/json-schema@7.0.15)(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8)
+        specifier: 7.2.0
+        version: 7.2.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yup@1.4.0)(zod@3.23.8)
       next-superjson:
         specifier: 0.0.4
         version: 0.0.4(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.93.0(@swc/core@1.3.101))
@@ -3892,87 +3892,6 @@ packages:
   '@types/webpack@5.28.5':
     resolution: {integrity: sha512-wR87cgvxj3p6D0Crt1r5avwqffqPXUkNlnQ1mjU93G7gCuFjufZR4I6j8cz5g1F1tTYpfOOFvly+cmIQwL9wvw==}
 
-  '@typeschema/core@0.13.2':
-    resolution: {integrity: sha512-pAt0MK249/9szYaoPuvzhSfOd3smrLhhwCCpUNB4onX32mRx5F3lzDIveIYGQkLYRq58xOX5sjoW+n72f/MLLw==}
-    peerDependencies:
-      '@types/json-schema': ^7.0.15
-    peerDependenciesMeta:
-      '@types/json-schema':
-        optional: true
-
-  '@typeschema/main@0.13.10':
-    resolution: {integrity: sha512-ArdFC4GbgdVWWgPKg2tymxx2KHMus3xZ8I2kHwqw/0P4FtWBXCmSNAiBqDtpoXXF8h9cbcm7fVpcs5ftoWT9+A==}
-    peerDependencies:
-      '@typeschema/arktype': 0.13.2
-      '@typeschema/class-validator': 0.1.2
-      '@typeschema/deepkit': 0.13.4
-      '@typeschema/effect': 0.13.4
-      '@typeschema/fastest-validator': 0.1.0
-      '@typeschema/function': 0.13.2
-      '@typeschema/io-ts': 0.13.3
-      '@typeschema/joi': 0.13.3
-      '@typeschema/json': 0.13.3
-      '@typeschema/ow': 0.13.3
-      '@typeschema/runtypes': 0.13.2
-      '@typeschema/superstruct': 0.13.2
-      '@typeschema/suretype': 0.1.0
-      '@typeschema/typebox': 0.13.4
-      '@typeschema/valibot': 0.13.5
-      '@typeschema/valita': 0.1.0
-      '@typeschema/vine': 0.1.0
-      '@typeschema/yup': 0.13.3
-      '@typeschema/zod': 0.13.3
-    peerDependenciesMeta:
-      '@typeschema/arktype':
-        optional: true
-      '@typeschema/class-validator':
-        optional: true
-      '@typeschema/deepkit':
-        optional: true
-      '@typeschema/effect':
-        optional: true
-      '@typeschema/fastest-validator':
-        optional: true
-      '@typeschema/function':
-        optional: true
-      '@typeschema/io-ts':
-        optional: true
-      '@typeschema/joi':
-        optional: true
-      '@typeschema/json':
-        optional: true
-      '@typeschema/ow':
-        optional: true
-      '@typeschema/runtypes':
-        optional: true
-      '@typeschema/superstruct':
-        optional: true
-      '@typeschema/suretype':
-        optional: true
-      '@typeschema/typebox':
-        optional: true
-      '@typeschema/valibot':
-        optional: true
-      '@typeschema/valita':
-        optional: true
-      '@typeschema/vine':
-        optional: true
-      '@typeschema/yup':
-        optional: true
-      '@typeschema/zod':
-        optional: true
-
-  '@typeschema/zod@0.13.3':
-    resolution: {integrity: sha512-p5Hs22WIKkM/vZTAvw5QOLSA0EJ6QBUsQMGUrXlYnTAE2LSR/F5MLsDUb18O6S5VxGjrzU7x3VIznD5qOafJRw==}
-    peerDependencies:
-      zod: ^3.22.4
-      zod-to-json-schema: ^3.22.4
-    peerDependenciesMeta:
-      zod:
-        optional: true
-      zod-to-json-schema:
-        optional: true
-
   '@vercel/analytics@1.3.1':
     resolution: {integrity: sha512-xhSlYgAuJ6Q4WQGkzYTLmXwhYl39sWjoMA3nHxfkvG+WdBT25c563a7QhwwKivEOZtPJXifYHR1m2ihoisbWyA==}
     peerDependencies:
@@ -5946,15 +5865,19 @@ packages:
       next: '>=13.4'
       react: '>=18.0.0'
 
-  next-safe-action@7.1.3:
-    resolution: {integrity: sha512-WWqgoExw2BjiVzTZPryW+rIMRhcrnEhvnKmofCDTNfDD6pmAYXk3f8tM199iTuKGYEHrJDtffs3fggQZlPuMzQ==}
+  next-safe-action@7.2.0:
+    resolution: {integrity: sha512-Hgg+BJ0RS/L7zK23q5pbqSb/KJYV65X6spNZf6pPXa4b7lfZdEz485q4rhzozTgcm0HDWlC3Kmn6/MMimNn9ZQ==}
     engines: {node: '>=18.17'}
     peerDependencies:
       next: '>= 14.0.0'
       react: '>= 18.2.0'
       react-dom: '>= 18.2.0'
+      valibot: '>= 0.36.0'
+      yup: '>= 1.0.0'
       zod: '>= 3.0.0'
     peerDependenciesMeta:
+      valibot:
+        optional: true
       zod:
         optional: true
 
@@ -6471,6 +6394,9 @@ packages:
 
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+
+  property-expr@2.0.6:
+    resolution: {integrity: sha512-SVtmxhRE/CGkn3eZY1T6pC8Nln6Fr/lu1mKSgRud0eC73whjGfoAogbn78LkD8aFL0zz3bAFerKSnOl7NlErBA==}
 
   prosemirror-changeset@2.2.1:
     resolution: {integrity: sha512-J7msc6wbxB4ekDFj+n9gTW/jav/p53kdlivvuppHsrZXCaQdVgRghoZbSS3kwrRyAstRVQ4/+u5k7YfLgkkQvQ==}
@@ -7285,6 +7211,9 @@ packages:
   through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
 
+  tiny-case@1.0.3:
+    resolution: {integrity: sha512-Eet/eeMhkO6TX8mnUteS9zgPbUMQa4I6Kkp5ORiBD5476/m+PIRiumP5tmh5ioJpH7k51Kehawy2UDfsnxxY8Q==}
+
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
 
@@ -7326,6 +7255,9 @@ packages:
   to-regex-range@5.0.1:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
+
+  toposort@2.0.2:
+    resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
 
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
@@ -7781,6 +7713,9 @@ packages:
   yocto-queue@1.1.1:
     resolution: {integrity: sha512-b4JR1PFR10y1mKjhHY9LaGo6tmrgjit7hxVIeAmyMw3jegXR4dhYqLaQF5zMXZxY7tLpMyJeLjr1C4rLmkVe8g==}
     engines: {node: '>=12.20'}
+
+  yup@1.4.0:
+    resolution: {integrity: sha512-wPbgkJRCqIf+OHyiTBQoJiP5PFuAXaWiJK6AmYkzQAh5/c2K9hzSApBZG5wV9KoKSePF7sAxmNSvh/13YHkFDg==}
 
   zip-stream@4.1.1:
     resolution: {integrity: sha512-9qv4rlDiopXg4E69k+vMHjNN63YFMe9sZMrdlvKnCjlCRWeCBswPPMPUfx+ipsAWq1LXHe70RcbaHdJJpS6hyQ==}
@@ -11097,27 +11032,6 @@ snapshots:
       - uglify-js
       - webpack-cli
 
-  '@typeschema/core@0.13.2(@types/json-schema@7.0.15)':
-    optionalDependencies:
-      '@types/json-schema': 7.0.15
-
-  '@typeschema/main@0.13.10(@types/json-schema@7.0.15)(@typeschema/zod@0.13.3(@types/json-schema@7.0.15)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8))':
-    dependencies:
-      '@typeschema/core': 0.13.2(@types/json-schema@7.0.15)
-    optionalDependencies:
-      '@typeschema/zod': 0.13.3(@types/json-schema@7.0.15)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8)
-    transitivePeerDependencies:
-      - '@types/json-schema'
-
-  '@typeschema/zod@0.13.3(@types/json-schema@7.0.15)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8)':
-    dependencies:
-      '@typeschema/core': 0.13.2(@types/json-schema@7.0.15)
-    optionalDependencies:
-      zod: 3.23.8
-      zod-to-json-schema: 3.22.5(zod@3.23.8)
-    transitivePeerDependencies:
-      - '@types/json-schema'
-
   '@vercel/analytics@1.3.1(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
     dependencies:
       server-only: 0.0.1
@@ -13289,36 +13203,14 @@ snapshots:
       - supports-color
       - terser
 
-  next-safe-action@7.1.3(@types/json-schema@7.0.15)(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8):
+  next-safe-action@7.2.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yup@1.4.0)(zod@3.23.8):
     dependencies:
-      '@typeschema/main': 0.13.10(@types/json-schema@7.0.15)(@typeschema/zod@0.13.3(@types/json-schema@7.0.15)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8))
-      '@typeschema/zod': 0.13.3(@types/json-schema@7.0.15)(zod-to-json-schema@3.22.5(zod@3.23.8))(zod@3.23.8)
       next: 14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+      yup: 1.4.0
     optionalDependencies:
       zod: 3.23.8
-    transitivePeerDependencies:
-      - '@types/json-schema'
-      - '@typeschema/arktype'
-      - '@typeschema/class-validator'
-      - '@typeschema/deepkit'
-      - '@typeschema/effect'
-      - '@typeschema/fastest-validator'
-      - '@typeschema/function'
-      - '@typeschema/io-ts'
-      - '@typeschema/joi'
-      - '@typeschema/json'
-      - '@typeschema/ow'
-      - '@typeschema/runtypes'
-      - '@typeschema/superstruct'
-      - '@typeschema/suretype'
-      - '@typeschema/typebox'
-      - '@typeschema/valibot'
-      - '@typeschema/valita'
-      - '@typeschema/vine'
-      - '@typeschema/yup'
-      - zod-to-json-schema
 
   next-superjson@0.0.4(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.93.0(@swc/core@1.3.101)):
     dependencies:
@@ -13827,6 +13719,8 @@ snapshots:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
+
+  property-expr@2.0.6: {}
 
   prosemirror-changeset@2.2.1:
     dependencies:
@@ -14913,6 +14807,8 @@ snapshots:
 
   through@2.3.8: {}
 
+  tiny-case@1.0.3: {}
+
   tiny-invariant@1.3.3: {}
 
   tinybench@2.8.0: {}
@@ -14950,6 +14846,8 @@ snapshots:
   to-regex-range@5.0.1:
     dependencies:
       is-number: 7.0.0
+
+  toposort@2.0.2: {}
 
   tr46@0.0.3: {}
 
@@ -15398,6 +15296,13 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.1.1: {}
+
+  yup@1.4.0:
+    dependencies:
+      property-expr: 2.0.6
+      tiny-case: 1.0.3
+      toposort: 2.0.2
+      type-fest: 2.19.0
 
   zip-stream@4.1.1:
     dependencies:
