@@ -514,8 +514,8 @@ importers:
         specifier: 1.3.0
         version: 1.3.0(@types/node@20.14.11)(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(terser@5.31.2)
       next-safe-action:
-        specifier: 7.2.2
-        version: 7.2.2(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yup@1.4.0)(zod@3.23.8)
+        specifier: 7.3.0
+        version: 7.3.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yup@1.4.0)(zod@3.23.8)
       next-superjson:
         specifier: 0.0.4
         version: 0.0.4(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.93.0(@swc/core@1.3.101))
@@ -5865,8 +5865,8 @@ packages:
       next: '>=13.4'
       react: '>=18.0.0'
 
-  next-safe-action@7.2.2:
-    resolution: {integrity: sha512-0N/9vzM0iloSw39fmpd3AJ0oGxzZ8z+RzfpOFlvpODfjs4LCC7ADyaoQKbo62HkVvJSXTbdOhgWA+reJONsxDw==}
+  next-safe-action@7.3.0:
+    resolution: {integrity: sha512-ZRPPtJAlbNkGkSWV1KubS+jvhqrlbPfyA7iWjV5naW7w+PRzOLGXS8VVi71mtqaxGiuirtTc3yIrqFVWzi5Qpw==}
     engines: {node: '>=18.17'}
     peerDependencies:
       next: '>= 14.0.0'
@@ -13203,7 +13203,7 @@ snapshots:
       - supports-color
       - terser
 
-  next-safe-action@7.2.2(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yup@1.4.0)(zod@3.23.8):
+  next-safe-action@7.3.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(yup@1.4.0)(zod@3.23.8):
     dependencies:
       next: 14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
