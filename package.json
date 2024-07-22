@@ -35,7 +35,7 @@
     "dotenv-cli": "7.4.2",
     "prettier": "3.3.3",
     "turbo": "2.0.9",
-    "typescript": "5.5.3"
+    "typescript": "5.5.4"
   },
   "prettier": "@acme/prettier-config"
 }
