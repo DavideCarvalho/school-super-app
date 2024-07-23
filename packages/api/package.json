@@ -23,7 +23,7 @@
     "nodemailer": "6.9.14",
     "superjson": "2.2.1",
     "zod": "3.23.8",
-    "@clerk/clerk-sdk-node": "5.0.16",
+    "@clerk/clerk-sdk-node": "5.0.17",
     "slugify": "1.6.6"
   },
   "devDependencies": {
