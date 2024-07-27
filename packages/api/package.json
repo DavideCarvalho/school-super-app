@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf .turbo node_modules",
+    "clean": "rm -rf .turbo dist node_modules",
     "lint": "eslint .",
     "lint:fix": "pnpm lint --fix",
     "type-check": "tsc --noEmit"
@@ -17,8 +17,8 @@
     "@acme/db": "workspace:^0.1.0",
     "@acme/email": "workspace:^0.1.0",
     "@react-email/render": "0.0.16",
-    "@trpc/client": "11.0.0-rc.467",
-    "@trpc/server": "11.0.0-rc.467",
+    "@trpc/client": "catalog:",
+    "@trpc/server": "catalog:",
     "minio": "8.0.1",
     "nodemailer": "6.9.14",
     "superjson": "2.2.1",
