@@ -76,11 +76,11 @@ importers:
         specifier: 0.0.5
         version: 0.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/clerk-sdk-node':
-        specifier: 5.0.18
-        version: 5.0.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 5.0.20
+        version: 5.0.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/elements':
         specifier: ^0.10.0
-        version: 0.10.7(@clerk/clerk-react@5.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 0.10.7(@clerk/clerk-react@5.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
         specifier: 2.4.8
         version: 2.4.8
@@ -368,8 +368,8 @@ importers:
         specifier: 0.0.5
         version: 0.0.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/clerk-sdk-node':
-        specifier: 5.0.18
-        version: 5.0.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 5.0.20
+        version: 5.0.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
         specifier: 2.4.8
         version: 2.4.8
@@ -681,8 +681,8 @@ importers:
         specifier: workspace:^0.1.0
         version: link:../email
       '@clerk/clerk-sdk-node':
-        specifier: 5.0.18
-        version: 5.0.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 5.0.20
+        version: 5.0.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@react-email/render':
         specifier: 0.0.16
         version: 0.0.16(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -949,13 +949,13 @@ importers:
     dependencies:
       '@ianvs/prettier-plugin-sort-imports':
         specifier: 4.3.1
-        version: 4.3.1(prettier@3.3.3)
+        version: 4.3.1(@vue/compiler-sfc@3.4.34)(prettier@3.3.3)
       prettier:
         specifier: 3.3.3
         version: 3.3.3
       prettier-plugin-tailwindcss:
         specifier: 0.6.5
-        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.3))(prettier@3.3.3)
+        version: 0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(@vue/compiler-sfc@3.4.34)(prettier@3.3.3))(prettier@3.3.3)
     devDependencies:
       '@acme/tsconfig':
         specifier: workspace:^0.1.0
@@ -1270,6 +1270,10 @@ packages:
     resolution: {integrity: sha512-cERP/71pIGZvA7WtJaMCrTf33pu4H6NI89LJXXBcUnMTj8YJy7XAGURKi8jzFTUAeMiQXjV7NESzkEzRWtgCGw==}
     engines: {node: '>=18.17.0'}
 
+  '@clerk/backend@1.4.3':
+    resolution: {integrity: sha512-wj4qsZO6iNiY9vF7vLH5v1f3oLh1yCLgFa0PedLzJAIJgepZl23C1/ubrRm7vyewjQEMHZwod4816mZlHDfoqA==}
+    engines: {node: '>=18.17.0'}
+
   '@clerk/clerk-react@5.2.9':
     resolution: {integrity: sha512-OL2MYVH4SX718gFTUukpy/0jHQUSqAaAxO3sp61WcUrt5T/Djczg4tfTCWoW688kWmqVsinU9+PxlOKNLKrUhA==}
     engines: {node: '>=18.17.0'}
@@ -1277,8 +1281,8 @@ packages:
       react: '>=18 || >=19.0.0-beta'
       react-dom: '>=18 || >=19.0.0-beta'
 
-  '@clerk/clerk-sdk-node@5.0.18':
-    resolution: {integrity: sha512-T/wFoWqRhhF+0AaFwztgPAZrb+cZ/b0+RZY/EODNz6WjNnENXEEKm8qLfcZZn2PuFsXrc54X+QRk+nh7DLqWRw==}
+  '@clerk/clerk-sdk-node@5.0.20':
+    resolution: {integrity: sha512-W8r9zpre2JowLcSk9fz74SQuGFCut/YrGZzE7GeAAafpnVAhfzBgpQ+Dg5onYc8dJUR/5/jLUJ/VrApBC+65kg==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/elements@0.10.7':
@@ -1308,6 +1312,18 @@ packages:
 
   '@clerk/shared@2.4.0':
     resolution: {integrity: sha512-2UI0OeRB8IIliiALydLTQjYYj3qhPNb/LU9/3tfBbz/PNbCEZkd18AuYKB9N3zIm2MIHbOSMLt7SoZJKsRB8+A==}
+    engines: {node: '>=18.17.0'}
+    peerDependencies:
+      react: '>=18 || >=19.0.0-beta'
+      react-dom: '>=18 || >=19.0.0-beta'
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
+  '@clerk/shared@2.4.1':
+    resolution: {integrity: sha512-sApuz6hDRIai4Jwo/fBcihX74+DdrKLt08LkEVrooh/7zc0ipDOSGlqmAy15yNuKPaxpemp/9nW4T8gq6uIr9Q==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       react: '>=18 || >=19.0.0-beta'
@@ -8043,6 +8059,17 @@ snapshots:
       - react
       - react-dom
 
+  '@clerk/backend@1.4.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@clerk/shared': 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/types': 4.9.1
+      cookie: 0.5.0
+      snakecase-keys: 5.4.4
+      tslib: 2.4.1
+    transitivePeerDependencies:
+      - react
+      - react-dom
+
   '@clerk/clerk-react@5.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/shared': 2.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -8051,20 +8078,20 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       tslib: 2.4.1
 
-  '@clerk/clerk-sdk-node@5.0.18(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/clerk-sdk-node@5.0.20(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 1.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/shared': 2.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/types': 4.9.0
+      '@clerk/backend': 1.4.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/types': 4.9.1
       tslib: 2.4.1
     transitivePeerDependencies:
       - react
       - react-dom
 
-  '@clerk/elements@0.10.7(@clerk/clerk-react@5.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/elements@0.10.7(@clerk/clerk-react@5.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/clerk-react': 5.2.9(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/shared': 2.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/types': 4.9.1
       '@radix-ui/react-form': 0.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slot': 1.1.0(@types/react@18.3.3)(react@18.3.1)
@@ -8100,6 +8127,17 @@ snapshots:
   '@clerk/shared@2.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/types': 4.9.0
+      glob-to-regexp: 0.4.1
+      js-cookie: 3.0.5
+      std-env: 3.7.0
+      swr: 2.2.5(react@18.3.1)
+    optionalDependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+
+  '@clerk/shared@2.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@clerk/types': 4.9.1
       glob-to-regexp: 0.4.1
       js-cookie: 3.0.5
       std-env: 3.7.0
@@ -8438,7 +8476,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.3.0': {}
 
-  '@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.3)':
+  '@ianvs/prettier-plugin-sort-imports@4.3.1(@vue/compiler-sfc@3.4.34)(prettier@3.3.3)':
     dependencies:
       '@babel/core': 7.24.9
       '@babel/generator': 7.25.0
@@ -8447,6 +8485,8 @@ snapshots:
       '@babel/types': 7.25.0
       prettier: 3.3.3
       semver: 7.6.3
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.4.34
     transitivePeerDependencies:
       - supports-color
 
@@ -11936,7 +11976,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.1
+      tslib: 2.6.3
 
   dotenv-cli@7.4.2:
     dependencies:
@@ -12965,7 +13005,7 @@ snapshots:
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.4.1
+      tslib: 2.6.3
 
   lru-cache@10.4.3: {}
 
@@ -13247,7 +13287,7 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.4.1
+      tslib: 2.6.3
 
   node-fetch@2.6.12:
     dependencies:
@@ -13612,11 +13652,11 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(prettier@3.3.3))(prettier@3.3.3):
+  prettier-plugin-tailwindcss@0.6.5(@ianvs/prettier-plugin-sort-imports@4.3.1(@vue/compiler-sfc@3.4.34)(prettier@3.3.3))(prettier@3.3.3):
     dependencies:
       prettier: 3.3.3
     optionalDependencies:
-      '@ianvs/prettier-plugin-sort-imports': 4.3.1(prettier@3.3.3)
+      '@ianvs/prettier-plugin-sort-imports': 4.3.1(@vue/compiler-sfc@3.4.34)(prettier@3.3.3)
 
   prettier@3.3.3: {}
 
@@ -14358,7 +14398,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.4.1
+      tslib: 2.6.3
 
   snakecase-keys@5.4.4:
     dependencies:
