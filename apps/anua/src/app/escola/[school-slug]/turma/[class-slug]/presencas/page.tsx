@@ -1,10 +1,14 @@
 import { headers } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { api } from "~/trpc/server";
-import { AttendancesTableServer } from "./attendances-table/attendances-table.server";
+import { Button } from "@acme/ui/button";
 
-export default async function ClassActivityPage({
+import { api } from "~/trpc/server";
+import { NewAttendanceModalListener } from "./_components/new-attendance-modal-listener";
+import { AttendancesTableServer } from "./containers/attendances-table/attendances-table.server";
+
+export default async function ClassAttendancePage({
   params,
   searchParams,
 }: {
@@ -39,6 +43,15 @@ export default async function ClassActivityPage({
   }
   return (
     <>
+      <NewAttendanceModalListener
+        classId={foundClass.id}
+        subjectId={subject.id}
+      />
+      <Link
+        href={`${url.pathname}?${url.searchParams.toString()}#adicionar-presenca`}
+      >
+        <Button>Adicionar presença</Button>
+      </Link>
       <AttendancesTableServer classId={foundClass.id} subjectId={subject.id} />
     </>
   );

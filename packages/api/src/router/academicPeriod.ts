@@ -134,4 +134,63 @@ export const academicPeriodRouter = createTRPCRouter({
         },
       });
     }),
+  getTeacherHasClassDatesOverAcademicPeriod: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        subjectId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
+      if (!academicPeriod) {
+        return [];
+      }
+      const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
+        where: {
+          classId: input.classId,
+          isActive: true,
+          Teacher: {
+            User: {
+              schoolId: ctx.session.school.id,
+            },
+          },
+          Subject: {
+            id: input.subjectId,
+          },
+        },
+      });
+      if (!teacherHasClass) {
+        return [];
+      }
+      const dates =
+        await academicPeriodService.getTeacherHasClassDatesOverAcademicPeriod(
+          teacherHasClass.id,
+          academicPeriod.id,
+        );
+
+      const attendanceDatesAlreadyDone = await ctx.prisma.attendance.findMany({
+        where: {
+          CalendarSlot: {
+            teacherHasClassId: teacherHasClass.id,
+            Calendar: {
+              academicPeriodId: academicPeriod.id,
+              isActive: true,
+            },
+          },
+        },
+      });
+      if (attendanceDatesAlreadyDone.length > 0) {
+        return dates.filter(
+          (date) =>
+            !attendanceDatesAlreadyDone.some(
+              (attendance) => attendance.date === date,
+            ),
+        );
+      }
+      return dates;
+    }),
 });
