@@ -64,6 +64,7 @@ export const classRouter = createTRPCRouter({
         }
         return ctx.prisma.student.count({
           where: {
+            classId: input.classId,
             StudentHasAcademicPeriod: {
               every: {
                 academicPeriodId: academicPeriod.id,

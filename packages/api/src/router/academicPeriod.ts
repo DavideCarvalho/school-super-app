@@ -1,3 +1,4 @@
+import { isSameDay, isSameHour, isSameMinute } from "date-fns";
 import { z } from "zod";
 
 import * as academicPeriodService from "../service/academicPeriod.service";
@@ -178,17 +179,21 @@ export const academicPeriodRouter = createTRPCRouter({
             teacherHasClassId: teacherHasClass.id,
             Calendar: {
               academicPeriodId: academicPeriod.id,
-              isActive: true,
             },
           },
         },
       });
+      console.log("attendanceDatesAlreadyDone", attendanceDatesAlreadyDone);
       if (attendanceDatesAlreadyDone.length > 0) {
         return dates.filter(
           (date) =>
-            !attendanceDatesAlreadyDone.some(
-              (attendance) => attendance.date === date,
-            ),
+            !attendanceDatesAlreadyDone.some((attendance) => {
+              return (
+                isSameDay(attendance.date, date) &&
+                isSameHour(attendance.date, date) &&
+                isSameMinute(attendance.date, date)
+              );
+            }),
         );
       }
       return dates;

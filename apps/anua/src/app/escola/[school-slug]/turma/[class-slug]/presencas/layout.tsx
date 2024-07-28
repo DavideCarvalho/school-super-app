@@ -12,9 +12,9 @@ export default function TabLayout({ children }: { children: React.ReactNode }) {
     // <TabsContent value="presencas">
     <Card>
       <CardHeader>
-        <CardTitle>Atividades pra nota</CardTitle>
+        <CardTitle>Presenças</CardTitle>
         <CardDescription>
-          Veja, crie e edite todas as atividades pra nota dessa turma.
+          Veja e adicione A presença de todos os alunos dessa turma.
         </CardDescription>
       </CardHeader>
       <CardContent>{children}</CardContent>

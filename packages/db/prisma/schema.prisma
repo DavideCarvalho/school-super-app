@@ -88,7 +88,8 @@ model TeacherAvailability {
 }
 
 model Student {
-  id           String @id
+  id           String  @id
+  classId      String?
   canteenLimit Float?
 
   User                     User                       @relation(name: "student_user_id", fields: [id], references: [id])
@@ -97,6 +98,7 @@ model Student {
   StudentHasAssignment     StudentHasAssignment[]
   StudentHasAcademicPeriod StudentHasAcademicPeriod[]
   StudentHasAttendance     StudentHasAttendance[]
+  Class                    Class?                     @relation(fields: [classId], references: [id])
 
   @@index([id])
 }
@@ -178,7 +180,7 @@ model Attendance {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   note           String?  @db.Text
-  date           DateTime @db.Date
+  date           DateTime
   calendarSlotId String
 
   StudentHasAttendance StudentHasAttendance[]
@@ -401,6 +403,7 @@ model Class {
   ClassSchedule            ClassSchedule[]
   Calendar                 Calendar[]
   StudentHasAcademicPeriod StudentHasAcademicPeriod[]
+  Student                  Student[]
 
   @@index([schoolId])
 }
