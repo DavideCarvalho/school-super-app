@@ -1,5 +1,6 @@
 import { endOfDay, startOfDay } from "date-fns";
 
+import type { PrismaClient } from "@acme/db";
 import { prisma } from "@acme/db";
 
 // current academic period means
@@ -8,9 +9,12 @@ import { prisma } from "@acme/db";
 // e.g: we have a period from 1/1/2023 to 1/2/2023
 //      and we're on 1/1/2023
 //      then the current academic period is the one from 1/1/2023 to 1/2/2023
-export function getCurrentAcademicPeriod(schoolId: string) {
+export function getCurrentAcademicPeriod(
+  schoolId: string,
+  { db }: { db: PrismaClient } = { db: prisma },
+) {
   const currentDate = new Date();
-  return prisma.academicPeriod.findFirst({
+  return db.academicPeriod.findFirst({
     where: {
       schoolId,
       startDate: {
@@ -32,8 +36,11 @@ export function getCurrentAcademicPeriod(schoolId: string) {
 
 // latest academic period means
 // the the last one created
-export function getLatestAcademicPeriod(schoolId: string) {
-  return prisma.academicPeriod.findFirst({
+export function getLatestAcademicPeriod(
+  schoolId: string,
+  { db }: { db: PrismaClient } = { db: prisma },
+) {
+  return db.academicPeriod.findFirst({
     where: {
       schoolId,
     },
@@ -50,9 +57,12 @@ export function getLatestAcademicPeriod(schoolId: string) {
 // last active academic period means
 // is the last one being used
 // and it will only be used when we're between the start and end date
-export function getLastActiveAcademicPeriod(schoolId: string) {
+export function getLastActiveAcademicPeriod(
+  schoolId: string,
+  { db }: { db: PrismaClient } = { db: prisma },
+) {
   const currentDate = new Date();
-  return prisma.academicPeriod.findFirst({
+  return db.academicPeriod.findFirst({
     where: {
       schoolId,
       endDate: {
@@ -69,8 +79,11 @@ export function getLastActiveAcademicPeriod(schoolId: string) {
   });
 }
 
-export function findById(academicPeriodId: string) {
-  return prisma.academicPeriod.findUnique({
+export function findById(
+  academicPeriodId: string,
+  { db }: { db: PrismaClient } = { db: prisma },
+) {
+  return db.academicPeriod.findUnique({
     where: {
       id: academicPeriodId,
     },

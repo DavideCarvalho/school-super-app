@@ -35,7 +35,7 @@ export function AttendancesTableClient({
     });
   return (
     <TableWithPagination
-      data={attendances ?? []}
+      data={attendances ? attendances.studentsAttendance : []}
       isLoading={!attendances && isLoadingAttendances}
       totalCount={studentsCount ?? 0}
       columns={columns}

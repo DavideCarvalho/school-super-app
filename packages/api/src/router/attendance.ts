@@ -1,4 +1,4 @@
-import { differenceInBusinessDays } from "date-fns";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import type { Subject, Teacher, TeacherHasClass, User } from "@acme/db";
@@ -17,16 +17,21 @@ export const attendanceRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
+      // Obter o período acadêmico atual ou o último ativo
       const academicPeriod =
         await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
           ctx.session.school.id,
         );
 
       if (!academicPeriod) {
-        return [];
+        return {
+          totalAttendanceQuantity: 0,
+          studentsAttendance: [],
+        };
       }
 
-      const rawData = await ctx.prisma.student.findMany({
+      // Consultar alunos matriculados no período acadêmico
+      const students = await ctx.prisma.student.findMany({
         where: {
           StudentHasAcademicPeriod: {
             some: {
@@ -72,9 +77,35 @@ export const attendanceRouter = createTRPCRouter({
         take: input.limit,
       });
 
-      const attendanceData = [];
+      // Estrutura para armazenar os dados de presença
+      const attendanceData: {
+        Student: (typeof students)[0];
+        totalAttendancePercentage: number;
+        totalAttendanceNumber: number;
+        attendancePerTeacherHasClass: {
+          TeacherHasClass: TeacherHasClass & {
+            Subject: Subject;
+            Teacher: Teacher & {
+              User: User;
+            };
+          };
+          attendancePercentage: number;
+          attendanceNumber: number;
+        }[];
+      }[] = [];
 
-      for (const student of rawData) {
+      const totalAttendances = await ctx.prisma.attendance.count({
+        where: {
+          CalendarSlot: {
+            Calendar: {
+              academicPeriodId: academicPeriod.id,
+            },
+          },
+        },
+      });
+
+      // Processamento dos dados de presença para cada aluno
+      for (const student of students) {
         const totalAttendanceMap = new Map<
           string,
           {
@@ -88,9 +119,49 @@ export const attendanceRouter = createTRPCRouter({
           }
         >();
 
-        for (const studentAttendance of student.StudentHasAttendance) {
-          const { CalendarSlot } = studentAttendance.Attendance;
-          const { TeacherHasClass } = CalendarSlot;
+        const totalStudentAttendanceNumber =
+          await ctx.prisma.studentHasAttendance.count({
+            where: {
+              studentId: student.id,
+              present: true,
+              Attendance: {
+                CalendarSlot: {
+                  Calendar: {
+                    academicPeriodId: academicPeriod.id,
+                  },
+                },
+              },
+            },
+          });
+
+        const calendarSlotsForCurrentAcademicPeriod =
+          await ctx.prisma.calendarSlot.findMany({
+            where: {
+              Calendar: {
+                academicPeriodId: academicPeriod.id,
+              },
+              teacherHasClassId: {
+                not: null,
+              },
+            },
+            include: {
+              Calendar: true,
+              TeacherHasClass: {
+                include: {
+                  Subject: true,
+                  Teacher: {
+                    include: {
+                      User: true,
+                    },
+                  },
+                },
+              },
+              Attendance: true,
+            },
+          });
+
+        for (const calendarSlot of calendarSlotsForCurrentAcademicPeriod) {
+          const { TeacherHasClass } = calendarSlot;
 
           if (TeacherHasClass) {
             const key = TeacherHasClass.id;
@@ -98,58 +169,182 @@ export const attendanceRouter = createTRPCRouter({
             if (!totalAttendanceMap.has(key)) {
               totalAttendanceMap.set(key, {
                 TeacherHasClass: TeacherHasClass,
-                attendanceNumber: 0,
+                attendanceNumber: calendarSlot.Attendance.length,
               });
-            }
-
-            const attendanceData = totalAttendanceMap.get(key);
-            if (attendanceData) {
-              attendanceData.attendanceNumber++;
             }
           }
         }
 
         const attendancePerTeacherHasClass = [];
-        let totalAttendanceNumber = 0;
 
         for (const [key, value] of totalAttendanceMap) {
-          const totalClasses =
-            await academicPeriodService.getTeacherHasClassAmmountOfClassesOverAcademicPeriod(
-              key,
-              academicPeriod.id,
-            );
+          const calendarSlot = await ctx.prisma.calendarSlot.findFirst({
+            where: {
+              teacherHasClassId: value.TeacherHasClass.id,
+              Calendar: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
+            include: {
+              Calendar: true,
+              TeacherHasClass: {
+                include: {
+                  Subject: true,
+                  Teacher: {
+                    include: {
+                      User: true,
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          if (!calendarSlot || !calendarSlot.TeacherHasClass) {
+            continue;
+          }
+
+          const attendanceQuantityForThisCalendarSlot =
+            await ctx.prisma.attendance.count({
+              where: {
+                calendarSlotId: calendarSlot.id,
+              },
+            });
+
+          const studentAttendanceQuantityForThisCalendarSlot =
+            await ctx.prisma.studentHasAttendance.count({
+              where: {
+                Attendance: {
+                  calendarSlotId: calendarSlot.id,
+                },
+                present: true,
+                studentId: student.id,
+              },
+            });
+
           const attendancePercentage =
-            totalClasses > 0
-              ? (value.attendanceNumber / totalClasses) * 100
+            attendanceQuantityForThisCalendarSlot > 0
+              ? (studentAttendanceQuantityForThisCalendarSlot /
+                  attendanceQuantityForThisCalendarSlot) *
+                100
               : 0;
 
           attendancePerTeacherHasClass.push({
-            TeacherHasClass: value.TeacherHasClass,
+            TeacherHasClass: calendarSlot.TeacherHasClass,
             attendancePercentage,
-            attendanceNumber: value.attendanceNumber,
+            attendanceNumber: studentAttendanceQuantityForThisCalendarSlot,
           });
-
-          totalAttendanceNumber += value.attendanceNumber;
         }
 
-        const totalClassesOverall = attendancePerTeacherHasClass.reduce(
-          (acc, curr) => acc + curr.TeacherHasClass.subjectQuantity,
-          0,
-        );
         const totalAttendancePercentage =
-          totalClassesOverall > 0
-            ? (totalAttendanceNumber / totalClassesOverall) * 100
+          totalAttendances > 0
+            ? (totalStudentAttendanceNumber / totalAttendances) * 100
             : 0;
-
-        student;
 
         attendanceData.push({
           Student: student,
           totalAttendancePercentage,
-          totalAttendanceNumber,
+          totalAttendanceNumber: totalStudentAttendanceNumber,
           attendancePerTeacherHasClass,
         });
       }
-      return attendanceData;
+      return {
+        totalAttendanceQuantity: totalAttendances,
+        studentsAttendance: attendanceData,
+      };
+    }),
+
+  saveClassAttendance: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        subjectId: z.string(),
+        date: z.date(),
+        note: z.string().optional(),
+        attendance: z.array(
+          z.object({
+            studentId: z.string(),
+            attendance: z.boolean(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.prisma.$transaction(async (tx) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
+        if (!academicPeriod) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Não há período letivo ativo",
+          });
+        }
+        const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
+          where: {
+            classId: input.classId,
+            isActive: true,
+            CalendarSlot: {
+              some: {
+                Calendar: {
+                  academicPeriodId: academicPeriod.id,
+                },
+              },
+            },
+            Teacher: {
+              User: {
+                schoolId: ctx.session.school.id,
+              },
+            },
+            Subject: {
+              id: input.subjectId,
+            },
+          },
+        });
+
+        if (!teacherHasClass) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Teacher not found",
+          });
+        }
+
+        const teacherHasClassCalendarSlot =
+          await ctx.prisma.calendarSlot.findFirst({
+            where: {
+              teacherHasClassId: teacherHasClass.id,
+              Calendar: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
+            include: {
+              Calendar: true,
+            },
+          });
+
+        if (!teacherHasClassCalendarSlot) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Calendar slot not found",
+          });
+        }
+
+        await tx.attendance.create({
+          data: {
+            calendarSlotId: teacherHasClassCalendarSlot.id,
+            date: input.date,
+            note: "",
+            StudentHasAttendance: {
+              createMany: {
+                data: input.attendance.map((attendance) => ({
+                  studentId: attendance.studentId,
+                  present: attendance.attendance,
+                })),
+              },
+            },
+          },
+        });
+      });
     }),
 });

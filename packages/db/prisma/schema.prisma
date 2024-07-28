@@ -177,12 +177,12 @@ model Attendance {
   id             String   @id @default(uuid())
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  note           String   @db.Text
+  note           String?  @db.Text
   date           DateTime @db.Date
   calendarSlotId String
 
-  StudentHasClassAttendance StudentHasAttendance[]
-  CalendarSlot              CalendarSlot           @relation(fields: [calendarSlotId], references: [id])
+  StudentHasAttendance StudentHasAttendance[]
+  CalendarSlot         CalendarSlot           @relation(fields: [calendarSlotId], references: [id])
 }
 
 model StudentHasAttendance {
@@ -191,6 +191,7 @@ model StudentHasAttendance {
   attendanceId String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  present      Boolean  @default(false)
 
   Attendance Attendance @relation(fields: [attendanceId], references: [id])
   Student    Student    @relation(fields: [studentId], references: [id])

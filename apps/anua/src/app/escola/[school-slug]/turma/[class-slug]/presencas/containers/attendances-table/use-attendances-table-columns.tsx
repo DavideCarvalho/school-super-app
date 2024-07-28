@@ -23,7 +23,7 @@ export function useAttendancesTableColumns() {
     }),
     columnHelper.display({
       id: "attendancePerTeacherHasClass",
-      header: "Presença por professor",
+      header: "Presença por matéria",
       cell: ({ row }) => {
         return (
           <div>

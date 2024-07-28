@@ -45,7 +45,7 @@ export type Attendance = {
   id: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
-  note: string;
+  note: string | null;
   date: Timestamp;
   calendarSlotId: string;
 };
@@ -265,6 +265,7 @@ export type StudentHasAttendance = {
   attendanceId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
+  present: Generated<number>;
 };
 export type StudentHasResponsible = {
   id: string;

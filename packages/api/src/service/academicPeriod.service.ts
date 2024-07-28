@@ -1,5 +1,6 @@
 import { eachWeekOfInterval, isSameDay } from "date-fns";
 
+import type { PrismaClient } from "@acme/db";
 import { prisma } from "@acme/db";
 
 import * as academicPeriodRepository from "../repository/academicPeriod.repository";

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import toast from "react-hot-toast";
 import { z } from "zod";
 
 import { Button } from "@acme/ui/button";
@@ -88,6 +89,9 @@ export function NewAttendanceModal({
       },
     );
 
+  const { mutateAsync: saveClassAttendance } =
+    api.attendance.saveClassAttendance.useMutation();
+
   useEffect(() => {
     if (!students) return;
     form.setValue(
@@ -104,7 +108,30 @@ export function NewAttendanceModal({
 
   const studentsAttendances = form.watch("attendances");
 
-  async function onSubmit(data: z.infer<typeof schema>) {}
+  async function onSubmit(data: z.infer<typeof schema>) {
+    const toastId = toast.loading("Salvando presença...");
+    try {
+      await saveClassAttendance({
+        classId,
+        subjectId,
+        date: data.date,
+        note: "",
+        attendance: studentsAttendances.map((attendance) => ({
+          studentId: attendance.student.id,
+          attendance: attendance.attendance,
+        })),
+      });
+      toast.dismiss(toastId);
+      toast.success("Presença salva com sucesso!");
+      form.reset();
+      await onClickSubmit();
+    } catch (e) {
+      toast.dismiss(toastId);
+      toast.error("Erro ao salvar presença");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClickCancel}>
@@ -119,7 +146,7 @@ export function NewAttendanceModal({
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Dia de aula</FormLabel>
+                  <FormLabel>Aula</FormLabel>
                   <FormControl>
                     <Select
                       value={format(field.value, "dd/MM/yyyy HH:mm")}
@@ -150,7 +177,7 @@ export function NewAttendanceModal({
                       }}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Data" />
+                        <SelectValue placeholder="Aula" />
                       </SelectTrigger>
                       <SelectContent>
                         {dates?.map((date) => (
