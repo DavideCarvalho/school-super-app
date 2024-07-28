@@ -5,7 +5,7 @@ import type { RouterOutputs } from "@acme/api";
 type Row =
   RouterOutputs["attendance"]["getClassAttendanceForCurrentAcademicPeriod"][0];
 
-export function useAttendancesTableColumns() {
+export function useStudentsAttendancesTableColumns() {
   const columnHelper = createColumnHelper<Row>();
 
   return [

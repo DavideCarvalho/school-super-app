@@ -347,4 +347,61 @@ export const attendanceRouter = createTRPCRouter({
         });
       });
     }),
+  getAttendances: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        subjectId: z.string(),
+        limit: z.number().optional().default(5),
+        page: z.number().optional().default(1),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.attendance.findMany({
+        where: {
+          CalendarSlot: {
+            Calendar: {
+              classId: input.classId,
+              isActive: true,
+            },
+            TeacherHasClass: {
+              subjectId: input.subjectId,
+            },
+          },
+          StudentHasAttendance: {
+            some: {
+              Student: {
+                User: {
+                  schoolId: ctx.session.school.id,
+                },
+              },
+            },
+          },
+        },
+        take: input.limit,
+        skip: (input.page - 1) * input.limit,
+      });
+    }),
+  countAttendances: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        subjectId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.attendance.count({
+        where: {
+          CalendarSlot: {
+            Calendar: {
+              classId: input.classId,
+              isActive: true,
+            },
+            TeacherHasClass: {
+              subjectId: input.subjectId,
+            },
+          },
+        },
+      });
+    }),
 });

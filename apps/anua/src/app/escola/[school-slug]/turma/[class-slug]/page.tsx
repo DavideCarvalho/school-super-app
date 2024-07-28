@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 import { api } from "~/trpc/server";
 
 export default async function ClassPage({
@@ -12,7 +10,6 @@ export default async function ClassPage({
   if (!foundClass) {
     throw new Error("Class not found");
   }
-  setClass(clasz);
 
   return null;
 }

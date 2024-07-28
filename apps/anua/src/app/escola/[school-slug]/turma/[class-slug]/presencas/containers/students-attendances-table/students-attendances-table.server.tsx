@@ -1,10 +1,9 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 
-import { api, createSSRHelper, HydrateClient } from "~/trpc/server";
-import { AttendancesTableClient } from "./attendances-table.client";
+import { api, HydrateClient } from "~/trpc/server";
+import { AttendancesTableClient } from "./studants-attendances-table.client";
 
 interface AssignmentsTableServerProps {
   classId: string;
