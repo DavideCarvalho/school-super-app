@@ -7,6 +7,109 @@ import * as academicPeriodService from "../service/academicPeriod.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const attendanceRouter = createTRPCRouter({
+  getClassAttendancesDoneForCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+          subjectId: z.string(),
+          limit: z.number().optional().default(5),
+          page: z.number().optional().default(1),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        // Obter o período acadêmico atual ou o último ativo
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
+        if (!academicPeriod) {
+          return [];
+        }
+
+        return ctx.prisma.attendance.findMany({
+          where: {
+            StudentHasAttendance: {
+              some: {
+                Student: {
+                  User: {
+                    schoolId: ctx.session.school.id,
+                  },
+                },
+              },
+            },
+            CalendarSlot: {
+              Calendar: {
+                academicPeriodId: academicPeriod.id,
+              },
+              TeacherHasClass: {
+                subjectId: input.subjectId,
+                classId: input.classId,
+              },
+            },
+          },
+          take: input.limit,
+          skip: (input.page - 1) * input.limit,
+          include: {
+            StudentHasAttendance: true,
+            CalendarSlot: {
+              include: {
+                TeacherHasClass: {
+                  include: {
+                    Subject: true,
+                    Teacher: {
+                      include: {
+                        User: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        });
+      }),
+  countClassAttendancesDoneForCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+          subjectId: z.string(),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        // Obter o período acadêmico atual ou o último ativo
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
+        if (!academicPeriod) {
+          return 0;
+        }
+
+        return ctx.prisma.attendance.count({
+          where: {
+            StudentHasAttendance: {
+              some: {
+                Student: {
+                  User: {
+                    schoolId: ctx.session.school.id,
+                  },
+                },
+              },
+            },
+            CalendarSlot: {
+              Calendar: {
+                academicPeriodId: academicPeriod.id,
+              },
+              TeacherHasClass: {
+                subjectId: input.subjectId,
+                classId: input.classId,
+              },
+            },
+          },
+        });
+      }),
   getClassAttendanceForCurrentAcademicPeriod: isUserLoggedInAndAssignedToSchool
     .input(
       z.object({

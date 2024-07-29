@@ -3,7 +3,7 @@ import { createColumnHelper } from "@tanstack/react-table";
 import type { RouterOutputs } from "@acme/api";
 
 type Row =
-  RouterOutputs["attendance"]["getClassAttendanceForCurrentAcademicPeriod"][0];
+  RouterOutputs["attendance"]["getClassAttendanceForCurrentAcademicPeriod"]["studentsAttendance"][0];
 
 export function useStudentsAttendancesTableColumns() {
   const columnHelper = createColumnHelper<Row>();

@@ -6,7 +6,7 @@ import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/server";
 import { NewAttendanceModalListener } from "./_components/new-attendance-modal-listener";
-import { AttendancesTableServer } from "./containers/attendances-table/attendances-table.server";
+import { AttendancesTableServer } from "./containers/students-attendances-table/students-attendances-table.server";
 
 export default async function ClassAttendancePage({
   params,
