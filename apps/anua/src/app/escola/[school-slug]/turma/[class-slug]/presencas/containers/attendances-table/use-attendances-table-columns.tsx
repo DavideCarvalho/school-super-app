@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { format } from "date-fns";
+import { addHours, format } from "date-fns";
 
 import type { RouterOutputs } from "@acme/api";
 
@@ -10,10 +10,13 @@ export function useStudentsAttendancesTableColumns() {
   const columnHelper = createColumnHelper<Row>();
 
   return [
-    columnHelper.accessor((row) => format(row.date, "dd/MM/yyyy HH:mm"), {
-      id: "attendedClasses",
-      header: "Aula",
-    }),
+    columnHelper.accessor(
+      (row) => format(addHours(row.date, 3), "dd/MM/yyyy HH:mm"),
+      {
+        id: "attendedClasses",
+        header: "Aula",
+      },
+    ),
     columnHelper.accessor("CalendarSlot.TeacherHasClass.Subject.name", {
       header: "Matéria",
     }),
