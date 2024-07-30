@@ -3,26 +3,28 @@ import { headers } from "next/headers";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { api, HydrateClient } from "~/trpc/server";
-import { AttendancesTableClient } from "./studants-attendances-table.client";
+import { StudentsAttendancesTableClient } from "./studants-attendances-table.client";
 
-interface AssignmentsTableServerProps {
+interface StudentsAttendancesTableServerProps {
   classId: string;
   subjectId: string;
 }
 
-export async function AttendancesTableServer(
-  props: AssignmentsTableServerProps,
+export async function StudentsAttendancesTableServer(
+  props: StudentsAttendancesTableServerProps,
 ) {
   return (
     <ErrorBoundary fallback={<p>⚠️Opa, algo deu errado</p>}>
       <Suspense>
-        <AttendancesTableDataLoader {...props} />
+        <StudentsAttendancesTableDataLoader {...props} />
       </Suspense>
     </ErrorBoundary>
   );
 }
 
-async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
+async function StudentsAttendancesTableDataLoader(
+  props: StudentsAttendancesTableServerProps,
+) {
   const requestHeaders = headers();
   const xUrl = requestHeaders.get("x-url")!;
   const url = new URL(xUrl);
@@ -45,7 +47,7 @@ async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
   ]);
   return (
     <HydrateClient>
-      <AttendancesTableClient {...props} />
+      <StudentsAttendancesTableClient {...props} />
     </HydrateClient>
   );
 }

@@ -23,21 +23,22 @@ export function AttendancesTableClient({
 
   const columns = useStudentsAttendancesTableColumns();
   const { data: attendances, isLoading: isLoadingAttendances } =
-    api.attendance.getClassAttendanceForCurrentAcademicPeriod.useQuery({
+    api.attendance.getClassAttendancesDoneForCurrentAcademicPeriod.useQuery({
       classId,
       subjectId,
       page,
       limit: size,
     });
-  const { data: studentsCount } =
-    api.class.countStudentsForClassOnCurrentAcademicPeriod.useQuery({
+  const { data: attendancesCount } =
+    api.attendance.countClassAttendancesDoneForCurrentAcademicPeriod.useQuery({
       classId,
+      subjectId,
     });
   return (
     <TableWithPagination
-      data={attendances ? attendances.studentsAttendance : []}
+      data={attendances ?? []}
       isLoading={!attendances && isLoadingAttendances}
-      totalCount={studentsCount ?? 0}
+      totalCount={attendancesCount ?? 0}
       columns={columns}
     />
   );

@@ -7,15 +7,15 @@ import { TableWithPagination } from "@acme/ui/table-with-pagination/table-with-p
 import { api } from "~/trpc/react";
 import { useStudentsAttendancesTableColumns } from "./use-students-attendances-table-columns";
 
-interface AttendancesTableProps {
+interface StudentsAttendancesTableProps {
   classId: string;
   subjectId: string;
 }
 
-export function AttendancesTableClient({
+export function StudentsAttendancesTableClient({
   classId,
   subjectId,
-}: AttendancesTableProps) {
+}: StudentsAttendancesTableProps) {
   const searchParams = useSearchParams();
 
   const page = searchParams.has("page") ? Number(searchParams.get("page")) : 1;

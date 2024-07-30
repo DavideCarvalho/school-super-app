@@ -5,13 +5,13 @@ import { ErrorBoundary } from "react-error-boundary";
 import { api, HydrateClient } from "~/trpc/server";
 import { AttendancesTableClient } from "./attendances-table.client";
 
-interface AssignmentsTableServerProps {
+interface AttendancesTableServerProps {
   classId: string;
   subjectId: string;
 }
 
 export async function AttendancesTableServer(
-  props: AssignmentsTableServerProps,
+  props: AttendancesTableServerProps,
 ) {
   return (
     <ErrorBoundary fallback={<p>⚠️Opa, algo deu errado</p>}>
@@ -22,7 +22,7 @@ export async function AttendancesTableServer(
   );
 }
 
-async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
+async function AttendancesTableDataLoader(props: AttendancesTableServerProps) {
   const requestHeaders = headers();
   const xUrl = requestHeaders.get("x-url")!;
   const url = new URL(xUrl);
@@ -33,14 +33,15 @@ async function AttendancesTableDataLoader(props: AssignmentsTableServerProps) {
     ? Number(url.searchParams.get("size"))
     : 10;
   await Promise.all([
-    api.attendance.getClassAttendanceForCurrentAcademicPeriod.prefetch({
+    api.attendance.getClassAttendancesDoneForCurrentAcademicPeriod.prefetch({
       classId: props.classId,
       subjectId: props.subjectId,
       page,
       limit: size,
     }),
-    api.class.countStudentsForClassOnCurrentAcademicPeriod.prefetch({
+    api.attendance.countClassAttendancesDoneForCurrentAcademicPeriod.prefetch({
       classId: props.classId,
+      subjectId: props.subjectId,
     }),
   ]);
   return (

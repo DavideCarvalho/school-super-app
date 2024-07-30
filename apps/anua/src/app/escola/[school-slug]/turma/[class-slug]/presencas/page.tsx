@@ -6,7 +6,9 @@ import { Button } from "@acme/ui/button";
 
 import { api } from "~/trpc/server";
 import { NewAttendanceModalListener } from "./_components/new-attendance-modal-listener";
-import { AttendancesTableServer } from "./containers/students-attendances-table/students-attendances-table.server";
+import { StudentViewSwitch } from "./_components/student-view-switch";
+import { AttendancesTableServer } from "./containers/attendances-table/attendances-table.server";
+import { StudentsAttendancesTableServer } from "./containers/students-attendances-table/students-attendances-table.server";
 
 export default async function ClassAttendancePage({
   params,
@@ -52,7 +54,20 @@ export default async function ClassAttendancePage({
       >
         <Button>Adicionar presença</Button>
       </Link>
-      <AttendancesTableServer classId={foundClass.id} subjectId={subject.id} />
+      <StudentViewSwitch
+        afterSwitchComponent={
+          <StudentsAttendancesTableServer
+            classId={foundClass.id}
+            subjectId={subject.id}
+          />
+        }
+        beforeSwitchComponent={
+          <AttendancesTableServer
+            classId={foundClass.id}
+            subjectId={subject.id}
+          />
+        }
+      />
     </>
   );
 }
