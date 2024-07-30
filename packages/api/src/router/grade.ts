@@ -41,6 +41,7 @@ export const gradeRouter = createTRPCRouter({
           .where("thc.classId", "=", input.classId)
           .where("thc.subjectId", "=", input.subjectId)
           .where("a.academicPeriodId", "=", academicPeriod.id)
+          .where("s.classId", "=", input.classId)
           .groupBy("s.id")
           .execute();
 
@@ -86,6 +87,7 @@ export const gradeRouter = createTRPCRouter({
                 where: {
                   Student: {
                     id: grade.studentId,
+                    classId: input.classId,
                   },
                   Assignment: {
                     id: grade.assignmentId,

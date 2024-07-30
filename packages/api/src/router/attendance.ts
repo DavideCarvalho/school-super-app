@@ -136,6 +136,7 @@ export const attendanceRouter = createTRPCRouter({
       // Consultar alunos matriculados no período acadêmico
       const students = await ctx.prisma.student.findMany({
         where: {
+          classId: input.classId,
           StudentHasAcademicPeriod: {
             some: {
               academicPeriodId: academicPeriod.id,

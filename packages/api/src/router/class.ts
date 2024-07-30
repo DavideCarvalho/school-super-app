@@ -34,6 +34,7 @@ export const classRouter = createTRPCRouter({
           User: {
             schoolId: ctx.session.school.id,
           },
+          classId: input.classId,
         },
         take: input.limit,
         skip: (input.page - 1) * input.limit,
