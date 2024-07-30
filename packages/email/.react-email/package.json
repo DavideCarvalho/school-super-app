@@ -21,7 +21,7 @@
     "@radix-ui/react-slot": "1.1.0",
     "@radix-ui/react-toggle-group": "1.1.0",
     "@radix-ui/react-tooltip": "1.1.2",
-    "@react-email/render": "0.0.16",
+    "@react-email/render": "0.0.17",
     "classnames": "2.5.1",
     "framer-motion": "11.3.9",
     "next": "14.2.5",
