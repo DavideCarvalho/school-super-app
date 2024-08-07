@@ -19,7 +19,7 @@
     "@acme/tailwind-config": "workspace:^0.1.0",
     "@ai-sdk/openai": "^0.0.34",
     "@ams-js/headless": "0.0.5",
-    "@clerk/clerk-sdk-node": "5.0.20",
+    "@clerk/clerk-sdk-node": "5.0.25",
     "@clerk/elements": "^0.10.0",
     "@clerk/localizations": "2.4.8",
     "@clerk/nextjs": "5.2.8",
