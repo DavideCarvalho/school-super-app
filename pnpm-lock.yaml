@@ -82,8 +82,8 @@ importers:
         specifier: ^0.10.0
         version: 0.10.7(@clerk/clerk-react@5.3.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
-        specifier: 2.4.8
-        version: 2.4.8
+        specifier: 2.5.6
+        version: 2.5.6
       '@clerk/nextjs':
         specifier: 5.2.14
         version: 5.2.14(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -374,8 +374,8 @@ importers:
         specifier: 5.0.25
         version: 5.0.25(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
-        specifier: 2.4.8
-        version: 2.4.8
+        specifier: 2.5.6
+        version: 2.5.6
       '@clerk/nextjs':
         specifier: 5.2.14
         version: 5.2.14(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1303,8 +1303,8 @@ packages:
       next:
         optional: true
 
-  '@clerk/localizations@2.4.8':
-    resolution: {integrity: sha512-8ww3OMuqJjCHW6ocJqCoS4kJKpZlsCAfbIe/Rmzj8Vj8EkmtPHMj7iUsY6bUSgNocmuzyOKh98T25hs8XUZI3Q==}
+  '@clerk/localizations@2.5.6':
+    resolution: {integrity: sha512-qGjAgPJ1s89LY4RYFoQEQUPy4/+He347jZN30js6CbTll3H5eFxnH7lCZ2301kOWJOi1WyQRJ2pfnmkulZhzKQ==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/nextjs@5.2.14':
@@ -1333,10 +1333,6 @@ packages:
 
   '@clerk/types@4.12.1':
     resolution: {integrity: sha512-0torlmJM3S3kYdaZuIrw1pf4K8aMvoFV+PE1xg7MGfZ0enD9UO3Vhw24pP/yBhI4hVGtNu95E63gpeOFIYysrA==}
-    engines: {node: '>=18.17.0'}
-
-  '@clerk/types@4.8.0':
-    resolution: {integrity: sha512-UjirfALJOWeuRSz+SvTujexlvIXvMC1VzvYlcNmSF0E9wcAcPJnzboLM+SlNTG7p1JMlL4bd0dipsFyWTJsq5A==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/types@4.9.1':
@@ -7835,9 +7831,9 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
-  '@clerk/localizations@2.4.8':
+  '@clerk/localizations@2.5.6':
     dependencies:
-      '@clerk/types': 4.8.0
+      '@clerk/types': 4.12.1
 
   '@clerk/nextjs@5.2.14(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -7870,10 +7866,6 @@ snapshots:
       tslib: 2.4.1
 
   '@clerk/types@4.12.1':
-    dependencies:
-      csstype: 3.1.1
-
-  '@clerk/types@4.8.0':
     dependencies:
       csstype: 3.1.1
 
