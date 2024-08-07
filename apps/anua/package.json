@@ -50,7 +50,7 @@
     "@react-email/section": "0.0.12",
     "@react-email/text": "0.0.8",
     "@remixicon/react": "4.2.0",
-    "@sentry/nextjs": "8.19.0",
+    "@sentry/nextjs": "8.24.0",
     "@sentry/opentelemetry-node": "7.114.0",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@tanstack/react-query": "5.51.11",
