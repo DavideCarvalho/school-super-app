@@ -183,7 +183,6 @@ export const academicPeriodRouter = createTRPCRouter({
           },
         },
       });
-      console.log("attendanceDatesAlreadyDone", attendanceDatesAlreadyDone);
       if (attendanceDatesAlreadyDone.length > 0) {
         return dates.filter(
           (date) =>

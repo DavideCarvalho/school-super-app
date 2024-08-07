@@ -2,9 +2,8 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
-import type { TeacherHasClass } from "@acme/db";
-
 import * as academicPeriodService from "../service/academicPeriod.service";
+import * as studentService from "../service/student.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
 
 export const classRouter = createTRPCRouter({
@@ -320,4 +319,152 @@ export const classRouter = createTRPCRouter({
         },
       });
     }),
+  getStudentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod:
+    isUserLoggedInAndAssignedToSchool
+      .input(
+        z.object({
+          classId: z.string(),
+          subjectId: z.string(),
+          limit: z.number().optional().default(5),
+          page: z.number().optional().default(1),
+        }),
+      )
+      .query(async ({ ctx, input }) => {
+        const academicPeriod =
+          await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+            ctx.session.school.id,
+          );
+
+        if (!academicPeriod) {
+          return [];
+        }
+
+        const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
+          where: {
+            classId: input.classId,
+            isActive: true,
+            Subject: {
+              id: input.subjectId,
+            },
+            CalendarSlot: {
+              some: {
+                Calendar: {
+                  academicPeriodId: academicPeriod.id,
+                },
+              },
+            },
+          },
+        });
+
+        if (!teacherHasClass) {
+          return [];
+        }
+
+        const today = new Date();
+
+        // Consultar todos os alunos matriculados no período acadêmico
+        const students = await ctx.prisma.student.findMany({
+          where: {
+            StudentHasAcademicPeriod: {
+              some: {
+                academicPeriodId: academicPeriod.id,
+              },
+            },
+          },
+          include: {
+            User: true,
+          },
+        });
+
+        const failingStudents = [];
+
+        for (const student of students) {
+          // Calcular o número total de aulas que o aluno deveria ter assistido até hoje
+          const totalClassesToDate = await ctx.prisma.attendance.count({
+            where: {
+              date: {
+                lte: today,
+              },
+              CalendarSlot: {
+                Calendar: {
+                  academicPeriodId: academicPeriod.id,
+                },
+              },
+            },
+          });
+
+          // Calcular o número total de presenças do aluno até hoje
+          const totalAttendancesToDate =
+            await ctx.prisma.studentHasAttendance.count({
+              where: {
+                studentId: student.id,
+                present: true,
+                Attendance: {
+                  date: {
+                    lte: today,
+                  },
+                  CalendarSlot: {
+                    Calendar: {
+                      academicPeriodId: academicPeriod.id,
+                    },
+                  },
+                },
+              },
+            });
+
+          // Calcular a porcentagem de presença até hoje
+          const attendancePercentageToDate =
+            totalClassesToDate > 0
+              ? (totalAttendancesToDate / totalClassesToDate) * 100
+              : 0;
+
+          // Estimar o número total de aulas até o final do período acadêmico
+          const totalClassesForPeriod =
+            await academicPeriodService.getTeacherHasClassAmmountOfClassesOverAcademicPeriod(
+              teacherHasClass.id,
+              academicPeriod.id,
+            );
+
+          // Estimar o número total de presenças projetadas para o aluno até o final do período acadêmico
+          const estimatedTotalAttendances = Math.round(
+            (attendancePercentageToDate / 100) * totalClassesForPeriod,
+          );
+
+          // Verificar se o aluno costuma faltar perto de feriados
+          const isHolidaySkipper =
+            await studentService.checkIfStudentSkipsAroundHolidays(
+              student.id,
+              academicPeriod.id,
+              today,
+            );
+
+          // Ajustar a previsão de faltas se o aluno costuma faltar perto de feriados
+          let adjustedEstimatedTotalAttendances = estimatedTotalAttendances;
+          if (isHolidaySkipper) {
+            const holidayClasses =
+              await academicPeriodService.countHolidayClasses(
+                academicPeriod.id,
+                student.id,
+              );
+            adjustedEstimatedTotalAttendances -= holidayClasses;
+          }
+
+          // Calcular a porcentagem de presença projetada ajustada
+          const projectedAttendancePercentage =
+            totalClassesForPeriod > 0
+              ? (adjustedEstimatedTotalAttendances / totalClassesForPeriod) *
+                100
+              : 0;
+
+          // Determinar se a porcentagem de presença projetada será inferior ao limite estabelecido
+          if (projectedAttendancePercentage < 70) {
+            failingStudents.push({
+              student,
+              projectedAttendancePercentage,
+            });
+          }
+        }
+
+        return failingStudents;
+      }),
 });

@@ -3,6 +3,13 @@ import { redirect } from "next/navigation";
 import { CalendarIcon, UsersIcon } from "@heroicons/react/24/outline";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@acme/ui/carousel";
 
 import { api } from "~/trpc/server";
 import { ClassTabs } from "./_components/class-tabs";
@@ -40,12 +47,52 @@ export default async function ClassLayout({
   if (!foundSubject) {
     return redirect(`/escola/${params["school-slug"]}`);
   }
+  const studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod =
+    await api.class.getStudentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod(
+      {
+        classId: clasz.id,
+        subjectId: foundSubject.id,
+      },
+    );
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
         <SubjectSelectServer classId={clasz.id} subjectId={foundSubject.id} />
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <Card>
+        <Carousel>
+          <CarouselContent>
+            <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+              {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length >
+              0 ? (
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      Presença
+                    </CardTitle>
+                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold">
+                      {
+                        studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length
+                      }{" "}
+                      {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length ===
+                      1
+                        ? "Aluno"
+                        : "Alunos"}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Estão com risco de reprovar por faltas.
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : null}
+            </CarouselItem>
+            <CarouselPrevious />
+            <CarouselNext />
+          </CarouselContent>
+        </Carousel>
+        {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"> */}
+        {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">
                 Próxima Atividade
@@ -63,20 +110,31 @@ export default async function ClassLayout({
                 Dia de entrega da atividade está próximo!
               </p>
             </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Presença</CardTitle>
-              <UsersIcon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold">3 Alunos</div>
-              <p className="text-sm text-muted-foreground">
-                Estão com risco de reprovar por faltas.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
+          </Card> */}
+        {/* {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length >
+          0 ? (
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Presença</CardTitle>
+                <UsersIcon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-lg font-bold">
+                  {
+                    studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length
+                  }{" "}
+                  {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length ===
+                  1
+                    ? "Aluno"
+                    : "Alunos"}
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Estão com risco de reprovar por faltas.
+                </p>
+              </CardContent>
+            </Card>
+          ) : null} */}
+        {/* <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Eventos</CardTitle>
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
@@ -87,8 +145,8 @@ export default async function ClassLayout({
                 4/20/2023 - 2:00 PM
               </p>
             </CardContent>
-          </Card>
-        </div>
+          </Card> */}
+        {/* </div> */}
         <div className="flex flex-col gap-4">
           <ClassTabs />
           {children}
