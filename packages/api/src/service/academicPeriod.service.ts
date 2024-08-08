@@ -150,18 +150,12 @@ export async function countHolidayClasses(
 
     const datesToCheck = [holidayDate];
 
-    if (dayOfWeek === 1) {
-      // Se o feriado for na segunda-feira
-      datesToCheck.push(holidayDate);
-    } else if (dayOfWeek === 2) {
+    if (dayOfWeek === 2) {
       // Se o feriado for na terça-feira
-      datesToCheck.push(subDays(holidayDate, 1), holidayDate);
+      datesToCheck.push(subDays(holidayDate, 1));
     } else if (dayOfWeek === 4) {
       // Se o feriado for na quinta-feira
       datesToCheck.push(addDays(holidayDate, 1));
-    } else if (dayOfWeek === 5) {
-      // Se o feriado for na sexta-feira
-      datesToCheck.push(holidayDate);
     }
 
     const classesAroundHoliday = await prisma.calendarSlot.findMany({
