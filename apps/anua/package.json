@@ -45,7 +45,7 @@
     "@radix-ui/react-popover": "1.1.1",
     "@radix-ui/react-slot": "1.1.0",
     "@react-buddy/ide-toolbox": "2.4.0",
-    "@react-email/container": "0.0.12",
+    "@react-email/container": "0.0.13",
     "@react-email/html": "0.0.8",
     "@react-email/section": "0.0.12",
     "@react-email/text": "0.0.8",
