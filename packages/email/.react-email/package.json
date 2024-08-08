@@ -31,7 +31,7 @@
     "@react-email/container": "0.0.12",
     "@react-email/html": "0.0.8",
     "@react-email/section": "0.0.12",
-    "@react-email/text": "0.0.8",
+    "@react-email/text": "0.0.9",
     "react-email": "2.1.6",
     "@react-email/button": "0.0.15",
     "@react-email/tailwind": "0.0.18",
