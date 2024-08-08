@@ -54,15 +54,20 @@ export default async function ClassLayout({
         subjectId: foundSubject.id,
       },
     );
+  const studentsWithLessThanMinimumGrade =
+    await api.class.getStudentsWithLessThanMinimumGrade({
+      classId: clasz.id,
+      subjectId: foundSubject.id,
+    });
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
         <SubjectSelectServer classId={clasz.id} subjectId={foundSubject.id} />
         <Carousel>
           <CarouselContent>
-            <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-              {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length >
-              0 ? (
+            {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length >
+            0 ? (
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -81,12 +86,38 @@ export default async function ClassLayout({
                         : "Alunos"}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      Estão com risco de reprovar por faltas.
+                      {studentsWithPossibilityOfReprovingByAvoidanceForClassOnCurrentAcademicPeriod.length ===
+                      1
+                        ? "Está com risco de reprovar por faltas"
+                        : "Estão com risco de reprovar por faltas"}
                     </p>
                   </CardContent>
                 </Card>
-              ) : null}
-            </CarouselItem>
+              </CarouselItem>
+            ) : null}
+            {studentsWithLessThanMinimumGrade.length > 0 ? (
+              <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between pb-2">
+                    <CardTitle className="text-sm font-medium">Notas</CardTitle>
+                    <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold">
+                      {studentsWithLessThanMinimumGrade.length}{" "}
+                      {studentsWithLessThanMinimumGrade.length === 1
+                        ? "Aluno"
+                        : "Alunos"}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {studentsWithLessThanMinimumGrade.length === 1
+                        ? "Está com nota menor que o mínimo"
+                        : "Estão com nota menor que o mínimo"}
+                    </p>
+                  </CardContent>
+                </Card>
+              </CarouselItem>
+            ) : null}
             <CarouselPrevious />
             <CarouselNext />
           </CarouselContent>

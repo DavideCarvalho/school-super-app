@@ -2,6 +2,8 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
+import { StudentHasAssignment } from "@acme/db";
+
 import * as academicPeriodService from "../service/academicPeriod.service";
 import * as studentService from "../service/student.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
@@ -467,4 +469,83 @@ export const classRouter = createTRPCRouter({
 
         return failingStudents;
       }),
+  getStudentsWithLessThanMinimumGrade: isUserLoggedInAndAssignedToSchool
+    .input(
+      z.object({
+        classId: z.string(),
+        subjectId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
+      if (!academicPeriod) {
+        return [];
+      }
+      const school = ctx.session.school;
+      const teacherHasClass = await ctx.prisma.teacherHasClass.findFirst({
+        where: {
+          classId: input.classId,
+          isActive: true,
+          Teacher: {
+            User: {
+              schoolId: ctx.session.school.id,
+            },
+          },
+          Subject: {
+            id: input.subjectId,
+          },
+        },
+      });
+      if (!teacherHasClass) {
+        return [];
+      }
+      const students = await ctx.prisma.student.findMany({
+        where: {
+          StudentHasAcademicPeriod: {
+            some: {
+              academicPeriodId: academicPeriod.id,
+              classId: input.classId,
+            },
+          },
+          StudentHasAssignment: {
+            some: {
+              grade: {
+                not: null,
+              },
+            },
+          },
+        },
+        include: {
+          StudentHasAssignment: true,
+        },
+      });
+      const schoolGrandeAlgorithm =
+        school.calculationAlgorithm === "AVERAGE"
+          ? (studentGrades: StudentHasAssignment[]) => {
+              const totalGrade = studentGrades.reduce(
+                (acc, grade) => acc + grade.grade!,
+                0,
+              );
+              return totalGrade / studentGrades.length;
+            }
+          : (studentGrades: StudentHasAssignment[]) => {
+              const totalGrade = studentGrades.reduce(
+                (acc, grade) => acc + grade.grade!,
+                0,
+              );
+              return totalGrade;
+            };
+      return students
+        .map((student) => {
+          const studentGrades = student.StudentHasAssignment;
+          return {
+            student,
+            grade: schoolGrandeAlgorithm(studentGrades),
+          };
+        })
+        .filter(({ grade }) => grade < school.minimumGrade);
+    }),
 });

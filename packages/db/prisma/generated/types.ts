@@ -7,7 +7,7 @@ export type Generated<T> =
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type AcademicPeriod = {
-  id: string;
+  id: Generated<string>;
   startDate: Timestamp;
   endDate: Timestamp;
   isActive: Generated<number>;
@@ -17,21 +17,21 @@ export type AcademicPeriod = {
   isClosed: Generated<number>;
 };
 export type AcademicPeriodHoliday = {
-  id: string;
+  id: Generated<string>;
   date: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   academicPeriodId: string;
 };
 export type AcademicPeriodWeekendClass = {
-  id: string;
+  id: Generated<string>;
   academicPeriodId: string;
   date: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
 export type Assignment = {
-  id: string;
+  id: Generated<string>;
   name: string;
   description: string | null;
   dueDate: Timestamp;
@@ -42,7 +42,7 @@ export type Assignment = {
   academicPeriodId: string;
 };
 export type Attendance = {
-  id: string;
+  id: Generated<string>;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   note: string | null;
@@ -50,7 +50,7 @@ export type Attendance = {
   calendarSlotId: string;
 };
 export type Calendar = {
-  id: string;
+  id: Generated<string>;
   classId: string;
   name: string;
   createdAt: Generated<Timestamp>;
@@ -59,14 +59,14 @@ export type Calendar = {
   academicPeriodId: string;
 };
 export type CalendarConfig = {
-  id: string;
+  id: Generated<string>;
   classesConfig: unknown | null;
   classesClashConfig: unknown | null;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
 export type CalendarSlot = {
-  id: string;
+  id: Generated<string>;
   teacherHasClassId: string | null;
   classWeekDay: number;
   startTime: Timestamp;
@@ -77,14 +77,14 @@ export type CalendarSlot = {
   calendarId: string;
 };
 export type Canteen = {
-  id: string;
+  id: Generated<string>;
   schoolId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   responsibleUserId: string;
 };
 export type CanteenItem = {
-  id: string;
+  id: Generated<string>;
   name: string;
   price: number;
   canteenId: string;
@@ -93,7 +93,7 @@ export type CanteenItem = {
   active: Generated<number>;
 };
 export type CanteenItemPurchased = {
-  id: string;
+  id: Generated<string>;
   price: number;
   quantity: number;
   createdAt: Generated<Timestamp>;
@@ -102,14 +102,14 @@ export type CanteenItemPurchased = {
   canteenItemId: string;
 };
 export type CanteenPurchase = {
-  id: string;
+  id: Generated<string>;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   payed: Generated<number>;
   userId: string;
 };
 export type Class = {
-  id: string;
+  id: Generated<string>;
   name: string;
   slug: string;
   schoolId: string;
@@ -117,7 +117,7 @@ export type Class = {
   updatedAt: Timestamp;
 };
 export type ClassSchedule = {
-  id: string;
+  id: Generated<string>;
   classId: string;
   name: string;
   createdAt: Generated<Timestamp>;
@@ -126,7 +126,7 @@ export type ClassSchedule = {
 };
 export type Comment = {
   id: Generated<number>;
-  uuid: string;
+  uuid: Generated<string>;
   postId: number;
   comment: string;
   createdAt: Generated<Timestamp>;
@@ -134,14 +134,14 @@ export type Comment = {
   userId: string;
 };
 export type CommentLike = {
-  id: string;
+  id: Generated<string>;
   commentId: number;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
   userId: string;
 };
 export type FixedClass = {
-  id: string;
+  id: Generated<string>;
   classScheduleId: string;
   teacherId: string;
   classId: string;
@@ -154,7 +154,7 @@ export type FixedClass = {
   updatedAt: Timestamp;
 };
 export type Notification = {
-  id: string;
+  id: Generated<string>;
   title: string;
   body: string | null;
   cleared: Generated<number>;
@@ -163,7 +163,7 @@ export type Notification = {
   updatedAt: Timestamp;
 };
 export type Occurence = {
-  id: string;
+  id: Generated<string>;
   date: Timestamp;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
@@ -173,7 +173,7 @@ export type Occurence = {
 };
 export type Post = {
   id: Generated<number>;
-  uuid: string;
+  uuid: Generated<string>;
   content: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
@@ -181,7 +181,7 @@ export type Post = {
   schoolId: string | null;
 };
 export type PrintRequest = {
-  id: string;
+  id: Generated<string>;
   userId: string;
   name: string;
   path: string;
@@ -194,7 +194,7 @@ export type PrintRequest = {
   updatedAt: Timestamp;
 };
 export type PurchaseRequest = {
-  id: string;
+  id: Generated<string>;
   productName: string;
   quantity: number;
   finalQuantity: number | null;
@@ -218,24 +218,26 @@ export type PurchaseRequest = {
   receiptPath: string | null;
 };
 export type ResponsibleUserAcceptedOccurence = {
-  id: string;
+  id: Generated<string>;
   responsibleUserId: string;
   occurenceId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
 export type Role = {
-  id: string;
+  id: Generated<string>;
   name: string;
 };
 export type School = {
-  id: string;
+  id: Generated<string>;
   name: string;
   slug: string;
   schoolChainId: string | null;
+  minimumGrade: Generated<number>;
+  calculationAlgorithm: Generated<string>;
 };
 export type SchoolChain = {
-  id: string;
+  id: Generated<string>;
   name: string;
   slug: string;
   createdAt: Generated<Timestamp>;
@@ -247,13 +249,13 @@ export type Student = {
   canteenLimit: number | null;
 };
 export type StudentHasAcademicPeriod = {
-  id: string;
+  id: Generated<string>;
   studentId: string;
   academicPeriodId: string;
   classId: string | null;
 };
 export type StudentHasAssignment = {
-  id: string;
+  id: Generated<string>;
   studentId: string;
   assignmentId: string;
   createdAt: Generated<Timestamp>;
@@ -261,7 +263,7 @@ export type StudentHasAssignment = {
   grade: number | null;
 };
 export type StudentHasAttendance = {
-  id: string;
+  id: Generated<string>;
   studentId: string;
   attendanceId: string;
   createdAt: Generated<Timestamp>;
@@ -269,14 +271,14 @@ export type StudentHasAttendance = {
   present: Generated<number>;
 };
 export type StudentHasResponsible = {
-  id: string;
+  id: Generated<string>;
   studentId: string;
   responsibleId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
 };
 export type Subject = {
-  id: string;
+  id: Generated<string>;
   name: string;
   slug: string;
   schoolId: string;
@@ -288,7 +290,7 @@ export type Teacher = {
   id: string;
 };
 export type TeacherAvailability = {
-  id: string;
+  id: Generated<string>;
   teacherId: string;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;
@@ -297,7 +299,7 @@ export type TeacherAvailability = {
   endTime: Timestamp;
 };
 export type TeacherHasClass = {
-  id: string;
+  id: Generated<string>;
   teacherId: string;
   classId: string;
   subjectId: string;
@@ -311,12 +313,12 @@ export type TeacherHasClass = {
   isActive: Generated<number>;
 };
 export type TeacherHasSubject = {
-  id: string;
+  id: Generated<string>;
   teacherId: string;
   subjectId: string;
 };
 export type User = {
-  id: string;
+  id: Generated<string>;
   name: string;
   slug: string;
   email: string;
@@ -329,7 +331,7 @@ export type User = {
   active: Generated<number>;
 };
 export type UserLikedPost = {
-  id: string;
+  id: Generated<string>;
   postId: number;
   createdAt: Generated<Timestamp>;
   updatedAt: Timestamp;

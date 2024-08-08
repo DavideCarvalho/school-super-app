@@ -15,22 +15,24 @@ datasource db {
 }
 
 model School {
-  id               String            @id @default(uuid())
-  name             String
-  slug             String
-  Users            User[]
-  Subjects         Subject[]
-  Classes          Class[]
-  PurchaseRequests PurchaseRequest[]
-  Canteen          Canteen[]
-  SchoolChain      SchoolChain?      @relation(fields: [schoolChainId], references: [id])
-  schoolChainId    String?
-  Post             Post[]
-  AcademicPeriod   AcademicPeriod[]
+  id                   String            @id @default(uuid(7))
+  name                 String
+  slug                 String
+  Users                User[]
+  Subjects             Subject[]
+  Classes              Class[]
+  PurchaseRequests     PurchaseRequest[]
+  Canteen              Canteen[]
+  SchoolChain          SchoolChain?      @relation(fields: [schoolChainId], references: [id])
+  schoolChainId        String?
+  Post                 Post[]
+  AcademicPeriod       AcademicPeriod[]
+  minimumGrade         Float             @default(6)
+  calculationAlgorithm String            @default("AVERAGE") // AVERAGE, SUM
 }
 
 model User {
-  id             String   @id @default(uuid())
+  id             String   @id @default(uuid(7))
   name           String
   slug           String
   email          String   @unique
@@ -75,7 +77,7 @@ model Teacher {
 }
 
 model TeacherAvailability {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   teacherId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -104,7 +106,7 @@ model Student {
 }
 
 model StudentHasAcademicPeriod {
-  id               String  @id @default(uuid())
+  id               String  @id @default(uuid(7))
   studentId        String
   academicPeriodId String
   classId          String?
@@ -115,7 +117,7 @@ model StudentHasAcademicPeriod {
 }
 
 model StudentHasResponsible {
-  id            String   @id @default(uuid())
+  id            String   @id @default(uuid(7))
   studentId     String
   responsibleId String
   createdAt     DateTime @default(now())
@@ -126,7 +128,7 @@ model StudentHasResponsible {
 }
 
 model AcademicPeriodHoliday {
-  id               String   @id @default(uuid())
+  id               String   @id @default(uuid(7))
   date             DateTime @db.Date()
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -136,7 +138,7 @@ model AcademicPeriodHoliday {
 }
 
 model AcademicPeriodWeekendClass {
-  id               String   @id @default(uuid())
+  id               String   @id @default(uuid(7))
   academicPeriodId String
   date             DateTime @db.Date()
   createdAt        DateTime @default(now())
@@ -146,7 +148,7 @@ model AcademicPeriodWeekendClass {
 }
 
 model AcademicPeriod {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   startDate DateTime @db.Date()
   endDate   DateTime @db.Date()
   isActive  Boolean  @default(true)
@@ -164,7 +166,7 @@ model AcademicPeriod {
 }
 
 model Canteen {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid(7))
   schoolId          String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -176,7 +178,7 @@ model Canteen {
 }
 
 model Attendance {
-  id             String   @id @default(uuid())
+  id             String   @id @default(uuid(7))
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   note           String?  @db.Text
@@ -188,7 +190,7 @@ model Attendance {
 }
 
 model StudentHasAttendance {
-  id           String   @id @default(uuid())
+  id           String   @id @default(uuid(7))
   studentId    String
   attendanceId String
   createdAt    DateTime @default(now())
@@ -200,7 +202,7 @@ model StudentHasAttendance {
 }
 
 model Occurence {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid(7))
   date              DateTime @db.Date
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -214,7 +216,7 @@ model Occurence {
 }
 
 model ResponsibleUserAcceptedOccurence {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid(7))
   responsibleUserId String
   occurenceId       String
   createdAt         DateTime @default(now())
@@ -225,7 +227,7 @@ model ResponsibleUserAcceptedOccurence {
 }
 
 model CanteenItem {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   name      String
   price     Float
   canteenId String
@@ -240,7 +242,7 @@ model CanteenItem {
 }
 
 model CanteenItemPurchased {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid(7))
   price             Float
   quantity          Int
   createdAt         DateTime @default(now())
@@ -253,7 +255,7 @@ model CanteenItemPurchased {
 }
 
 model CanteenPurchase {
-  id String @id @default(uuid())
+  id String @id @default(uuid(7))
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -267,7 +269,7 @@ model CanteenPurchase {
 }
 
 model CalendarSlot {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid(7))
   teacherHasClassId String?
   classWeekDay      Int
   startTime         DateTime @db.Time(6)
@@ -285,7 +287,7 @@ model CalendarSlot {
 }
 
 model TeacherHasClass {
-  id                    String   @id @default(uuid())
+  id                    String   @id @default(uuid(7))
   teacherId             String
   classId               String
   subjectId             String
@@ -313,7 +315,7 @@ model TeacherHasClass {
 }
 
 model Assignment {
-  id                String   @id @default(uuid())
+  id                String   @id @default(uuid(7))
   name              String
   description       String?  @db.Text
   dueDate           DateTime
@@ -329,7 +331,7 @@ model Assignment {
 }
 
 model StudentHasAssignment {
-  id           String   @id @default(uuid())
+  id           String   @id @default(uuid(7))
   studentId    String
   assignmentId String
   createdAt    DateTime @default(now())
@@ -341,7 +343,7 @@ model StudentHasAssignment {
 }
 
 model TeacherHasSubject {
-  id        String @id @default(uuid())
+  id        String @id @default(uuid(7))
   teacherId String
   subjectId String
 
@@ -352,7 +354,7 @@ model TeacherHasSubject {
 }
 
 model Subject {
-  id                      String              @id @default(uuid())
+  id                      String              @id @default(uuid(7))
   name                    String
   slug                    String
   schoolId                String
@@ -368,7 +370,7 @@ model Subject {
 }
 
 model PrintRequest {
-  id               String   @id @default(uuid())
+  id               String   @id @default(uuid(7))
   userId           String
   name             String
   path             String
@@ -384,13 +386,13 @@ model PrintRequest {
 }
 
 model Role {
-  id    String @id @default(uuid())
+  id    String @id @default(uuid(7))
   name  String
   Users User[]
 }
 
 model Class {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   name      String
   slug      String
   schoolId  String
@@ -409,7 +411,7 @@ model Class {
 }
 
 model PurchaseRequest {
-  id                   String    @id @default(uuid())
+  id                   String    @id @default(uuid(7))
   productName          String
   quantity             Int // quantidade do produto de acordo com quem fez o pedido
   finalQuantity        Int? // quantidade final do produto de acordo com quem fez a compra
@@ -440,7 +442,7 @@ model PurchaseRequest {
 }
 
 model Notification {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   title     String
   body      String?  @db.Text
   cleared   Boolean  @default(false)
@@ -454,7 +456,7 @@ model Notification {
 }
 
 model SchoolChain {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   name      String
   slug      String
   createdAt DateTime @default(now())
@@ -465,7 +467,7 @@ model SchoolChain {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  uuid      String   @default(uuid())
+  uuid      String   @default(uuid(7))
   content   String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -481,7 +483,7 @@ model Post {
 }
 
 model UserLikedPost {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   postId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -493,7 +495,7 @@ model UserLikedPost {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  uuid      String   @default(uuid())
+  uuid      String   @default(uuid(7))
   postId    Int
   comment   String   @db.Text
   createdAt DateTime @default(now())
@@ -508,7 +510,7 @@ model Comment {
 }
 
 model CommentLike {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   commentId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -519,7 +521,7 @@ model CommentLike {
 }
 
 model Calendar {
-  id               String   @id @default(uuid())
+  id               String   @id @default(uuid(7))
   classId          String
   name             String // Nome do calendário, por exemplo, "Calendário 2024"
   createdAt        DateTime @default(now())
@@ -535,7 +537,7 @@ model Calendar {
 }
 
 model CalendarConfig {
-  id                 String   @id @default(uuid())
+  id                 String   @id @default(uuid(7))
   classesConfig      Json?
   classesClashConfig Json?
   createdAt          DateTime @default(now())
@@ -543,7 +545,7 @@ model CalendarConfig {
 }
 
 model ClassSchedule {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid(7))
   classId   String
   name      String // Nome do calendário, por exemplo, "Calendário 2024"
   createdAt DateTime @default(now())
@@ -557,7 +559,7 @@ model ClassSchedule {
 }
 
 model FixedClass {
-  id              String   @id @default(uuid())
+  id              String   @id @default(uuid(7))
   classScheduleId String
   teacherId       String
   classId         String
