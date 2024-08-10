@@ -113,7 +113,7 @@ importers:
         version: 2.1.5(react@18.3.1)
       '@highlight-run/react':
         specifier: 3.2.5
-        version: 3.2.5(highlight.run@9.1.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 3.2.5(highlight.run@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: 3.9.0
         version: 3.9.0(react-hook-form@7.52.2(react@18.3.1))
@@ -220,8 +220,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 9.1.5
-        version: 9.1.5
+        specifier: 9.2.0
+        version: 9.2.0
       lucide-react:
         specifier: 0.424.0
         version: 0.424.0(react@18.3.1)
@@ -402,7 +402,7 @@ importers:
         version: 2.1.5(react@18.3.1)
       '@highlight-run/react':
         specifier: 3.2.5
-        version: 3.2.5(highlight.run@9.1.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 3.2.5(highlight.run@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: 3.9.0
         version: 3.9.0(react-hook-form@7.52.2(react@18.3.1))
@@ -527,8 +527,8 @@ importers:
         specifier: 4.6.13
         version: 4.6.13
       highlight.run:
-        specifier: 9.1.5
-        version: 9.1.5
+        specifier: 9.2.0
+        version: 9.2.0
       lucide-react:
         specifier: 0.424.0
         version: 0.424.0(react@18.3.1)
@@ -5151,8 +5151,8 @@ packages:
   highlight-words-core@1.2.2:
     resolution: {integrity: sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==}
 
-  highlight.run@9.1.5:
-    resolution: {integrity: sha512-BUGb07Lj5kn+mzerG1hMgl315DSH7AFt1Rz1vWzXpvN7HdJLVXM7CWC7FK8YxXenq/0NccuKw/ZYcDUpaOIUIw==}
+  highlight.run@9.2.0:
+    resolution: {integrity: sha512-aagBVUj4pCpLuMjk3xQ/epmimLKeX2EupcfURT4m8acE06aA+yHJpNJteIZynIZeEWXx/qW/RYKy4Ht0OEt4vA==}
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
@@ -8171,9 +8171,9 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@highlight-run/react@3.2.5(highlight.run@9.1.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@highlight-run/react@3.2.5(highlight.run@9.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      highlight.run: 9.1.5
+      highlight.run: 9.2.0
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
@@ -12199,7 +12199,7 @@ snapshots:
 
   highlight-words-core@1.2.2: {}
 
-  highlight.run@9.1.5: {}
+  highlight.run@9.2.0: {}
 
   hoist-non-react-statics@3.3.2:
     dependencies:
