@@ -23,7 +23,7 @@
     "@clerk/elements": "^0.12.0",
     "@clerk/localizations": "2.5.8",
     "@clerk/nextjs": "5.3.1",
-    "@clerk/themes": "2.1.19",
+    "@clerk/themes": "2.1.20",
     "@date-fns/utc": "^1.2.0",
     "@dnd-kit/core": "6.1.0",
     "@dnd-kit/sortable": "8.0.0",
