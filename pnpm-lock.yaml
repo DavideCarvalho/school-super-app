@@ -79,8 +79,8 @@ importers:
         specifier: 5.0.27
         version: 5.0.27(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/elements':
-        specifier: ^0.12.0
-        version: 0.12.4(@clerk/clerk-react@5.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: ^0.13.0
+        version: 0.13.0(@clerk/clerk-react@5.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/localizations':
         specifier: 2.5.8
         version: 2.5.8
@@ -1290,8 +1290,8 @@ packages:
     resolution: {integrity: sha512-nTztsbRq4nhSqryYb2YgFarT54t+ZRI+uoiiXcypI90e1J2WAWnPrnE66h+B45riAr1aQ62isXDQOJCmKdm0kg==}
     engines: {node: '>=18.17.0'}
 
-  '@clerk/elements@0.12.4':
-    resolution: {integrity: sha512-xpSVoELhvySxVXdS+Zt24tp7TclD8DZawrK7C8uOQZqucCGqZITNs6A45Y2H/871SPf1duW4xO8NA21Xmbks2A==}
+  '@clerk/elements@0.13.0':
+    resolution: {integrity: sha512-bqOQvSfy5inyj5kYFSTt9VZoolXmQ4KjED+Ag8aX+FcK6MU5G2iOiO/gmdMta6FrV5uFeMtlCU2tkOOuqpTBRQ==}
     engines: {node: '>=18.17.0'}
     peerDependencies:
       '@clerk/clerk-react': ^5.0.0
@@ -1329,10 +1329,6 @@ packages:
 
   '@clerk/themes@2.1.20':
     resolution: {integrity: sha512-8dCVetxtFTUFDSlUIeHqFTGZf/FINSlspxZ51iOPXW6qtay73A1GmquHVfJAfBkGs8S26IO2L5wJytfRBUtkMQ==}
-    engines: {node: '>=18.17.0'}
-
-  '@clerk/types@4.13.0':
-    resolution: {integrity: sha512-W/iZ5ig35UgJHmZqqgO1tosHuGtdKR8e+f8FJWphpdIW6KNCK+Oxc5lOO/hJU1c9aih0x5QdlLrKsqF3S8JKdA==}
     engines: {node: '>=18.17.0'}
 
   '@clerk/types@4.13.1':
@@ -7831,11 +7827,11 @@ snapshots:
       - react
       - react-dom
 
-  '@clerk/elements@0.12.4(@clerk/clerk-react@5.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/elements@0.13.0(@clerk/clerk-react@5.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@clerk/shared@2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react-dom@18.3.0)(@types/react@18.3.3)(next@14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@clerk/clerk-react': 5.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@clerk/shared': 2.5.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/types': 4.13.0
+      '@clerk/types': 4.13.1
       '@radix-ui/react-form': 0.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@radix-ui/react-slot': 1.1.0(@types/react@18.3.3)(react@18.3.1)
       '@xstate/react': 4.1.1(@types/react@18.3.3)(react@18.3.1)(xstate@5.17.1)
@@ -7882,10 +7878,6 @@ snapshots:
     dependencies:
       '@clerk/types': 4.13.1
       tslib: 2.4.1
-
-  '@clerk/types@4.13.0':
-    dependencies:
-      csstype: 3.1.1
 
   '@clerk/types@4.13.1':
     dependencies:
