@@ -29,7 +29,7 @@
     "@floating-ui/react": "0.26.22",
     "@headlessui/react": "2.1.2",
     "@heroicons/react": "2.1.5",
-    "@highlight-run/react": "3.2.5",
+    "@highlight-run/react": "4.0.1",
     "@hookform/resolvers": "3.9.0",
     "@next/third-parties": "14.2.5",
     "@opentelemetry/exporter-trace-otlp-http": "0.52.1",

@@ -112,8 +112,8 @@ importers:
         specifier: 2.1.5
         version: 2.1.5(react@18.3.1)
       '@highlight-run/react':
-        specifier: 3.2.5
-        version: 3.2.5(highlight.run@9.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 4.0.1
+        version: 4.0.1(highlight.run@9.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: 3.9.0
         version: 3.9.0(react-hook-form@7.52.2(react@18.3.1))
@@ -401,8 +401,8 @@ importers:
         specifier: 2.1.5
         version: 2.1.5(react@18.3.1)
       '@highlight-run/react':
-        specifier: 3.2.5
-        version: 3.2.5(highlight.run@9.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 4.0.1
+        version: 4.0.1(highlight.run@9.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@hookform/resolvers':
         specifier: 3.9.0
         version: 3.9.0(react-hook-form@7.52.2(react@18.3.1))
@@ -1765,10 +1765,10 @@ packages:
     peerDependencies:
       react: '>= 16'
 
-  '@highlight-run/react@3.2.5':
-    resolution: {integrity: sha512-MUw3OnOu778vllif+LHRmVEBRBPmtiBx/PxQZycE8oS+pmOcDt9NJRNVRwmufBgwtog2sf6sdvZFoPqCd0EWpQ==}
+  '@highlight-run/react@4.0.1':
+    resolution: {integrity: sha512-VNNgyFQhB+pT7pm459rGDgofafa4YJxs0BXw9YtcjqVlrsoGK5AC2BO9XXAI1RJz2d32Hj1Vw1CnBjYH1ktw3w==}
     peerDependencies:
-      highlight.run: 9.1.5
+      highlight.run: 9.2.1
       react: '>=16'
       react-dom: '>=16'
 
@@ -8196,7 +8196,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@highlight-run/react@3.2.5(highlight.run@9.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@highlight-run/react@4.0.1(highlight.run@9.2.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       highlight.run: 9.2.1
       react: 18.3.1
