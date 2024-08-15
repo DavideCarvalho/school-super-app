@@ -235,8 +235,8 @@ importers:
         specifier: 4.24.7
         version: 4.24.7(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nodemailer@6.9.14)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-axiom:
-        specifier: 1.4.0
-        version: 1.4.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        specifier: 1.4.1
+        version: 1.4.1(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       next-superjson:
         specifier: 0.0.4
         version: 0.0.4(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.93.0(@swc/core@1.3.101(@swc/helpers@0.5.12)))
@@ -542,8 +542,8 @@ importers:
         specifier: 4.24.7
         version: 4.24.7(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nodemailer@6.9.14)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-axiom:
-        specifier: 1.4.0
-        version: 1.4.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        specifier: 1.4.1
+        version: 1.4.1(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       next-safe-action:
         specifier: 7.6.2
         version: 7.6.2(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.23.8)
@@ -5737,8 +5737,8 @@ packages:
       nodemailer:
         optional: true
 
-  next-axiom@1.4.0:
-    resolution: {integrity: sha512-9Gw3SAGl+n8O6VWPgGpF3Ivv8RBes4JXwWJjfK4SnCtTwU4phden6+ijo7Oov6F8gSQQzWoJ974d2KPnaxQ8IQ==}
+  next-axiom@1.4.1:
+    resolution: {integrity: sha512-1E/yRcQLlek7TjQjQaKyzdzbxIFasuTYCWGLJSomrYH3LtfChhFKixLNsHTOwn0A3F0LjO6mPudIYE2d0wNWcQ==}
     engines: {node: '>=18'}
     peerDependencies:
       next: '>=14.0'
@@ -7346,6 +7346,9 @@ packages:
     peerDependenciesMeta:
       webpack-cli:
         optional: true
+
+  whatwg-fetch@3.6.20:
+    resolution: {integrity: sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==}
 
   whatwg-url@5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
@@ -12784,11 +12787,12 @@ snapshots:
     optionalDependencies:
       nodemailer: 6.9.14
 
-  next-axiom@1.4.0(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+  next-axiom@1.4.1(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
     dependencies:
       next: 14.2.5(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       use-deep-compare: 1.3.0(react@18.3.1)
+      whatwg-fetch: 3.6.20
 
   next-safe-action@7.6.2(next@14.2.5(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.23.8):
     dependencies:
@@ -14645,6 +14649,8 @@ snapshots:
       - '@swc/core'
       - esbuild
       - uglify-js
+
+  whatwg-fetch@3.6.20: {}
 
   whatwg-url@5.0.0:
     dependencies:
