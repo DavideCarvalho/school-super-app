@@ -7,7 +7,7 @@
     "preview-email": "email dev --dir=./src/templates --port=3001"
   },
   "dependencies": {
-    "@react-email/button": "0.0.15",
+    "@react-email/button": "0.0.16",
     "@react-email/container": "0.0.13",
     "@react-email/head": "0.0.10",
     "@react-email/html": "0.0.9",
