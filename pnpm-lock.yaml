@@ -755,8 +755,8 @@ importers:
   packages/email:
     dependencies:
       '@react-email/button':
-        specifier: 0.0.15
-        version: 0.0.15(react@18.3.1)
+        specifier: 0.0.16
+        version: 0.0.16(react@18.3.1)
       '@react-email/container':
         specifier: 0.0.13
         version: 0.0.13(react@18.3.1)
@@ -3103,8 +3103,8 @@ packages:
     peerDependencies:
       react: ^17.0.0 || ^18.0.0
 
-  '@react-email/button@0.0.15':
-    resolution: {integrity: sha512-9Zi6SO3E8PoHYDfcJTecImiHLyitYWmIRs0HE3Ogra60ZzlWP2EXu+AZqwQnhXuq+9pbgwBWNWxB5YPetNPTNA==}
+  '@react-email/button@0.0.16':
+    resolution: {integrity: sha512-paptUerzDhKHEUmBuT0UecCoqo3N6ZQSyDKC1hFALTwKReGW2xQATisinho9Ybh9ZGw6IZ3n1nGtmX5k2sX70Q==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.2.0
@@ -9899,7 +9899,7 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@react-email/button@0.0.15(react@18.3.1)':
+  '@react-email/button@0.0.16(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
