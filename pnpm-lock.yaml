@@ -223,8 +223,8 @@ importers:
         specifier: 9.3.0
         version: 9.3.0
       lucide-react:
-        specifier: 0.424.0
-        version: 0.424.0(react@18.3.1)
+        specifier: 0.427.0
+        version: 0.427.0(react@18.3.1)
       minio:
         specifier: 8.0.1
         version: 8.0.1
@@ -530,8 +530,8 @@ importers:
         specifier: 9.3.0
         version: 9.3.0
       lucide-react:
-        specifier: 0.424.0
-        version: 0.424.0(react@18.3.1)
+        specifier: 0.427.0
+        version: 0.427.0(react@18.3.1)
       minio:
         specifier: 8.0.1
         version: 8.0.1
@@ -900,8 +900,8 @@ importers:
         specifier: ^8.1.8
         version: 8.1.8(react@18.3.1)
       lucide-react:
-        specifier: 0.424.0
-        version: 0.424.0(react@18.3.1)
+        specifier: 0.427.0
+        version: 0.427.0(react@18.3.1)
       next-themes:
         specifier: 0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5570,8 +5570,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-react@0.424.0:
-    resolution: {integrity: sha512-x2Nj2aytk1iOyHqt4hKenfVlySq0rYxNeEf8hE0o+Yh0iE36Rqz0rkngVdv2uQtjZ70LAE73eeplhhptYt9x4Q==}
+  lucide-react@0.427.0:
+    resolution: {integrity: sha512-lv9s6c5BDF/ccuA0EgTdskTxIe11qpwBDmzRZHJAKtp8LTewAvDvOM+pTES9IpbBuTqkjiMhOmGpJ/CB+mKjFw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0-rc
 
@@ -12630,7 +12630,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-react@0.424.0(react@18.3.1):
+  lucide-react@0.427.0(react@18.3.1):
     dependencies:
       react: 18.3.1
 
