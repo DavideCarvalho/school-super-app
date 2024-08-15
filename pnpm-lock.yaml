@@ -160,8 +160,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9(react@18.3.1)
       '@react-email/section':
-        specifier: 0.0.12
-        version: 0.0.12(react@18.3.1)
+        specifier: 0.0.13
+        version: 0.0.13(react@18.3.1)
       '@react-email/text':
         specifier: 0.0.9
         version: 0.0.9(react@18.3.1)
@@ -449,8 +449,8 @@ importers:
         specifier: 0.0.9
         version: 0.0.9(react@18.3.1)
       '@react-email/section':
-        specifier: 0.0.12
-        version: 0.0.12(react@18.3.1)
+        specifier: 0.0.13
+        version: 0.0.13(react@18.3.1)
       '@react-email/text':
         specifier: 0.0.9
         version: 0.0.9(react@18.3.1)
@@ -770,8 +770,8 @@ importers:
         specifier: 0.0.10
         version: 0.0.10(react@18.3.1)
       '@react-email/section':
-        specifier: 0.0.12
-        version: 0.0.12(react@18.3.1)
+        specifier: 0.0.13
+        version: 0.0.13(react@18.3.1)
       '@react-email/tailwind':
         specifier: 0.0.19
         version: 0.0.19(react@18.3.1)
@@ -3123,8 +3123,8 @@ packages:
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@react-email/section@0.0.12':
-    resolution: {integrity: sha512-UCD/N/BeOTN4h3VZBUaFdiSem6HnpuxD1Q51TdBFnqeNqS5hBomp8LWJJ9s4gzwHWk1XPdNfLA3I/fJwulJshg==}
+  '@react-email/section@0.0.13':
+    resolution: {integrity: sha512-McsCQ5NQlNWEMEAR3EtCxHgRhxGmLD+jPvj7A3FD7y2X3fXG0hbmUGX12B63rIywSWjJoQi6tojx/8RpzbyeTA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^18.2.0
@@ -9896,7 +9896,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       react-promise-suspense: 0.3.4
 
-  '@react-email/section@0.0.12(react@18.3.1)':
+  '@react-email/section@0.0.13(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
