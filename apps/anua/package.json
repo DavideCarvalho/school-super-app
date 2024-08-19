@@ -102,7 +102,7 @@
     "@acme/tsconfig": "workspace:^0.1.0",
     "@acme/ui": "workspace:^0.1.0",
     "@biomejs/biome": "1.8.3",
-    "@types/node": "20.16.0",
+    "@types/node": "20.16.1",
     "@types/nodemailer": "6.4.15",
     "@types/react": "catalog:react18",
     "@types/react-collapse": "5.0.4",
