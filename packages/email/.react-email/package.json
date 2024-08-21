@@ -23,7 +23,7 @@
     "@radix-ui/react-tooltip": "1.1.2",
     "@react-email/render": "0.0.17",
     "classnames": "2.5.1",
-    "framer-motion": "11.3.28",
+    "framer-motion": "11.3.29",
     "next": "14.2.5",
     "prism-react-renderer": "2.3.1",
     "react": "18.3.1",
