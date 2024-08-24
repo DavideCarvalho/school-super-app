@@ -12,7 +12,7 @@
     "@react-email/head": "0.0.10",
     "@react-email/html": "0.0.9",
     "@react-email/preview": "0.0.10",
-    "@react-email/section": "0.0.13",
+    "@react-email/section": "0.0.14",
     "@react-email/tailwind": "0.0.19",
     "@react-email/text": "0.0.9",
     "react": "18.3.1",
