@@ -40,6 +40,7 @@ export const inteligenceRouter = createTRPCRouter({
       return ctx.prisma.printRequest.findMany({
         where: {
           status: "REVIEW",
+          userId: ctx.session.user.id,
           User: {
             schoolId: ctx.session.school.id,
           },
