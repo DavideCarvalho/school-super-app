@@ -11,6 +11,7 @@ import { canteenRouter } from "./router/canteen";
 import { classRouter } from "./router/class";
 import { emailRouter } from "./router/email";
 import { gradeRouter } from "./router/grade";
+import { inteligenceRouter } from "./router/inteligence";
 import { peiRouter } from "./router/pei";
 import { postRouter } from "./router/post";
 import { printRequestRouter } from "./router/printRequest";
@@ -44,6 +45,7 @@ export const appRouter = createTRPCRouter({
   assignment: assignmentRouter,
   attendance: attendanceRouter,
   grade: gradeRouter,
+  inteligence: inteligenceRouter,
 });
 
 export const trpCaller = appRouter.createCaller({ prisma, session: null });

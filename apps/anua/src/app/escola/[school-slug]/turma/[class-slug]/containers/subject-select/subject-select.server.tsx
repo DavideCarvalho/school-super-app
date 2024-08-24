@@ -21,15 +21,6 @@ export async function SubjectSelectServer(props: SubjectSelectServerProps) {
 }
 
 async function SubjectSelectDataLoader(props: SubjectSelectServerProps) {
-  const requestHeaders = headers();
-  const xUrl = requestHeaders.get("x-url")!;
-  const url = new URL(xUrl);
-  const page = url.searchParams.has("page")
-    ? Number(url.searchParams.get("page"))
-    : 1;
-  const size = url.searchParams.has("size")
-    ? Number(url.searchParams.get("size"))
-    : 10;
   await api.teacher.getTeacherSubjectsOnClassForCurrentAcademicPeriod.prefetch({
     classId: props.classId,
   });

@@ -1,0 +1,43 @@
+import { addDays, endOfDay, startOfDay } from "date-fns";
+
+import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
+
+export const inteligenceRouter = createTRPCRouter({
+  getPrintRequestsNotApprovedCloseToDueDate:
+    isUserLoggedInAndAssignedToSchool.query(({ ctx }) => {
+      const today = new Date();
+      return ctx.prisma.printRequest.findMany({
+        where: {
+          dueDate: {
+            lte: endOfDay(addDays(new Date(), 3)),
+            gte: startOfDay(today),
+          },
+          status: "REQUESTED",
+        },
+      });
+    }),
+  getPrintRequestsToPrintToday: isUserLoggedInAndAssignedToSchool.query(
+    ({ ctx }) => {
+      const today = new Date();
+      return ctx.prisma.printRequest.findMany({
+        where: {
+          dueDate: {
+            lte: endOfDay(today),
+            gte: startOfDay(today),
+          },
+        },
+      });
+    },
+  ),
+  getPrintRequestsOwnerUserNeedToReview:
+    isUserLoggedInAndAssignedToSchool.query(({ ctx }) => {
+      return ctx.prisma.printRequest.findMany({
+        where: {
+          status: "REVIEW",
+          User: {
+            schoolId: ctx.session.school.id,
+          },
+        },
+      });
+    }),
+});
