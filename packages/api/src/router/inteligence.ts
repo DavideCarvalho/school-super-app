@@ -13,6 +13,9 @@ export const inteligenceRouter = createTRPCRouter({
             gte: startOfDay(today),
           },
           status: "REQUESTED",
+          User: {
+            schoolId: ctx.session.school.id,
+          },
         },
       });
     }),
@@ -24,6 +27,9 @@ export const inteligenceRouter = createTRPCRouter({
           dueDate: {
             lte: endOfDay(today),
             gte: startOfDay(today),
+          },
+          User: {
+            schoolId: ctx.session.school.id,
           },
         },
       });
