@@ -3,13 +3,7 @@
 import { UsersIcon } from "@heroicons/react/24/outline";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@acme/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@acme/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem } from "@acme/ui/carousel";
 
 import { api } from "~/trpc/react";
 
@@ -92,8 +86,6 @@ export function SubjectInteligenceCarouselClient({
             </Card>
           </CarouselItem>
         ) : null}
-        <CarouselPrevious />
-        <CarouselNext />
       </CarouselContent>
     </Carousel>
   );

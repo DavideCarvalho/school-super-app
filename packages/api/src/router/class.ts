@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import slugify from "slugify";
 import { z } from "zod";
 
-import { StudentHasAssignment } from "@acme/db";
+import type { StudentHasAssignment } from "@acme/db";
 
 import * as academicPeriodService from "../service/academicPeriod.service";
 import * as studentService from "../service/student.service";

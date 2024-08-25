@@ -19,6 +19,12 @@ async function InteligenceCarouselDataLoader() {
     api.inteligence.getPrintRequestsNotApprovedCloseToDueDate.prefetch(),
     api.inteligence.getPrintRequestsToPrintToday.prefetch(),
     api.inteligence.getPrintRequestsOwnerUserNeedToReview.prefetch(),
+    api.inteligence.getStudentsWithPossibilityOfReprovingByAvoidanceOnCurrentAcademicPeriod.prefetch(
+      {
+        page: 1,
+        limit: 999,
+      },
+    ),
   ]);
   return (
     <HydrateClient>

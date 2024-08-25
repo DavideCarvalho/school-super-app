@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import PrinterIcon from "@heroicons/react/24/outline/PrinterIcon";
 import UsersIcon from "@heroicons/react/24/outline/UsersIcon";
 
 import {
@@ -30,6 +31,13 @@ export function InteligenceCarouselClient() {
     api.inteligence.getPrintRequestsToPrintToday.useQuery();
   const { data: printRequestsOwnerUserNeedToReview } =
     api.inteligence.getPrintRequestsOwnerUserNeedToReview.useQuery();
+  const { data: studentsWithPossibilityOfReprovingByAvoidance } =
+    api.inteligence.getStudentsWithPossibilityOfReprovingByAvoidanceOnCurrentAcademicPeriod.useQuery(
+      {
+        page: 1,
+        limit: 999,
+      },
+    );
 
   const noInconsistenciesFound =
     printRequestsNotApprovedCloseToDueDate?.length === 0 &&
@@ -51,14 +59,18 @@ export function InteligenceCarouselClient() {
   ) {
     inconsistenciesAmmount += 1;
   }
+  if (
+    studentsWithPossibilityOfReprovingByAvoidance &&
+    studentsWithPossibilityOfReprovingByAvoidance?.length > 0
+  ) {
+    inconsistenciesAmmount += 1;
+  }
   return (
     <Accordion
       type="multiple"
       className="w-full"
       value={openInteligenceCarousel}
-      onValueChange={(value) => {
-        setOpenInteligenceCarousel(value);
-      }}
+      onValueChange={setOpenInteligenceCarousel}
     >
       <AccordionItem value="item-1">
         <AccordionTrigger className="text-lg">
@@ -75,93 +87,129 @@ export function InteligenceCarouselClient() {
             </div>
           ) : null}
           {!noInconsistenciesFound ? (
-            <Carousel className="sm:min-h-0 md:min-h-[126px] lg:min-h-[126px]">
-              <CarouselContent>
-                {printRequestsNotApprovedCloseToDueDate &&
-                printRequestsNotApprovedCloseToDueDate?.length > 0 ? (
-                  <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          Impressão
-                        </CardTitle>
-                        <UsersIcon className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-lg font-bold">
-                          {printRequestsNotApprovedCloseToDueDate.length}{" "}
-                          {printRequestsNotApprovedCloseToDueDate.length === 1
-                            ? "Impressão"
-                            : "Impressões"}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {printRequestsNotApprovedCloseToDueDate.length === 1
-                            ? "Está em risco de não ser impressa a tempo"
-                            : "Estão em risco de não ser impressas a tempo"}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                ) : null}
+            <div className="flex content-center items-center justify-center">
+              <Carousel className="w-[80%] sm:min-h-0 md:min-h-[126px] lg:min-h-[126px]">
+                <CarouselContent>
+                  {printRequestsNotApprovedCloseToDueDate &&
+                  printRequestsNotApprovedCloseToDueDate?.length > 0 ? (
+                    <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                          <CardTitle className="text-sm font-medium">
+                            Impressão
+                          </CardTitle>
+                          <PrinterIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-lg font-bold">
+                            {printRequestsNotApprovedCloseToDueDate.length}{" "}
+                            {printRequestsNotApprovedCloseToDueDate.length === 1
+                              ? "Impressão"
+                              : "Impressões"}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {printRequestsNotApprovedCloseToDueDate.length === 1
+                              ? "Está em risco de não ser impressa a tempo"
+                              : "Estão em risco de não ser impressas a tempo"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ) : null}
 
-                {printRequestsToPrintToday &&
-                printRequestsToPrintToday?.length > 0 ? (
-                  <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          Impressão
-                        </CardTitle>
-                        <UsersIcon className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-lg font-bold">
-                          {printRequestsToPrintToday.length}{" "}
-                          {printRequestsToPrintToday.length === 1
-                            ? "Impressão"
-                            : "Impressões"}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {printRequestsToPrintToday.length === 1
-                            ? "Precisa ser impressa hoje"
-                            : "Precisam ser impressas hoje"}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                ) : null}
+                  {printRequestsToPrintToday &&
+                  printRequestsToPrintToday?.length > 0 ? (
+                    <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                          <CardTitle className="text-sm font-medium">
+                            Impressão
+                          </CardTitle>
+                          <PrinterIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-lg font-bold">
+                            {printRequestsToPrintToday.length}{" "}
+                            {printRequestsToPrintToday.length === 1
+                              ? "Impressão"
+                              : "Impressões"}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {printRequestsToPrintToday.length === 1
+                              ? "Precisa ser impressa hoje"
+                              : "Precisam ser impressas hoje"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ) : null}
 
-                {printRequestsOwnerUserNeedToReview &&
-                printRequestsOwnerUserNeedToReview?.length > 0 ? (
-                  <CarouselItem className="md:basis-1/2 lg:basis-1/3">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">
-                          Impressão
-                        </CardTitle>
-                        <UsersIcon className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-lg font-bold">
-                          {printRequestsOwnerUserNeedToReview.length}{" "}
-                          {printRequestsOwnerUserNeedToReview.length === 1
-                            ? "Impressão"
-                            : "Impressões"}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {printRequestsOwnerUserNeedToReview.length === 1
-                            ? "Precisa ser revisada"
-                            : "Precisam ser revisadas"}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </CarouselItem>
-                ) : null}
+                  {printRequestsOwnerUserNeedToReview &&
+                  printRequestsOwnerUserNeedToReview?.length > 0 ? (
+                    <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                          <CardTitle className="text-sm font-medium">
+                            Impressão
+                          </CardTitle>
+                          <PrinterIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-lg font-bold">
+                            {printRequestsOwnerUserNeedToReview.length}{" "}
+                            {printRequestsOwnerUserNeedToReview.length === 1
+                              ? "Impressão"
+                              : "Impressões"}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {printRequestsOwnerUserNeedToReview.length === 1
+                              ? "Precisa ser revisada"
+                              : "Precisam ser revisadas"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ) : null}
 
-                <CarouselPrevious />
-                <CarouselNext />
-              </CarouselContent>
-            </Carousel>
+                  {studentsWithPossibilityOfReprovingByAvoidance &&
+                  studentsWithPossibilityOfReprovingByAvoidance?.length > 0 ? (
+                    <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                          <CardTitle className="text-sm font-medium">
+                            Alunos
+                          </CardTitle>
+                          <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-lg font-bold">
+                            {
+                              studentsWithPossibilityOfReprovingByAvoidance.length
+                            }{" "}
+                            {studentsWithPossibilityOfReprovingByAvoidance.length ===
+                            1
+                              ? "Aluno"
+                              : "Alunos"}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {studentsWithPossibilityOfReprovingByAvoidance.length ===
+                            1
+                              ? "Está em risco de reprovar por faltas"
+                              : "Estão em risco de reprovar por faltas"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ) : null}
+                </CarouselContent>
+                {inconsistenciesAmmount >= 3 ? (
+                  <>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </>
+                ) : null}
+              </Carousel>
+            </div>
           ) : null}
         </AccordionContent>
       </AccordionItem>
