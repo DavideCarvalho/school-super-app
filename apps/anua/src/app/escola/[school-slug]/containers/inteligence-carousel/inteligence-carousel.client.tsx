@@ -38,11 +38,16 @@ export function InteligenceCarouselClient() {
         limit: 999,
       },
     );
+  const { data: studentsWithLessThanMinimumGrade } =
+    api.inteligence.getStudentsWithLessThanMinimumGrade.useQuery();
 
   const noInconsistenciesFound =
     printRequestsNotApprovedCloseToDueDate?.length === 0 &&
     printRequestsToPrintToday?.length === 0 &&
-    printRequestsOwnerUserNeedToReview?.length === 0;
+    printRequestsOwnerUserNeedToReview?.length === 0 &&
+    studentsWithPossibilityOfReprovingByAvoidance?.length === 0 &&
+    studentsWithLessThanMinimumGrade?.length === 0;
+
   let inconsistenciesAmmount = 0;
   if (
     printRequestsNotApprovedCloseToDueDate &&
@@ -62,6 +67,12 @@ export function InteligenceCarouselClient() {
   if (
     studentsWithPossibilityOfReprovingByAvoidance &&
     studentsWithPossibilityOfReprovingByAvoidance?.length > 0
+  ) {
+    inconsistenciesAmmount += 1;
+  }
+  if (
+    studentsWithLessThanMinimumGrade &&
+    studentsWithLessThanMinimumGrade?.length > 0
   ) {
     inconsistenciesAmmount += 1;
   }
@@ -196,6 +207,33 @@ export function InteligenceCarouselClient() {
                             1
                               ? "Está em risco de reprovar por faltas"
                               : "Estão em risco de reprovar por faltas"}
+                          </p>
+                        </CardContent>
+                      </Card>
+                    </CarouselItem>
+                  ) : null}
+
+                  {studentsWithLessThanMinimumGrade &&
+                  studentsWithLessThanMinimumGrade?.length > 0 ? (
+                    <CarouselItem className="md:basis-1/2 lg:basis-1/3">
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between pb-2">
+                          <CardTitle className="text-sm font-medium">
+                            Alunos
+                          </CardTitle>
+                          <UsersIcon className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                          <div className="text-lg font-bold">
+                            {studentsWithLessThanMinimumGrade.length}{" "}
+                            {studentsWithLessThanMinimumGrade.length === 1
+                              ? "Aluno"
+                              : "Alunos"}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {studentsWithLessThanMinimumGrade.length === 1
+                              ? "Está em risco de reprovar por nota"
+                              : "Estão em risco de reprovar por nota"}
                           </p>
                         </CardContent>
                       </Card>
