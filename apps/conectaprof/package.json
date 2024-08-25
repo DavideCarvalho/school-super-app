@@ -46,7 +46,7 @@
     "@react-email/container": "0.0.13",
     "@react-email/html": "0.0.9",
     "@react-email/section": "0.0.14",
-    "@react-email/text": "0.0.9",
+    "@react-email/text": "0.0.10",
     "@remixicon/react": "4.2.0",
     "@sentry/nextjs": "8.26.0",
     "@sentry/opentelemetry-node": "7.114.0",
