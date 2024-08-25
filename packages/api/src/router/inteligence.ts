@@ -1,6 +1,8 @@
 import { addDays, endOfDay, startOfDay } from "date-fns";
 import { z } from "zod";
 
+import { StudentHasAssignment } from "@acme/db";
+
 import * as academicPeriodService from "../service/academicPeriod.service";
 import * as studentService from "../service/student.service";
 import { createTRPCRouter, isUserLoggedInAndAssignedToSchool } from "../trpc";
@@ -220,4 +222,100 @@ export const inteligenceRouter = createTRPCRouter({
 
         return failingStudents;
       }),
+  getStudentsWithLessThanMinimumGrade: isUserLoggedInAndAssignedToSchool.query(
+    async ({ ctx }) => {
+      const academicPeriod =
+        await academicPeriodService.getCurrentOrLastActiveAcademicPeriod(
+          ctx.session.school.id,
+        );
+      if (!academicPeriod) {
+        return [];
+      }
+      const school = ctx.session.school;
+      const teacherHasClasses = await ctx.prisma.teacherHasClass.findMany({
+        where: {
+          isActive: true,
+          Teacher: {
+            User: {
+              schoolId: ctx.session.school.id,
+            },
+          },
+        },
+        include: {
+          Subject: true,
+        },
+      });
+      if (!teacherHasClasses.length) {
+        return [];
+      }
+      const students = await ctx.prisma.student.findMany({
+        where: {
+          StudentHasAcademicPeriod: {
+            some: {
+              academicPeriodId: academicPeriod.id,
+            },
+          },
+          StudentHasAssignment: {
+            some: {
+              grade: {
+                not: null,
+              },
+            },
+          },
+        },
+        include: {
+          StudentHasAssignment: {
+            include: {
+              Assignment: true,
+            },
+          },
+          User: true,
+        },
+      });
+      const schoolGradeAlgorithm =
+        school.calculationAlgorithm === "AVERAGE"
+          ? (studentGrades: StudentHasAssignment[]) => {
+              const totalGrade = studentGrades.reduce(
+                (acc, grade) => acc + grade.grade!,
+                0,
+              );
+              return totalGrade / studentGrades.length;
+            }
+          : (studentGrades: StudentHasAssignment[]) => {
+              const totalGrade = studentGrades.reduce(
+                (acc, grade) => acc + grade.grade!,
+                0,
+              );
+              return totalGrade;
+            };
+
+      return students
+        .map((student) => {
+          const subjectsWithLowGrades = [];
+
+          for (const teacherHasClass of teacherHasClasses) {
+            const studentGrades = student.StudentHasAssignment.filter(
+              ({ Assignment }) =>
+                Assignment.teacherHasClassId === teacherHasClass.id,
+            );
+
+            const grade = schoolGradeAlgorithm(studentGrades);
+
+            if (grade < school.minimumGrade) {
+              subjectsWithLowGrades.push({
+                id: teacherHasClass.Subject.id,
+                name: teacherHasClass.Subject.name,
+              });
+            }
+          }
+
+          return {
+            id: student.id,
+            name: student.User.name,
+            subjectsWithLowGrades,
+          };
+        })
+        .filter((student) => student.subjectsWithLowGrades.length > 0);
+    },
+  ),
 });
