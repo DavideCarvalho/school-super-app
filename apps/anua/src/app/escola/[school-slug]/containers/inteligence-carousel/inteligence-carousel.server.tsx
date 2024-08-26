@@ -25,6 +25,7 @@ async function InteligenceCarouselDataLoader() {
         limit: 999,
       },
     ),
+    api.inteligence.getStudentsWithLessThanMinimumGrade.prefetch(),
   ]);
   return (
     <HydrateClient>
