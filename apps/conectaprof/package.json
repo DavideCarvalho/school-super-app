@@ -79,7 +79,7 @@
     "next-axiom": "1.4.1",
     "next-safe-action": "7.7.1",
     "next-superjson": "0.0.4",
-    "nodemailer": "6.9.14",
+    "nodemailer": "6.9.15",
     "prosemirror-inputrules": "1.4.0",
     "react": "catalog:react18",
     "react-dom": "catalog:react18",
