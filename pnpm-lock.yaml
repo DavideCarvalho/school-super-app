@@ -582,7 +582,7 @@ importers:
         version: 3.10.13(react@18.3.1)
       react-highlight-within-textarea:
         specifier: ^3.2.1
-        version: 3.2.1(draft-js@0.11.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 3.2.2(draft-js@0.11.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-highlight-words:
         specifier: ^0.20.0
         version: 0.20.0(react@18.3.1)
@@ -6429,8 +6429,8 @@ packages:
     peerDependencies:
       react: '>=16, <=18'
 
-  react-highlight-within-textarea@3.2.1:
-    resolution: {integrity: sha512-ettN+GQfNLg6zCcpatsT9yhgpwEh5dV+tRKEmZu9+DnvLL7t1Bm/0wZ2tTC+G7wAZngJ2HbMlusJXR6v3Cs4PQ==}
+  react-highlight-within-textarea@3.2.2:
+    resolution: {integrity: sha512-pS+tPi6//dM8V154/0SfSqkx+0i6lKpSKazLZa7+RQjNQg0wKeCZBVkOGtxAhsVJy5KWpfIfdcpE8JpZ2Giz/g==}
     peerDependencies:
       draft-js: '>=0.11.7'
       react: '>=0.14.0'
@@ -13978,7 +13978,7 @@ snapshots:
       prop-types: 15.8.1
       react: 18.3.1
 
-  react-highlight-within-textarea@3.2.1(draft-js@0.11.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-highlight-within-textarea@3.2.2(draft-js@0.11.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       draft-js: 0.11.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
