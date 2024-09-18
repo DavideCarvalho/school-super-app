@@ -17,7 +17,7 @@
     "@acme/api": "workspace:^0.1.0",
     "@acme/db": "workspace:^0.1.0",
     "@acme/tailwind-config": "workspace:^0.1.0",
-    "@ai-sdk/openai": "^0.0.53",
+    "@ai-sdk/openai": "^0.0.60",
     "@ams-js/headless": "0.0.5",
     "@clerk/clerk-sdk-node": "5.0.38",
     "@clerk/elements": "^0.14.0",
