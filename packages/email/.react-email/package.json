@@ -34,7 +34,7 @@
     "@react-email/text": "0.0.10",
     "react-email": "2.1.6",
     "@react-email/button": "0.0.16",
-    "@react-email/tailwind": "0.0.19",
+    "@react-email/tailwind": "0.1.0",
     "@react-email/head": "^0.0.10",
     "@react-email/preview": "0.0.11"
   },
