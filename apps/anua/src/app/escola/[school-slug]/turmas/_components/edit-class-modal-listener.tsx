@@ -11,6 +11,7 @@ export function EditClassModalListener() {
   const [openEditClassModal, setOpenEditClassModal] = useState(false);
   const [hash, setHash] = useHash();
   const [hashValue] = useHashQueryValue("turma");
+  const utils = api.useUtils();
 
   useEffect(() => {
     if (hash === "editar-turma" && hashValue) {
@@ -19,8 +20,6 @@ export function EditClassModalListener() {
       setOpenEditClassModal(false);
     }
   }, [hash, hashValue]);
-
-  const utils = api.useUtils();
 
   async function handleOnClickSubmit() {
     setOpenEditClassModal(false);

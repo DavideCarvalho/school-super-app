@@ -18,7 +18,7 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@prisma/client": "5.18.0",
+    "@prisma/client": "5.19.0",
     "kysely": "0.27.4",
     "prisma-extension-kysely": "2.1.0"
   },
