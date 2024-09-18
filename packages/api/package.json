@@ -16,7 +16,7 @@
   "dependencies": {
     "@acme/db": "workspace:^0.1.0",
     "@acme/email": "workspace:^0.1.0",
-    "@clerk/clerk-sdk-node": "5.0.41",
+    "@clerk/clerk-sdk-node": "5.0.42",
     "@react-email/render": "1.0.1",
     "@trpc/client": "catalog:",
     "@trpc/server": "catalog:",
