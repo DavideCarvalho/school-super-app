@@ -82,9 +82,9 @@
     "nodemailer": "6.9.15",
     "prosemirror-inputrules": "1.4.0",
     "react": "catalog:react18",
-    "react-dom": "catalog:react18",
     "react-collapse": "5.1.1",
     "react-contenteditable": "^3.3.7",
+    "react-dom": "catalog:react18",
     "react-dropzone": "14.2.3",
     "react-email": "2.1.6",
     "react-error-boundary": "4.0.13",
@@ -104,7 +104,6 @@
     "zod-form-data": "2.0.2"
   },
   "devDependencies": {
-    "@types/react-collapse": "5.0.4",
     "@acme/prettier-config": "workspace:^0.1.0",
     "@acme/tailwind-config": "workspace:^0.1.0",
     "@acme/tsconfig": "workspace:^0.1.0",
@@ -113,6 +112,7 @@
     "@types/node": "20.16.5",
     "@types/nodemailer": "6.4.15",
     "@types/react": "catalog:react18",
+    "@types/react-collapse": "5.0.4",
     "@types/react-dom": "catalog:react18",
     "@types/react-flatpickr": "3.8.11",
     "@types/uuid": "^10.0.0",
