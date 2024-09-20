@@ -235,8 +235,8 @@ importers:
         specifier: 4.24.7
         version: 4.24.7(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nodemailer@6.9.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-axiom:
-        specifier: 1.4.1
-        version: 1.4.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        specifier: 1.5.1
+        version: 1.5.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       next-superjson:
         specifier: 0.0.4
         version: 0.0.4(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(superjson@2.2.1)(webpack@5.94.0(@swc/core@1.3.101(@swc/helpers@0.5.12)))
@@ -542,8 +542,8 @@ importers:
         specifier: 4.24.7
         version: 4.24.7(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(nodemailer@6.9.15)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-axiom:
-        specifier: 1.4.1
-        version: 1.4.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+        specifier: 1.5.1
+        version: 1.5.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       next-safe-action:
         specifier: 7.7.1
         version: 7.7.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(zod@3.23.8)
@@ -5717,8 +5717,8 @@ packages:
       nodemailer:
         optional: true
 
-  next-axiom@1.4.1:
-    resolution: {integrity: sha512-1E/yRcQLlek7TjQjQaKyzdzbxIFasuTYCWGLJSomrYH3LtfChhFKixLNsHTOwn0A3F0LjO6mPudIYE2d0wNWcQ==}
+  next-axiom@1.5.1:
+    resolution: {integrity: sha512-sWxIzuJOex48ugMDlXWzvGvDGv5YHZ3w8gLZbUQ/Yml7oy5jcCItJNws9D0qmASirp2e5/BnvHxs44+9CO0GAQ==}
     engines: {node: '>=18'}
     peerDependencies:
       next: '>=14.0'
@@ -12826,7 +12826,7 @@ snapshots:
     optionalDependencies:
       nodemailer: 6.9.15
 
-  next-axiom@1.4.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+  next-axiom@1.5.1(next@14.2.13(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
     dependencies:
       next: 14.2.13(@babel/core@7.24.5)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
