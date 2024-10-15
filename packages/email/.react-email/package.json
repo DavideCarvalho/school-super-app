@@ -33,7 +33,7 @@
     "@react-email/section": "0.0.14",
     "@react-email/text": "0.0.10",
     "react-email": "3.0.1",
-    "@react-email/button": "0.0.16",
+    "@react-email/button": "0.0.17",
     "@react-email/tailwind": "0.1.0",
     "@react-email/head": "^0.0.10",
     "@react-email/preview": "0.0.11"
