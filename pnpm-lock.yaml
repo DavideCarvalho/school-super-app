@@ -91,8 +91,8 @@ importers:
         specifier: 2.1.36
         version: 2.1.36
       '@date-fns/utc':
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^2.0.0
+        version: 2.1.0
       '@dnd-kit/core':
         specifier: 6.1.0
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1367,8 +1367,8 @@ packages:
   '@date-fns/tz@1.0.2':
     resolution: {integrity: sha512-iKxj0kXMy7Qe6vjK+flz33cpy2j0dnTKT5i54p3fFlB411J47aSs6HBg7LOO5X9LjDi2iNlctD9rFn738ySOGQ==}
 
-  '@date-fns/utc@1.2.0':
-    resolution: {integrity: sha512-YLq+crMPJiBmIdkRmv9nZuZy1mVtMlDcUKlg4mvI0UsC/dZeIaGoGB5p/C4FrpeOhZ7zBTK03T58S0DFkRNMnw==}
+  '@date-fns/utc@2.1.0':
+    resolution: {integrity: sha512-176grgAgU2U303rD2/vcOmNg0kGPbhzckuH1TEP2al7n0AQipZIy9P15usd2TKQCG1g+E1jX/ZVQSzs4sUDwgA==}
 
   '@dnd-kit/accessibility@3.1.0':
     resolution: {integrity: sha512-ea7IkhKvlJUv9iSHJOnxinBcoOI3ppGnnL+VDJ75O45Nss6HtZd8IdN8touXPDtASfeI2T2LImb8VOZcL47wjQ==}
@@ -7889,7 +7889,7 @@ snapshots:
 
   '@date-fns/tz@1.0.2': {}
 
-  '@date-fns/utc@1.2.0': {}
+  '@date-fns/utc@2.1.0': {}
 
   '@dnd-kit/accessibility@3.1.0(react@18.3.1)':
     dependencies:
